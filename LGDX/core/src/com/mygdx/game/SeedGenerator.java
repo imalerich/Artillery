@@ -16,7 +16,7 @@ public class SeedGenerator
 		int peakspace = (int)(Math.random()*64) + 64;
 		for (int i=0; i<ScreenW/peakspace; i++)
 		{
-			int x = i*peakspace;// + (int)(Math.random()*64) - 32;
+			int x = i*peakspace + (int)(Math.random()*8);
 			int s = (int)(Math.random()*6);
 			int w = (int)(Math.random()*256) + peakspace + 128;
 			int h = (int)(Math.random() * w * 0.7);
