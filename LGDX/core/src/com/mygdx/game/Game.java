@@ -6,20 +6,25 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 public class Game extends ApplicationAdapter {
-	private OrthographicCamera cam;
+	private OrthographicCamera proj;
 	private SpriteBatch batch;
 	 
 	private Terrain ter;
 	private Background bg;
 	private UI ui;
 	private Tank tank;
+	private Camera cam;
 	
 	private double clock = 0.0;
 	
 	public static final int SCREENW = 960;
 	public static final int SCREENH = 600;
+	
+	public static final int WORLDW = 1920;
+	public static final int WORLDH = 1200;
 	
 	public void Release()
 	{
@@ -32,17 +37,22 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create() {
 		// init the camera and the sprite batch
-		cam = new OrthographicCamera();
-		cam.setToOrtho(false, SCREENW, SCREENH);
+		proj = new OrthographicCamera();
+		proj.setToOrtho(false, SCREENW, SCREENH);
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(SCREENW, SCREENH, 32) );
+		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, SCREENH, 32) );
 		
 		// create the tank, background and ui
 		bg = new Background("bg.png");
 		ui = new UI("ui.png");
-		tank = new Tank("Tank1.png", ter);
+		tank = new Tank("Tank1.png", ter, 60);
+		
+		// create the camera with the position to follow
+		cam = new Camera();
+		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
+		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
 	}
 
 	@Override
@@ -53,7 +63,7 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		// begin rendering the scene
-		batch.setProjectionMatrix(cam.combined);
+		batch.setProjectionMatrix(proj.combined);
 		batch.begin();
 		
 		DrawScene();
@@ -70,8 +80,8 @@ public class Game extends ApplicationAdapter {
 	private void DrawScene()
 	{
 		bg.Draw(batch);
-		ter.Draw(batch);
-		tank.Draw(batch);
+		ter.Draw(batch, cam.GetPos());
+		tank.Draw(batch, cam.GetPos());
 		
 		//ui.Draw(batch);
 	}
@@ -83,6 +93,12 @@ public class Game extends ApplicationAdapter {
 			tank.MoveRight();
 		else if (Gdx.input.isKeyPressed(Keys.LEFT))
 			tank.MoveLeft();
+		
+		// set the camera to follow the tank
+		Vector2 campos = new Vector2( tank.GetPos() );
+		campos.x -= SCREENW/2 - 32;
+		campos.y -= SCREENH/2 - 32;
+		cam.SetPos( campos );
 	}
 	
 	private void UpdateScene()

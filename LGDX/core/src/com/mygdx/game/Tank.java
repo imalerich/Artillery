@@ -38,6 +38,11 @@ public class Tank {
 		speed = Speed;
 	}
 	
+	public Vector2 GetPos()
+	{
+		return pos;
+	}
+	
 	public Terrain GetTerrainReference()
 	{
 		return ter;
@@ -76,7 +81,7 @@ public class Tank {
 		pos.y = Game.SCREENH - ter.GetHeight((int)pos.x+32) - 3;
 	}
 	
-	public void Draw(SpriteBatch Batch)
+	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
 		float theta = 0.0f;
 		float h0 = ter.GetHeight((int)pos.x+16);
@@ -84,6 +89,8 @@ public class Tank {
 		theta = -(float)Math.atan( (h1-h0)/32.0f );
 		theta = (float)Math.toDegrees(theta);
 		
-		Batch.draw(tex, pos.x, pos.y, 32, 0, 64, 64, 1.0f, 1.0f, theta, 0, 0, 64, 64, !forward, false);
+		// draw the tank
+		Batch.draw(tex, pos.x - Campos.x, pos.y - Campos.y, 32, 0, 64, 64, 1.0f, 1.0f, 
+				theta, 0, 0, 64, 64, !forward, false);
 	}
 }

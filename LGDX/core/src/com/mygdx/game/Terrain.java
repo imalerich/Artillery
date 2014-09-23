@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 public class Terrain {
 	// image data
@@ -247,8 +248,8 @@ public class Terrain {
 		tex = new Texture(data);
 	}
 	
-	public void Draw(SpriteBatch Batch)
+	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
-		Batch.draw(tex, 0, 0);
+		Batch.draw(tex, -Campos.x, -Campos.y);
 	}
 }
