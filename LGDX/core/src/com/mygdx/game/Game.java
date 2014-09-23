@@ -37,25 +37,7 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		TerrainSeed seed = new TerrainSeed();
-		seed.SetDimmensions(SCREENW, SCREENH);
-		seed.SetColor(32, 32, 32);
-		seed.SetSeaLevel(256);
-		seed.SetMinLevel(138);
-		seed.SetSoftness(64);
-		seed.SetConsistencyLevel(4);
-		
-		// generate some random location for the terrain seeder
-		for (int i=0; i<6; i++)
-		{
-			int x = (int)(Math.random()*SCREENW);
-			int s = (int)(Math.random()*5);
-			int w = (int)(Math.random()*128)+256;
-			int h = (int)(Math.random()*0.75*w);
-			h *= (int)(Math.random()*2) * 2 - 1; // -1 or 1, flip the height
-			seed.AddPeak(x, s, w, h);
-		}
-		ter = new Terrain(seed);
+		ter = new Terrain( SeedGenerator.GenerateSeed(SCREENW, SCREENH, 32) );
 		
 		// create the tank, background and ui
 		bg = new Background("bg.png");
