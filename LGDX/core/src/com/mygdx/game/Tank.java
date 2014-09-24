@@ -5,16 +5,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class Tank {
-	private Terrain ter;
+public class Tank extends Entity 
+{
 	private Texture tex;
-	private Vector2 pos;
-	private boolean forward;
-	private int speed;
 	
 	public void Release()
 	{
-		ter = null;
 		tex.dispose();
 	}
 	
@@ -24,6 +20,7 @@ public class Tank {
 		pos = new Vector2();
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+32) - 3;
 		
+		width = tex.getWidth();
 		forward = true;
 		ter = Ter;
 		speed = 20;
@@ -35,52 +32,10 @@ public class Tank {
 		pos = new Vector2();
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+32) - 3;
 		
+		width = tex.getWidth();
 		forward = true;
 		ter = Ter;
 		speed = Speed;
-	}
-	
-	public Vector2 GetPos()
-	{
-		return pos;
-	}
-	
-	public Terrain GetTerrainReference()
-	{
-		return ter;
-	}
-	
-	public void SetTerrainReference(Terrain Ter)
-	{
-		ter = Ter;
-	}
-	
-	public void MoveRight()
-	{
-		// sample the direction traveled
-		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+48) - 3;
-		float theta = -(float)Math.atan( (nexth-pos.y)/16.0f );
-		float xspeed = (float)Math.cos(theta)*tanspeed;
-		pos.x += xspeed; 
-		forward = true;
-			
-		// set the new height
-		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x+32) - 3;
-	}
-	
-	public void MoveLeft()
-	{
-		// sample the direction traveled
-		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+16) - 3;
-		float theta = -(float)Math.atan( (pos.y-nexth)/16.0f );
-		float xspeed = (float)Math.cos(theta)*tanspeed;
-		pos.x -= xspeed;
-		forward = false;
-		
-		// set the new height
-		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x+32) - 3;
 	}
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)

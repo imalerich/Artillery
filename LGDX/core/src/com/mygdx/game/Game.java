@@ -1,5 +1,8 @@
 package com.mygdx.game;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -8,7 +11,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class Game extends ApplicationAdapter {
+public class Game extends ApplicationAdapter 
+{
 	private OrthographicCamera proj;
 	private SpriteBatch batch;
 	 
@@ -17,6 +21,8 @@ public class Game extends ApplicationAdapter {
 	private UI ui;
 	private Tank tank;
 	private Camera cam;
+	
+	private Vector<Gunman> gunman;
 	
 	private double clock = 0.0;
 	
@@ -35,19 +41,28 @@ public class Game extends ApplicationAdapter {
 	}
 	
 	@Override
-	public void create() {
+	public void create() 
+	{
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 8) );
+		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 32) );
 		
 		// create the tank, background and ui
 		bg = new Background("bg.png");
 		ui = new UI("ui.png");
 		tank = new Tank("Tank1.png", ter, 60);
+		
+		// create a line of gunman
+		gunman = new Vector<Gunman>();
+		for (int i=0; i<15; i++)
+		{
+			Vector2 pos = new Vector2(i*32, 0);
+			gunman.add( new Gunman(ter, pos, 40) );
+		}
 		
 		// create the camera with the position to follow
 		cam = new Camera();
@@ -56,7 +71,8 @@ public class Game extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
+	public void render() 
+	{
 		UpdateScene();
 		
 		Gdx.gl.glClearColor(1, 0, 0, 1);
@@ -83,6 +99,10 @@ public class Game extends ApplicationAdapter {
 		ter.Draw(batch, cam.GetPos());
 		tank.Draw(batch, cam.GetPos());
 		
+		Iterator<Gunman> i = gunman.iterator();
+		while (i.hasNext()) 
+			i.next().Draw(batch, cam.GetPos());
+		
 		//ui.Draw(batch);
 	}
 	
@@ -93,6 +113,10 @@ public class Game extends ApplicationAdapter {
 			tank.MoveRight();
 		else if (Gdx.input.isKeyPressed(Keys.LEFT))
 			tank.MoveLeft();
+		
+		Iterator<Gunman> i = gunman.iterator();
+		while (i.hasNext())
+			i.next().MoveRight();
 		
 		// set the camera to follow the tank
 		Vector2 campos = new Vector2( tank.GetPos() );
