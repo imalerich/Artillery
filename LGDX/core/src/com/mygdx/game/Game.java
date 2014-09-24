@@ -49,7 +49,7 @@ public class Game extends ApplicationAdapter
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 32) );
+		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 8) );
 		
 		// create the tank, background and ui
 		bg = new Background("bg.png");
