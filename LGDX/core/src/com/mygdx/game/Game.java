@@ -42,7 +42,7 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, SCREENH, 32) );
+		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 8) );
 		
 		// create the tank, background and ui
 		bg = new Background("bg.png");
@@ -52,7 +52,7 @@ public class Game extends ApplicationAdapter {
 		// create the camera with the position to follow
 		cam = new Camera();
 		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
-		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
+		cam.SetWorldMax( new Vector2(WORLDW, Float.MAX_VALUE) );
 	}
 
 	@Override

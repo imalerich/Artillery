@@ -22,7 +22,7 @@ public class Tank {
 	{
 		tex = new Texture( Gdx.files.internal(Filename) );
 		pos = new Vector2();
-		pos.y = Game.SCREENH - Ter.GetHeight((int)pos.x);
+		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+32) - 3;
 		
 		forward = true;
 		ter = Ter;
@@ -33,6 +33,8 @@ public class Tank {
 	{
 		tex = new Texture(Gdx.files.internal(Filename) );
 		pos = new Vector2();
+		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+32) - 3;
+		
 		forward = true;
 		ter = Ter;
 		speed = Speed;
@@ -57,28 +59,28 @@ public class Tank {
 	{
 		// sample the direction traveled
 		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.SCREENH - ter.GetHeight((int)pos.x+48) - 3;
+		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+48) - 3;
 		float theta = -(float)Math.atan( (nexth-pos.y)/16.0f );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
 		pos.x += xspeed; 
 		forward = true;
 			
 		// set the new height
-		pos.y = Game.SCREENH - ter.GetHeight((int)pos.x+32) - 3;
+		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x+32) - 3;
 	}
 	
 	public void MoveLeft()
 	{
 		// sample the direction traveled
 		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.SCREENH - ter.GetHeight((int)pos.x+16) - 3;
+		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+16) - 3;
 		float theta = -(float)Math.atan( (pos.y-nexth)/16.0f );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
 		pos.x -= xspeed;
 		forward = false;
 		
 		// set the new height
-		pos.y = Game.SCREENH - ter.GetHeight((int)pos.x+32) - 3;
+		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x+32) - 3;
 	}
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
