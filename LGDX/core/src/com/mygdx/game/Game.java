@@ -54,7 +54,8 @@ public class Game extends ApplicationAdapter
 		// create the tank, background and ui
 		bg = new Background();
 		ui = new UI("ui.png");
-		tank = new Tank("Tank1.png", ter, 60);
+		tank = new Tank("Tank1.png", "Barrel.png", ter, 60);
+		tank.SetBarrelOffset( new Vector2(16, 32) );
 		
 		// create a line of gunman
 		gunman = new Vector<Gunman>();
@@ -118,6 +119,11 @@ public class Game extends ApplicationAdapter
 		Iterator<Gunman> i = gunman.iterator();
 		while (i.hasNext())
 			i.next().MoveRight();
+		
+		if (Gdx.input.isKeyPressed(Keys.UP))
+			tank.MoveBarrelUp();
+		else if (Gdx.input.isKeyPressed(Keys.DOWN))
+			tank.MoveBarrelDown();
 		
 		// set the camera to follow the tank
 		Vector2 campos = new Vector2( tank.GetPos() );

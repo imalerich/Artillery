@@ -21,13 +21,27 @@ public class AnimTex
 	
 	public void Release()
 	{
-		spritesheet.dispose();
+		if (spritesheet != null)
+			spritesheet.dispose();
 	}
 	
 	public AnimTex(String Spritesheet, int Rows, int Columns, int AnimCount)
 	{
 		// load assets
 		spritesheet = new Texture(Gdx.files.internal(Spritesheet));
+		animations = new Animation[AnimCount];
+		
+		// set data
+		rows = Rows;
+		columns = Columns;
+		width = spritesheet.getWidth()/columns;
+		height = spritesheet.getHeight()/rows;
+	}
+	
+	public AnimTex(Texture Spritesheet, int Rows, int Columns, int AnimCount)
+	{
+		// load assets
+		spritesheet = Spritesheet;
 		animations = new Animation[AnimCount];
 		
 		// set data

@@ -28,8 +28,8 @@ public class Background {
 	{
 		Batch.draw(bg, 0, 0, Game.SCREENW, Game.SCREENH);
 		
-		int offset0 = (PlayerX/6) % Game.SCREENW;
-		Batch.setColor(1.0f, 1.0f, 1.0f, 0.1f);
+		//int offset0 = (PlayerX/6) % Game.SCREENW;
+		//Batch.setColor(1.0f, 1.0f, 1.0f, 0.1f);
 		//Batch.draw(stars, -offset0, 0, Game.SCREENW, Game.SCREENH);
 		//Batch.draw(stars, Game.SCREENW-offset0, 0, Game.SCREENW, Game.SCREENH);
 		

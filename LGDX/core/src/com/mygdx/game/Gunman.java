@@ -1,21 +1,29 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class Gunman extends Entity
 {
 	private AnimTex anim;
+	private static Texture spritesheet;
 	
 	public void Release()
 	{
-		anim.Release();;
+		if (spritesheet != null)
+			spritesheet.dispose();
+		
+		anim.Release();
 	}
 	
 	public Gunman(Terrain Ter, Vector2 Pos, int Speed)
 	{
 		if (anim == null) {
-			anim = new AnimTex("gunman.png", 1, 2, 2);
+			spritesheet = new Texture( Gdx.files.internal("gunman.png") );
+			
+			anim = new AnimTex(spritesheet, 1, 2, 2);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
 		}
