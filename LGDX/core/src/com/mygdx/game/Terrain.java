@@ -28,7 +28,12 @@ public class Terrain {
 	private int addy;
 	private int addr;
 	
-	private static final int alphamask = 0x00256;
+	// divide the world into segments of SEGMENTWIDTH and invalidate them when damaged
+	private boolean[] isSegmentValid;
+	private int segmentcount;
+	
+	private static final int SEGMENTWIDTH = 64;
+	private static final int ALPHAMASK = 0x00256;
 	
 	public void ResetTimers()
 	{
@@ -47,25 +52,6 @@ public class Terrain {
 		data.dispose();
 	}
 	
-	public Terrain(int Width, int Height, int R, int G, int B)
-	{
-		// set the color
-		color = new Color(R/255.0f, G/255.0f, B/255.0f, 1.0f);
-		
-		// set image dimensions
-		width = Width;
-		height = Height;
-		
-		// init the pixmap
-		data = new Pixmap(Width, Height, Pixmap.Format.RGBA8888);
-		Pixmap.setBlending(Blending.None);
-		GenerateTerrain();
-		
-		// set initial data
-		Invalidate();
-		ResetTimers();
-	}
-	
 	public Terrain(TerrainSeed Seed)
 	{
 		// init colors and dimensions
@@ -78,6 +64,24 @@ public class Terrain {
 		data = new Pixmap(width, height, Pixmap.Format.RGBA8888);
 		Pixmap.setBlending(Blending.None);
 		
+		// generate the terrain
+		InitSegments();
+		GenerateFromSeed(Seed);
+		UpdateTex();
+		ResetTimers();
+	}
+	
+	private void InitSegments()
+	{
+		// generate the validation segments
+		segmentcount = (int)(Math.ceil( (float)width/SEGMENTWIDTH) );
+		isSegmentValid = new boolean[segmentcount];
+		for (int i=0; i<segmentcount; i++)
+			isSegmentValid[i] = true;
+	}
+	
+	private void GenerateFromSeed(TerrainSeed Seed)
+	{
 		// temporarily store the data that will be used to create the PixMap 
 		int[] heights = new int[width];
 		for (int i=0; i<width; i++)
@@ -132,10 +136,6 @@ public class Terrain {
 			for (int y=0; y<height; y++)
 				if (y>height-heights[x])
 					data.drawPixel(x, y);
-		
-		// set initial data
-		Invalidate();
-		ResetTimers();
 	}
 	
 	public void SetBedrock()
@@ -153,23 +153,10 @@ public class Terrain {
 	{
 		int rety = 0;
 		for (int y=0; y<height; y++)
-			if ((data.getPixel(X, y) & alphamask) == 0)
+			if ((data.getPixel(X, y) & ALPHAMASK) == 0)
 				rety = y;
 		
 		return rety;
-	}
-	
-	private void GenerateTerrain()
-	{
-		data.setColor(0.0f, 0.0f, 0.0f, 0.0f);
-		data.fill();
-		
-		data.setColor(color);
-		for (int x=0; x<width; x++)
-			for (int y=0; y<height; y++)
-				if (y>height-136) data.drawPixel(x, y);
-		
-		SetBedrock();
 	}
 	
 	private void SetPixel(int X, int Y, boolean State)
@@ -187,29 +174,47 @@ public class Terrain {
 		if (dropclock < 0.01) return;
 		dropclock = 0.0;
 		
-		// loop through each section of the terrain
-		for (int x=0; x<width; x++)
+		// declare the variables only once for the loop
+		int sety = height;
+		boolean laststate = true;
+		boolean currentstate = true;
+		
+		// loop through each invalid section of the terrain
+		for (int i=0; i<segmentcount; i++)
 		{
-			int sety = height;
-			boolean laststate = true;
-			boolean currentstate = true;
+			// only update invalid segments
+			if (isSegmentValid[i])
+				continue;
 			
-			for (int y=height; y>0; y--)
+			// assume this region is valid until specified as otherwise
+			isSegmentValid[i] = true;
+			
+			for (int x=i*SEGMENTWIDTH; x<(i+1)*SEGMENTWIDTH; x++)
 			{
-				// get the current state of this pixel
-				if ((data.getPixel(x, y) & alphamask) == 0)
-					currentstate = false;
-				else currentstate = true;
-				
-				if (!laststate && currentstate && y != height-1)
-					sety = y+1;
-				else if (laststate && !currentstate && sety != height) {
-					SetPixel(x, sety, true);
-					SetPixel(x, y+1, false);
+				sety = height;
+				laststate = true;
+				currentstate = true;
+
+				for (int y=height; y>0; y--)
+				{
+					// get the current state of this pixel
+					if ((data.getPixel(x, y) & ALPHAMASK) == 0)
+						currentstate = false;
+					else currentstate = true;
+
+					if (!laststate && currentstate && y != height-1)
+						sety = y+1;
+					else if (laststate && !currentstate && sety != height) {
+						SetPixel(x, sety, true);
+						SetPixel(x, y+1, false);
+						
+						// set this region as invalid, continue processing
+						isSegmentValid[i] = false; // set this region as invalid, continue processing
+					}
+
+					// set the last state
+					laststate = currentstate;
 				}
-					
-				// set the last state
-				laststate = currentstate;
 			}
 		}
 	}
@@ -226,20 +231,40 @@ public class Terrain {
 			data.fillCircle(addx, addy, radius);
 		}
 		
+		// don't invalid regions until the terrain is finished being destroyed 
+		if (holeclock > 1.5)
+			InvalidateRegions();
+		
 		if (holeclock > 1.5 || addr < 0) {
 			holeclock = 0.0;
 			addr = -1;
 		}
 	}
 	
+	private void InvalidateRegions()
+	{
+		// invalidate the region covered by this new hole
+		int x0 = addx - addr;
+		int x1 = addx + addr;
+		
+		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
+		region0 = Math.max(region0, 0);
+		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
+		region1 = Math.min(region1, segmentcount-1);
+		
+		for (int i = region0; i<=region1; i++)
+			isSegmentValid[i] = false;
+	}
+	
 	public void AddHole(int X, int Y, int Radius)
 	{
+		// set the position that the hole is added
 		addx = X;
 		addy = Y;
 		addr = Radius;
 	}
 	
-	public void Invalidate()
+	public void UpdateTex()
 	{
 		if (tex != null)
 			tex.dispose();

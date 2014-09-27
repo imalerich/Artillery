@@ -73,9 +73,10 @@ public class Game extends ApplicationAdapter
 	@Override
 	public void render() 
 	{
+		FrameRate.Update();
 		UpdateScene();
 		
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		// begin rendering the scene
@@ -142,6 +143,6 @@ public class Game extends ApplicationAdapter
 		}
 		
 		ter.Update();
-		ter.Invalidate();
+		ter.UpdateTex();
 	}
 }
