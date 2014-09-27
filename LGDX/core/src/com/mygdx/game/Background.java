@@ -7,21 +7,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Background {
 	private Texture bg;
-	private Texture stars0;
-	private Texture stars1;
+	private Texture clouds;
+	private Texture stars;
 	
 	public void Release()
 	{
 		bg.dispose();
-		stars0.dispose();
-		stars1.dispose();
+		stars.dispose();
+		clouds.dispose();
 	}
 	
 	public Background()
 	{
 		bg = new Texture( Gdx.files.internal("bg.png") );
-		stars0 = new Texture( Gdx.files.internal("stars.png") );
-		stars1 = new Texture( Gdx.files.internal("stars1.png") );
+		clouds = new Texture( Gdx.files.internal("clouds.png") );
+		stars = new Texture( Gdx.files.internal("stars.png") );
 	}
 	
 	public void Draw(SpriteBatch Batch, int PlayerX)
@@ -29,14 +29,14 @@ public class Background {
 		Batch.draw(bg, 0, 0, Game.SCREENW, Game.SCREENH);
 		
 		int offset0 = (PlayerX/6) % Game.SCREENW;
-		Batch.setColor(1.0f, 1.0f, 1.0f, 0.2f);
-		Batch.draw(stars0, -offset0, 0, Game.SCREENW, Game.SCREENH);
-		Batch.draw(stars0, Game.SCREENW-offset0, 0, Game.SCREENW, Game.SCREENH);
+		Batch.setColor(1.0f, 1.0f, 1.0f, 0.1f);
+		//Batch.draw(stars, -offset0, 0, Game.SCREENW, Game.SCREENH);
+		//Batch.draw(stars, Game.SCREENW-offset0, 0, Game.SCREENW, Game.SCREENH);
 		
-		int offset1 = (PlayerX/12) % Game.SCREENW;
-		Batch.setColor(1.0f, 1.0f, 1.0f, 0.5f);
-		Batch.draw(stars1, -offset1, 0, Game.SCREENW, Game.SCREENH);
-		Batch.draw(stars1, Game.SCREENW-offset1, 0, Game.SCREENW, Game.SCREENH);
+		int offset1 = (PlayerX/3) % Game.SCREENW;
+		Batch.setColor(1.0f, 1.0f, 1.0f, 0.12f);
+		Batch.draw(clouds, -offset1, 0, Game.SCREENW, Game.SCREENH);
+		Batch.draw(clouds, Game.SCREENW-offset1, 0, Game.SCREENW, Game.SCREENH);
 		
 		Batch.setColor(Color.WHITE);
 	}
