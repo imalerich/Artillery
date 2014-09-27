@@ -52,7 +52,7 @@ public class Game extends ApplicationAdapter
 		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 8) );
 		
 		// create the tank, background and ui
-		bg = new Background("bg.png");
+		bg = new Background();
 		ui = new UI("ui.png");
 		tank = new Tank("Tank1.png", ter, 60);
 		
@@ -96,7 +96,7 @@ public class Game extends ApplicationAdapter
 	
 	private void DrawScene()
 	{
-		bg.Draw(batch);
+		bg.Draw(batch, (int)tank.GetPos().x);
 		ter.Draw(batch, cam.GetPos());
 		tank.Draw(batch, cam.GetPos());
 		
@@ -104,7 +104,7 @@ public class Game extends ApplicationAdapter
 		while (i.hasNext()) 
 			i.next().Draw(batch, cam.GetPos());
 		
-		//ui.Draw(batch);
+		ui.Draw(batch);
 	}
 	
 	private void UpdatePos()

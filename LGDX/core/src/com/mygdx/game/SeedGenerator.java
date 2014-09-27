@@ -19,7 +19,7 @@ public class SeedGenerator
 			int x = i*peakspace + (int)(Math.random()*8);
 			int s = (int)(Math.random()*6);
 			int w = (int)(Math.random()*256) + peakspace + 128;
-			int h = (int)(Math.random() * w * 0.7);
+			int h = (int)(Math.random() * w * 0.4);
 			h *= (int)(Math.random()*2) * 2 - 1; // 50/50 invert height
 			
 			Seed.AddPeak(x, s, w, h);

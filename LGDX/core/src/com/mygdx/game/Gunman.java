@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Gunman extends Entity
 {
-	private static AnimTex anim;
+	private AnimTex anim;
 	
 	public void Release()
 	{
