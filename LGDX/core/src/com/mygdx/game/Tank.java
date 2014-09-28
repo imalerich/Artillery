@@ -50,26 +50,39 @@ public class Tank extends Entity
 		barrelPhi -= Gdx.graphics.getDeltaTime()*30;
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	private Vector2 RotateCoord(Vector2 Coord, float Theta)
+	{
+		float x = Coord.x;
+		float y = Coord.y;
+		
+		float cos = (float)Math.cos( Theta );
+		float sin = (float)Math.sin( Theta );
+		
+		Coord.x = x*cos - y*sin;
+		Coord.y = x*sin + y*cos;
+		
+		return Coord;
+	}
+	
+	private float GetAngle()
 	{
 		float theta = 0.0f;
-		float h0 = ter.GetHeight((int)pos.x+16);
-		float h1 = ter.GetHeight((int)pos.x+48);
+		float h0 = ter.GetHeight( (int)pos.x+16 );
+		float h1 = ter.GetHeight( (int)pos.x+48 );
+		
 		theta = -(float)Math.atan( (h1-h0)/32.0f );
-		theta = (float)Math.toDegrees(theta);
+		return (float)Math.toDegrees(theta);
+	}
+	
+	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	{
+		float theta = GetAngle();
 		
 		// draw the tanks barrel
 		Vector2 offset = new Vector2(barrelOffset.x-32, barrelOffset.y);
 		if (!forward) offset.x = 32 - barrelOffset.x;
 		
-		float x = offset.x;
-		float y = offset.y;
-		
-		float cos = (float)Math.cos( Math.toRadians(theta));
-		float sin = (float)Math.sin(Math.toRadians(theta));
-		
-		offset.x = x*cos - y*sin;
-		offset.y = x*sin + y*cos;
+		offset = RotateCoord( offset, (float)Math.toRadians(theta) );
 		
 		float phi = barrelPhi;
 		if (!forward)
