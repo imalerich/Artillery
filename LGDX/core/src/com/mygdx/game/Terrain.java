@@ -290,7 +290,12 @@ public class Terrain {
 		Batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
 		
 		// draw each segment
-		for (int i=0; i<segmentcount; i++)
+		int s0 = GetSegment((int)Campos.x) - 1;
+		s0 = (int)Math.max(s0, 0);
+		int s1 = (Game.SCREENW/SEGMENTWIDTH) + 2;
+		s1 = s0 + (int)Math.min(s1, segmentcount);
+		
+		for (int i=s0; i<s1; i++)
 			Batch.draw(mask[i], (i*SEGMENTWIDTH)-Campos.x, -Campos.y);
 		
 		Batch.flush();
