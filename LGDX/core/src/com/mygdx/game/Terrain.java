@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,63 +13,55 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Terrain {
 	// image data
-	private Pixmap data;
+	private Pixmap[] data;
+	private Texture[] mask;
+	
 	private Texture tex;
+	
 	private int width;
 	private int height;
 	private int minlevel;
 	
-	// terrain color
-	private Color color;
-	
 	// clocks
 	private double dropclock;
-	private double holeclock;
-	private int addx;
-	private int addy;
-	private int addr;
 	
 	// divide the world into segments of SEGMENTWIDTH and invalidate them when damaged
 	private boolean[] isSegmentValid;
 	private int segmentcount;
 	
 	private static final int SEGMENTWIDTH = 64;
-	private static final int ALPHAMASK = 0x00256;
-	
-	public void ResetTimers()
-	{
-		dropclock = 0.0;
-		holeclock = 0.0;
-		minlevel = 0;
-		
-		addx = -1;
-		addy = -1;
-		addr = -1;
-	}
+	private static final int ALPHAMASK = 255;
 	
 	public void Release()
 	{
-		tex.dispose();
-		data.dispose();
+		for (int i=0; i<segmentcount; i++) {
+			mask[i].dispose();
+			data[i].dispose();
+		}
 	}
 	
 	public Terrain(TerrainSeed Seed)
 	{
 		// init colors and dimensions
-		color = Seed.GetColor();
 		width = Seed.GetWidth();
 		height = Seed.GetHeight();
 		minlevel = Seed.GetMinLevel();
+		dropclock = 0.0;
 		
 		// generate the texture representing the terrain
-		data = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+		InitSegments();
 		Pixmap.setBlending(Blending.None);
 		
 		// generate the terrain
-		InitSegments();
 		GenerateFromSeed(Seed);
-		UpdateTex();
-		ResetTimers();
+		for (int i=0; i<segmentcount; i++)
+			InvalidateTex(i);
+		
+		// generate the texture
+		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
+		tmp.setColor( Seed.GetColor() );
+		tmp.fill();
+		tex = new Texture(tmp);
 	}
 	
 	private void InitSegments()
@@ -78,6 +71,18 @@ public class Terrain {
 		isSegmentValid = new boolean[segmentcount];
 		for (int i=0; i<segmentcount; i++)
 			isSegmentValid[i] = true;
+		
+		// generate the data buffers
+		data = new Pixmap[segmentcount];
+		mask = new Texture[segmentcount];
+		
+		for (int i=0; i<segmentcount; i++) {
+			data[i] = new Pixmap(SEGMENTWIDTH, height, Pixmap.Format.Alpha);
+			
+			// init to transparent
+			data[i].setColor(Color.CLEAR);
+			data[i].fill();
+		}
 	}
 	
 	private void GenerateFromSeed(TerrainSeed Seed)
@@ -126,34 +131,48 @@ public class Terrain {
 			heights[x] += (int)(consistency*Math.abs(offset));
 		}
 		
-		// first, set the PixMap entirely transparent
-		data.setColor(0.0f, 0.0f, 0.0f, 0.0f);
-		data.fill();
-		
 		// construct the PixMap from the generated data
-		data.setColor(color);
-		for (int x=0; x<width; x++)
-			for (int y=0; y<height; y++)
-				if (y>height-heights[x])
-					data.drawPixel(x, y);
+		for (int i=0; i<segmentcount; i++)
+		{
+			data[i].setColor(Color.WHITE);
+			
+			// fill the segments with the terrain data
+			for (int x=0; x<SEGMENTWIDTH; x++)
+				for (int y=0; y<height; y++)
+					if (y > height-heights[x + i*SEGMENTWIDTH])
+						data[i].drawPixel(x, y);
+			
+			// leave a transparent line at the top of the pixmap
+			data[i].setColor(0.0f, 0.0f, 0.0f, 0.0f);
+			data[i].fillRectangle(0, 0, SEGMENTWIDTH, 2);
+		}
 	}
 	
-	public void SetBedrock()
+	private int GetSegment(int X)
+	{
+		return X/SEGMENTWIDTH;
+	}
+	
+	public void SetBedrock(int Segment)
 	{
 		// set the bottom layer to bedrock so it cannot be destroyed
-		data.setColor(color);
-		data.fillRectangle(0, height-minlevel, width, minlevel);
-		
-		// set the top layer to transparent for falling to properly work
-		data.setColor(0.0f, 0.0f, 0.0f, 0.0f);
-		data.fillRectangle(0, 0, width, 2);
+		data[Segment].setColor(Color.WHITE);
+		data[Segment].fillRectangle(0, height-minlevel, SEGMENTWIDTH, minlevel);
 	}
 	
 	public int GetHeight(int X)
 	{
+		// do not allow tests beyond the scope of the terrain
+		if (X > width || X < 0) return 0;
+		
+		// determine the segment of this position
+		int s = GetSegment(X);
+		int localx = X - s*SEGMENTWIDTH;
+		
+		// find the height
 		int rety = 0;
 		for (int y=0; y<height; y++)
-			if ((data.getPixel(X, y) & ALPHAMASK) == 0)
+			if ( (data[s].getPixel(localx, y) & ALPHAMASK) == 0 )
 				rety = y;
 		
 		return rety;
@@ -161,11 +180,15 @@ public class Terrain {
 	
 	private void SetPixel(int X, int Y, boolean State)
 	{
-		if (State)
-			data.setColor(color);
-		else data.setColor(0.0f, 0.0f, 0.0f, 0.0f);
+		// determine the segment for this pixel
+		int s = GetSegment(X);
+		int localx = X - s*SEGMENTWIDTH;
 		
-		data.drawPixel(X, Y);
+		if (State)
+			data[s].setColor(Color.WHITE);
+		else data[s].setColor(Color.CLEAR);
+		
+		data[s].drawPixel(localx, Y);
 	}
 	
 	private void UpdateDropping()
@@ -189,7 +212,7 @@ public class Terrain {
 			// assume this region is valid until specified as otherwise
 			isSegmentValid[i] = true;
 			
-			for (int x=i*SEGMENTWIDTH; x<(i+1)*SEGMENTWIDTH; x++)
+			for (int x=0; x<SEGMENTWIDTH; x++)
 			{
 				sety = height;
 				laststate = true;
@@ -198,15 +221,15 @@ public class Terrain {
 				for (int y=height; y>0; y--)
 				{
 					// get the current state of this pixel
-					if ((data.getPixel(x, y) & ALPHAMASK) == 0)
+					if ((data[i].getPixel(x, y) & ALPHAMASK) == 0)
 						currentstate = false;
 					else currentstate = true;
 
 					if (!laststate && currentstate && y != height-1)
 						sety = y+1;
 					else if (laststate && !currentstate && sety != height) {
-						SetPixel(x, sety, true);
-						SetPixel(x, y+1, false);
+						SetPixel(x + i*SEGMENTWIDTH, sety, true);
+						SetPixel(x + i*SEGMENTWIDTH, y+1, false);
 						
 						// set this region as invalid, continue processing
 						isSegmentValid[i] = false; // set this region as invalid, continue processing
@@ -216,65 +239,69 @@ public class Terrain {
 					laststate = currentstate;
 				}
 			}
+			
+			// processing was done on the segment, invalidate it
+			InvalidateTex(i);
 		}
 	}
 	
 	public void Update()
 	{
 		UpdateDropping();
-		
-		holeclock += Gdx.graphics.getDeltaTime();
-		if (holeclock > 1.0 && addr > 0) {
-			data.setColor(0.0f, 0.0f, 0.0f, 0.0f);
-			int radius = (int)(addr * 2 * (holeclock-1.0));
-			
-			data.fillCircle(addx, addy, radius);
-		}
-		
-		// don't invalid regions until the terrain is finished being destroyed 
-		if (holeclock > 1.5)
-			InvalidateRegions();
-		
-		if (holeclock > 1.5 || addr < 0) {
-			holeclock = 0.0;
-			addr = -1;
-		}
 	}
 	
-	private void InvalidateRegions()
+	public void AddHole(int X, int Y, int Radius)
 	{
-		// invalidate the region covered by this new hole
-		int x0 = addx - addr;
-		int x1 = addx + addr;
+		// determine which segments this hole belongs to
+		int x0 = X - Radius;
+		int x1 = X + Radius;
 		
 		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
 		region0 = Math.max(region0, 0);
 		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
 		region1 = Math.min(region1, segmentcount-1);
 		
-		for (int i = region0; i<=region1; i++)
+		// for each segment, invalidate it, and add the hole
+		for (int i=region0; i<=region1; i++)
+		{
+			int localx = X - i*SEGMENTWIDTH;
 			isSegmentValid[i] = false;
+			
+			data[i].setColor(Color.CLEAR);
+			data[i].fillCircle(localx, Y, Radius);
+			InvalidateTex(i);
+		}
 	}
 	
-	public void AddHole(int X, int Y, int Radius)
+	// call whenever processing is done on a segment
+	private void InvalidateTex(int Segment)
 	{
-		// set the position that the hole is added
-		addx = X;
-		addy = Y;
-		addr = Radius;
-	}
-	
-	public void UpdateTex()
-	{
-		if (tex != null)
-			tex.dispose();
+		if (mask[Segment] != null)
+			mask[Segment].dispose();
 		
-		SetBedrock();
-		tex = new Texture(data);
+		SetBedrock(Segment);
+		mask[Segment] = new Texture( data[Segment] );
 	}
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
-		Batch.draw(tex, -Campos.x, -Campos.y);
+		// draw the alpha mask
+		Gdx.gl.glColorMask(false, false, false, true);
+		Batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
+		
+		// draw each segment
+		for (int i=0; i<segmentcount; i++)
+			Batch.draw(mask[i], (i*SEGMENTWIDTH)-Campos.x, -Campos.y);
+		
+		Batch.flush();
+		
+		// render the texture
+		Gdx.gl.glColorMask(true, true, true, true);
+		Batch.setBlendFunction(GL20.GL_DST_ALPHA, GL20.GL_ONE_MINUS_DST_ALPHA);
+		Batch.draw(tex, 0, 0);
+		Batch.flush();
+		
+		// reset the blend function
+		Batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 }

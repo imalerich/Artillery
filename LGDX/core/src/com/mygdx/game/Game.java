@@ -29,7 +29,7 @@ public class Game extends ApplicationAdapter
 	public static final int SCREENW = 960;
 	public static final int SCREENH = 600;
 	
-	public static final int WORLDW = 1920;
+	public static final int WORLDW = 1920*2;
 	public static final int WORLDH = 1200;
 	
 	public void Release()
@@ -49,7 +49,7 @@ public class Game extends ApplicationAdapter
 		batch = new SpriteBatch();
 		
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 8) );
+		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16) );
 		
 		// create the tank, background and ui
 		bg = new Background();
@@ -105,7 +105,7 @@ public class Game extends ApplicationAdapter
 		while (i.hasNext()) 
 			i.next().Draw(batch, cam.GetPos());
 		
-		ui.Draw(batch);
+		//ui.Draw(batch);
 	}
 	
 	private void UpdatePos()
@@ -140,7 +140,7 @@ public class Game extends ApplicationAdapter
 		UpdatePos();
 		
 		// update drawing holes all over the place
-		if (clock >= 1.0) {
+		if (clock >= 3.0) {
 			int x = (int)(Math.random()*640);
 			int y = ter.GetHeight(x);
 			int r = (int)(Math.random()*16)+24;
@@ -149,6 +149,5 @@ public class Game extends ApplicationAdapter
 		}
 		
 		ter.Update();
-		ter.UpdateTex();
 	}
 }
