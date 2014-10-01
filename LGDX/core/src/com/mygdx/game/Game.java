@@ -3,6 +3,9 @@ package com.mygdx.game;
 import java.util.Iterator;
 import java.util.Vector;
 
+import terrain.SeedGenerator;
+import terrain.Terrain;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -10,6 +13,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+
+import entity.Gunman;
+import entity.Tank;
+import entity.WarPlane;
 
 public class Game extends ApplicationAdapter 
 {
@@ -23,6 +30,7 @@ public class Game extends ApplicationAdapter
 	private Camera cam;
 	
 	private Vector<Gunman> gunman;
+	private WarPlane plane;
 	
 	private double clock = 0.0;
 	
@@ -56,6 +64,7 @@ public class Game extends ApplicationAdapter
 		ui = new UI("ui.png");
 		tank = new Tank("Tank1.png", "Barrel.png", ter, 60);
 		tank.SetBarrelOffset( new Vector2(16, 32) );
+		plane = new WarPlane(ter, 1200, SCREENH, 100);
 		
 		// create a line of gunman
 		gunman = new Vector<Gunman>();
@@ -104,8 +113,9 @@ public class Game extends ApplicationAdapter
 		Iterator<Gunman> i = gunman.iterator();
 		while (i.hasNext()) 
 			i.next().Draw(batch, cam.GetPos());
+		plane.Draw(batch, cam.GetPos());
 		
-		//ui.Draw(batch);
+		ui.Draw(batch);
 	}
 	
 	private void UpdatePos()
@@ -119,6 +129,8 @@ public class Game extends ApplicationAdapter
 		Iterator<Gunman> i = gunman.iterator();
 		while (i.hasNext())
 			i.next().MoveRight();
+		
+		plane.MoveRight();
 		
 		if (Gdx.input.isKeyPressed(Keys.UP))
 			tank.MoveBarrelUp();
@@ -144,7 +156,7 @@ public class Game extends ApplicationAdapter
 			int x = (int)(Math.random()*640);
 			int y = ter.GetHeight(x);
 			int r = (int)(Math.random()*16)+24;
-			ter.AddHole(x, y, r);
+			ter.CutHole(x, y, r);
 			clock = 0.0;
 		}
 		
