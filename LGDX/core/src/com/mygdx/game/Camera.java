@@ -45,6 +45,18 @@ public class Camera
 		ValidatePos();
 	}
 	
+	public void MoveHorizontal(int Dist)
+	{
+		pos.x += Dist;
+		ValidatePos();
+	}
+	
+	public void MoveVertical(int Dist)
+	{
+		pos.y += Dist;
+		ValidatePos();
+	}
+	
 	private void ValidatePos()
 	{
 		if (pos.x < worldmin.x)

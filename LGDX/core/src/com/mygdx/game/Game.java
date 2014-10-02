@@ -9,8 +9,10 @@ import terrain.Terrain;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
@@ -32,7 +34,8 @@ public class Game extends ApplicationAdapter
 	private Vector<Gunman> gunman;
 	private WarPlane plane;
 	
-	private double clock = 0.0;
+	private Texture base;
+	private int ypos;
 	
 	public static final int SCREENW = 960;
 	public static final int SCREENH = 600;
@@ -46,6 +49,7 @@ public class Game extends ApplicationAdapter
 		bg.Release();
 		ui.Release();
 		tank.Release();
+		base.dispose();
 	}
 	
 	@Override
@@ -55,7 +59,7 @@ public class Game extends ApplicationAdapter
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
 		batch = new SpriteBatch();
-		
+
 		// generate the terrain
 		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16) );
 		
@@ -78,6 +82,13 @@ public class Game extends ApplicationAdapter
 		cam = new Camera();
 		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.SetWorldMax( new Vector2(WORLDW, Float.MAX_VALUE) );
+		
+		// generate the base
+		base = new Texture( Gdx.files.internal("base.png") );
+		ypos = ter.GetMinHeight(0, base.getWidth());
+		int max = ter.GetMaxHeight(0, base.getWidth());
+		ter.CutRegion(0, ypos, base.getWidth(), max-ypos);
+		ypos = WORLDH - ter.GetHeight(0) - 3;
 	}
 
 	@Override
@@ -115,6 +126,9 @@ public class Game extends ApplicationAdapter
 			i.next().Draw(batch, cam.GetPos());
 		plane.Draw(batch, cam.GetPos());
 		
+		batch.setColor(16/255.0f, 16/255.0f, 16/255.0f, 1);
+		batch.draw(base, -cam.GetPos().x, ypos - 3 - cam.GetPos().y);
+		batch.setColor(Color.WHITE);
 		ui.Draw(batch);
 	}
 	
@@ -138,27 +152,17 @@ public class Game extends ApplicationAdapter
 			tank.MoveBarrelDown();
 		
 		// set the camera to follow the tank
-		Vector2 campos = new Vector2( tank.GetPos() );
-		campos.x -= SCREENW/2 - 32;
-		campos.y -= SCREENH/2 - 32;
-		cam.SetPos( campos );
+		if (Gdx.input.isButtonPressed(2))
+		{
+			cam.MoveHorizontal( 6 * -Gdx.input.getDeltaX() );
+			cam.MoveVertical( 6 * Gdx.input.getDeltaY() );
+		}
 	}
 	
 	private void UpdateScene()
 	{
-		clock += Gdx.graphics.getDeltaTime();
-	 	
 		// update the tanks position
 		UpdatePos();
-		
-		// update drawing holes all over the place
-		if (clock >= 3.0) {
-			int x = (int)(Math.random()*640);
-			int y = ter.GetHeight(x);
-			int r = (int)(Math.random()*16)+24;
-			ter.CutHole(x, y, r);
-			clock = 0.0;
-		}
 		
 		ter.Update();
 	}

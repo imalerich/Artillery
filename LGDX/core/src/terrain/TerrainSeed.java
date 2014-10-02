@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class TerrainSeed {
 	private Vector<Integer> peaks; // x location of peaks
-	private Vector<Integer> sharpness; // (0) hill -> (1) mountain
+	private Vector<Integer> sharpness;
 	private Vector<Integer> peakwidth; // the width of each peak
 	private Vector<Integer> peakheight; // scale of those peaks, negative = valley
 	
@@ -104,7 +104,6 @@ public class TerrainSeed {
 	{
 		// clamp the sharpness to the bounds
 		if (Sharpness < 0) Sharpness = 0;
-		else if (Sharpness > 1) Sharpness = 1;
 		
 		// add the data as a new peak
 		peaks.add(XPos);

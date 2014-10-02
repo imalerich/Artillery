@@ -339,6 +339,8 @@ public class Terrain {
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
+		Batch.flush();
+		
 		// draw the alpha mask
 		Gdx.gl.glColorMask(false, false, false, true);
 		Batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
@@ -347,7 +349,7 @@ public class Terrain {
 		int s0 = GetSegment((int)Campos.x) - 1;
 		s0 = (int)Math.max(s0, 0);
 		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 2;
-		s1 = (int)Math.min(s1, segmentcount-1);
+		s1 = (int)Math.min(s1, segmentcount);
 		
 		for (int i=s0; i<s1; i++)
 			Batch.draw(mask[i], (i*SEGMENTWIDTH)-Campos.x, -Campos.y);
