@@ -1,13 +1,11 @@
 package com.mygdx.game;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import terrain.SeedGenerator;
 import terrain.Terrain;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -17,8 +15,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import entity.Gunman;
+import entity.Squad;
 import entity.Tank;
-import entity.WarPlane;
 
 public class Game extends ApplicationAdapter 
 {
@@ -28,11 +26,10 @@ public class Game extends ApplicationAdapter
 	private Terrain ter;
 	private Background bg;
 	private UI ui;
-	private Tank tank;
 	private Camera cam;
 	
-	private Vector<Gunman> gunman;
-	private WarPlane plane;
+	private Squad gunmen;
+	private Squad tank;
 	
 	private Texture base;
 	private int ypos;
@@ -45,16 +42,19 @@ public class Game extends ApplicationAdapter
 	
 	public void Release()
 	{
+		Shaders.Release();
 		ter.Release();
 		bg.Release();
 		ui.Release();
-		tank.Release();
 		base.dispose();
 	}
 	
 	@Override
 	public void create() 
 	{
+		// initialize the shaders
+		Shaders.InitShaders();
+		
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
@@ -65,18 +65,21 @@ public class Game extends ApplicationAdapter
 		
 		// create the tank, background and ui
 		bg = new Background();
-		ui = new UI("ui.png");
-		tank = new Tank("Tank1.png", "Barrel.png", ter, 60);
-		tank.SetBarrelOffset( new Vector2(16, 32) );
-		plane = new WarPlane(ter, 1200, SCREENH, 100);
+		ui = new UI("img/ui.png");
 		
 		// create a line of gunman
-		gunman = new Vector<Gunman>();
-		for (int i=0; i<15; i++)
+		gunmen = new Squad();
+		for (int i=0; i<5; i++)
 		{
-			Vector2 pos = new Vector2(i*32, 0);
-			gunman.add( new Gunman(ter, pos, 40) );
+			Vector2 pos = new Vector2(512 + i*32, 0);
+			gunmen.AddUnit( new Gunman(ter, pos, 40) );
 		}
+		
+		// create the tank squad
+		tank = new Squad();
+		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 20);
+		add.SetBarrelOffset( new Vector2(17, 29) );
+		tank.AddUnit(add);
 		
 		// create the camera with the position to follow
 		cam = new Camera();
@@ -84,7 +87,7 @@ public class Game extends ApplicationAdapter
 		cam.SetWorldMax( new Vector2(WORLDW, Float.MAX_VALUE) );
 		
 		// generate the base
-		base = new Texture( Gdx.files.internal("base.png") );
+		base = new Texture( Gdx.files.internal("img/base.png") );
 		ypos = ter.GetMinHeight(0, base.getWidth());
 		int max = ter.GetMaxHeight(0, base.getWidth());
 		ter.CutRegion(0, ypos, base.getWidth(), max-ypos);
@@ -117,42 +120,22 @@ public class Game extends ApplicationAdapter
 	
 	private void DrawScene()
 	{
-		bg.Draw(batch, (int)tank.GetPos().x);
+		bg.Draw(batch, (int)cam.GetPos().x);
+		
 		ter.Draw(batch, cam.GetPos());
-		tank.Draw(batch, cam.GetPos());
-		
-		Iterator<Gunman> i = gunman.iterator();
-		while (i.hasNext()) 
-			i.next().Draw(batch, cam.GetPos());
-		plane.Draw(batch, cam.GetPos());
-		
 		batch.setColor(16/255.0f, 16/255.0f, 16/255.0f, 1);
 		batch.draw(base, -cam.GetPos().x, ypos - 3 - cam.GetPos().y);
 		batch.setColor(Color.WHITE);
+		
+		gunmen.Draw(batch, cam.GetPos());
+		tank.Draw(batch, cam.GetPos());
 		ui.Draw(batch);
 	}
 	
 	private void UpdatePos()
 	{
-		// move the tank based on the users input
-		if (Gdx.input.isKeyPressed(Keys.RIGHT))
-			tank.MoveRight();
-		else if (Gdx.input.isKeyPressed(Keys.LEFT))
-			tank.MoveLeft();
-		
-		Iterator<Gunman> i = gunman.iterator();
-		while (i.hasNext())
-			i.next().MoveRight();
-		
-		plane.MoveRight();
-		
-		if (Gdx.input.isKeyPressed(Keys.UP))
-			tank.MoveBarrelUp();
-		else if (Gdx.input.isKeyPressed(Keys.DOWN))
-			tank.MoveBarrelDown();
-		
 		// set the camera to follow the tank
-		if (Gdx.input.isButtonPressed(2))
+		if (Gdx.input.isButtonPressed(Buttons.MIDDLE))
 		{
 			cam.MoveHorizontal( 6 * -Gdx.input.getDeltaX() );
 			cam.MoveVertical( 6 * Gdx.input.getDeltaY() );
@@ -163,6 +146,8 @@ public class Game extends ApplicationAdapter
 	{
 		// update the tanks position
 		UpdatePos();
+		gunmen.Update();
+		tank.Update();
 		
 		ter.Update();
 	}

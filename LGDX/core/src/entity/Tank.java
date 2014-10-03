@@ -7,8 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Game;
+import com.mygdx.game.Shaders;
 
-public class Tank extends ObjectData 
+public class Tank extends Unit 
 {
 	private Texture tex;
 	private Texture barrel;
@@ -17,8 +18,6 @@ public class Tank extends ObjectData
 	private Vector2 barrelOffset; // coordinates of the barrel relative to the tank
 	
 	private int halfwidth;
-	private int tankwidth;
-	private int tankheight;
 	
 	private int barrelwidth;
 	private int barrelheight;
@@ -39,16 +38,15 @@ public class Tank extends ObjectData
 		barrel = new Texture( Gdx.files.internal(Barrel) );
 		
 		halfwidth = tex.getWidth()/2;
-		tankwidth = tex.getWidth();
-		tankheight = tex.getHeight();
+		width = tex.getWidth();
+		height = tex.getHeight();
 		
 		barrelwidth = barrel.getWidth();
 		barrelheight = barrel.getHeight();
 		
-		pos = new Vector2();
+		pos = new Vector2(64, 0);
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;
 		
-		width = tex.getWidth();
 		barrelOffset = new Vector2();
 		forward = true;
 		barrelPhi = 0.0f;
@@ -97,7 +95,28 @@ public class Tank extends ObjectData
 		return (float)Math.toDegrees(theta);
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	public void DrawHighlight(SpriteBatch Batch, Vector2 Campos)
+	{
+		// draw a highlighted version of the sprite
+		Batch.setShader(Shaders.hili);
+		
+		for (int x=-1; x<2; x++) {
+			for (int y=-1; y<2; y++) {
+				Render(Batch, Campos, x, y);
+			}
+		}
+		
+		Batch.setShader(null);
+	}
+	
+	public void Draw(SpriteBatch Batch, Vector2 Campos, boolean Highlight)
+	{
+		if (Highlight)
+			DrawHighlight(Batch, Campos);
+		Render(Batch, Campos, 0, 0);
+	}
+	
+	public void Render(SpriteBatch Batch, Vector2 Campos, int OffsetX, int OffsetY)
 	{
 		float theta = GetAngle();
 		
@@ -111,12 +130,15 @@ public class Tank extends ObjectData
 		if (!forward)
 			phi = -phi + 180;
 		
-		Batch.draw(barrel, pos.x - Campos.x + halfwidth + offset.x, pos.y - Campos.y + offset.y, 
+		// draw the tanks barrel
+		Batch.draw(barrel, pos.x - Campos.x + halfwidth + offset.x + OffsetX, 
+				pos.y - Campos.y + offset.y + OffsetY, 
 				0, barrelheight/2, barrelwidth, barrelheight, 1.0f, 1.0f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
 		
 		// draw the tank
-		Batch.draw(tex, pos.x - Campos.x, pos.y - Campos.y, halfwidth, 0, tankwidth, tankheight, 1.0f, 1.0f, 
-				theta, 0, 0, tankwidth, tankheight, !forward, false);
+		Batch.draw(tex, pos.x - Campos.x + OffsetX, pos.y - Campos.y + OffsetY, 
+				halfwidth, 0, width, height, 1.0f, 1.0f, 
+				theta, 0, 0, width, height, !forward, false);
 	}
 }

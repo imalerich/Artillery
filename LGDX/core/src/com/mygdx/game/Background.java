@@ -15,14 +15,14 @@ public class Background {
 	
 	public Background()
 	{
-		bg = new Texture( Gdx.files.internal("bg.png") );
+		bg = new Texture( Gdx.files.internal("img/bg.png") );
 	}
 	
 	public void Draw(SpriteBatch Batch, int PlayerX)
 	{
 		Batch.draw(bg, 0, 0, Game.SCREENW, Game.SCREENH);
 		
-		int offset1 = (PlayerX/3) % Game.SCREENW;
+		//int offset1 = (PlayerX/3) % Game.SCREENW;
 		Batch.setColor(1.0f, 1.0f, 1.0f, 0.12f);
 		
 		Batch.setColor(Color.WHITE);

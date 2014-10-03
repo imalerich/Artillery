@@ -77,9 +77,13 @@ public class AnimTex
 		time = 0.0f;
 	}
 	
-	public void Render(SpriteBatch Batch, int Index, Vector2 Pos, float XScale, float YScale)
+	public void UpdateClock()
 	{
 		time += Gdx.graphics.getDeltaTime();
+	}
+	
+	public void Render(SpriteBatch Batch, int Index, Vector2 Pos, float XScale, float YScale)
+	{
 		currentframe = animations[Index].getKeyFrame(time, true);
 		
 		Batch.draw(currentframe, Pos.x, Pos.y, width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);
