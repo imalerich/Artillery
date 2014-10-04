@@ -21,6 +21,7 @@ public class Squad
 	
 	private boolean menuactive;
 	private boolean menurelease;
+	private boolean ismoving;
 	private ButtonOptions menu;
 	
 	private PointSelect moveselect;
@@ -34,6 +35,7 @@ public class Squad
 		
 		menuactive = false;
 		menurelease = false;
+		ismoving = false;
 		
 		menu = new ButtonOptions(0, 0, 4);
 		menu.SetGlyph(0, ButtonOptions.ATTACK);
@@ -109,6 +111,15 @@ public class Squad
 	
 	private void UpdateMenu(Vector2 Campos)
 	{
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			menuactive = false;
+			menurelease  = false;
+			menu.ResetClock();
+		}
+		
+		if (!Cursor.isButtonPressed(Cursor.LEFT))
+			menurelease = true;
+		
 		int event = -1;
 		if (Cursor.isButtonJustReleased(Cursor.LEFT))
 			event = menu.GetAction( menu.GetButtonDown(Campos) );
@@ -153,7 +164,10 @@ public class Squad
 	
 	public void Update(Vector2 Campos)
 	{
-		if (IsMouseOver(Campos) && Cursor.isButtonJustPressed(Cursor.LEFT)) {
+		if (targetpos >= 0)
+			Move(Campos);
+		
+		if (!ismoving && IsMouseOver(Campos) && Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			if (menurelease) {
 				menuactive = false;
 				menurelease = false;
@@ -164,31 +178,29 @@ public class Squad
 			}
 		}
 		
-		if (!Cursor.isButtonPressed(Cursor.LEFT) && menuactive)
-			menurelease = true;
-		
 		if (menuactive) 
 			UpdateMenu(Campos);
 		
 		if (moveactive)
 			UpdateMove(Campos);
-			
-		if (targetpos >= 0)
-			Move(Campos);
 	}
 	
 	public void Move(Vector2 Campos)
 	{
 		if (bbox.x > targetpos)
 		{
+			ismoving = true;
 			Iterator<Unit> i = units.iterator();
 			while (i.hasNext())
 				i.next().MoveLeft();
 		} else if (bbox.x + bbox.width < targetpos)
 		{
+			ismoving = true;
 			Iterator<Unit> i = units.iterator();
 			while (i.hasNext())
 				i.next().MoveRight();
+		} else {
+			ismoving = false;
 		}
 		
 		CalcBoundingBox(Campos);
@@ -197,7 +209,7 @@ public class Squad
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
 		CalcBoundingBox(Campos);
-		boolean highlight = IsMouseOver(Campos);
+		boolean highlight = IsMouseOver(Campos) && !ismoving;
 		
 		if (menuactive) {
 			highlight = true;

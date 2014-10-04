@@ -3,7 +3,6 @@ package ui;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -11,7 +10,7 @@ import com.mygdx.game.Game;
 
 public class PointSelect 
 {
-	private static final int POINTGAP = 32;
+	private static final int POINTGAP = 24;
 	private static Texture tex;
 	
 	private Terrain ter;
@@ -96,19 +95,17 @@ public class PointSelect
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
-		Batch.setColor(1.0f, 1.0f, 1.0f, 0.5f);
-		
 		// draw each point
 		if (targetx > startx+startwidth)
 			for (int x=startx+startwidth; x<targetx; x+=POINTGAP)
 				DrawAt(Batch, Campos, x);
 		else if (targetx < startx)
-			for (int x=startx; x>targetx; x-=POINTGAP)
+			for (int x=startx-POINTGAP; x>targetx; x-=POINTGAP)
 				DrawAt(Batch, Campos, x);
 		
 		// draw an additional point at the cursors location
 		int height = Game.WORLDH - ter.GetHeight(tex.getWidth()/2 + targetx) - (int)Campos.y;
-		Batch.draw(tex, targetx-Campos.x, height);
-		Batch.setColor(Color.WHITE);
+		if (targetx < startx || targetx > startx+startwidth)
+			Batch.draw(tex, targetx-Campos.x, height);
 	}
 }
