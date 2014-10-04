@@ -1,11 +1,12 @@
 package ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 
 public class ButtonOptions 
@@ -21,9 +22,6 @@ public class ButtonOptions
 	
 	private static Texture button;
 	private static TextureRegion[] glyphs;
-	
-	private boolean buttondown;
-	private boolean buttonrelease;
 	
 	private double clock;
 	private int xpos;
@@ -50,15 +48,13 @@ public class ButtonOptions
 		
 		clock = 0.0;
 		count = Count;
-		buttondown = false;
-		buttonrelease = false;
 		
 		buttonGlyphs = new int[count];
 		for (int i=0; i<count; i++)
 			buttonGlyphs[i] = 0;
 		
 		bbox = new Rectangle[count];
-		SetPos(XPos, YPos);
+		SetPos(XPos, YPos, new Vector2(0, 0));
 	}
 	
 	public void ResetClock()
@@ -83,17 +79,12 @@ public class ButtonOptions
 		}
 	}
 	
-	public void SetPos(int XPos, int YPos)
+	public void SetPos(int XPos, int YPos, Vector2 Campos)
 	{
 		xpos = XPos;
 		ypos = YPos;
 		
 		CalcBoundingBoxes();
-	}
-	
-	public boolean IsButtonReleased()
-	{
-		return buttonrelease;
 	}
 	
 	public int GetAction(int Button)
@@ -104,36 +95,22 @@ public class ButtonOptions
 		return buttonGlyphs[Button];
 	}
 	
-	public int GetButtonDown()
+	public int GetButtonDown(Vector2 Campos)
 	{
-		// check if the button is pressed (but not yet released)
-		if (Gdx.input.isButtonPressed(Buttons.LEFT))
-			buttondown = true;
-		else if (buttondown) {
-			// set the button release as true and process the action
-			buttonrelease = true;
-			buttondown = false;
-		} else if (!buttondown) {
-			// the button is neither pressed nor released, do not process the action
-			buttonrelease = false;
-			buttondown = false;
-			return -1;
-		}
-		
 		int mousex = Gdx.input.getX();
 		int mousey = Game.SCREENH - Gdx.input.getY();
 		
 		// loop through each button and find if the user selects it
 		for (int i=0; i<count; i++)
 		{
-			if (bbox[i].contains(mousex, mousey))
+			if (bbox[i].contains(mousex+Campos.x, mousey+Campos.y))
 				return i;
 		}
 		
 		return -1;
 	}
 	
-	public void Draw(SpriteBatch Batch)
+	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
 		// increment the clock
 		clock += Gdx.graphics.getDeltaTime();
@@ -142,7 +119,7 @@ public class ButtonOptions
 			scale = GROWSPEED*(float)(clock * clock);
 			
 		int width = button.getWidth()*count + BUTTONGAP*(count-1);
-		int selected = GetButtonDown();
+		int selected = GetButtonDown(Campos);
 		
 		for (int i=0; i<count; i++)
 		{
@@ -151,11 +128,12 @@ public class ButtonOptions
 			int yoff = (int)(button.getHeight()*(1-scale) )/2;
 			
 			// push the button down
-			if (selected == i)
+			if (selected == i && Cursor.isButtonPressed(Cursor.LEFT))
 				yoff -= BUTTONDOWN;
 			
-			Batch.draw(button, x+xoff, ypos+yoff, button.getWidth()*scale, button.getHeight()*scale);
-			Batch.draw(glyphs[buttonGlyphs[i]], x+xoff, ypos+yoff, 
+			Batch.draw(button, x+xoff - Campos.x, ypos+yoff - Campos.y, 
+					button.getWidth()*scale, button.getHeight()*scale);
+			Batch.draw(glyphs[buttonGlyphs[i]], x+xoff - Campos.x, ypos+yoff - Campos.y, 
 					button.getWidth()*scale, button.getHeight()*scale);
 		}
 	}

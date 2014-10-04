@@ -3,13 +3,15 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import terrain.Terrain;
 import ui.ButtonOptions;
+import ui.PointSelect;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 
 public class Squad 
@@ -18,19 +20,30 @@ public class Squad
 	private Rectangle bbox;
 	
 	private boolean menuactive;
+	private boolean menurelease;
 	private ButtonOptions menu;
 	
-	public Squad()
+	private PointSelect moveselect;
+	private boolean moveactive;
+	private int targetpos;
+	
+	public Squad(Terrain Ter)
 	{
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		
 		menuactive = false;
+		menurelease = false;
+		
 		menu = new ButtonOptions(0, 0, 4);
 		menu.SetGlyph(0, ButtonOptions.ATTACK);
 		menu.SetGlyph(1, ButtonOptions.MOVE);
 		menu.SetGlyph(2, ButtonOptions.UPGRADE);
 		menu.SetGlyph(3, ButtonOptions.STOP);
+		
+		moveselect = new PointSelect(Ter);
+		moveactive = false;
+		targetpos = -1;
 	}
 	
 	private void CalcBoundingBox(Vector2 Campos)
@@ -51,8 +64,6 @@ public class Squad
 			// convert he position to screen coords
 			Unit n = i.next();
 			Vector2 pos = new Vector2( n.GetPos() );
-			pos.x -= Campos.x;
-			pos.y -= Campos.y;
 			
 			if (pos.x < minx)
 				minx = pos.x;
@@ -77,14 +88,14 @@ public class Squad
 		bbox = new Rectangle(minx, miny, maxx-minx + maxw, maxy-miny + maxh);
 	}
 	
-	private boolean IsMouseOver()
+	private boolean IsMouseOver(Vector2 Campos)
 	{
 		// get the mouse position
 		float mousex = Gdx.input.getX();
 		float mousey = Game.SCREENH - Gdx.input.getY();
 		
 		// check if it is in the bounds of the bounding box
-		if (bbox.contains(mousex, mousey))
+		if (bbox.contains(mousex+Campos.x, mousey+Campos.y))
 			return true;
 		
 		return false;
@@ -96,41 +107,107 @@ public class Squad
 		units.add(Add);
 	}
 	
-	public void Update()
+	private void UpdateMenu(Vector2 Campos)
 	{
-		if (IsMouseOver() && Gdx.input.isButtonPressed(Buttons.LEFT))
-			menuactive = true;
-		
-		if (menuactive) 
-		{
-			int event = menu.GetAction( menu.GetButtonDown() );
-			if (!menu.IsButtonReleased())
-				event = -1;
+		int event = -1;
+		if (Cursor.isButtonJustReleased(Cursor.LEFT))
+			event = menu.GetAction( menu.GetButtonDown(Campos) );
 			
-			switch (event)
-			{
-			case ButtonOptions.STOP:
-				// leave the menu
+		switch (event)
+		{
+		case ButtonOptions.STOP:
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.ResetClock();
+			break;
+
+		case ButtonOptions.MOVE:
+			// set the movement
+			moveactive = true;
+			moveselect.SetPos((int)bbox.x, (int)bbox.width);
+			moveselect.SetMaxDist(512);
+
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.ResetClock();
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	private void UpdateMove(Vector2 Campos)
+	{
+		moveselect.Update(Campos);
+
+		// set the target pos on left release, or cancel on right click
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			targetpos = moveselect.GetTargetX();
+			moveactive = false;
+		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
+			moveactive = false;
+	}
+	
+	public void Update(Vector2 Campos)
+	{
+		if (IsMouseOver(Campos) && Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			if (menurelease) {
 				menuactive = false;
+				menurelease = false;
 				menu.ResetClock();
-				break;
-				
-			default:
-				break;
+			} else {
+				menurelease = false;
+				menuactive = true;
 			}
 		}
+		
+		if (!Cursor.isButtonPressed(Cursor.LEFT) && menuactive)
+			menurelease = true;
+		
+		if (menuactive) 
+			UpdateMenu(Campos);
+		
+		if (moveactive)
+			UpdateMove(Campos);
+			
+		if (targetpos >= 0)
+			Move(Campos);
+	}
+	
+	public void Move(Vector2 Campos)
+	{
+		if (bbox.x > targetpos)
+		{
+			Iterator<Unit> i = units.iterator();
+			while (i.hasNext())
+				i.next().MoveLeft();
+		} else if (bbox.x + bbox.width < targetpos)
+		{
+			Iterator<Unit> i = units.iterator();
+			while (i.hasNext())
+				i.next().MoveRight();
+		}
+		
+		CalcBoundingBox(Campos);
 	}
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
 	{
 		CalcBoundingBox(Campos);
-		boolean highlight = IsMouseOver();
+		boolean highlight = IsMouseOver(Campos);
 		
 		if (menuactive) {
 			highlight = true;
-			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f) );
-			
-			menu.Draw(Batch);
+			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f), Campos );
+			menu.Draw(Batch, Campos);
+		}
+		
+		if (moveactive) {
+			highlight = true;
+			moveselect.Draw(Batch, Campos);
 		}
 		
 		Iterator<Unit> i = units.iterator();

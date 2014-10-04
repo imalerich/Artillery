@@ -54,6 +54,7 @@ public class Game extends ApplicationAdapter
 	{
 		// initialize the shaders
 		Shaders.InitShaders();
+		Cursor.Init();
 		
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
@@ -68,7 +69,7 @@ public class Game extends ApplicationAdapter
 		ui = new UI("img/ui.png");
 		
 		// create a line of gunman
-		gunmen = new Squad();
+		gunmen = new Squad(ter);
 		for (int i=0; i<5; i++)
 		{
 			Vector2 pos = new Vector2(512 + i*32, 0);
@@ -76,7 +77,7 @@ public class Game extends ApplicationAdapter
 		}
 		
 		// create the tank squad
-		tank = new Squad();
+		tank = new Squad(ter);
 		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 20);
 		add.SetBarrelOffset( new Vector2(17, 29) );
 		tank.AddUnit(add);
@@ -85,6 +86,7 @@ public class Game extends ApplicationAdapter
 		cam = new Camera();
 		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.SetWorldMax( new Vector2(WORLDW, Float.MAX_VALUE) );
+		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
 		
 		// generate the base
 		base = new Texture( Gdx.files.internal("img/base.png") );
@@ -98,6 +100,7 @@ public class Game extends ApplicationAdapter
 	public void render() 
 	{
 		FrameRate.Update();
+		Cursor.Update();
 		UpdateScene();
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -146,8 +149,8 @@ public class Game extends ApplicationAdapter
 	{
 		// update the tanks position
 		UpdatePos();
-		gunmen.Update();
-		tank.Update();
+		gunmen.Update(cam.GetPos());
+		tank.Update(cam.GetPos());
 		
 		ter.Update();
 	}

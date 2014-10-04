@@ -76,7 +76,7 @@ public class Unit
 		float xspeed = (float)Math.cos(theta)*tanspeed;
 		pos.x -= xspeed;
 		forward = false;
-		moving = false;
+		moving = true;
 		
 		SetHeight();
 	}

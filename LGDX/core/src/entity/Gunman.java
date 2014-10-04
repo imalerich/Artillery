@@ -63,7 +63,9 @@ public class Gunman extends Unit
 				hpos.x += x;
 				hpos.y += y;
 				
-				anim.Render(Batch, 1, hpos, 1.0f, 1.0f);
+				if (forward)
+					anim.Render(Batch, 1, hpos, 1.0f, 1.0f);
+				else anim.Render(Batch, 1, hpos, -1.0f, 1.0f);
 			}
 		}
 		
@@ -81,7 +83,9 @@ public class Gunman extends Unit
 		
 		if (Highlight)
 			DrawHighlight(Batch, Campos);
-		anim.Render(Batch, 1, Coords, 1.0f, 1.0f);
+		if (forward)
+			anim.Render(Batch, 1, Coords, 1.0f, 1.0f);
+		else anim.Render(Batch, 1, Coords, -1.0f, 1.0f);
 		moving = false;
 	}
 }
