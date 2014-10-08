@@ -22,6 +22,20 @@ public class Camera
 		worldmax = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
 	}
 	
+	public float GetRenderX(float XPos)
+	{
+		float xpos = XPos;
+		if (pos.x > Game.SCREENW && XPos < Game.SCREENW)
+			xpos += Game.WORLDW;
+		
+		return xpos - pos.x;
+	}
+	
+	public float GetRenderY(float YPos)
+	{
+		return YPos - pos.y;
+	}
+	
 	public Vector2 GetPos()
 	{
 		return pos;
@@ -45,13 +59,13 @@ public class Camera
 		ValidatePos();
 	}
 	
-	public void MoveHorizontal(int Dist)
+	public void MoveHorizontal(float Dist)
 	{
 		pos.x += Dist;
 		ValidatePos();
 	}
 	
-	public void MoveVertical(int Dist)
+	public void MoveVertical(float Dist)
 	{
 		pos.y += Dist;
 		ValidatePos();
@@ -60,9 +74,9 @@ public class Camera
 	private void ValidatePos()
 	{
 		if (pos.x < worldmin.x)
+			pos.x = worldmax.x;
+		else if (pos.x > worldmax.x)
 			pos.x = worldmin.x;
-		else if (pos.x > worldmax.x - Game.SCREENW)
-			pos.x = worldmax.x - Game.SCREENW;
 		
 		if (pos.y < worldmin.y)
 			pos.y = worldmin.y;

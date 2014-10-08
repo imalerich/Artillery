@@ -2,6 +2,8 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Cursor 
 {
@@ -67,4 +69,39 @@ public class Cursor
 			return true;
 		else return false;
 	}
+	
+	public static int GetMouseX(Vector2 Campos)
+	{
+		int xpos = Gdx.input.getX();
+		if (xpos + Campos.x > Game.WORLDW)
+			xpos -= Game.WORLDW;
+		
+		return xpos;
+	}
+	
+	public static boolean IsMouseOver(Rectangle R, Vector2 Campos)
+	{
+		if (R.contains(Campos.x + GetMouseX(Campos), Campos.y + GetMouseY()))
+			return true;
+		else if (R.contains(Campos.x + GetMouseX(Campos)+Game.WORLDW, Campos.y + GetMouseY()))
+			return true;
+		
+		return false;
+	}
+	
+	public static int GetMouseY()
+	{
+		return Game.SCREENH - Gdx.input.getY();
+	}
+	
+	public static int GetDeltaX()
+	{
+		return Gdx.input.getDeltaX();
+	}
+	
+	public static int GetDeltaY()
+	{
+		return Gdx.input.getDeltaY();
+	}
+	
 }

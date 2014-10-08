@@ -110,6 +110,7 @@ public class Terrain {
 		Iterator<Integer> sharpness		= Seed.GetSharpness().iterator();
 		Iterator<Integer> peakwidth		= Seed.GetPeakWidth().iterator();
 		Iterator<Integer> peakheight	= Seed.GetPeakHeight().iterator();
+		Iterator<Vector2> baselocations = Seed.GetBases().iterator();
 		
 		// for each peak in the seed
 		for (int i=0; i<Seed.GetPeakCount(); i++)
@@ -118,15 +119,42 @@ public class Terrain {
 			int s = sharpness.next();
 			int w = peakwidth.next()/2; // use the half width
 			int h = peakheight.next();
+
+			// skip this peak if it would overlap a base
+			boolean skip = false;
+			while (baselocations.hasNext()) {
+				Vector2 b = baselocations.next();
+				if (p-w <= b.x && p+w >= b.x)
+					skip = true;
+				if (p-w >= b.x && p-w <= b.y)
+					skip = true;
+				
+				if (p-w <= b.x+width && p+w >= b.x+width)
+					skip = true;
+				if (p-w >= b.x+width && p-w <= b.y+width)
+					skip = true;
+			}
 			
-			// add each peak
-			for (int x=0; x<width; x++)
+			baselocations = Seed.GetBases().iterator();
+			if (skip) continue;
+				
+			// add the peak
+			for (int x=-width; x<width*2-2; x++)
 			{
 				// if this point is outside the bounds of this peak
 				if (x<p-w || x>p+w) continue;
 				
+				// wrap peaks around the terrain, so it is uniform at the seam
+				int addx = x;
+				if (x < 0) addx+=width;
+				else if (x >= width) addx -= width;
+			
+				// reset the iterator and check whether or not we should continue
+				baselocations = Seed.GetBases().iterator();
+				if (skip) continue;
+				
 				float add = h*(1 - (float)Math.pow( (p-x)/(float)w, 2*s ));
-				heights[x] += (int)add;
+				heights[addx] += (int)add;
 			}
 		}
 		
@@ -176,7 +204,8 @@ public class Terrain {
 	public int GetHeight(int X)
 	{
 		// do not allow tests beyond the scope of the terrain
-		if (X > width-1 || X < 0) return 0;
+		if (X < 0) X += Game.WORLDW;
+		if (X >= width) X -= Game.WORLDW;
 		
 		// determine the segment of this position
 		int s = GetSegment(X);
@@ -349,9 +378,18 @@ public class Terrain {
 		int s0 = GetSegment((int)Campos.x) - 1;
 		s0 = (int)Math.max(s0, 0);
 		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 2;
-		s1 = (int)Math.min(s1, segmentcount);
 		
-		for (int i=s0; i<s1; i++)
+		// render the extension
+		int e0 = GetSegment((int)Campos.x) - segmentcount;
+		e0 = (int)Math.max(e0, 0);
+		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 2;
+		
+		if (s1 > segmentcount)
+			for (int i=e0; i<e1; i++)
+				Batch.draw(mask[i], width + (i*SEGMENTWIDTH)-Campos.x, -Campos.y);
+		
+		// render the primary map
+		for (int i=s0; i<(int)Math.min(s1, segmentcount); i++)
 			Batch.draw(mask[i], (i*SEGMENTWIDTH)-Campos.x, -Campos.y);
 		
 		// draw a clear region above the bounds of the mask

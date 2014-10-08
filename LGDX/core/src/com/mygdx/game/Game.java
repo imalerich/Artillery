@@ -2,15 +2,14 @@ package com.mygdx.game;
 
 import terrain.SeedGenerator;
 import terrain.Terrain;
+import terrain.TerrainSeed;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
@@ -20,6 +19,25 @@ import entity.Tank;
 
 public class Game extends ApplicationAdapter 
 {
+	/*
+	 *	Global Constants
+	 */
+	public static int WINDOWW = 960;
+	public static int WINDOWH = 1200; 
+	
+	public static final int SCREENW = 960;
+	public static final int SCREENH = 600;
+	
+	public static final int WORLDW = 1920*2;
+	public static final int WORLDH = 1200;
+	
+	public static final int CAMSPEED = 512;
+	
+	/*
+	 *	Local test data
+	 *		most will eventually be moved into 
+	 *		more generic classes
+	 */
 	private OrthographicCamera proj;
 	private SpriteBatch batch;
 	 
@@ -31,22 +49,22 @@ public class Game extends ApplicationAdapter
 	private Squad gunmen;
 	private Squad tank;
 	
-	private Texture base;
-	private int ypos;
+	private MilitaryBase b0;
+	private MilitaryBase b1;
 	
-	public static final int SCREENW = 960;
-	public static final int SCREENH = 600;
-	
-	public static final int WORLDW = 1920*2;
-	public static final int WORLDH = 1200;
+	public Game(int WindowW, int WindowH)
+	{
+		WINDOWW = WindowW;
+		WINDOWH = WindowH;
+	}
 	
 	public void Release()
 	{
 		Shaders.Release();
+		MilitaryBase.Release();
 		ter.Release();
 		bg.Release();
 		ui.Release();
-		base.dispose();
 	}
 	
 	@Override
@@ -62,7 +80,26 @@ public class Game extends ApplicationAdapter
 		batch = new SpriteBatch();
 
 		// generate the terrain
-		ter = new Terrain( SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16) );
+		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16);
+		seed.AddBase(0, MilitaryBase.GetWidth());
+		seed.AddBase(WORLDW/2, MilitaryBase.GetWidth());
+		ter = new Terrain( seed );
+		
+		// init the bases
+		Color bcol = new Color(16/255f, 16/255f, 16/255f, 1f);
+		b0 = new MilitaryBase( 0, ter, bcol );
+		b0.SetLogo((int)(Math.random()*4));
+		b1 = new MilitaryBase( WORLDW/2, ter, bcol );
+		
+		if (b0.GetLogo() != 0)
+		b1.SetLogo( b0.GetLogo()-1 );
+		else b1.SetLogo(1);
+		
+		// create the camera with the position to follow
+		cam = new Camera();
+		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
+		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
+		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
 		
 		// create the tank, background and ui
 		bg = new Background();
@@ -73,27 +110,14 @@ public class Game extends ApplicationAdapter
 		for (int i=0; i<5; i++)
 		{
 			Vector2 pos = new Vector2(512 + i*32, 0);
-			gunmen.AddUnit( new Gunman(ter, pos, 40) );
+			gunmen.AddUnit( new Gunman(ter, pos, 40), cam );
 		}
 		
 		// create the tank squad
 		tank = new Squad(ter);
 		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 20);
 		add.SetBarrelOffset( new Vector2(17, 29) );
-		tank.AddUnit(add);
-		
-		// create the camera with the position to follow
-		cam = new Camera();
-		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
-		cam.SetWorldMax( new Vector2(WORLDW, Float.MAX_VALUE) );
-		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
-		
-		// generate the base
-		base = new Texture( Gdx.files.internal("img/base.png") );
-		ypos = ter.GetMinHeight(0, base.getWidth());
-		int max = ter.GetMaxHeight(0, base.getWidth());
-		ter.CutRegion(0, ypos, base.getWidth(), max-ypos);
-		ypos = WORLDH - ter.GetHeight(0) - 3;
+		tank.AddUnit(add, cam);
 	}
 
 	@Override
@@ -126,23 +150,33 @@ public class Game extends ApplicationAdapter
 		bg.Draw(batch, (int)cam.GetPos().x);
 		
 		ter.Draw(batch, cam.GetPos());
-		batch.setColor(16/255.0f, 16/255.0f, 16/255.0f, 1);
-		batch.draw(base, -cam.GetPos().x, ypos - 3 - cam.GetPos().y);
-		batch.setColor(Color.WHITE);
+		b0.Draw(batch, cam);
+		b1.Draw(batch, cam);
 		
-		gunmen.Draw(batch, cam.GetPos());
-		tank.Draw(batch, cam.GetPos());
+		gunmen.Draw(batch, cam);
+		tank.Draw(batch, cam);
 		ui.Draw(batch);
 	}
 	
 	private void UpdatePos()
 	{
-		// set the camera to follow the tank
-		if (Gdx.input.isButtonPressed(Buttons.MIDDLE))
+		// move the camera with the mouse
+		if (Cursor.isButtonPressed(Cursor.MIDDLE))
 		{
-			cam.MoveHorizontal( 6 * -Gdx.input.getDeltaX() );
-			cam.MoveVertical( 6 * Gdx.input.getDeltaY() );
+			cam.MoveHorizontal( 6 * -Cursor.GetDeltaX() );
+			cam.MoveVertical( 6 * Cursor.GetDeltaY() );
 		}
+		
+		// move the camera with the keyboard
+		if (Gdx.input.isKeyPressed(Keys.D))
+			cam.MoveHorizontal( CAMSPEED * Gdx.graphics.getDeltaTime() );
+		else if (Gdx.input.isKeyPressed(Keys.A))
+			cam.MoveHorizontal( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+		
+		if (Gdx.input.isKeyPressed(Keys.W))
+			cam.MoveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
+		else if (Gdx.input.isKeyPressed(Keys.S))
+			cam.MoveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
 	}
 	
 	private void UpdateScene()

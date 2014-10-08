@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 
 public class PointSelect 
@@ -43,6 +45,12 @@ public class PointSelect
 	
 	public int GetTargetX()
 	{
+		if (targetx >= startx && targetx <= startx+startwidth)
+			return -1;
+		
+		if (targetx <= (startx+startwidth)-Game.WORLDW && startx+startwidth >= Game.WORLDW)
+			return -1;
+		
 		return targetx;
 	}
 	
@@ -82,30 +90,104 @@ public class PointSelect
 	public void Update(Vector2 Campos)
 	{
 		// get the mouse pos and set the maximum
-		targetx = Gdx.input.getX() + (int)Campos.x;
-		targetx = Math.min(targetx, maxx);
-		targetx = Math.max(targetx, minx);
+		targetx = Cursor.GetMouseX(Campos) + (int)Campos.x;
+		
+		// check the distance to the target in each direction
+		int rdist = (Game.WORLDW-(startx+startwidth))+targetx;
+		if (targetx > startx+startwidth)
+			rdist = targetx-(startx+startwidth);
+		
+		int ldist = startx + (Game.WORLDW-targetx);
+		if (targetx < startx)
+			ldist = (startx-targetx);
+		
+		if (rdist < ldist) {
+			if (maxx < Game.WORLDW && targetx > maxx)
+				targetx = maxx;
+			else if (maxx > Game.WORLDW && targetx > (maxx-Game.WORLDW) &&
+					(Gdx.input.getX()+Campos.x) > Game.WORLDW)
+				targetx = (maxx-Game.WORLDW);
+		} else {
+			if (minx > 0 && targetx < minx && targetx < (startx+startwidth))
+				targetx = minx;
+			else if (minx < 0 && targetx < (minx+Game.WORLDW) &&
+					targetx > (startx+startwidth))
+				targetx = (minx+Game.WORLDW);
+		}
+		
+		if (targetx == Game.WORLDW) targetx = 0;
 	}
 	
-	private void DrawAt(SpriteBatch Batch, Vector2 Campos, int XPos)
+	private void DrawAt(SpriteBatch Batch, Camera Cam, int XPos)
 	{
 		int ypos = ter.GetHeight(XPos + tex.getWidth()/2);
-		Batch.draw(tex, XPos - Campos.x, Game.WORLDH - ypos - Campos.y);
+		Batch.draw(tex, Cam.GetRenderX(XPos), Cam.GetRenderY(Game.WORLDH - ypos));
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	private void DrawLeft(SpriteBatch Batch, Camera Cam)
 	{
-		// draw each point
+		// render the points
+		boolean next = true;
+		int x = startx;
+		
+		while (next)
+		{
+			if (Math.abs(x - targetx) < POINTGAP)
+				next = false;
+			if (x < targetx && x+POINTGAP > targetx)
+				break;
+			
+			DrawAt(Batch, Cam, x);
+			
+			x -= POINTGAP;
+			if (x < 0) x += Game.WORLDW;
+		}
+	}
+	
+	private void DrawRight(SpriteBatch Batch, Camera Cam)
+	{
+		// render the points
+		boolean next = true;
+		int x = startx + startwidth;
+		if (x > Game.WORLDW) x -= Game.WORLDW;
+		
+		while (next)
+		{
+			if (Math.abs(x - targetx) < POINTGAP)
+				next = false;
+			if (x > targetx && x-POINTGAP < targetx)
+				break;
+			
+			DrawAt(Batch, Cam, x);
+			
+			x += POINTGAP;
+			if (x > Game.WORLDW) x -= Game.WORLDW;
+		}
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam)
+	{
+		if (targetx >= startx && targetx <= startx+startwidth)
+			return;
+		
+		if (targetx <= (startx+startwidth)-Game.WORLDW && startx+startwidth >= Game.WORLDW)
+			return;
+		
+		// check the distance to the target in each direction
+		int rdist = (Game.WORLDW-(startx+startwidth))+targetx;
 		if (targetx > startx+startwidth)
-			for (int x=startx+startwidth; x<targetx; x+=POINTGAP)
-				DrawAt(Batch, Campos, x);
-		else if (targetx < startx)
-			for (int x=startx-POINTGAP; x>targetx; x-=POINTGAP)
-				DrawAt(Batch, Campos, x);
+			rdist = targetx-(startx+startwidth);
+		
+		int ldist = startx + (Game.WORLDW-targetx);
+		if (targetx < startx)
+			ldist = (startx-targetx);
+		
+		if (rdist < ldist)
+			DrawRight(Batch, Cam);
+		else DrawLeft(Batch, Cam);
 		
 		// draw an additional point at the cursors location
-		int height = Game.WORLDH - ter.GetHeight(tex.getWidth()/2 + targetx) - (int)Campos.y;
-		if (targetx < startx || targetx > startx+startwidth)
-			Batch.draw(tex, targetx-Campos.x, height);
+		int height = Game.WORLDH - ter.GetHeight(tex.getWidth()/2 + targetx);
+		Batch.draw(tex, Cam.GetRenderX(targetx), Cam.GetRenderY(height));
 	}
 }

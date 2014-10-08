@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AnimTex;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -48,44 +49,38 @@ public class Gunman extends Unit
 	
 	}
 	
-	private void DrawHighlight(SpriteBatch Batch, Vector2 Campos)
+	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
 		Batch.setShader(Shaders.hili);
 		
-		Vector2 Coords = new Vector2(pos);
-		Coords.x -= Campos.x;
-		Coords.y -= Campos.y;
-		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
-				Vector2 hpos = new Vector2(Coords);
-				hpos.x += x;
-				hpos.y += y;
+				Vector2 Coords = new Vector2(pos);
+				Coords.x += x;
+				Coords.y += y;
 				
 				if (forward)
-					anim.Render(Batch, 1, hpos, 1.0f, 1.0f);
-				else anim.Render(Batch, 1, hpos, -1.0f, 1.0f);
+					anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+				else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
 			}
 		}
 		
 		Batch.setShader(null);
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		Vector2 Coords = new Vector2(pos);
-		Coords.x -= Campos.x;
-		Coords.y -= Campos.y;
 		
 		if (moving)
 			anim.UpdateClock();
 		
 		if (Highlight)
-			DrawHighlight(Batch, Campos);
+			DrawHighlight(Batch, Cam);
 		if (forward)
-			anim.Render(Batch, 1, Coords, 1.0f, 1.0f);
-		else anim.Render(Batch, 1, Coords, -1.0f, 1.0f);
+			anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+		else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
 		moving = false;
 	}
 }

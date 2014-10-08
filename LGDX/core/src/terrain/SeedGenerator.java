@@ -6,7 +6,7 @@ public class SeedGenerator
 	{
 		// set the basic properties of the generated terrain
 		Seed.SetDimmensions(WorldW, WorldH);
-		Seed.SetConsistencyLevel( 4 + (int)(Math.random()*3) );
+		Seed.SetConsistencyLevel( 2 + (int)(Math.random()*2) );
 		Seed.SetSoftness( (int)(Math.random()*64) + 32 );
 		Seed.SetMinLevel(64);
 		Seed.SetSeaLevel( (int)(WorldH*0.5f) );
@@ -16,7 +16,7 @@ public class SeedGenerator
 		int peakspace = (int)(Math.random()*64) + 64;
 		for (int i=0; i<WorldW/peakspace; i++)
 		{
-			int x = 768 + i*peakspace + (int)(Math.random()*8);
+			int x = i*peakspace + (int)(Math.random()*8);
 			int s = (int)(Math.random()*3);
 			int w = (int)(Math.random()*256) + peakspace + 128;
 			int h = (int)(Math.random() * w * 0.4);

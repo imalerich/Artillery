@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -88,35 +89,44 @@ public class Tank extends Unit
 	private float GetAngle()
 	{
 		float theta = 0.0f;
-		float h0 = ter.GetHeight( (int)pos.x + halfwidth/2 );
-		float h1 = ter.GetHeight( (int)pos.x + halfwidth/2+halfwidth );
+		int x0 = (int)pos.x + halfwidth/2;
+		int x1 = (int)pos.x + halfwidth/2+halfwidth;
+		
+		if (x0 >= Game.WORLDW) x0 -= Game.WORLDW; 
+		if (x0 < 0) x0 += Game.WORLDW;
+		
+		if (x1 >= Game.WORLDW) x1 -= Game.WORLDW;
+		if (x1 < 0) x1 += Game.WORLDW;
+		
+		float h0 = ter.GetHeight(x0);
+		float h1 = ter.GetHeight(x1);
 		
 		theta = -(float)Math.atan( (h1-h0)/(float)halfwidth );
 		return (float)Math.toDegrees(theta);
 	}
 	
-	public void DrawHighlight(SpriteBatch Batch, Vector2 Campos)
+	public void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
 		Batch.setShader(Shaders.hili);
 		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
-				Render(Batch, Campos, x, y);
+				Render(Batch, Cam, x, y);
 			}
 		}
 		
 		Batch.setShader(null);
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		if (Highlight)
-			DrawHighlight(Batch, Campos);
-		Render(Batch, Campos, 0, 0);
+			DrawHighlight(Batch, Cam);
+		Render(Batch, Cam, 0, 0);
 	}
 	
-	public void Render(SpriteBatch Batch, Vector2 Campos, int OffsetX, int OffsetY)
+	public void Render(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
 	{
 		float theta = GetAngle();
 		
@@ -131,13 +141,14 @@ public class Tank extends Unit
 			phi = -phi + 180;
 		
 		// draw the tanks barrel
-		Batch.draw(barrel, pos.x - Campos.x + halfwidth + offset.x + OffsetX, 
-				pos.y - Campos.y + offset.y + OffsetY, 
+		Batch.draw(barrel, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
+				Cam.GetRenderY(pos.y + offset.y + OffsetY),
 				0, barrelheight/2, barrelwidth, barrelheight, 1.0f, 1.0f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
 		
 		// draw the tank
-		Batch.draw(tex, pos.x - Campos.x + OffsetX, pos.y - Campos.y + OffsetY, 
+		Batch.draw(tex, Cam.GetRenderX(pos.x + OffsetX),
+				Cam.GetRenderY(pos.y + OffsetY),
 				halfwidth, 0, width, height, 1.0f, 1.0f, 
 				theta, 0, 0, width, height, !forward, false);
 	}

@@ -5,6 +5,7 @@ import terrain.Terrain;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
 public class Unit 
@@ -27,6 +28,16 @@ public class Unit
 		return pos;
 	}
 	
+	public void SetPos(Vector2 Pos)
+	{
+		pos = Pos;
+	}
+	
+	public boolean IsForward()
+	{
+		return forward;
+	}
+	
 	public int GetWidth()
 	{
 		return width;
@@ -35,6 +46,11 @@ public class Unit
 	public int GetHeight()
 	{
 		return height;
+	}
+	
+	public int GetSpeed()
+	{
+		return speed;
 	}
 	
 	public Terrain GetTerrainReference()
@@ -54,10 +70,17 @@ public class Unit
 		
 		// sample the direction traveled
 		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+frontpoint) - 3;
-		float theta = -(float)Math.atan( (nexth-pos.y)/(width/4.0f) );
+		int nxtpos = (int)pos.x+frontpoint;
+		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
+		if (nxtpos < 0) nxtpos += Game.WORLDW;
+		int nxth = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
+		
+		float theta = -(float)Math.atan( (nxth-pos.y)/(width/4.0f) );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
+		
 		pos.x += xspeed; 
+		if (pos.x >= Game.WORLDW) pos.x -= Game.WORLDW;
+		if (pos.x < 0) pos.x += Game.WORLDW;
 		forward = true;
 		moving = true;
 		
@@ -71,10 +94,17 @@ public class Unit
 		
 		// sample the direction traveled
 		float tanspeed = Gdx.graphics.getDeltaTime()*speed;
-		int nexth = Game.WORLDH - ter.GetHeight((int)pos.x+backpoint) - 3;
-		float theta = -(float)Math.atan( (pos.y-nexth)/(width/4.0f) );
+		int nxtpos = (int)pos.x+backpoint;
+		if (nxtpos < 0) nxtpos += Game.WORLDW;
+		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
+		int nxth = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
+		
+		float theta = -(float)Math.atan( (pos.y-nxth)/(width/4.0f) );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
+		
 		pos.x -= xspeed;
+		if (pos.x < 0) pos.x += Game.WORLDW;
+		if (pos.x >= Game.WORLDW) pos.x -= Game.WORLDW;
 		forward = false;
 		moving = true;
 		
@@ -84,10 +114,14 @@ public class Unit
 	public void SetHeight()
 	{
 		// set the new height
-		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x + width/2) - 3;
+		int nxtpos = (int)pos.x + width/2;
+		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
+		if (nxtpos < 0) nxtpos += Game.WORLDW;
+		
+		pos.y = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		// override in implementation classes
 	}

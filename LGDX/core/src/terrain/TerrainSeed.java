@@ -3,12 +3,15 @@ package terrain;
 import java.util.Vector;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 
 public class TerrainSeed {
 	private Vector<Integer> peaks; // x location of peaks
 	private Vector<Integer> sharpness;
 	private Vector<Integer> peakwidth; // the width of each peak
 	private Vector<Integer> peakheight; // scale of those peaks, negative = valley
+	
+	private Vector<Vector2> baselocation; // each vector2 is a min/max xpos for the base
 	
 	private Color color;
 	private int width;
@@ -24,6 +27,7 @@ public class TerrainSeed {
 		sharpness = new Vector<Integer>();
 		peakwidth = new Vector<Integer>();
 		peakheight = new Vector<Integer>();
+		baselocation = new Vector<Vector2>();
 		
 		color = new Color();
 		width = 0;
@@ -100,6 +104,11 @@ public class TerrainSeed {
 		return consistency;
 	}
 	
+	public void AddBase(int XPos, int Width)
+	{
+		baselocation.add( new Vector2(XPos, XPos+Width) );
+	}
+	
 	public void AddPeak(int XPos, int Sharpness, int ScaleX, int ScaleY)
 	{
 		// clamp the sharpness to the bounds
@@ -115,6 +124,11 @@ public class TerrainSeed {
 	public int GetPeakCount()
 	{
 		return peaks.size();
+	}
+	
+	public Vector<Vector2> GetBases()
+	{
+		return baselocation;
 	}
 	
 	public Vector<Integer> GetPeaks()

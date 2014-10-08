@@ -7,15 +7,17 @@ import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.PointSelect;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 
 public class Squad 
 {
+	private static int squadspacing = 32;
+	
 	private Vector<Unit> units;
 	private Rectangle bbox;
 	
@@ -51,10 +53,7 @@ public class Squad
 	private void CalcBoundingBox(Vector2 Campos)
 	{
 		// set to max to guarantee override
-		float minx = Float.MAX_VALUE;
 		float miny = Float.MAX_VALUE;
-		
-		float maxx = Float.MIN_VALUE;
 		float maxy = Float.MIN_VALUE;
 		
 		float maxh = Float.MIN_VALUE;
@@ -63,14 +62,9 @@ public class Squad
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
 		{
-			// convert he position to screen coords
+			// convert he position to screen coordinates
 			Unit n = i.next();
 			Vector2 pos = new Vector2( n.GetPos() );
-			
-			if (pos.x < minx)
-				minx = pos.x;
-			if (pos.x > maxx)
-				maxx = pos.x;
 			
 			if (pos.y < miny)
 				miny = pos.y;
@@ -87,26 +81,39 @@ public class Squad
 		}
 		
 		// construct the new bounding box
-		bbox = new Rectangle(minx, miny, maxx-minx + maxw, maxy-miny + maxh);
+		float minx = units.firstElement().GetPos().x;
+		bbox = new Rectangle(minx, miny, (units.size()-1)*squadspacing + maxw, maxy-miny + maxh);
 	}
 	
 	private boolean IsMouseOver(Vector2 Campos)
 	{
-		// get the mouse position
-		float mousex = Gdx.input.getX();
-		float mousey = Game.SCREENH - Gdx.input.getY();
-		
-		// check if it is in the bounds of the bounding box
-		if (bbox.contains(mousex+Campos.x, mousey+Campos.y))
-			return true;
-		
-		return false;
+		return Cursor.IsMouseOver(bbox, Campos);
 	}
 	
-	public void AddUnit(Unit Add)
+	public void SetSquadSpacing(int SquadSpacing)
 	{
+		squadspacing = SquadSpacing;
+	}
+	
+	public int GetSquadSpacing()
+	{
+		return squadspacing;
+	}
+	
+	public void AddUnit(Unit Add, Camera Cam)
+	{
+		// get the position at which to add this unit
+		Vector2 addp =  new Vector2(Add.GetPos());
+		if (units.size() > 0) {
+			addp = new Vector2(units.lastElement().GetPos());
+			addp.x += squadspacing;
+		}
+		
+		Add.SetPos(addp);
 		Add.SetHeight();
 		units.add(Add);
+		
+		CalcBoundingBox(Cam.GetPos());
 	}
 	
 	private void UpdateMenu(Vector2 Campos)
@@ -157,6 +164,7 @@ public class Squad
 		// set the target pos on left release, or cancel on right click
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			targetpos = moveselect.GetTargetX();
+			ModTarget();
 			moveactive = false;
 		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
 			moveactive = false;
@@ -185,45 +193,100 @@ public class Squad
 			UpdateMove(Campos);
 	}
 	
-	public void Move(Vector2 Campos)
+	private void ModTarget()
 	{
-		if (bbox.x > targetpos)
-		{
-			ismoving = true;
-			Iterator<Unit> i = units.iterator();
-			while (i.hasNext())
-				i.next().MoveLeft();
-		} else if (bbox.x + bbox.width < targetpos)
-		{
-			ismoving = true;
-			Iterator<Unit> i = units.iterator();
-			while (i.hasNext())
-				i.next().MoveRight();
-		} else {
-			ismoving = false;
-		}
+		// -1 means don't move at all
+		if (targetpos < 0) return;
 		
-		CalcBoundingBox(Campos);
+		// check the distance to the target in each direction
+		float rdist = (Game.WORLDW-(bbox.x+bbox.width))+targetpos;
+		if (targetpos > bbox.x+bbox.width)
+			rdist = targetpos -(bbox.x+bbox.width);
+
+		float ldist = bbox.x + (Game.WORLDW-targetpos);
+		if (targetpos < bbox.x)
+			ldist = (bbox.x - targetpos);
+		
+		// modify the target position so its facing the front of the squad
+		if (rdist < ldist)
+			targetpos -= (units.size()-1)*squadspacing;
+		
+		// set within the world bounds
+		if (targetpos < 0) targetpos += Game.WORLDW;
+		else if (targetpos >= Game.WORLDW) targetpos -= Game.WORLDW;
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	public void Move(Vector2 Campos)
 	{
-		CalcBoundingBox(Campos);
-		boolean highlight = IsMouseOver(Campos) && !ismoving;
+		// for each unit in this squad
+		Iterator<Unit> i = units.iterator();
+		int index = -1; // start at 0
+		int updated = 0;
+		
+		// for each unit
+		while (i.hasNext())
+		{
+			Unit u = i.next();
+			index++; // start at 0
+			
+			Vector2 pos = u.GetPos();
+			int width = u.GetWidth();
+			
+			int target = targetpos + index*squadspacing;
+			if (target < 0) target += Game.WORLDW;
+			if (target >= Game.WORLDW) target -= Game.WORLDW;
+			
+			// check the distance to the target in each direction
+			float rdist = (Game.WORLDW-(pos.x+width)) + target;
+			if (target > pos.x)
+				rdist = target -(pos.x);
+
+			float ldist = pos.x + (Game.WORLDW - target);
+			if (target < pos.x)
+				ldist = (pos.x - target);
+			
+			// check if this unit has reached his position
+			if (target >= pos.x 
+					&& target <= pos.x+width)
+				continue;
+			
+			// really not good code to fix a rare problem
+			if (ldist < rdist && u.IsForward() && ismoving)
+				continue;
+			if (rdist < ldist && !u.IsForward() && ismoving)
+				continue;
+			
+			// move the unit
+			updated++;
+			if (ldist < rdist)
+				u.MoveLeft();
+			else u.MoveRight();
+		}
+		
+		// if they have all met their positional conditional, stop moving them
+		if (updated == 0) {
+			CalcBoundingBox(Campos);
+			ismoving = false;
+		} else ismoving = true;
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam)
+	{
+		boolean highlight = IsMouseOver(Cam.GetPos()) && !ismoving;
 		
 		if (menuactive) {
 			highlight = true;
-			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f), Campos );
-			menu.Draw(Batch, Campos);
+			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f), Cam.GetPos());
+			menu.Draw(Batch, Cam);
 		}
 		
 		if (moveactive) {
 			highlight = true;
-			moveselect.Draw(Batch, Campos);
+			moveselect.Draw(Batch, Cam);
 		}
 		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
-			i.next().Draw(Batch, Campos, highlight);
+			i.next().Draw(Batch, Cam, highlight);
 	}
 }

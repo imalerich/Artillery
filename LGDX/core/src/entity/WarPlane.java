@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -74,22 +75,19 @@ public class WarPlane extends Unit
 		return (float)Math.toDegrees(phi);
 	}
 	
-	public void DrawHighlight(SpriteBatch Batch, Vector2 Campos)
+	public void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
 		Batch.setShader(Shaders.hili);
 		
-		Vector2 Coords = new Vector2(pos);
-		Coords.x -= Campos.x;
-		Coords.y -= Campos.y;
-		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
-				Vector2 hpos = new Vector2(Coords);
-				hpos.x += x;
-				hpos.y += y;
+				Vector2 Coords = new Vector2(pos);
+				Coords.x += x;
+				Coords.y += y;
 				
-				Batch.draw(tex, hpos.x, hpos.y, halfwidth, 0, width, height, 1.0f, 1.0f, 
+				Batch.draw(tex, Cam.GetRenderX(Coords.x), Cam.GetRenderY(Coords.y),
+						halfwidth, 0, width, height, 1.0f, 1.0f, 
 						theta, 0, 0, width, height, !forward, false);
 			}
 		}
@@ -97,7 +95,7 @@ public class WarPlane extends Unit
 		Batch.setShader(null);
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		
 		// get the target angle for theta
@@ -112,8 +110,9 @@ public class WarPlane extends Unit
 		
 		// draw the plane 
 		if (Highlight)
-			DrawHighlight(Batch, Campos);
-		Batch.draw(tex, pos.x - Campos.x, pos.y - Campos.y, halfwidth, 0, width, height, 1.0f, 1.0f, 
+			DrawHighlight(Batch, Cam);
+		Batch.draw(tex, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y),
+				halfwidth, 0, width, height, 1.0f, 1.0f, 
 				theta, 0, 0, width, height, !forward, false);
 	}
 }

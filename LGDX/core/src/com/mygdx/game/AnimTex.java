@@ -34,6 +34,7 @@ public class AnimTex
 		// set data
 		rows = Rows;
 		columns = Columns;
+		time = (float)Math.random()*5;
 		width = spritesheet.getWidth()/columns;
 		height = spritesheet.getHeight()/rows;
 	}
@@ -47,6 +48,7 @@ public class AnimTex
 		// set data
 		rows = Rows;
 		columns = Columns;
+		time = (float)Math.random()*5;
 		width = spritesheet.getWidth()/columns;
 		height = spritesheet.getHeight()/rows;
 	}
@@ -82,10 +84,11 @@ public class AnimTex
 		time += Gdx.graphics.getDeltaTime();
 	}
 	
-	public void Render(SpriteBatch Batch, int Index, Vector2 Pos, float XScale, float YScale)
+	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale)
 	{
 		currentframe = animations[Index].getKeyFrame(time, true);
 		
-		Batch.draw(currentframe, Pos.x, Pos.y, width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);
+		Batch.draw(currentframe, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
+				width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);
 	}
 }

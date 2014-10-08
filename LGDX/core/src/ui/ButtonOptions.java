@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
-import com.mygdx.game.Game;
 
 public class ButtonOptions 
 {
@@ -97,20 +97,17 @@ public class ButtonOptions
 	
 	public int GetButtonDown(Vector2 Campos)
 	{
-		int mousex = Gdx.input.getX();
-		int mousey = Game.SCREENH - Gdx.input.getY();
-		
 		// loop through each button and find if the user selects it
 		for (int i=0; i<count; i++)
 		{
-			if (bbox[i].contains(mousex+Campos.x, mousey+Campos.y))
+			if (Cursor.IsMouseOver(bbox[i], Campos))
 				return i;
 		}
 		
 		return -1;
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		// increment the clock
 		clock += Gdx.graphics.getDeltaTime();
@@ -119,7 +116,7 @@ public class ButtonOptions
 			scale = GROWSPEED*(float)(clock * clock);
 			
 		int width = button.getWidth()*count + BUTTONGAP*(count-1);
-		int selected = GetButtonDown(Campos);
+		int selected = GetButtonDown(Cam.GetPos());
 		
 		for (int i=0; i<count; i++)
 		{
@@ -131,9 +128,9 @@ public class ButtonOptions
 			if (selected == i && Cursor.isButtonPressed(Cursor.LEFT))
 				yoff -= BUTTONDOWN;
 			
-			Batch.draw(button, x+xoff - Campos.x, ypos+yoff - Campos.y, 
+			Batch.draw(button, Cam.GetRenderX(x+xoff), Cam.GetRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
-			Batch.draw(glyphs[buttonGlyphs[i]], x+xoff - Campos.x, ypos+yoff - Campos.y, 
+			Batch.draw(glyphs[buttonGlyphs[i]], Cam.GetRenderX(x+xoff), Cam.GetRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
 		}
 	}

@@ -18,7 +18,8 @@ public class FrameRate
 		// update the frame rate once per second
 		if (timePassed >= 1)
 		{
-			System.out.println(fps);
+			if (fps > 0)
+				System.out.println(fps);
 			
 			// calculate the frame rate and the milliseconds per frame
 			fps = frames/timePassed;
