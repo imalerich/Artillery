@@ -34,7 +34,6 @@ public class AnimTex
 		// set data
 		rows = Rows;
 		columns = Columns;
-		time = (float)Math.random()*5;
 		width = spritesheet.getWidth()/columns;
 		height = spritesheet.getHeight()/rows;
 	}
@@ -48,7 +47,6 @@ public class AnimTex
 		// set data
 		rows = Rows;
 		columns = Columns;
-		time = (float)Math.random()*5;
 		width = spritesheet.getWidth()/columns;
 		height = spritesheet.getHeight()/rows;
 	}
@@ -76,7 +74,7 @@ public class AnimTex
 		}
 		
 		animations[Index] = new Animation(TimeStep, frames);
-		time = 0.0f;
+		time = (float)(Math.random()*TimeStep);
 	}
 	
 	public void UpdateClock()

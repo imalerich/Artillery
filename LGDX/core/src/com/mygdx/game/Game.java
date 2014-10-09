@@ -3,6 +3,7 @@ package com.mygdx.game;
 import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
+import ammunition.CannonBall;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -31,6 +32,7 @@ public class Game extends ApplicationAdapter
 	public static final int WORLDW = 1920*2;
 	public static final int WORLDH = 1200;
 	
+	public static final int GRAVITY = 160;
 	public static final int CAMSPEED = 512;
 	
 	/*
@@ -62,6 +64,8 @@ public class Game extends ApplicationAdapter
 	{
 		Shaders.Release();
 		MilitaryBase.Release();
+		CannonBall.Release();
+		
 		ter.Release();
 		bg.Release();
 		ui.Release();
@@ -155,6 +159,7 @@ public class Game extends ApplicationAdapter
 		
 		gunmen.Draw(batch, cam);
 		tank.Draw(batch, cam);
+		
 		ui.Draw(batch);
 	}
 	
