@@ -1,12 +1,18 @@
 package ammunition;
 
+import physics.PhysicsWorld;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class Armament 
 {
 	private float angle;
 	private float speed;
-	private Vector2 basepos;
+	
+	public void Fire(PhysicsWorld World, Vector2 BasePos)
+	{
+		// override in implementation class
+	}
 	
 	public void AddAngle(float Add)
 	{
@@ -31,10 +37,5 @@ public class Armament
 	public Vector2 GetInitialVelocity()
 	{
 		return new Vector2( (float)Math.cos(angle)*speed, (float)Math.sin(angle)*speed );
-	}
-	
-	public Vector2 GetPos()
-	{
-		return basepos;
 	}
 }

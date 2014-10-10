@@ -15,6 +15,7 @@ public class Unit
 	protected boolean forward;
 	protected boolean moving;
 	protected int speed;
+	protected float barrelPhi = 0.0f;
 	protected int width = 0;
 	protected int height = 0;
 	

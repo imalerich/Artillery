@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import physics.PhysicsWorld;
 import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
@@ -43,16 +44,11 @@ public class Game extends ApplicationAdapter
 	private OrthographicCamera proj;
 	private SpriteBatch batch;
 	 
-	private Terrain ter;
 	private Background bg;
 	private UI ui;
 	private Camera cam;
 	
-	private Squad gunmen;
-	private Squad tank;
-	
-	private MilitaryBase b0;
-	private MilitaryBase b1;
+	private PhysicsWorld physics;
 	
 	public Game(int WindowW, int WindowH)
 	{
@@ -66,7 +62,7 @@ public class Game extends ApplicationAdapter
 		MilitaryBase.Release();
 		CannonBall.Release();
 		
-		ter.Release();
+		physics.Release();
 		bg.Release();
 		ui.Release();
 	}
@@ -87,13 +83,13 @@ public class Game extends ApplicationAdapter
 		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16);
 		seed.AddBase(0, MilitaryBase.GetWidth());
 		seed.AddBase(WORLDW/2, MilitaryBase.GetWidth());
-		ter = new Terrain( seed );
+		Terrain ter = new Terrain( seed );
 		
 		// init the bases
 		Color bcol = new Color(16/255f, 16/255f, 16/255f, 1f);
-		b0 = new MilitaryBase( 0, ter, bcol );
+		MilitaryBase b0 = new MilitaryBase( 0, ter, bcol );
 		b0.SetLogo((int)(Math.random()*4));
-		b1 = new MilitaryBase( WORLDW/2, ter, bcol );
+		MilitaryBase b1 = new MilitaryBase( WORLDW/2, ter, bcol );
 		
 		if (b0.GetLogo() != 0)
 		b1.SetLogo( b0.GetLogo()-1 );
@@ -110,7 +106,7 @@ public class Game extends ApplicationAdapter
 		ui = new UI("img/ui.png");
 		
 		// create a line of gunman
-		gunmen = new Squad(ter);
+		Squad gunmen = new Squad(ter);
 		for (int i=0; i<5; i++)
 		{
 			Vector2 pos = new Vector2(512 + i*32, 0);
@@ -118,10 +114,18 @@ public class Game extends ApplicationAdapter
 		}
 		
 		// create the tank squad
-		tank = new Squad(ter);
+		Squad tank = new Squad(ter);
 		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 20);
 		add.SetBarrelOffset( new Vector2(17, 29) );
 		tank.AddUnit(add, cam);
+		
+		// initialize the physics world
+		physics = new PhysicsWorld(ter);
+		physics.AddBase(b0);
+		physics.AddBase(b1);
+		
+		physics.AddSquad(tank);
+		physics.AddSquad(gunmen);
 	}
 
 	@Override
@@ -153,12 +157,7 @@ public class Game extends ApplicationAdapter
 	{
 		bg.Draw(batch, (int)cam.GetPos().x);
 		
-		ter.Draw(batch, cam.GetPos());
-		b0.Draw(batch, cam);
-		b1.Draw(batch, cam);
-		
-		gunmen.Draw(batch, cam);
-		tank.Draw(batch, cam);
+		physics.Draw(batch, cam);
 		
 		ui.Draw(batch);
 	}
@@ -186,11 +185,9 @@ public class Game extends ApplicationAdapter
 	
 	private void UpdateScene()
 	{
-		// update the tanks position
+		// update the camera position
 		UpdatePos();
-		gunmen.Update(cam.GetPos());
-		tank.Update(cam.GetPos());
 		
-		ter.Update();
+		physics.Update(cam);
 	}
 }

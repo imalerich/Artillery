@@ -6,6 +6,7 @@ import java.util.Vector;
 import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.PointSelect;
+import ammunition.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -18,6 +19,7 @@ public class Squad
 {
 	private static int squadspacing = 32;
 	
+	private Armament arms;
 	private Vector<Unit> units;
 	private Rectangle bbox;
 	
@@ -48,6 +50,16 @@ public class Squad
 		moveselect = new PointSelect(Ter);
 		moveactive = false;
 		targetpos = -1;
+	}
+	
+	public void SetArmament(Armament Arms)
+	{
+		arms = Arms;
+	}
+	
+	public Armament GetArmament()
+	{
+		return arms;
 	}
 	
 	private void CalcBoundingBox(Vector2 Campos)

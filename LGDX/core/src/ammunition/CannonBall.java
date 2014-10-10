@@ -1,7 +1,5 @@
 package ammunition;
 
-import terrain.Terrain;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,15 +24,15 @@ public class CannonBall extends Projectile
 		// set the radius of this projectile
 		radius = tex.getWidth()/2;
 		blastradius = radius*4;
+		ignoreGravity = false;
 	}
 	
-	public CannonBall(Vector2 Position, Vector2 Velocity, Terrain Ter)
+	public CannonBall(Vector2 Position, Vector2 Velocity)
 	{
 		LoadTex();
 		
 		pos = Position;
 		vel = Velocity;
-		ter = Ter;
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)

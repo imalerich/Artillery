@@ -15,7 +15,6 @@ public class Tank extends Unit
 	private Texture tex;
 	private Texture barrel;
 	
-	private float barrelPhi; // angle of the barrel relative to the tank
 	private Vector2 barrelOffset; // coordinates of the barrel relative to the tank
 	
 	private int halfwidth;
