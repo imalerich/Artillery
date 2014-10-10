@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import entity.Army;
 import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
@@ -121,11 +122,12 @@ public class Game extends ApplicationAdapter
 		
 		// initialize the physics world
 		physics = new PhysicsWorld(ter);
-		physics.AddBase(b0);
-		physics.AddBase(b1);
 		
-		physics.AddSquad(tank);
-		physics.AddSquad(gunmen);
+		Army a0 = new Army(b0);
+		a0.AddSquad(gunmen);
+		a0.AddSquad(tank);
+		physics.AddArmy(a0);
+		physics.AddArmy( new Army(b1) );
 	}
 
 	@Override
