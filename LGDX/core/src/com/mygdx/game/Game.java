@@ -123,11 +123,12 @@ public class Game extends ApplicationAdapter
 		// initialize the physics world
 		physics = new PhysicsWorld(ter);
 		
-		Army a0 = new Army(b0);
+		Army a0 = new Army(b0, ter);
+		a0.SetUserControlled(true);
 		a0.AddSquad(gunmen);
 		a0.AddSquad(tank);
 		physics.AddArmy(a0);
-		physics.AddArmy( new Army(b1) );
+		physics.AddArmy( new Army(b1, ter) );
 	}
 
 	@Override

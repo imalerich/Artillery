@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import terrain.Terrain;
-import ui.ButtonOptions;
-import ui.PointSelect;
 import ammunition.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,39 +15,21 @@ import com.mygdx.game.Game;
 
 public class Squad 
 {
-	private static int squadspacing = 32;
+	private int squadspacing = 32;
 	
 	private Armament arms;
 	private Vector<Unit> units;
 	private Rectangle bbox;
 	
-	private boolean menuactive;
-	private boolean menurelease;
-	private boolean ismoving;
-	private ButtonOptions menu;
-	
-	private PointSelect moveselect;
-	private boolean moveactive;
 	private int targetpos;
+	private boolean ismoving;
 	
 	public Squad(Terrain Ter)
 	{
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
-		
-		menuactive = false;
-		menurelease = false;
-		ismoving = false;
-		
-		menu = new ButtonOptions(0, 0, 4);
-		menu.SetGlyph(0, ButtonOptions.ATTACK);
-		menu.SetGlyph(1, ButtonOptions.MOVE);
-		menu.SetGlyph(2, ButtonOptions.UPGRADE);
-		menu.SetGlyph(3, ButtonOptions.STOP);
-		
-		moveselect = new PointSelect(Ter);
-		moveactive = false;
 		targetpos = -1;
+		ismoving = false;
 	}
 	
 	public void SetArmament(Armament Arms)
@@ -60,6 +40,22 @@ public class Squad
 	public Armament GetArmament()
 	{
 		return arms;
+	}
+	
+	public int GetTargetX()
+	{
+		return targetpos;
+	}
+	
+	public void SetTargetX(int Target)
+	{
+		targetpos = Target;
+		ModTarget();
+	}
+	
+	public Rectangle GetBoundingBox()
+	{
+		return bbox;
 	}
 	
 	private void CalcBoundingBox(Vector2 Campos)
@@ -97,9 +93,14 @@ public class Squad
 		bbox = new Rectangle(minx, miny, (units.size()-1)*squadspacing + maxw, maxy-miny + maxh);
 	}
 	
-	private boolean IsMouseOver(Vector2 Campos)
+	public boolean IsMouseOver(Vector2 Campos)
 	{
 		return Cursor.IsMouseOver(bbox, Campos);
+	}
+	
+	public boolean IsMoving()
+	{
+		return ismoving;
 	}
 	
 	public void SetSquadSpacing(int SquadSpacing)
@@ -128,81 +129,10 @@ public class Squad
 		CalcBoundingBox(Cam.GetPos());
 	}
 	
-	private void UpdateMenu(Vector2 Campos)
-	{
-		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
-			menuactive = false;
-			menurelease  = false;
-			menu.ResetClock();
-		}
-		
-		if (!Cursor.isButtonPressed(Cursor.LEFT))
-			menurelease = true;
-		
-		int event = -1;
-		if (Cursor.isButtonJustReleased(Cursor.LEFT))
-			event = menu.GetAction( menu.GetButtonDown(Campos) );
-			
-		switch (event)
-		{
-		case ButtonOptions.STOP:
-			// leave the menu
-			menuactive = false;
-			menurelease = false;
-			menu.ResetClock();
-			break;
-
-		case ButtonOptions.MOVE:
-			// set the movement
-			moveactive = true;
-			moveselect.SetPos((int)bbox.x, (int)bbox.width);
-			moveselect.SetMaxDist(512);
-
-			// leave the menu
-			menuactive = false;
-			menurelease = false;
-			menu.ResetClock();
-			break;
-
-		default:
-			break;
-		}
-	}
-	
-	private void UpdateMove(Vector2 Campos)
-	{
-		moveselect.Update(Campos);
-
-		// set the target pos on left release, or cancel on right click
-		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			targetpos = moveselect.GetTargetX();
-			ModTarget();
-			moveactive = false;
-		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
-			moveactive = false;
-	}
-	
 	public void Update(Vector2 Campos)
 	{
 		if (targetpos >= 0)
 			Move(Campos);
-		
-		if (!ismoving && IsMouseOver(Campos) && Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			if (menurelease) {
-				menuactive = false;
-				menurelease = false;
-				menu.ResetClock();
-			} else {
-				menurelease = false;
-				menuactive = true;
-			}
-		}
-		
-		if (menuactive) 
-			UpdateMenu(Campos);
-		
-		if (moveactive)
-			UpdateMove(Campos);
 	}
 	
 	private void ModTarget()
@@ -282,23 +212,10 @@ public class Squad
 		} else ismoving = true;
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
-		boolean highlight = IsMouseOver(Cam.GetPos()) && !ismoving;
-		
-		if (menuactive) {
-			highlight = true;
-			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f), Cam.GetPos());
-			menu.Draw(Batch, Cam);
-		}
-		
-		if (moveactive) {
-			highlight = true;
-			moveselect.Draw(Batch, Cam);
-		}
-		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
-			i.next().Draw(Batch, Cam, highlight);
+			i.next().Draw(Batch, Cam, Highlight);
 	}
 }
