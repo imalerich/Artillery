@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import terrain.FogOfWar;
 import terrain.Terrain;
 import ammunition.Armament;
 
@@ -22,6 +23,7 @@ public class Squad
 	private Rectangle bbox;
 	
 	private int targetpos;
+	private int viewRadius;
 	private boolean ismoving;
 	
 	public Squad(Terrain Ter)
@@ -30,6 +32,17 @@ public class Squad
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		targetpos = -1;
 		ismoving = false;
+		viewRadius = 256;
+	}
+	
+	public void SetViewRadius(int Radius)
+	{
+		viewRadius = Radius;
+	}
+	
+	public int GetViewRadius()
+	{
+		return viewRadius;
 	}
 	
 	public void SetArmament(Armament Arms)
@@ -210,6 +223,20 @@ public class Squad
 			CalcBoundingBox(Campos);
 			ismoving = false;
 		} else ismoving = true;
+	}
+	
+	public void DrawView(Camera Cam)
+	{
+		Iterator<Unit> i = units.iterator();
+		while (i.hasNext()) {
+			Unit u = i.next();
+			Vector2 pos = new Vector2( u.GetPos() );
+			pos.x += u.GetWidth()/2;
+			pos.y += u.GetHeight()/2;
+			
+			FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
+					Cam.GetRenderY(pos.y), viewRadius);
+		}
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)

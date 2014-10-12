@@ -1,6 +1,8 @@
 package com.mygdx.game;
 
 import physics.PhysicsWorld;
+import terrain.Background;
+import terrain.FogOfWar;
 import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
@@ -19,6 +21,7 @@ import entity.Army;
 import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
+import entity.UserArmy;
 
 public class Game extends ApplicationAdapter 
 {
@@ -45,7 +48,6 @@ public class Game extends ApplicationAdapter
 	private OrthographicCamera proj;
 	private SpriteBatch batch;
 	 
-	private Background bg;
 	private UI ui;
 	private Camera cam;
 	
@@ -62,9 +64,9 @@ public class Game extends ApplicationAdapter
 		Shaders.Release();
 		MilitaryBase.Release();
 		CannonBall.Release();
+		Background.Release();
 		
 		physics.Release();
-		bg.Release();
 		ui.Release();
 	}
 	
@@ -72,8 +74,10 @@ public class Game extends ApplicationAdapter
 	public void create() 
 	{
 		// initialize the shaders
-		Shaders.InitShaders();
+		Shaders.Init();
 		Cursor.Init();
+		Background.Init();
+		FogOfWar.Init();
 		
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
@@ -103,7 +107,6 @@ public class Game extends ApplicationAdapter
 		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
 		
 		// create the tank, background and ui
-		bg = new Background();
 		ui = new UI("img/ui.png");
 		
 		// create a line of gunman
@@ -116,19 +119,18 @@ public class Game extends ApplicationAdapter
 		
 		// create the tank squad
 		Squad tank = new Squad(ter);
-		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 20);
+		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 40);
 		add.SetBarrelOffset( new Vector2(17, 29) );
 		tank.AddUnit(add, cam);
 		
 		// initialize the physics world
 		physics = new PhysicsWorld(ter);
 		
-		Army a0 = new Army(b0, ter);
-		a0.SetUserControlled(true);
+		UserArmy a0 = new UserArmy(b0, ter);
 		a0.AddSquad(gunmen);
 		a0.AddSquad(tank);
-		physics.AddArmy(a0);
-		physics.AddArmy( new Army(b1, ter) );
+		physics.AddFriendlyArmy(a0);
+		physics.AddEnemyArmy( new Army(b1) );
 	}
 
 	@Override
@@ -140,6 +142,7 @@ public class Game extends ApplicationAdapter
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
 		
 		// begin rendering the scene
 		batch.setProjectionMatrix(proj.combined);
@@ -158,8 +161,6 @@ public class Game extends ApplicationAdapter
 	
 	private void DrawScene()
 	{
-		bg.Draw(batch, (int)cam.GetPos().x);
-		
 		physics.Draw(batch, cam);
 		
 		ui.Draw(batch);

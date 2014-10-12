@@ -13,7 +13,7 @@ public class Shaders
 			hili.dispose();
 	}
 	
-	public static void InitShaders()
+	public static void Init()
 	{
 		Release();
 		

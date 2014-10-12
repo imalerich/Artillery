@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import terrain.Background;
+import terrain.FogOfWar;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
@@ -88,6 +90,16 @@ public class MilitaryBase
 		return tex.getHeight();
 	}
 	
+	public void DrawView(Camera Cam)
+	{
+		Vector2 pos = new Vector2(xpos, ypos);
+		pos.x += tex.getWidth()/2;
+		pos.y += tex.getHeight()/2;
+		
+		FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
+				Cam.GetRenderY(pos.y), 600);
+	}
+	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the base
@@ -100,7 +112,7 @@ public class MilitaryBase
 		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
 		
 		// draw the flags logo
-		Batch.setColor(Background.BGCOLOR);
+		Batch.setColor(Background.FGCOLOR);
 		Batch.draw(logos[logo], Cam.GetRenderX(xpos+GetWidth()-2+LOGOOFFSETX),
 				Cam.GetRenderY(ypos+LOGOOFFSETY));
 		Batch.draw(logos[logo], Cam.GetRenderX(xpos+LOGOOFFSETX),
