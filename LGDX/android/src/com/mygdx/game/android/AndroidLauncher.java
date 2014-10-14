@@ -12,6 +12,7 @@ public class AndroidLauncher extends AndroidApplication {
 	{
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.stencil = 8;
 		initialize(new Game(960, 600), config);
 	}
 }

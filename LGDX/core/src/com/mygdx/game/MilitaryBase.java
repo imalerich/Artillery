@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class MilitaryBase 
@@ -16,12 +17,14 @@ public class MilitaryBase
 	public static final int LOGOCOUNT = 4;
 	private static final int LOGOOFFSETX = -2;
 	private static final int LOGOOFFSETY = 185;
+	private static final int MOUSEYTOLERANCE = 16;
 	
 	private static Texture tex;
 	private static AnimTex flag;
 	private static TextureRegion[] logos;
 	
 	private Color col;
+	
 	private int logo;
 	private int xpos;
 	private int ypos;
@@ -33,6 +36,18 @@ public class MilitaryBase
 		
 		if (flag != null)
 			flag.Release();
+	}
+	
+	public static int GetWidth()
+	{
+		LoadTex();
+		return tex.getWidth();
+	}
+	
+	public static int GetHeight()
+	{
+		LoadTex();
+		return tex.getHeight();
 	}
 	
 	private static void LoadTex()
@@ -65,6 +80,17 @@ public class MilitaryBase
 		ypos = Game.WORLDH - Ter.GetHeight(0) - 3;
 	}
 	
+	public boolean IsMouseOver(Vector2 Campos)
+	{
+		Rectangle r = new Rectangle(xpos, ypos-MOUSEYTOLERANCE, GetWidth(), GetHeight()+MOUSEYTOLERANCE);
+		return Cursor.IsMouseOver(r, Campos);
+	}
+	
+	public Vector2 GetPos()
+	{
+		return new Vector2(xpos, ypos);
+	}
+	
 	public void SetLogo(int Logo)
 	{
 		logo = Logo;
@@ -78,18 +104,6 @@ public class MilitaryBase
 		return logo;
 	}
 	
-	public static int GetWidth()
-	{
-		LoadTex();
-		return tex.getWidth();
-	}
-	
-	public static int GetHeight()
-	{
-		LoadTex();
-		return tex.getHeight();
-	}
-	
 	public void DrawView(Camera Cam)
 	{
 		Vector2 pos = new Vector2(xpos, ypos);
@@ -100,6 +114,7 @@ public class MilitaryBase
 				Cam.GetRenderY(pos.y), 600);
 	}
 	
+	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the base
@@ -107,6 +122,7 @@ public class MilitaryBase
 		Batch.draw(tex, Cam.GetRenderX(xpos), Cam.GetRenderY(ypos));
 		
 		// draw the flag 
+		Batch.setColor(col);
 		flag.UpdateClock();
 		flag.Render(Batch, Cam, 0, new Vector2(xpos+GetWidth()-2, ypos), 1f, 1f);
 		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);

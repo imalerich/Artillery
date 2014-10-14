@@ -78,7 +78,7 @@ public class WarPlane extends Unit
 	public void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
-		Batch.setShader(Shaders.hili);
+		Shaders.SetShader(Batch, Shaders.hili);
 		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
@@ -92,7 +92,7 @@ public class WarPlane extends Unit
 			}
 		}
 		
-		Batch.setShader(null);
+		Shaders.RevertShader(Batch);
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.PointSelect;
+import ui.UnitDeployer;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -19,6 +20,7 @@ public class UserArmy extends Army
 	private boolean menurelease;
 	private ButtonOptions menu;
 	
+	private int prevdeployi;
 	private PointSelect moveselect;
 	private boolean moveactive;
 	
@@ -27,6 +29,8 @@ public class UserArmy extends Army
 	public UserArmy(MilitaryBase Base, Terrain Ter)
 	{
 		base = Base;
+		UnitDeployer.SetPos(base.GetPos());
+		ter = Ter;
 		
 		menuactive = false;
 		menurelease = false;
@@ -39,17 +43,17 @@ public class UserArmy extends Army
 		
 		moveselect = new PointSelect(Ter);
 		moveactive = false;
+		prevdeployi = -1;
 		selected = null;
 	}
 	
 	public void Update(Camera Cam)
 	{
-		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext())
-			s.next().Update(Cam.GetPos());
+		super.Update(Cam);
 		
 		SetSelectedSquad(Cam.GetPos());
 		UpdateMenu(Cam);
+		UpdateDeployer(Cam);
 	}
 	
 	private void SetSelectedSquad(Vector2 Campos)
@@ -157,6 +161,56 @@ public class UserArmy extends Army
 			moveactive = false;
 	}
 	
+	private void UpdateDeployer(Camera Cam)
+	{
+		int selected = UnitDeployer.GetSelected(Cam);
+		
+		if (selected >= 0 && selected < UnitDeployer.UNITCOUNT &&
+			Cursor.isButtonJustReleased(Cursor.LEFT))
+		{
+			switch (selected) 
+			{
+			case UnitDeployer.GUNMAN:
+				SpawnGunmen(5, Cam, 80);
+				break;
+			
+			case UnitDeployer.SPECOPS:
+				SpawnSpecops(5, Cam, 80);
+				break;
+				
+			case UnitDeployer.STEALTHOPS:
+				SpawnStealth(5, Cam, 80);
+				break;
+				
+			default:
+				break;
+			}
+		}
+	}
+	
+	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
+	{
+		Rectangle r0 = new Rectangle(base.GetPos().x+76, base.GetPos().y, 110, 79);
+		Rectangle r1 = new Rectangle(base.GetPos().x+192, base.GetPos().y, 110, 79);
+		Rectangle r2 = new Rectangle(base.GetPos().x+306, base.GetPos().y, 110, 79);
+		
+		int i = -1;
+		if (Cursor.IsMouseOver(r0, Cam.GetPos()))
+			i = 0;
+		else if (Cursor.IsMouseOver(r1, Cam.GetPos()))
+			i = 1;
+		else if (Cursor.IsMouseOver(r2, Cam.GetPos()))
+			i = 2;
+		
+		if (i != prevdeployi)
+			UnitDeployer.ResetClock();
+		prevdeployi = i;
+			
+		if (UnitDeployer.Contains(i))
+			UnitDeployer.Draw(Batch, Cam, i);
+		
+	}
+	
 	private boolean HighlightSquad(Squad S, Camera Cam)
 	{
 		if (selected != S)
@@ -173,6 +227,8 @@ public class UserArmy extends Army
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
+		DrawDeployer(Batch, Cam);
+		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();

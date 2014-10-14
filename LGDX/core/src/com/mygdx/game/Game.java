@@ -6,6 +6,7 @@ import terrain.FogOfWar;
 import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
+import ui.UnitDeployer;
 import ammunition.CannonBall;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -78,6 +79,7 @@ public class Game extends ApplicationAdapter
 		Cursor.Init();
 		Background.Init();
 		FogOfWar.Init();
+		UnitDeployer.Init();
 		
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
@@ -114,23 +116,31 @@ public class Game extends ApplicationAdapter
 		for (int i=0; i<5; i++)
 		{
 			Vector2 pos = new Vector2(512 + i*32, 0);
-			gunmen.AddUnit( new Gunman(ter, pos, 40), cam );
+			gunmen.AddUnit( new Gunman(ter, pos, 80), cam );
 		}
 		
 		// create the tank squad
-		Squad tank = new Squad(ter);
-		Tank add = new Tank("img/Tank1.png", "img/Barrel.png", ter, 40);
-		add.SetBarrelOffset( new Vector2(17, 29) );
-		tank.AddUnit(add, cam);
+		Squad st0 = new Squad(ter);
+		Tank tank0 = new Tank("img/Tank1.png", "img/Barrel.png", ter, 80);
+		tank0.SetBarrelOffset( new Vector2(17, 29) );
+		tank0.SetPos( new Vector2(WORLDW-128, 0) );
+		st0.AddUnit(tank0, cam);
 		
 		// initialize the physics world
 		physics = new PhysicsWorld(ter);
 		
 		UserArmy a0 = new UserArmy(b0, ter);
-		a0.AddSquad(gunmen);
-		a0.AddSquad(tank);
+		a0.AddSquad(st0);
 		physics.AddFriendlyArmy(a0);
-		physics.AddEnemyArmy( new Army(b1) );
+		
+		Army a1 = new Army(b1, ter);
+		Squad st1 = new Squad(ter);
+		Tank tank1= new Tank("img/Tank1.png", "img/Barrel.png", ter, 40);
+		tank1.SetPos( new Vector2(b1.GetPos().x+MilitaryBase.GetWidth()+64, b1.GetPos().y) );
+		tank1.SetBarrelOffset( new Vector2(17, 29) );
+		st1.AddUnit(tank1, cam);
+		a1.AddSquad(st1);
+		physics.AddEnemyArmy(a1);
 	}
 
 	@Override

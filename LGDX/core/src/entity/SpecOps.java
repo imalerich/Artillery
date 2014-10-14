@@ -51,7 +51,7 @@ public class SpecOps extends Unit
 	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
-		Batch.setShader(Shaders.hili);
+		Shaders.SetShader(Batch, Shaders.hili);
 		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
@@ -59,11 +59,13 @@ public class SpecOps extends Unit
 				Coords.x += x;
 				Coords.y += y;
 				
-				anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+				if (forward)
+					anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+				else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
 			}
 		}
 		
-		Batch.setShader(null);
+		Shaders.RevertShader(Batch);
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
@@ -75,7 +77,10 @@ public class SpecOps extends Unit
 		
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
-		anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+		
+		if (forward)
+			anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
+		else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
 		moving = false;
 	}
 }

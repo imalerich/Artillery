@@ -12,6 +12,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Shaders;
 
 import entity.Army;
 
@@ -95,14 +96,26 @@ public class PhysicsWorld
 		Batch.flush();
 		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
 		
-		// draw all enemy untis above the terrain, but hidden by the fog 
+		// draw enemy base hidden by fog
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().DrawBase(Batch, Cam);
 		
+		// temporarily disable the stencil test to draw the friendly terrain
+		Batch.flush();
+		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().DrawBase(Batch, Cam);
+		Batch.flush();
+		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
+		
+		// draw all enemy untis above the terrain, but hidden by the fog 
+		Shaders.SetShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().Draw(Batch, Cam);
+		Shaders.RevertShader(Batch);
 		
 		FogOfWar.MaskOff(Batch);
 	}
@@ -114,10 +127,6 @@ public class PhysicsWorld
 		DrawHidden(Batch, Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext())
-			f.next().DrawBase(Batch, Cam);
-		
-		f = friendlyArmy.iterator();
 		while (f.hasNext())
 			f.next().Draw(Batch, Cam);
 		

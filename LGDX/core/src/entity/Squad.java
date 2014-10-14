@@ -130,10 +130,10 @@ public class Squad
 	{
 		// get the position at which to add this unit
 		Vector2 addp =  new Vector2(Add.GetPos());
-		if (units.size() > 0) {
+		/*if (units.size() > 0) {
 			addp = new Vector2(units.lastElement().GetPos());
 			addp.x += squadspacing;
-		}
+		}*/
 		
 		Add.SetPos(addp);
 		Add.SetHeight();
