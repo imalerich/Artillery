@@ -223,6 +223,9 @@ public class Squad
 			CalcBoundingBox(Campos);
 			ismoving = false;
 		} else ismoving = true;
+		
+		// recalculate the bounding box
+		CalcBoundingBox(Campos);
 	}
 	
 	public void DrawView(Camera Cam)

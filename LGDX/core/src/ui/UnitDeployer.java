@@ -57,6 +57,11 @@ public class UnitDeployer
 		}
 	}
 	
+	public static void SetBBox(Rectangle BBox, int Index)
+	{
+		bbox[Index] = BBox;
+	}
+	
 	public static boolean Contains(int Index)
 	{
 		if (Index >= 0 && Index < UNITCOUNT)
@@ -88,6 +93,9 @@ public class UnitDeployer
 		Batch.setColor(Background.FGCOLOR);
 
 		Vector2 pos = new Vector2(bbox[Index].x, bbox[Index].y);
+		pos.x += ( bbox[Index].width/2 - glyphs[Index].getRegionWidth()/2 );
+		
+		// offset to center after scaling
 		int xoff = (int)(glyphs[Index].getRegionWidth()*(1-scale) )/2;
 		int yoff = (int)(glyphs[Index].getRegionHeight()*(1-scale) )/2;
 

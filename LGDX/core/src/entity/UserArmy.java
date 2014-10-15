@@ -16,6 +16,8 @@ import com.mygdx.game.MilitaryBase;
 
 public class UserArmy extends Army
 {
+	private boolean procmouseevent;
+	
 	private boolean menuactive;
 	private boolean menurelease;
 	private ButtonOptions menu;
@@ -26,12 +28,15 @@ public class UserArmy extends Army
 	
 	private Squad selected; // the currently selected squad, or null
 	
-	public UserArmy(MilitaryBase Base, Terrain Ter)
+	public UserArmy(MilitaryBase Base, Terrain Ter, Camera Cam)
 	{
 		base = Base;
 		UnitDeployer.SetPos(base.GetPos());
+		SetDeployBBox(Cam);
+		
 		ter = Ter;
 		
+		procmouseevent = true;
 		menuactive = false;
 		menurelease = false;
 		
@@ -47,8 +52,20 @@ public class UserArmy extends Army
 		selected = null;
 	}
 	
+	private void SetDeployBBox(Camera Cam)
+	{
+		Rectangle r0 = new Rectangle(base.GetPos().x+76, base.GetPos().y, 110, 79);
+		Rectangle r1 = new Rectangle(base.GetPos().x+192, base.GetPos().y, 110, 79);
+		Rectangle r2 = new Rectangle(base.GetPos().x+306, base.GetPos().y, 110, 79);
+		
+		UnitDeployer.SetBBox(r0, 0);
+		UnitDeployer.SetBBox(r1, 1);
+		UnitDeployer.SetBBox(r2, 2);
+	}
+	
 	public void Update(Camera Cam)
 	{
+		procmouseevent = true;
 		super.Update(Cam);
 		
 		SetSelectedSquad(Cam.GetPos());
@@ -58,7 +75,10 @@ public class UserArmy extends Army
 	
 	private void SetSelectedSquad(Vector2 Campos)
 	{
-		if (menuactive || moveactive) 
+		if (!procmouseevent)
+			return;
+		
+		if (menuactive || moveactive)
 			return;
 		
 		Iterator<Squad> s = squads.iterator();
@@ -69,11 +89,14 @@ public class UserArmy extends Army
 				
 				// set the first found squad with the mouse over
 				selected = c;
+				
+				procmouseevent = false;
 				return;
 			}
 		}
 		
 		selected = null;
+		return;
 	}
 	
 	private void UpdateMenu(Camera Cam)
@@ -99,6 +122,9 @@ public class UserArmy extends Army
 		
 		if (moveactive)
 			UpdateMove(Cam.GetPos());
+		
+		if (menuactive || moveactive)
+			procmouseevent = false;
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
@@ -163,9 +189,12 @@ public class UserArmy extends Army
 	
 	private void UpdateDeployer(Camera Cam)
 	{
+		if (!procmouseevent)
+			return;
+		
 		int selected = UnitDeployer.GetSelected(Cam);
 		
-		if (selected >= 0 && selected < UnitDeployer.UNITCOUNT &&
+		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
 			switch (selected) 
@@ -186,28 +215,26 @@ public class UserArmy extends Army
 				break;
 			}
 		}
+		
+		if (UnitDeployer.Contains(selected))
+			procmouseevent = false;
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
 	{
-		Rectangle r0 = new Rectangle(base.GetPos().x+76, base.GetPos().y, 110, 79);
-		Rectangle r1 = new Rectangle(base.GetPos().x+192, base.GetPos().y, 110, 79);
-		Rectangle r2 = new Rectangle(base.GetPos().x+306, base.GetPos().y, 110, 79);
+		if (!procmouseevent)
+			return;
 		
-		int i = -1;
-		if (Cursor.IsMouseOver(r0, Cam.GetPos()))
-			i = 0;
-		else if (Cursor.IsMouseOver(r1, Cam.GetPos()))
-			i = 1;
-		else if (Cursor.IsMouseOver(r2, Cam.GetPos()))
-			i = 2;
+		int i = UnitDeployer.GetSelected(Cam);
 		
 		if (i != prevdeployi)
 			UnitDeployer.ResetClock();
 		prevdeployi = i;
 			
-		if (UnitDeployer.Contains(i))
+		if (UnitDeployer.Contains(i)) {
+			procmouseevent = false;
 			UnitDeployer.Draw(Batch, Cam, i);
+		}
 		
 	}
 	
@@ -227,17 +254,29 @@ public class UserArmy extends Army
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
-		DrawDeployer(Batch, Cam);
+		procmouseevent = true;
+		if (menuactive && selected != null)
+			procmouseevent = false;
+		else if (moveactive && selected != null)
+			procmouseevent = false;
 		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();
-			c.Draw(Batch, Cam, HighlightSquad(c, Cam));
+			
+			boolean highlight = HighlightSquad(c, Cam);
+			if (!procmouseevent) highlight = false;
+			else if (highlight) procmouseevent = false;
+			
+			c.Draw(Batch, Cam, highlight);
 		}
 		
+		DrawDeployer(Batch, Cam);
+		
+		// do not check for procmouseevent status, as the menus have priority
 		if (menuactive && selected != null) {
 			Rectangle bbox = selected.GetBoundingBox();
-			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y + bbox.height*1.5f), Cam.GetPos());
+			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
 			menu.Draw(Batch, Cam);
 		}
 		

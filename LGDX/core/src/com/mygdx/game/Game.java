@@ -19,7 +19,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import entity.Army;
-import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
 import entity.UserArmy;
@@ -111,26 +110,10 @@ public class Game extends ApplicationAdapter
 		// create the tank, background and ui
 		ui = new UI("img/ui.png");
 		
-		// create a line of gunman
-		Squad gunmen = new Squad(ter);
-		for (int i=0; i<5; i++)
-		{
-			Vector2 pos = new Vector2(512 + i*32, 0);
-			gunmen.AddUnit( new Gunman(ter, pos, 80), cam );
-		}
-		
-		// create the tank squad
-		Squad st0 = new Squad(ter);
-		Tank tank0 = new Tank("img/Tank1.png", "img/Barrel.png", ter, 80);
-		tank0.SetBarrelOffset( new Vector2(17, 29) );
-		tank0.SetPos( new Vector2(WORLDW-128, 0) );
-		st0.AddUnit(tank0, cam);
-		
 		// initialize the physics world
 		physics = new PhysicsWorld(ter);
 		
-		UserArmy a0 = new UserArmy(b0, ter);
-		a0.AddSquad(st0);
+		UserArmy a0 = new UserArmy(b0, ter, cam);
 		physics.AddFriendlyArmy(a0);
 		
 		Army a1 = new Army(b1, ter);
