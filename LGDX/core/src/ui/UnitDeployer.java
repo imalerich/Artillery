@@ -1,9 +1,6 @@
 package ui;
 
-import terrain.Background;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -90,7 +87,6 @@ public class UnitDeployer
 			scale = GROWSPEED*(float)(clock * clock);
 			
 		int selected = GetSelected(Cam);
-		Batch.setColor(Background.FGCOLOR);
 
 		Vector2 pos = new Vector2(bbox[Index].x, bbox[Index].y);
 		pos.x += ( bbox[Index].width/2 - glyphs[Index].getRegionWidth()/2 );
@@ -107,7 +103,5 @@ public class UnitDeployer
 
 		Batch.draw(glyphs[Index], pos.x, pos.y, 
 				glyphs[Index].getRegionWidth()*scale, glyphs[Index].getRegionHeight()*scale);
-		
-		Batch.setColor(Color.WHITE);
 	}
 }

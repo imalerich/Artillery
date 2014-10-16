@@ -7,6 +7,8 @@ import ui.ButtonOptions;
 import ui.PointSelect;
 import ui.UnitDeployer;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +18,8 @@ import com.mygdx.game.MilitaryBase;
 
 public class UserArmy extends Army
 {
-	private boolean procmouseevent;
+	private SelectionStack optionstack;
+	private int prevstacksize;
 	
 	private boolean menuactive;
 	private boolean menurelease;
@@ -36,7 +39,9 @@ public class UserArmy extends Army
 		
 		ter = Ter;
 		
-		procmouseevent = true;
+		optionstack = new SelectionStack();
+		prevstacksize = 0;
+		
 		menuactive = false;
 		menurelease = false;
 		
@@ -65,38 +70,134 @@ public class UserArmy extends Army
 	
 	public void Update(Camera Cam)
 	{
-		procmouseevent = true;
 		super.Update(Cam);
 		
-		SetSelectedSquad(Cam.GetPos());
-		UpdateMenu(Cam);
+		BuildOptionStack(Cam);
+		SetSelected();
 		UpdateDeployer(Cam);
+		
+		UpdateMenu(Cam);
 	}
 	
-	private void SetSelectedSquad(Vector2 Campos)
+	private void BuildOptionStack(Camera Cam)
 	{
-		if (!procmouseevent)
+		// do not process new information while a menu is open
+		if (IsMenuOpen()) {
+			optionstack.Reset();
 			return;
+		}
 		
-		if (menuactive || moveactive)
+		// proces input
+		ProcStackChange();
+		int stacksize = CalcOptionStackSize(Cam);
+
+		/*
+		 *  no change occured leave the method and do not recalc the option stack
+		 */
+		if (stacksize == prevstacksize) {
+			prevstacksize = stacksize;
 			return;
+		}
+
+		// a change occured
+		prevstacksize = stacksize;
+		
+		// reset the optionstack and recalculate its contents
+		optionstack.Reset();
 		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();
 			
-			if (c.IsMouseOver(Campos)) {
-				
-				// set the first found squad with the mouse over
-				selected = c;
-				
-				procmouseevent = false;
-				return;
-			}
+			if (c.IsMouseOver(Cam.GetPos()))
+				optionstack.AddSquadOver(c);
 		}
 		
-		selected = null;
-		return;
+		
+		int selected = UnitDeployer.GetSelected(Cam);
+		if (UnitDeployer.Contains(selected))
+			optionstack.AddBarracksOver();
+	}
+	
+	private void ProcStackChange()
+	{
+		// cycle though current option stack
+		if (Gdx.input.isKeyJustPressed(Keys.TAB))
+			optionstack.IncSelection();
+		
+		if (Cursor.getScrollDirection() > 0)
+			optionstack.DecSelection();
+		else if (Cursor.getScrollDirection() < 0)
+			optionstack.IncSelection();
+	}
+	
+	private int CalcOptionStackSize(Camera Cam)
+	{
+		int size = 0;
+		
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad c = s.next();
+			
+			// size increases for each unit over
+			if (c.IsMouseOver(Cam.GetPos()))
+				size++;
+		}
+		
+		// size increased if a the mouse is over a deployer
+		int selected = UnitDeployer.GetSelected(Cam);
+		if (UnitDeployer.Contains(selected))
+			size++;
+		
+		// return the anticipated size of the optionstack
+		return size;
+	}
+	
+	private void SetSelected()
+	{
+		// do not select a squad while a menu is open
+		if (IsMenuOpen())
+			return;
+		
+		if (optionstack.IsOverSquad()) {
+			selected = optionstack.GetSquadOver();
+		} else {
+			selected = null;
+		}
+	}
+	
+	private void UpdateDeployer(Camera Cam)
+	{
+		// do not update the deployer while a menu is open
+		if (IsMenuOpen() || !optionstack.IsOverAdd())
+			return;
+		
+		int selected = UnitDeployer.GetSelected(Cam);
+		
+		if (UnitDeployer.Contains(selected) &&
+			Cursor.isButtonJustReleased(Cursor.LEFT))
+		{
+			switch (selected) 
+			{
+			case UnitDeployer.GUNMAN:
+				SpawnGunmen(5, Cam, 80);
+				optionstack.Reset();
+				break;
+			
+			case UnitDeployer.SPECOPS:
+				SpawnSpecops(5, Cam, 80);
+				optionstack.Reset();
+				break;
+				
+			case UnitDeployer.STEALTHOPS:
+				SpawnStealth(5, Cam, 80);
+				optionstack.Reset();
+				break;
+				
+			default:
+				break;
+			}
+		}
 	}
 	
 	private void UpdateMenu(Camera Cam)
@@ -122,9 +223,6 @@ public class UserArmy extends Army
 		
 		if (moveactive)
 			UpdateMove(Cam.GetPos());
-		
-		if (menuactive || moveactive)
-			procmouseevent = false;
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
@@ -187,42 +285,15 @@ public class UserArmy extends Army
 			moveactive = false;
 	}
 	
-	private void UpdateDeployer(Camera Cam)
+	private boolean IsMenuOpen()
 	{
-		if (!procmouseevent)
-			return;
-		
-		int selected = UnitDeployer.GetSelected(Cam);
-		
-		if (UnitDeployer.Contains(selected) &&
-			Cursor.isButtonJustReleased(Cursor.LEFT))
-		{
-			switch (selected) 
-			{
-			case UnitDeployer.GUNMAN:
-				SpawnGunmen(5, Cam, 80);
-				break;
-			
-			case UnitDeployer.SPECOPS:
-				SpawnSpecops(5, Cam, 80);
-				break;
-				
-			case UnitDeployer.STEALTHOPS:
-				SpawnStealth(5, Cam, 80);
-				break;
-				
-			default:
-				break;
-			}
-		}
-		
-		if (UnitDeployer.Contains(selected))
-			procmouseevent = false;
+		return (menuactive || moveactive);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
 	{
-		if (!procmouseevent)
+		// do not draw the deployer when a menu is open
+		if (IsMenuOpen() || !optionstack.IsOverAdd())
 			return;
 		
 		int i = UnitDeployer.GetSelected(Cam);
@@ -231,11 +302,8 @@ public class UserArmy extends Army
 			UnitDeployer.ResetClock();
 		prevdeployi = i;
 			
-		if (UnitDeployer.Contains(i)) {
-			procmouseevent = false;
+		if (UnitDeployer.Contains(i))
 			UnitDeployer.Draw(Batch, Cam, i);
-		}
-		
 	}
 	
 	private boolean HighlightSquad(Squad S, Camera Cam)
@@ -254,20 +322,11 @@ public class UserArmy extends Army
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
-		procmouseevent = true;
-		if (menuactive && selected != null)
-			procmouseevent = false;
-		else if (moveactive && selected != null)
-			procmouseevent = false;
-		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();
 			
 			boolean highlight = HighlightSquad(c, Cam);
-			if (!procmouseevent) highlight = false;
-			else if (highlight) procmouseevent = false;
-			
 			c.Draw(Batch, Cam, highlight);
 		}
 		

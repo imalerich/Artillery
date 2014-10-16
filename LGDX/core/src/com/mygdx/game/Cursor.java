@@ -20,6 +20,8 @@ public class Cursor
 	
 	public static void Init()
 	{
+		Gdx.input.setInputProcessor( new CursorInput() );
+		
 		buttondown = new int[BUTTONCOUNT];
 		for (int i=0; i<BUTTONCOUNT; i++)
 			buttondown[i] = UP;
@@ -51,23 +53,22 @@ public class Cursor
 	
 	public static boolean isButtonPressed(int Button)
 	{
-		if (buttondown[Button] == DOWN || buttondown[Button] == PRESSED)
-			return true;
-		else return false;
+		return (buttondown[Button] == DOWN || buttondown[Button] == PRESSED);
 	}
 	
 	public static boolean isButtonJustPressed(int Button)
 	{
-		if (buttondown[Button] == PRESSED)
-			return true;
-		else return false;
+		return (buttondown[Button] == PRESSED);
 	}
 	
 	public static boolean isButtonJustReleased(int Button)
 	{
-		if (buttondown[Button] == RELEASED)
-			return true;
-		else return false;
+		return (buttondown[Button] == RELEASED);
+	}
+	
+	public static int getScrollDirection()
+	{
+		return CursorInput.GetScrollDirection();
 	}
 	
 	public static int GetMouseX(Vector2 Campos)
@@ -87,6 +88,11 @@ public class Cursor
 			return true;
 		
 		return false;
+	}
+	
+	public static boolean DidMouseMove()
+	{
+		return (GetDeltaX() != 0 || GetDeltaY() != 0);
 	}
 	
 	public static int GetMouseY()
