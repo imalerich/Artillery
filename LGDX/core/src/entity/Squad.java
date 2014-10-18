@@ -28,7 +28,6 @@ public class Squad
 	private Terrain ter;
 	
 	private int targetpos;
-	private int viewRadius;
 	private boolean ismoving;
 	
 	private boolean direction;
@@ -54,20 +53,9 @@ public class Squad
 		ter = Ter;
 		targetpos = -1;
 		ismoving = false;
-		viewRadius = 256;
 		
 		pointerheight = (int)(Math.random()*MAXHEIGHT);
 		direction = true; // up
-	}
-	
-	public void SetViewRadius(int Radius)
-	{
-		viewRadius = Radius;
-	}
-	
-	public int GetViewRadius()
-	{
-		return viewRadius;
 	}
 	
 	public void SetArmament(Armament Arms)
@@ -293,7 +281,7 @@ public class Squad
 			pos.y += u.GetHeight()/2;
 			
 			FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
-					Cam.GetRenderY(pos.y), viewRadius);
+					Cam.GetRenderY(pos.y), u.GetViewRadius());
 		}
 	}
 	

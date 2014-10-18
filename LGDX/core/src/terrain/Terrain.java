@@ -13,7 +13,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Game;
 
 public class Terrain {
+	
 	// image data
+	private static Color col;
 	private Pixmap[] data;
 	private Texture[] mask;
 	
@@ -33,6 +35,16 @@ public class Terrain {
 	
 	private static final int SEGMENTWIDTH = 64;
 	private static final int ALPHAMASK = 255;
+	
+	public static void SetColor(Color Col)
+	{
+		col = Col;
+	}
+	
+	public static Color GetColor()
+	{
+		return col;
+	}
 	
 	public void Release()
 	{
@@ -64,7 +76,7 @@ public class Terrain {
 		
 		// generate the texture
 		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
-		tmp.setColor( Seed.GetColor() );
+		tmp.setColor( col );
 		tmp.fill();
 		tex = new Texture(tmp);
 		tmp.dispose();

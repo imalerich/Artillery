@@ -2,7 +2,6 @@ package terrain;
 
 import java.util.Vector;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
 public class TerrainSeed {
@@ -13,7 +12,6 @@ public class TerrainSeed {
 	
 	private Vector<Vector2> baselocation; // each vector2 is a min/max xpos for the base
 	
-	private Color color;
 	private int width;
 	private int height;
 	private int sealevel;
@@ -29,23 +27,12 @@ public class TerrainSeed {
 		peakheight = new Vector<Integer>();
 		baselocation = new Vector<Vector2>();
 		
-		color = new Color();
 		width = 0;
 		height = 0;
 		sealevel = 0;
 		minlevel = 0;
 		softness = 0;
 		consistency = 0;
-	}
-	
-	public void SetColor(int R, int G, int B)
-	{
-		color = new Color(R/255.0f, G/255.0f, B/255.0f, 1.0f);
-	}
-	
-	public Color GetColor()
-	{
-		return color;
 	}
 	
 	public void SetDimmensions(int Width, int Height)

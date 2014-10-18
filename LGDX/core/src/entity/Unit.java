@@ -15,6 +15,8 @@ public class Unit
 	protected boolean forward;
 	protected boolean moving;
 	protected int speed;
+	
+	protected int viewRadius = 256;
 	protected float barrelPhi = 0.0f;
 	protected int width = 0;
 	protected int height = 0;
@@ -22,6 +24,16 @@ public class Unit
 	public void Release()
 	{
 		// override in implementation classes
+	}
+	
+	public int GetViewRadius()
+	{
+		return viewRadius;
+	}
+	
+	public void SetViewRadius(int Radius)
+	{
+		viewRadius = Radius;
 	}
 	
 	public Vector2 GetPos()

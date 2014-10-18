@@ -35,6 +35,11 @@ public class MenuBar
 			endbutton.dispose();
 	}
 	
+	public static int GetMenuBarHeight()
+	{
+		return bar.getHeight();
+	}
+	
 	public static boolean IsEndTurn()
 	{
 		return (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));

@@ -7,6 +7,7 @@ import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
 import ui.MenuBar;
+import ui.Profile;
 import ui.UnitDeployer;
 import ammunition.CannonBall;
 
@@ -45,7 +46,6 @@ public class Game extends ApplicationAdapter
 	private SpriteBatch batch;
 
 	private Camera cam;
-	
 	private GameWorld physics;
 	
 	public Game(int WindowW, int WindowH)
@@ -56,6 +56,8 @@ public class Game extends ApplicationAdapter
 	
 	public void Init()
 	{
+		Terrain.SetColor( new Color(16/255f, 16/255f, 16/255f, 1f));
+		
 		Squad.Init();
 		Shaders.Init();
 		Cursor.Init();
@@ -63,6 +65,7 @@ public class Game extends ApplicationAdapter
 		FogOfWar.Init();
 		UnitDeployer.Init();
 		MenuBar.Init();
+		Profile.Init();
 	}
 	
 	public void Release()
@@ -73,6 +76,7 @@ public class Game extends ApplicationAdapter
 		CannonBall.Release();
 		Background.Release();
 		MenuBar.Release();
+		Profile.Release();
 		
 		physics.Release();
 	}
@@ -89,20 +93,19 @@ public class Game extends ApplicationAdapter
 		batch = new SpriteBatch();
 
 		// generate the terrain
-		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH, 16);
+		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH);
 		seed.AddBase(0, MilitaryBase.GetWidth());
 		seed.AddBase(WORLDW/2, MilitaryBase.GetWidth());
 		Terrain ter = new Terrain( seed );
 		
 		// init the bases
-		Color bcol = new Color(16/255f, 16/255f, 16/255f, 1f);
-		MilitaryBase b0 = new MilitaryBase( 0, ter, bcol );
+		MilitaryBase b0 = new MilitaryBase( 0, ter );
 		b0.SetLogo((int)(Math.random()*4));
-		MilitaryBase b1 = new MilitaryBase( WORLDW/2, ter, bcol );
-		
+		MilitaryBase b1 = new MilitaryBase( WORLDW/2, ter );
+
 		if (b0.GetLogo() != 0)
 			b1.SetLogo( b0.GetLogo()-1 );
-		else 
+		else
 			b1.SetLogo(1);
 		
 		// create the camera with the position to follow

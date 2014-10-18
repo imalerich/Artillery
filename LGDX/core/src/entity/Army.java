@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import terrain.Terrain;
+import ui.UnitDeployer;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -33,45 +34,40 @@ public class Army
 		return true;
 	}
 	
-	public void SpawnGunmen(int Count, Camera Cam, int Speed)
+	public void SpawnUnit(int UnitType, int Count, Camera Cam, int Speed)
 	{
+		int offset = 76;
+		if (UnitType == UnitDeployer.STEALTHOPS)
+			offset = 192;
+		else if (UnitType == UnitDeployer.SPECOPS)
+			offset = 306;
+		
 		Squad s = new Squad(ter);
-		s.SetTargetX((int)base.GetPos().x+76);
+		s.SetTargetX((int)base.GetPos().x+offset);
 		int spacing = s.GetSquadSpacing();
 		AddSquad(s);
 		
 		for (int i=0; i<Count; i++)
 		{
-			Vector2 pos = new Vector2(base.GetPos().x+76 + i*spacing, 0);
-			s.AddUnit( new Gunman(ter, pos, Speed), Cam );
-		}
-	}
-	
-	public void SpawnSpecops(int Count, Camera Cam, int Speed)
-	{
-		Squad s = new Squad(ter);
-		s.SetTargetX((int)base.GetPos().x+306);
-		int spacing = s.GetSquadSpacing();
-		AddSquad(s);
-		
-		for (int i=0; i<Count; i++)
-		{
-			Vector2 pos = new Vector2(base.GetPos().x+306 + i*spacing, 0);
-			s.AddUnit( new SpecOps(ter, pos, Speed), Cam );
-		}
-	}
-	
-	public void SpawnStealth(int Count, Camera Cam, int Speed)
-	{
-		Squad s = new Squad(ter);
-		s.SetTargetX((int)base.GetPos().x+192);
-		int spacing = s.GetSquadSpacing();
-		AddSquad(s);
-		
-		for (int i=0; i<Count; i++)
-		{
-			Vector2 pos = new Vector2(base.GetPos().x+192 + i*spacing, 0);
-			s.AddUnit( new StealthTroop(ter, pos, Speed), Cam );
+			Vector2 pos = new Vector2(base.GetPos().x+offset + i*spacing, 0);
+			
+			switch (UnitType)
+			{
+			case UnitDeployer.GUNMAN:	
+				s.AddUnit( new Gunman(ter, pos, Speed), Cam);
+				break;
+				
+			case UnitDeployer.STEALTHOPS:
+				s.AddUnit( new StealthTroop(ter, pos, Speed), Cam);
+				break;
+				
+			case UnitDeployer.SPECOPS:
+				s.AddUnit( new SpecOps(ter, pos, Speed), Cam);
+				break;
+				
+			default:
+				break;
+			}
 		}
 	}
 	

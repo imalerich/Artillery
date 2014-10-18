@@ -7,6 +7,7 @@ import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.MenuBar;
 import ui.PointSelect;
+import ui.Profile;
 import ui.UnitDeployer;
 
 import com.badlogic.gdx.Gdx;
@@ -30,6 +31,7 @@ public class UserArmy extends Army
 	private int prevdeployi;
 	private PointSelect moveselect;
 	private boolean moveactive;
+	private boolean profileactive;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -47,14 +49,14 @@ public class UserArmy extends Army
 		menuactive = false;
 		menurelease = false;
 		
-		menu = new ButtonOptions(0, 0, 4);
-		menu.SetGlyph(0, ButtonOptions.ATTACK);
-		menu.SetGlyph(1, ButtonOptions.MOVE);
-		menu.SetGlyph(2, ButtonOptions.UPGRADE);
-		menu.SetGlyph(3, ButtonOptions.STOP);
+		menu = new ButtonOptions(0, 0, 3);
+		menu.SetGlyph(0, ButtonOptions.MOVE);
+		menu.SetGlyph(1, ButtonOptions.UPGRADE);
+		menu.SetGlyph(2, ButtonOptions.STOP);
 		
 		moveselect = new PointSelect(Ter);
 		moveactive = false;
+		profileactive = false;
 		prevdeployi = -1;
 		selected = null;
 	}
@@ -75,6 +77,11 @@ public class UserArmy extends Army
 		switch (Stage) 
 		{
 		case GameWorld.MOVESELECT:
+			// do not leave the stage while a menu is open
+			if (IsMenuOpen())
+				return false;
+			
+			// check the end turn conditions
 			if (Gdx.input.isKeyPressed(Keys.ENTER))
 				return true;
 			else if (MenuBar.IsEndTurn())
@@ -212,26 +219,7 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
-			switch (selected) 
-			{
-			case UnitDeployer.GUNMAN:
-				SpawnGunmen(5, Cam, 80);
-				optionstack.Reset();
-				break;
-			
-			case UnitDeployer.SPECOPS:
-				SpawnSpecops(5, Cam, 80);
-				optionstack.Reset();
-				break;
-				
-			case UnitDeployer.STEALTHOPS:
-				SpawnStealth(5, Cam, 80);
-				optionstack.Reset();
-				break;
-				
-			default:
-				break;
-			}
+			SpawnUnit(selected, 5, Cam, 80);
 		}
 	}
 	
@@ -247,7 +235,7 @@ public class UserArmy extends Army
 				menuactive = false;
 				menurelease = false;
 				menu.ResetClock();
-			} else {
+			} else if (!IsMenuOpen()) {
 				menurelease = false;
 				menuactive = true;
 			}
@@ -258,13 +246,18 @@ public class UserArmy extends Army
 		
 		if (moveactive)
 			UpdateMove(Cam.GetPos());
+		
+		if (profileactive)
+			UpdateProfile();
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
 	{
 		// DO NOT UPDATE THE MENU IF NO SQUAD IS SELECTED
-		if (selected == null)
+		if (selected == null) {
+			menuactive = false;
 			return;
+		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			menuactive = false;
@@ -283,6 +276,7 @@ public class UserArmy extends Army
 		{
 		case ButtonOptions.STOP:
 			// leave the menu
+			selected.SetTargetX(-1);
 			menuactive = false;
 			menurelease = false;
 			menu.ResetClock();
@@ -299,6 +293,17 @@ public class UserArmy extends Army
 			menurelease = false;
 			menu.ResetClock();
 			break;
+			
+		case ButtonOptions.UPGRADE:
+			// activate the profile
+			profileactive = true;
+			
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.ResetClock();
+			Profile.ResetPos();
+			break;
 
 		default:
 			break;
@@ -307,8 +312,10 @@ public class UserArmy extends Army
 	
 	private void UpdateMove(Vector2 Campos)
 	{
-		if (selected == null)
+		if (selected == null) {
+			moveactive = false;
 			return;
+		}
 		
 		moveselect.Update(Campos);
 
@@ -320,9 +327,20 @@ public class UserArmy extends Army
 			moveactive = false;
 	}
 	
+	private void UpdateProfile()
+	{
+		if (selected == null) {
+			profileactive = false;
+			return;
+		}
+			
+		if (Profile.IsMouseOverClose() && Cursor.isButtonJustReleased(Cursor.LEFT))
+			profileactive = false;
+	}
+	
 	private boolean IsMenuOpen()
 	{
-		return (menuactive || moveactive);
+		return (menuactive || moveactive || profileactive);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
@@ -346,7 +364,7 @@ public class UserArmy extends Army
 		if (selected != S)
 			return false;
 		
-		if (menuactive || moveactive)
+		if (IsMenuOpen())
 			return true;
 		
 		if (selected.IsMouseOver(Cam.GetPos()) && !selected.IsMoving())
@@ -383,6 +401,10 @@ public class UserArmy extends Army
 		
 		if (moveactive && selected != null) {
 			moveselect.Draw(Batch, Cam);
+		}
+		
+		if (profileactive && selected != null) {
+			Profile.Draw(Batch, selected, base.GetLogo());
 		}
 	}
 }

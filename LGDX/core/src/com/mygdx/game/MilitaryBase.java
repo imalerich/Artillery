@@ -23,8 +23,6 @@ public class MilitaryBase
 	private static AnimTex flag;
 	private static TextureRegion[] logos;
 	
-	private Color col;
-	
 	private int logo;
 	private int xpos;
 	private int ypos;
@@ -66,12 +64,19 @@ public class MilitaryBase
 		}
 	}
 	
-	public MilitaryBase(int XPos, Terrain Ter, Color Col)
+	public static TextureRegion GetLogo(int Index)
+	{
+		if (logos == null)
+			return null;
+		
+		return logos[Index];
+	}
+	
+	public MilitaryBase(int XPos, Terrain Ter)
 	{
 		LoadTex();
 		logo = 0;
 		xpos = XPos;
-		col = Col;
 		
 		// generate the base data
 		ypos = Ter.GetMinHeight(xpos, xpos+tex.getWidth());
@@ -118,11 +123,11 @@ public class MilitaryBase
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the base
-		Batch.setColor(col);
+		Batch.setColor( Terrain.GetColor() );
 		Batch.draw(tex, Cam.GetRenderX(xpos), Cam.GetRenderY(ypos));
 		
 		// draw the flag 
-		Batch.setColor(col);
+		Batch.setColor( Terrain.GetColor() );
 		flag.UpdateClock();
 		flag.Render(Batch, Cam, 0, new Vector2(xpos+GetWidth()-2, ypos), 1f, 1f);
 		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);

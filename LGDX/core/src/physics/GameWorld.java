@@ -75,10 +75,6 @@ public class GameWorld
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().UpdateMoveSelect(Cam);
-			
-		Iterator<Projectile> p = projectiles.iterator();
-		while (p.hasNext())
-			p.next().Update();
 	}
 	
 	public void UpdateMove(Camera Cam)
@@ -90,6 +86,10 @@ public class GameWorld
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().UpdateMove(Cam);
+		
+		Iterator<Projectile> p = projectiles.iterator();
+		while (p.hasNext())
+			p.next().Update();
 	}
 	
 	public void Update(Camera Cam)
@@ -184,15 +184,15 @@ public class GameWorld
 		DrawFogMask(Batch, Cam);
 		DrawHidden(Batch, Cam);
 		
-		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext())
-			f.next().Draw(Batch, Cam);
-		
 		DrawTargets(Batch, Cam);
 		
 		Iterator<Projectile> p = projectiles.iterator();
 		while (p.hasNext())
 			p.next().Draw(Batch, Cam);
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().Draw(Batch, Cam);
 		
 		MenuBar.Draw(Batch, Cam);
 	}
