@@ -1,6 +1,6 @@
 package ammunition;
 
-import physics.PhysicsWorld;
+import physics.GameWorld;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,7 +9,7 @@ public class Armament
 	private float angle;
 	private float speed;
 	
-	public void Fire(PhysicsWorld World, Vector2 BasePos)
+	public void Fire(GameWorld World, Vector2 BasePos)
 	{
 		// override in implementation class
 	}

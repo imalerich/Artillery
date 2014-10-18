@@ -90,6 +90,16 @@ public class Cursor
 		return false;
 	}
 	
+	public static boolean IsMouseOverAbsolute(Rectangle R)
+	{
+		if (R.contains(Gdx.input.getX(), Game.SCREENH-Gdx.input.getY()))
+			return true;
+		else if (R.contains(Gdx.input.getX()+Game.WORLDW, Game.SCREENH-Gdx.input.getY()))
+			return true;
+		
+		return false;
+	}
+	
 	public static boolean DidMouseMove()
 	{
 		return (GetDeltaX() != 0 || GetDeltaY() != 0);

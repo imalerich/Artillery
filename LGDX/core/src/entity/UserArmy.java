@@ -2,8 +2,10 @@ package entity;
 
 import java.util.Iterator;
 
+import physics.GameWorld;
 import terrain.Terrain;
 import ui.ButtonOptions;
+import ui.MenuBar;
 import ui.PointSelect;
 import ui.UnitDeployer;
 
@@ -68,10 +70,44 @@ public class UserArmy extends Army
 		UnitDeployer.SetBBox(r2, 2);
 	}
 	
-	public void Update(Camera Cam)
+	public boolean IsStageCompleted(int Stage)
 	{
-		super.Update(Cam);
+		switch (Stage) 
+		{
+		case GameWorld.MOVESELECT:
+			if (Gdx.input.isKeyPressed(Keys.ENTER))
+				return true;
+			else if (MenuBar.IsEndTurn())
+				return true;
+			else return false;
 		
+		case GameWorld.MOVEUPDATE:
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext()) {
+				if (s.next().IsMoving())
+					return false;
+			}
+			
+			return true;
+			
+		case GameWorld.ATTACKSELECT:
+			return true;
+			
+		case GameWorld.ATTACKUPDATE:
+			return true;
+			
+		default:
+			return false;
+		}
+	}
+	
+	public void UpdateMove(Camera Cam)
+	{
+		super.UpdateMove(Cam);
+	}
+	
+	public void UpdateMoveSelect(Camera Cam)
+	{
 		BuildOptionStack(Cam);
 		SetSelected();
 		UpdateDeployer(Cam);
@@ -112,7 +148,6 @@ public class UserArmy extends Army
 			if (c.IsMouseOver(Cam.GetPos()))
 				optionstack.AddSquadOver(c);
 		}
-		
 		
 		int selected = UnitDeployer.GetSelected(Cam);
 		if (UnitDeployer.Contains(selected))
@@ -320,6 +355,14 @@ public class UserArmy extends Army
 		return false;
 	}
 	
+	public void DrawTargets(SpriteBatch Batch, Camera Cam)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			s.next().DrawTarget(Batch, Cam);
+		}
+	}
+	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
@@ -332,7 +375,6 @@ public class UserArmy extends Army
 		
 		DrawDeployer(Batch, Cam);
 		
-		// do not check for procmouseevent status, as the menus have priority
 		if (menuactive && selected != null) {
 			Rectangle bbox = selected.GetBoundingBox();
 			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());

@@ -1,11 +1,12 @@
 package com.mygdx.game;
 
-import physics.PhysicsWorld;
+import physics.GameWorld;
 import terrain.Background;
 import terrain.FogOfWar;
 import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
+import ui.MenuBar;
 import ui.UnitDeployer;
 import ammunition.CannonBall;
 
@@ -28,7 +29,7 @@ public class Game extends ApplicationAdapter
 	/*
 	 *	Global Constants
 	 */
-	public static int WINDOWW = 960;
+	public static int WINDOWW =	960;
 	public static int WINDOWH = 1200; 
 	
 	public static final int SCREENW = 960;
@@ -37,21 +38,15 @@ public class Game extends ApplicationAdapter
 	public static final int WORLDW = 1920*2;
 	public static final int WORLDH = 1200;
 	
-	public static final int GRAVITY = 160;
+	public static final int GRAVITY	= 160;
 	public static final int CAMSPEED = 512;
 	
-	/*
-	 *	Local test data
-	 *		most will eventually be moved into 
-	 *		more generic classes
-	 */
 	private OrthographicCamera proj;
 	private SpriteBatch batch;
-	 
-	private UI ui;
+
 	private Camera cam;
 	
-	private PhysicsWorld physics;
+	private GameWorld physics;
 	
 	public Game(int WindowW, int WindowH)
 	{
@@ -59,26 +54,34 @@ public class Game extends ApplicationAdapter
 		WINDOWH = WindowH;
 	}
 	
-	public void Release()
+	public void Init()
 	{
-		Shaders.Release();
-		MilitaryBase.Release();
-		CannonBall.Release();
-		Background.Release();
-		
-		physics.Release();
-		ui.Release();
-	}
-	
-	@Override
-	public void create() 
-	{
-		// initialize the shaders
+		Squad.Init();
 		Shaders.Init();
 		Cursor.Init();
 		Background.Init();
 		FogOfWar.Init();
 		UnitDeployer.Init();
+		MenuBar.Init();
+	}
+	
+	public void Release()
+	{
+		Squad.Release();
+		Shaders.Release();
+		MilitaryBase.Release();
+		CannonBall.Release();
+		Background.Release();
+		MenuBar.Release();
+		
+		physics.Release();
+	}
+	
+	@Override
+	public void create() 
+	{
+		// init the game
+		Init();
 		
 		// init the camera and the sprite batch
 		proj = new OrthographicCamera();
@@ -98,8 +101,9 @@ public class Game extends ApplicationAdapter
 		MilitaryBase b1 = new MilitaryBase( WORLDW/2, ter, bcol );
 		
 		if (b0.GetLogo() != 0)
-		b1.SetLogo( b0.GetLogo()-1 );
-		else b1.SetLogo(1);
+			b1.SetLogo( b0.GetLogo()-1 );
+		else 
+			b1.SetLogo(1);
 		
 		// create the camera with the position to follow
 		cam = new Camera();
@@ -107,11 +111,8 @@ public class Game extends ApplicationAdapter
 		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
 		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
 		
-		// create the tank, background and ui
-		ui = new UI("img/ui.png");
-		
 		// initialize the physics world
-		physics = new PhysicsWorld(ter);
+		physics = new GameWorld(ter);
 		
 		UserArmy a0 = new UserArmy(b0, ter, cam);
 		physics.AddFriendlyArmy(a0);
@@ -166,8 +167,6 @@ public class Game extends ApplicationAdapter
 	private void DrawScene()
 	{
 		physics.Draw(batch, cam);
-		
-		ui.Draw(batch);
 	}
 	
 	private void UpdatePos()
