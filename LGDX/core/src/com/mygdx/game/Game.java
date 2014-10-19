@@ -10,6 +10,7 @@ import ui.MenuBar;
 import ui.Profile;
 import ui.UnitDeployer;
 import ammunition.CannonBall;
+import ammunition.Projectile;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -30,11 +31,16 @@ public class Game extends ApplicationAdapter
 	/*
 	 *	Global Constants
 	 */
-	public static int WINDOWW =	960;
-	public static int WINDOWH = 1200; 
+	private static final int MINHEIGHT = 400;
+	private static final int MAXHEIGHT = 1200;
 	
-	public static final int SCREENW = 960;
-	public static final int SCREENH = 600;
+	public static int WINDOWW =	960;
+	public static int WINDOWH = 1200;
+	public static float SCREENRATIOX = 1;
+	public static float SCREENRATIOY = 1;
+	
+	public static int SCREENW = 960;
+	public static int SCREENH = 800;
 	
 	public static final int WORLDW = 1920*2;
 	public static final int WORLDH = 1200;
@@ -42,16 +48,22 @@ public class Game extends ApplicationAdapter
 	public static final int GRAVITY	= 160;
 	public static final int CAMSPEED = 512;
 	
-	private OrthographicCamera proj;
-	private SpriteBatch batch;
+	private static OrthographicCamera proj;
+	private static SpriteBatch batch;
 
 	private Camera cam;
 	private GameWorld physics;
 	
 	public Game(int WindowW, int WindowH)
 	{
-		WINDOWW = WindowW;
-		WINDOWH = WindowH;
+		ResizeScreen(WindowW, WindowH);
+	}
+	
+	public void resize(int width, int height)
+	{
+		ResizeScreen(width, height);
+		proj = new OrthographicCamera();
+		proj.setToOrtho(false, SCREENW, SCREENH);
 	}
 	
 	public void Init()
@@ -88,9 +100,9 @@ public class Game extends ApplicationAdapter
 		Init();
 		
 		// init the camera and the sprite batch
+		batch = new SpriteBatch();
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
-		batch = new SpriteBatch();
 
 		// generate the terrain
 		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH);
@@ -136,6 +148,28 @@ public class Game extends ApplicationAdapter
 		st1.AddUnit(tank1, cam);
 		a1.AddSquad(st1);
 		physics.AddEnemyArmy(a1);
+	}
+	
+	private void ResizeScreen(int Width, int Height)
+	{
+		WINDOWW = Width;
+		WINDOWH = Height;
+		
+		SCREENH = WINDOWH;
+		if (SCREENH < MINHEIGHT)
+			SCREENH = MINHEIGHT;
+		else if (SCREENH>MAXHEIGHT)
+			SCREENH /= (SCREENH/MAXHEIGHT + 1);
+		
+		SCREENRATIOY = (float)SCREENH/WINDOWH;
+		
+		SCREENW = (int)(WINDOWW*SCREENRATIOY);
+		SCREENRATIOX = (float)SCREENW/WINDOWW;
+	}
+	
+	public static OrthographicCamera GetProj()
+	{
+		return proj;
 	}
 
 	@Override

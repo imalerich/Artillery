@@ -10,6 +10,7 @@ import ammunition.Armament;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
@@ -19,6 +20,10 @@ import com.mygdx.game.Game;
 public class Squad 
 {
 	private static Texture pointer;
+	private static TextureRegion[] mugshots;
+	private static final int MUGSHOTCOUNT = 4;
+	private static final int SPACING = 2;
+	
 	private static int MAXHEIGHT = 12;
 	private int squadspacing = 32;
 	
@@ -37,6 +42,11 @@ public class Squad
 	{
 		if (pointer == null)
 			pointer = new Texture( Gdx.files.internal("img/pointer.png") );
+		
+		if (mugshots == null) {
+			Texture tmp = new Texture( Gdx.files.internal("img/mugshots.png") );
+			mugshots = TextureRegion.split(tmp, 32, 32)[0];
+		}
 	}
 	
 	public static void Release()
@@ -82,6 +92,11 @@ public class Squad
 	public Rectangle GetBoundingBox()
 	{
 		return bbox;
+	}
+	
+	public int GetUnitCount()
+	{
+		return units.size();
 	}
 	
 	private void CalcBoundingBox(Vector2 Campos)
@@ -300,6 +315,22 @@ public class Squad
 		} else if (pointerheight < 0) {
 			pointerheight = 0;
 			direction = true;
+		}
+	}
+	
+	public void DrawMugshots(SpriteBatch Batch, int XPos, int YPos)
+	{
+		int i = 0;
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			int index = u.next().GetMugShotIndex();
+			if (index < 0) index = 0;
+			else if (index >= MUGSHOTCOUNT)
+				index = MUGSHOTCOUNT-1;
+			int offset = (32+SPACING)*i;
+			
+			Batch.draw(mugshots[index], XPos+offset, YPos);
+			i++;
 		}
 	}
 	

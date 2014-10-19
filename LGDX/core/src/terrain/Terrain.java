@@ -389,12 +389,13 @@ public class Terrain {
 		// draw each segment
 		int s0 = GetSegment((int)Campos.x) - 1;
 		s0 = (int)Math.max(s0, 0);
-		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 2;
+		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 4;
 		
 		// render the extension
 		int e0 = GetSegment((int)Campos.x) - segmentcount;
 		e0 = (int)Math.max(e0, 0);
-		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 2;
+		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 4;
+		e1 = Math.min(e1, mask.length-1);
 		
 		if (s1 > segmentcount)
 			for (int i=e0; i<e1; i++)

@@ -37,6 +37,7 @@ public class StealthTroop extends Unit
 		
 		halfwidth = anim.GetFrameWidth();
 		
+		mugshotIndex = 1;
 		viewRadius = 512;
 		pos = Pos;
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;

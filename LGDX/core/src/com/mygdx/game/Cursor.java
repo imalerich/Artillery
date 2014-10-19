@@ -73,11 +73,17 @@ public class Cursor
 	
 	public static int GetMouseX(Vector2 Campos)
 	{
-		int xpos = Gdx.input.getX();
+		int xpos = (int)(Gdx.input.getX()*Game.SCREENRATIOX);
 		if (xpos + Campos.x > Game.WORLDW)
 			xpos -= Game.WORLDW;
 		
 		return xpos;
+	}
+	
+	public static int GetMouseY()
+	{
+		int ypos = (int)(Gdx.input.getY()*Game.SCREENRATIOY);
+		return Game.SCREENH - ypos;
 	}
 	
 	public static boolean IsMouseOver(Rectangle R, Vector2 Campos)
@@ -92,7 +98,10 @@ public class Cursor
 	
 	public static boolean IsMouseOverAbsolute(Rectangle R)
 	{
-		if (R.contains(Gdx.input.getX(), Game.SCREENH-Gdx.input.getY()))
+		int xpos = (int)(Gdx.input.getX()*Game.SCREENRATIOX);
+		int ypos = (int)(Gdx.input.getY()*Game.SCREENRATIOY);
+		
+		if (R.contains(xpos, Game.SCREENH-ypos))
 			return true;
 		else if (R.contains(Gdx.input.getX()+Game.WORLDW, Game.SCREENH-Gdx.input.getY()))
 			return true;
@@ -103,11 +112,6 @@ public class Cursor
 	public static boolean DidMouseMove()
 	{
 		return (GetDeltaX() != 0 || GetDeltaY() != 0);
-	}
-	
-	public static int GetMouseY()
-	{
-		return Game.SCREENH - Gdx.input.getY();
 	}
 	
 	public static int GetDeltaX()

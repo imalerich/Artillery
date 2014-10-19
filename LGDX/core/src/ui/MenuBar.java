@@ -35,6 +35,12 @@ public class MenuBar
 			endbutton.dispose();
 	}
 	
+	public static void SetEndButttonPos()
+	{
+		bbox.x = Game.SCREENW/2 - endbutton.getWidth()/2;
+		bbox.y = Game.SCREENH - endbutton.getHeight()+2;
+	}
+	
 	public static int GetMenuBarHeight()
 	{
 		return bar.getHeight();
@@ -51,6 +57,7 @@ public class MenuBar
 			Batch.draw(bar, x, Game.SCREENH-bar.getHeight());
 		
 		int offset = 0;
+		SetEndButttonPos();
 		if (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonPressed(Cursor.LEFT))
 			offset = 2;
 		

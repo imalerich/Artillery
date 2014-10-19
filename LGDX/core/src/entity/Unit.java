@@ -21,9 +21,21 @@ public class Unit
 	protected int width = 0;
 	protected int height = 0;
 	
+	protected int mugshotIndex = 0;
+	
 	public void Release()
 	{
 		// override in implementation classes
+	}
+	
+	public int GetMugShotIndex()
+	{
+		return mugshotIndex;
+	}
+	
+	public void SetMugShotIndex(int Index)
+	{
+		mugshotIndex = Index;
 	}
 	
 	public int GetViewRadius()

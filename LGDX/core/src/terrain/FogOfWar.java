@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.mygdx.game.Game;
 
 public class FogOfWar 
 {
@@ -32,6 +33,8 @@ public class FogOfWar
 		Gdx.gl.glStencilMask(0xFF);
 		Gdx.gl.glClear(GL20.GL_STENCIL_BUFFER_BIT);
 		Batch.end();
+		
+		sr.setProjectionMatrix(Game.GetProj().combined);
 		sr.begin(ShapeType.Filled);
 	}
 	

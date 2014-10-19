@@ -71,5 +71,7 @@ public class Profile
 		Batch.draw(bg, xpos, 4);
 		Batch.draw(MilitaryBase.GetLogo(ArmyIndex), xpos+STAMPX, 4+(bg.getHeight()-STAMPY));
 		Batch.draw(close, closerect.x, closerect.y-offsety);
+		
+		S.DrawMugshots(Batch, 6+xpos, 4+(bg.getHeight()-36));
 	}
 }

@@ -46,6 +46,7 @@ public class SpecOps extends Unit
 		forward = true;
 		ter = Ter;
 		speed = Speed;
+		mugshotIndex = 2;
 	}
 	
 	private void DrawHighlight(SpriteBatch Batch, Camera Cam)

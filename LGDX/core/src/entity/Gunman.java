@@ -46,7 +46,7 @@ public class Gunman extends Unit
 		forward = true;
 		ter = Ter;
 		speed = Speed;
-	
+		mugshotIndex = 0;
 	}
 	
 	private void DrawHighlight(SpriteBatch Batch, Camera Cam)

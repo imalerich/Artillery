@@ -219,7 +219,7 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
-			SpawnUnit(selected, 5, Cam, 80);
+			SpawnUnit(selected, 6, Cam, 80);
 		}
 	}
 	

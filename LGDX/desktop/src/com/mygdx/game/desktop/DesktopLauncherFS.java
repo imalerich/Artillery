@@ -4,18 +4,20 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.mygdx.game.Game;
 
-public class DesktopLauncher 
+public class DesktopLauncherFS 
 {
 	public static void main (String[] arg) 
 	{
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Shoot All Teh Things";
-		config.stencil = 8;
-		config.backgroundFPS = -1;
-		config.foregroundFPS = -1;
+		int width = LwjglApplicationConfiguration.getDisplayModes()[0].width;
+		int height = LwjglApplicationConfiguration.getDisplayModes()[0].height;
 		
-		config.width = 1366;
-		config.height = 768;
+		config.stencil = 8;
+		config.width = width;
+		config.height = height;
+		config.fullscreen = true;
+		config.resizable = false;
 		
 		new LwjglApplication(new Game(config.width, config.height), config);
 	}
