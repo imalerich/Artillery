@@ -41,10 +41,10 @@ public class Squad
 	public static void Init()
 	{
 		if (pointer == null)
-			pointer = new Texture( Gdx.files.internal("img/pointer.png") );
+			pointer = new Texture( Gdx.files.internal("img/ui/indicators/pointer.png") );
 		
 		if (mugshots == null) {
-			Texture tmp = new Texture( Gdx.files.internal("img/mugshots.png") );
+			Texture tmp = new Texture( Gdx.files.internal("img/ui/profile/mugshots.png") );
 			mugshots = TextureRegion.split(tmp, 32, 32)[0];
 		}
 	}

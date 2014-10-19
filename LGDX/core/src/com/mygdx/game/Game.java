@@ -10,7 +10,6 @@ import ui.MenuBar;
 import ui.Profile;
 import ui.UnitDeployer;
 import ammunition.CannonBall;
-import ammunition.Projectile;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -133,14 +132,14 @@ public class Game extends ApplicationAdapter
 		physics.AddFriendlyArmy(a0);
 		
 		Squad st0 = new Squad(ter);
-		Tank tank0 = new Tank("img/Tank1.png", "img/Barrel.png", ter, 40);
+		Tank tank0 = new Tank("img/tanks/Tank1.png", "img/tanks/Barrel.png", ter, 40);
 		tank0.SetBarrelOffset( new Vector2(17, 64-35) );
 		st0.AddUnit(tank0, cam);
 		a0.AddSquad(st0);
 		
 		Army a1 = new Army(b1, ter);
 		Squad st1 = new Squad(ter);
-		Tank tank1 = new Tank("img/Tank0.png", "img/Barrel.png", ter, 40);
+		Tank tank1 = new Tank("img/tanks/Tank0.png", "img/tanks/Barrel.png", ter, 40);
 		tank1.SetPos( new Vector2(b1.GetPos().x+MilitaryBase.GetWidth()+64, b1.GetPos().y) );
 		tank1.SetBarrelOffset( new Vector2(17, 29) );
 		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );

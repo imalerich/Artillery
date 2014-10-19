@@ -17,10 +17,10 @@ public class MenuBar
 	public static void Init()
 	{
 		if (bar == null)
-			bar = new Texture( Gdx.files.internal("img/ui.png") );
+			bar = new Texture( Gdx.files.internal("img/ui/menubar/menubar.png") );
 		
 		if (endbutton == null)
-			endbutton = new Texture( Gdx.files.internal("img/EndTurnButton.png") );
+			endbutton = new Texture( Gdx.files.internal("img/ui/menubar/EndTurnButton.png") );
 		
 		bbox = new Rectangle(Game.SCREENW/2 - endbutton.getWidth()/2, 
 				Game.SCREENH-endbutton.getHeight()+2, endbutton.getWidth(), endbutton.getHeight());

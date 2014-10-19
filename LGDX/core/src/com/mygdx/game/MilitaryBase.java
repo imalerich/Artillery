@@ -51,15 +51,15 @@ public class MilitaryBase
 	private static void LoadTex()
 	{
 		if (tex == null)
-			tex = new Texture( Gdx.files.internal("img/base.png") );
+			tex = new Texture( Gdx.files.internal("img/army/base.png") );
 		
 		if (flag == null) {
-			flag = new AnimTex("img/flag.png", 1, 3, 1);
+			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
 			flag.NewAnimation(0, 3, 0, 2, 0.333f);
 		}
 		
 		if (logos == null) {
-			Texture tmp = new Texture( Gdx.files.internal("img/logos.png") );
+			Texture tmp = new Texture( Gdx.files.internal("img/army/logos.png") );
 			logos = TextureRegion.split(tmp, tmp.getWidth()/LOGOCOUNT, tmp.getHeight())[0];
 		}
 	}

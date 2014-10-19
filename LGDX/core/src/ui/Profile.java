@@ -31,9 +31,9 @@ public class Profile
 	public static void Init()
 	{
 		if (bg == null)
-			bg = new Texture( Gdx.files.internal("img/profile.png"));
+			bg = new Texture( Gdx.files.internal("img/ui/profile/profile.png"));
 		if (close == null)
-			close = new Texture( Gdx.files.internal("img/closeprofile.png"));
+			close = new Texture( Gdx.files.internal("img/ui/profile/closeprofile.png"));
 		
 		ResetPos();
 	}

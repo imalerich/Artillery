@@ -27,7 +27,7 @@ public class UnitDeployer
 	public static void Init()
 	{
 		if (glyphs == null) {
-			Texture tmp = new Texture( Gdx.files.internal("img/units.png") );
+			Texture tmp = new Texture( Gdx.files.internal("img/ui/indicators/units.png") );
 			glyphs = TextureRegion.split(tmp, tmp.getWidth()/UNITCOUNT, tmp.getHeight())[0];
 		}
 		

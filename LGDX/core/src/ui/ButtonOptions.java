@@ -38,11 +38,11 @@ public class ButtonOptions
 	public ButtonOptions(int XPos, int YPos, int Count)
 	{
 		if (button == null)
-			button = new Texture( Gdx.files.internal("img/button.png") );
+			button = new Texture( Gdx.files.internal("img/ui/indicators/button.png") );
 		
 		if (glyphs == null)
 		{
-			Texture tmp = new Texture( Gdx.files.internal("img/glyphs.png") );
+			Texture tmp = new Texture( Gdx.files.internal("img/ui/indicators/glyphs.png") );
 			glyphs = TextureRegion.split(tmp, button.getWidth(), button.getHeight())[0];
 		}
 		

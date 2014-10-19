@@ -28,7 +28,7 @@ public class Gunman extends Unit
 	public Gunman(Terrain Ter, Vector2 Pos, int Speed)
 	{
 		if (anim == null) {
-			spritesheet = new Texture( Gdx.files.internal("img/gunman.png") );
+			spritesheet = new Texture( Gdx.files.internal("img/units/gunman.png") );
 			
 			anim = new AnimTex(spritesheet, 1, 2, 2);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);

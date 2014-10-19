@@ -30,7 +30,7 @@ public class WarPlane extends Unit
 	public WarPlane(Terrain Ter, int Speed, int Height, int MinHeight)
 	{
 		if (tex == null)
-			tex = new Texture( Gdx.files.internal("img/plane.png") );
+			tex = new Texture( Gdx.files.internal("img/units/plane.png") );
 		
 		halfwidth = tex.getWidth()/2;
 		width = tex.getWidth();

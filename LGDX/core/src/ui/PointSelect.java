@@ -26,7 +26,7 @@ public class PointSelect
 	public PointSelect(Terrain Ter)
 	{
 		if (tex == null)
-			tex = new Texture( Gdx.files.internal("img/point.png") );
+			tex = new Texture( Gdx.files.internal("img/ui/indicators/point.png") );
 		
 		ter = Ter;
 		startx = 0;

@@ -19,7 +19,7 @@ public class CannonBall extends Projectile
 	private void LoadTex()
 	{
 		if (tex == null)
-			tex = new Texture( Gdx.files.internal("img/cannonball.png") );
+			tex = new Texture( Gdx.files.internal("img/weaponry/cannonball.png") );
 		
 		// set the radius of this projectile
 		radius = tex.getWidth()/2;
