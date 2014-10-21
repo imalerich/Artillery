@@ -57,6 +57,7 @@ public class UserArmy extends Army
 		moveselect = new PointSelect(Ter);
 		moveactive = false;
 		profileactive = false;
+		squadspawned = false;
 		prevdeployi = -1;
 		selected = null;
 	}
@@ -106,6 +107,11 @@ public class UserArmy extends Army
 		default:
 			return false;
 		}
+	}
+	
+	public void InitStage()
+	{
+		squadspawned = false;
 	}
 	
 	public void UpdateMove(Camera Cam)
@@ -211,7 +217,7 @@ public class UserArmy extends Army
 	private void UpdateDeployer(Camera Cam)
 	{
 		// do not update the deployer while a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd())
+		if (IsMenuOpen() || !optionstack.IsOverAdd() || squadspawned)
 			return;
 		
 		int selected = UnitDeployer.GetSelected(Cam);
@@ -220,6 +226,7 @@ public class UserArmy extends Army
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
 			SpawnUnit(selected, 6, Cam, 80);
+			squadspawned = true;
 		}
 	}
 	
@@ -346,7 +353,7 @@ public class UserArmy extends Army
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
 	{
 		// do not draw the deployer when a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd())
+		if (IsMenuOpen() || !optionstack.IsOverAdd() || squadspawned)
 			return;
 		
 		int i = UnitDeployer.GetSelected(Cam);

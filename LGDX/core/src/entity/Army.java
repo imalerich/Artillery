@@ -16,6 +16,7 @@ public class Army
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
 	protected Terrain ter;
+	protected boolean squadspawned;
 	
 	public Army()
 	{
@@ -32,6 +33,21 @@ public class Army
 	public boolean IsStageCompleted(int Stage)
 	{
 		return true;
+	}
+	
+	public boolean hasSpawnedSquad()
+	{
+		return squadspawned;
+	}
+	
+	public void setSpawnedSquad(boolean Set)
+	{
+		squadspawned = Set;
+	}
+	
+	public void InitStage()
+	{
+		//
 	}
 	
 	public void SpawnUnit(int UnitType, int Count, Camera Cam, int Speed)

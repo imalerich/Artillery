@@ -216,14 +216,29 @@ public class GameWorld
 		return true;
 	}
 	
+	private void InitNewStage()
+	{
+		Iterator<Army> f = friendlyArmy.iterator();
+		Iterator<Army> e = enemyArmy.iterator();
+
+		while (f.hasNext())
+			f.next().InitStage();
+
+		while (e.hasNext())
+			e.next().InitStage();
+	}
+	
 	public void CheckNextStage()
 	{
 		// if all the armies are ready to update update the current stage
-		if ( IsArmiesStageCompleted() )
-			currentstage++;
+		if ( !IsArmiesStageCompleted() )
+			return;
 		
-		// clamp to bounds
+		// set the new stage
+		currentstage++;
 		if (currentstage == STAGECOUNT)
 			currentstage = 0;
+		
+		InitNewStage();
 	}
 }
