@@ -9,7 +9,7 @@ import terrain.TerrainSeed;
 import ui.MenuBar;
 import ui.Profile;
 import ui.UnitDeployer;
-import ammunition.CannonBall;
+import arsenal.CannonBall;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

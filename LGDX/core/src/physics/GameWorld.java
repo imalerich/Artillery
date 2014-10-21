@@ -7,7 +7,7 @@ import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
-import ammunition.Projectile;
+import arsenal.Projectile;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;

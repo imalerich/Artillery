@@ -15,6 +15,7 @@ public class Unit
 	protected boolean forward;
 	protected boolean moving;
 	protected int speed;
+	protected int health;
 	
 	protected int viewRadius = 256;
 	protected float barrelPhi = 0.0f;
@@ -46,6 +47,21 @@ public class Unit
 	public void SetViewRadius(int Radius)
 	{
 		viewRadius = Radius;
+	}
+	
+	public int GetHealth()
+	{
+		return health;
+	}
+	
+	public void Damage(int Dmg)
+	{
+		health -= Dmg;
+	}
+	
+	public void Heal(int Amt)
+	{
+		health += Amt;
 	}
 	
 	public Vector2 GetPos()

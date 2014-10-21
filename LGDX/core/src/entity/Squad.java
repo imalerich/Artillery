@@ -5,7 +5,8 @@ import java.util.Vector;
 
 import terrain.FogOfWar;
 import terrain.Terrain;
-import ammunition.Armament;
+import arsenal.Armament;
+import arsenal.Armor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,7 +28,10 @@ public class Squad
 	private static int MAXHEIGHT = 12;
 	private int squadspacing = 32;
 	
+	// the armor and armament that is used by this squadbn
 	private Armament arms;
+	private Armor armor;
+	
 	private Vector<Unit> units;
 	private Rectangle bbox;
 	private Terrain ter;
@@ -76,6 +80,16 @@ public class Squad
 	public Armament GetArmament()
 	{
 		return arms;
+	}
+	
+	public void SetArmor(Armor Set)
+	{
+		armor = Set;
+	}
+	
+	public Armor GetArmor()
+	{
+		return armor;
 	}
 	
 	public int GetTargetX()
