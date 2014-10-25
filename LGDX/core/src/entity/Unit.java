@@ -4,6 +4,7 @@ import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
@@ -27,6 +28,11 @@ public class Unit
 	public void Release()
 	{
 		// override in implementation classes
+	}
+	
+	public Rectangle GetBBox()
+	{
+		return new Rectangle(pos.x, pos.y, width, height);
 	}
 	
 	public int GetMugShotIndex()
@@ -162,7 +168,7 @@ public class Unit
 		pos.y = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		// override in implementation classes
 	}

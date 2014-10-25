@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Background;
 import terrain.FogOfWar;
@@ -76,6 +77,7 @@ public class Game extends ApplicationAdapter
 		FogOfWar.Init();
 		UnitDeployer.Init();
 		MenuBar.Init();
+		CombatResolver.Init();
 		Profile.Init();
 	}
 	
@@ -87,6 +89,7 @@ public class Game extends ApplicationAdapter
 		CannonBall.Release();
 		Background.Release();
 		MenuBar.Release();
+		CombatResolver.Release();
 		Profile.Release();
 		
 		physics.Release();
@@ -146,6 +149,7 @@ public class Game extends ApplicationAdapter
 		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
 		st1.AddUnit(tank1, cam);
 		a1.AddSquad(st1);
+		a1.SpawnUnit(UnitDeployer.GUNMAN, 6, cam, 20);
 		physics.AddEnemyArmy(a1);
 	}
 	

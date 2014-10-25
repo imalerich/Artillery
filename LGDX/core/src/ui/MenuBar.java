@@ -12,6 +12,7 @@ public class MenuBar
 {
 	private static Texture bar;
 	private static Texture endbutton;
+	private static Texture endinactive;
 	private static Rectangle bbox;
 	
 	public static void Init()
@@ -21,6 +22,9 @@ public class MenuBar
 		
 		if (endbutton == null)
 			endbutton = new Texture( Gdx.files.internal("img/ui/menubar/EndTurnButton.png") );
+		
+		if (endinactive == null)
+			endinactive = new Texture( Gdx.files.internal("img/ui/menubar/EndInactive.png") );
 		
 		bbox = new Rectangle(Game.SCREENW/2 - endbutton.getWidth()/2, 
 				Game.SCREENH-endbutton.getHeight()+2, endbutton.getWidth(), endbutton.getHeight());
@@ -33,6 +37,9 @@ public class MenuBar
 		
 		if (endbutton != null)
 			endbutton.dispose();
+		
+		if (endinactive != null)
+			endinactive.dispose();
 	}
 	
 	public static void SetEndButttonPos()
@@ -51,7 +58,7 @@ public class MenuBar
 		return (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
 	}
 	
-	public static void Draw(SpriteBatch Batch, Camera Cam)
+	public static void Draw(SpriteBatch Batch, Camera Cam, boolean Active)
 	{
 		for (int x=0; x<Game.WORLDW; x += bar.getWidth())
 			Batch.draw(bar, x, Game.SCREENH-bar.getHeight());
@@ -61,6 +68,9 @@ public class MenuBar
 		if (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonPressed(Cursor.LEFT))
 			offset = 2;
 		
-		Batch.draw(endbutton, bbox.x, bbox.y-offset);
+		if (Active)
+			Batch.draw(endbutton, bbox.x, bbox.y-offset);
+		else
+			Batch.draw(endinactive, bbox.x, bbox.y);
 	}
 }

@@ -395,7 +395,7 @@ public class UserArmy extends Army
 			Squad c = s.next();
 			
 			boolean highlight = HighlightSquad(c, Cam);
-			c.Draw(Batch, Cam, highlight);
+			c.Draw(Batch, Cam, highlight, false);
 		}
 		
 		DrawDeployer(Batch, Cam);

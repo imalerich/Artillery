@@ -1,8 +1,5 @@
 package arsenal;
 
-import com.badlogic.gdx.math.Vector2;
-
-import entity.Squad;
 
 public class Armament 
 {
@@ -17,10 +14,6 @@ public class Armament
 	private int strength;
 	private int speed;
 	private float accuracy;
-	
-	// targeting mechanism for armaments
-	private Squad target;
-	private float angle;
 	
 	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
@@ -37,27 +30,6 @@ public class Armament
 		accuracy = Accuracy;
 		accuracy = Math.min(accuracy, 1.0f);
 		accuracy = Math.max(accuracy, 0.0f);
-	}
-	
-	// set the target for this armement
-	public void SetTarget(Squad Target)
-	{
-		target = Target;
-	}
-	
-	public Squad GetTarget()
-	{
-		return target;
-	}
-	
-	public void AddAngle(float Add)
-	{
-		angle += Add;
-	}
-	
-	public Vector2 GetInitialVelocity()
-	{
-		return new Vector2( (float)Math.cos(angle)*speed, (float)Math.sin(angle)*speed );
 	}
 	
 	// getter methods for the properties of this armament

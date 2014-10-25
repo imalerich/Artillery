@@ -104,24 +104,36 @@ public class Tank extends Unit
 		return (float)Math.toDegrees(theta);
 	}
 	
-	public void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	private void DrawOutline(SpriteBatch Batch, Camera Cam)
 	{
-		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.hili);
-		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
 				Render(Batch, Cam, x, y);
 			}
 		}
-		
+	}
+	
+	private void DrawTarget(SpriteBatch Batch, Camera Cam)
+	{
+		Shaders.SetShader(Batch, Shaders.target);
+		DrawOutline(Batch, Cam);
 		Shaders.RevertShader(Batch);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	{
+		Shaders.SetShader(Batch, Shaders.hili);
+		DrawOutline(Batch, Cam);
+		Shaders.RevertShader(Batch);
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
+		else if (Target)
+			DrawTarget(Batch, Cam);
+		
 		Render(Batch, Cam, 0, 0);
 	}
 	

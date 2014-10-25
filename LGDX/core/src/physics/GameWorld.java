@@ -194,7 +194,7 @@ public class GameWorld
 		while (f.hasNext())
 			f.next().Draw(Batch, Cam);
 		
-		MenuBar.Draw(Batch, Cam);
+		MenuBar.Draw(Batch, Cam, currentstage == MOVESELECT);
 	}
 	
 	private boolean IsArmiesStageCompleted()

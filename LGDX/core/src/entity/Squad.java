@@ -72,6 +72,16 @@ public class Squad
 		direction = true; // up
 	}
 	
+	public Vector<Unit> GetUnits()
+	{
+		return units;
+	}
+	
+	public Rectangle GetBBox()
+	{
+		return bbox;
+	}
+	
 	public void SetArmament(Armament Arms)
 	{
 		arms = Arms;
@@ -376,10 +386,10 @@ public class Squad
 		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
-			i.next().Draw(Batch, Cam, Highlight);
+			i.next().Draw(Batch, Cam, Highlight, Target);
 	}
 }

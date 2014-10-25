@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public class Shaders 
 {
 	public static ShaderProgram hili;
+	public static ShaderProgram target;
 	public static ShaderProgram enemy;
 	
 	private static ShaderProgram current;
@@ -19,6 +20,9 @@ public class Shaders
 		
 		if (enemy != null)
 			enemy.dispose();
+		
+		if (target != null)
+			target.dispose();
 	}
 	
 	public static void Init()
@@ -30,10 +34,12 @@ public class Shaders
 		
 		String vshader = Gdx.files.internal("shaders/def.vs").readString();
 		String fshader = Gdx.files.internal("shaders/hili.fs").readString();
+		String tfshader = Gdx.files.internal("shaders/target.fs").readString();
 		String efshader = Gdx.files.internal("shaders/enemy.fs").readString();
 		
 		hili = new ShaderProgram(vshader, fshader);
 		enemy = new ShaderProgram(vshader, efshader);
+		target = new ShaderProgram(vshader, tfshader);
 	}
 	
 	public static void SetShader(SpriteBatch Batch, ShaderProgram Prog)

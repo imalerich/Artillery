@@ -75,11 +75,8 @@ public class WarPlane extends Unit
 		return (float)Math.toDegrees(phi);
 	}
 	
-	public void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	private void DrawOutline(SpriteBatch Batch, Camera Cam)
 	{
-		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.hili);
-		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
 				Vector2 Coords = new Vector2(pos);
@@ -91,11 +88,25 @@ public class WarPlane extends Unit
 						theta, 0, 0, width, height, !forward, false);
 			}
 		}
-		
+	}
+	
+	private void DrawTarget(SpriteBatch Batch, Camera Cam)
+	{
+		// draw a highlighted version of the sprite
+		Shaders.SetShader(Batch, Shaders.target);
+		DrawOutline(Batch, Cam);
 		Shaders.RevertShader(Batch);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	{
+		// draw a highlighted version of the sprite
+		Shaders.SetShader(Batch, Shaders.hili);
+		DrawOutline(Batch, Cam);
+		Shaders.RevertShader(Batch);
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		
 		// get the target angle for theta
@@ -111,6 +122,9 @@ public class WarPlane extends Unit
 		// draw the plane 
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
+		else if (Target)
+			DrawTarget(Batch, Cam);
+		
 		Batch.draw(tex, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y),
 				halfwidth, 0, width, height, 1.0f, 1.0f, 
 				theta, 0, 0, width, height, !forward, false);

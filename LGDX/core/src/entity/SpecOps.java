@@ -49,11 +49,8 @@ public class SpecOps extends Unit
 		mugshotIndex = 2;
 	}
 	
-	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	private void DrawOutline(SpriteBatch Batch, Camera Cam)
 	{
-		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.hili);
-		
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
 				Vector2 Coords = new Vector2(pos);
@@ -65,11 +62,23 @@ public class SpecOps extends Unit
 				else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
 			}
 		}
-		
+	}
+	
+	private void DrawTarget(SpriteBatch Batch, Camera Cam)
+	{
+		Shaders.SetShader(Batch, Shaders.target);
+		DrawOutline(Batch, Cam);
 		Shaders.RevertShader(Batch);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	{
+		Shaders.SetShader(Batch, Shaders.hili);
+		DrawOutline(Batch, Cam);
+		Shaders.RevertShader(Batch);
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		Vector2 Coords = new Vector2(pos);
 		
@@ -78,6 +87,8 @@ public class SpecOps extends Unit
 		
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
+		else if (Target)
+			DrawTarget(Batch, Cam);
 		
 		if (forward)
 			anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);

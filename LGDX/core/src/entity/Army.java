@@ -127,6 +127,6 @@ public class Army
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext())
-			s.next().Draw(Batch, Cam, false);
+			s.next().Draw(Batch, Cam, false, true);
 	}
 }
