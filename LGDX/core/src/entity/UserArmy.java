@@ -9,6 +9,7 @@ import ui.MenuBar;
 import ui.PointSelect;
 import ui.Profile;
 import ui.UnitDeployer;
+import arsenal.Armament;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -27,6 +28,7 @@ public class UserArmy extends Army
 	private boolean menuactive;
 	private boolean menurelease;
 	private ButtonOptions menu;
+	private ButtonOptions offensemenu;
 	
 	private int prevdeployi;
 	private PointSelect moveselect;
@@ -55,11 +57,15 @@ public class UserArmy extends Army
 		menu.SetGlyph(1, ButtonOptions.UPGRADE);
 		menu.SetGlyph(2, ButtonOptions.STOP);
 		
+		offensemenu = new ButtonOptions(0, 0, 2);
+		offensemenu.SetGlyph(0, ButtonOptions.ATTACK);
+		offensemenu.SetGlyph(1, ButtonOptions.STOP);
+		
 		moveselect = new PointSelect(Ter);
 		moveactive = false;
 		profileactive = false;
 		squadspawned = false;
-		targetenemies = true;
+		targetenemies = false;
 		
 		prevdeployi = -1;
 		selected = null;
@@ -102,6 +108,10 @@ public class UserArmy extends Army
 			return true;
 			
 		case GameWorld.ATTACKSELECT:
+			// do not leave the stage while a menu is open
+			if (IsMenuOpen())
+				return false;
+			
 			// check the end turn conditions
 			if (Gdx.input.isKeyPressed(Keys.ENTER))
 				return true;
@@ -134,14 +144,22 @@ public class UserArmy extends Army
 	
 	public void UpdateMoveSelect(Camera Cam)
 	{
-		BuildOptionStack(Cam);
+		BuildOptionStack(Cam, true);
 		SetSelected();
 		UpdateDeployer(Cam);
 		
 		UpdateMenu(Cam);
 	}
 	
-	private void BuildOptionStack(Camera Cam)
+	public void UpdateAttackSelect(Camera Cam)
+	{
+		BuildOptionStack(Cam, false);
+		SetSelected();
+		
+		UpdateOffenseMenu(Cam);
+	}
+	
+	private void BuildOptionStack(Camera Cam, boolean IncludeDeployer)
 	{
 		// do not process new information while a menu is open
 		if (IsMenuOpen()) {
@@ -174,6 +192,9 @@ public class UserArmy extends Army
 			if (c.IsMouseOver(Cam.GetPos()))
 				optionstack.AddSquadOver(c);
 		}
+		
+		if (!IncludeDeployer)
+			return;
 		
 		int selected = UnitDeployer.GetSelected(Cam);
 		if (UnitDeployer.Contains(selected))
@@ -271,6 +292,31 @@ public class UserArmy extends Army
 			UpdateProfile();
 	}
 	
+	private void UpdateOffenseMenu(Camera Cam)
+	{
+		if (selected == null)
+			return;
+		
+		if (!selected.IsMoving()
+				&& selected.IsMouseOver(Cam.GetPos()) && Cursor.isButtonJustPressed(Cursor.LEFT))
+		{
+			if (menurelease) {
+				menuactive = false;
+				menurelease = false;
+				offensemenu.ResetClock();
+			} else if (!IsMenuOpen()) {
+				menurelease = false;
+				menuactive = true;
+			}
+		}
+		
+		if (menuactive)
+			UpdateOffenseButtons(Cam.GetPos());
+		
+		if (targetenemies)
+			UpdateTargets();
+	}
+	
 	private void UpdateButtons(Vector2 Campos)
 	{
 		// DO NOT UPDATE THE MENU IF NO SQUAD IS SELECTED
@@ -330,6 +376,53 @@ public class UserArmy extends Army
 		}
 	}
 	
+	private void UpdateOffenseButtons(Vector2 Campos)
+	{
+		// DO NOT UPDATE THE MENU IF NO SQUAD IS SELECTED
+		if (selected == null) {
+			menuactive = false;
+			return;
+		}
+		
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			menuactive = false;
+			menurelease  = false;
+			offensemenu.ResetClock();
+		}
+		
+		if (!Cursor.isButtonPressed(Cursor.LEFT))
+			menurelease = true;
+		
+		int event = -1;
+		if (Cursor.isButtonJustReleased(Cursor.LEFT))
+			event = offensemenu.GetAction( offensemenu.GetButtonDown(Campos) );
+		
+		switch (event)
+		{
+		case ButtonOptions.STOP:
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			offensemenu.ResetClock();
+			break;
+			
+		case ButtonOptions.ATTACK:
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			offensemenu.ResetClock();
+			
+			if (selected.GetArmament().GetType() == Armament.UNITTARGET) {
+				targetenemies = true;
+			}
+			
+			break;
+			
+		default:
+			break;
+		}
+	}
+	
 	private void UpdateMove(Vector2 Campos)
 	{
 		if (selected == null) {
@@ -347,6 +440,14 @@ public class UserArmy extends Army
 			moveactive = false;
 	}
 	
+	private void UpdateTargets()
+	{
+		if (selected == null || Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			targetenemies = false;
+			return;
+		}
+	}
+	
 	private void UpdateProfile()
 	{
 		if (selected == null) {
@@ -360,7 +461,7 @@ public class UserArmy extends Army
 	
 	private boolean IsMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive);
+		return (menuactive || moveactive || profileactive || targetenemies);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
@@ -393,15 +494,23 @@ public class UserArmy extends Army
 		return false;
 	}
 	
-	public void DrawTargets(SpriteBatch Batch, Camera Cam)
+	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			s.next().DrawTarget(Batch, Cam);
+			s.next().DrawTargetPos(Batch, Cam);
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets)
+	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			s.next().DrawTargetSquad(Batch, Cam);
+		}
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
@@ -415,8 +524,14 @@ public class UserArmy extends Army
 		
 		if (menuactive && selected != null) {
 			Rectangle bbox = selected.GetBoundingBox();
-			menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
-			menu.Draw(Batch, Cam);
+			
+			if (CurrentStage == GameWorld.MOVESELECT) {
+				menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
+				menu.Draw(Batch, Cam);
+			} else if (CurrentStage == GameWorld.ATTACKSELECT) {
+				offensemenu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
+				offensemenu.Draw(Batch, Cam);
+			}
 		}
 		
 		if (moveactive && selected != null) {

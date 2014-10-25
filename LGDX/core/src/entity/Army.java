@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import terrain.Terrain;
 import ui.UnitDeployer;
+import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -77,14 +78,17 @@ public class Army
 			{
 			case UnitDeployer.GUNMAN:	
 				s.AddUnit( new Gunman(ter, pos, Speed), Cam);
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.8f));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
 				s.AddUnit( new StealthTroop(ter, pos, Speed), Cam);
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.7f));
 				break;
 				
 			case UnitDeployer.SPECOPS:
 				s.AddUnit( new SpecOps(ter, pos, Speed), Cam);
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.95f));
 				break;
 				
 			default:
@@ -110,6 +114,11 @@ public class Army
 		//
 	}
 	
+	public void UpdateAttackSelect(Camera Cam)
+	{
+		//
+	}
+	
 	public void DrawBase(SpriteBatch Batch, Camera Cam)
 	{
 		base.Draw(Batch, Cam);
@@ -124,12 +133,17 @@ public class Army
 		base.DrawView(Cam);
 	}
 	
-	public void DrawTargets(SpriteBatch Batch, Camera Cam)
+	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		//
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets) 
+	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
+	{
+		//
+	}
+	
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {

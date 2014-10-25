@@ -36,6 +36,7 @@ public class Squad
 	private Rectangle bbox;
 	private Terrain ter;
 	
+	private Squad targetsquad;
 	private int targetpos;
 	private boolean ismoving;
 	
@@ -65,6 +66,7 @@ public class Squad
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		
 		ter = Ter;
+		targetsquad = null;
 		targetpos = -1;
 		ismoving = false;
 		
@@ -111,6 +113,16 @@ public class Squad
 	{
 		targetpos = Target;
 		ModTarget();
+	}
+	
+	public Squad GetTargetSquad()
+	{
+		return targetsquad;
+	}
+	
+	public void SetTargetSquad(Squad Target)
+	{
+		targetsquad = Target;
 	}
 	
 	public Rectangle GetBoundingBox()
@@ -359,7 +371,20 @@ public class Squad
 		}
 	}
 	
-	public void DrawTarget(SpriteBatch Batch, Camera Cam)
+	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
+	{
+		// a target squad must be set
+		if (targetsquad == null)
+			return;
+		
+		float xpos = targetsquad.GetBBox().x;
+		float ypos = targetsquad.GetBBox().y + targetsquad.GetBBox().height;
+		SetPointerHeight();
+		
+		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
+	}
+	
+	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		// do not draw the target pointer if the the target position is met
 		if (targetpos < 0)

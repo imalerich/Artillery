@@ -10,6 +10,7 @@ import terrain.TerrainSeed;
 import ui.MenuBar;
 import ui.Profile;
 import ui.UnitDeployer;
+import arsenal.Armament;
 import arsenal.CannonBall;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -138,6 +139,7 @@ public class Game extends ApplicationAdapter
 		Tank tank0 = new Tank("img/tanks/Tank1.png", "img/tanks/Barrel.png", ter, 40);
 		tank0.SetBarrelOffset( new Vector2(17, 64-35) );
 		st0.AddUnit(tank0, cam);
+		st0.SetArmament( new Armament(Armament.POINTTARGET, 256, 1, 10, 200, 0.8f));
 		a0.AddSquad(st0);
 		
 		Army a1 = new Army(b1, ter);

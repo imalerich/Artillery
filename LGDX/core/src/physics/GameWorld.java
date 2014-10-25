@@ -92,6 +92,17 @@ public class GameWorld
 			p.next().Update();
 	}
 	
+	public void UpdateAttackSelect(Camera Cam)
+	{
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().UpdateAttackSelect(Cam);
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().UpdateAttackSelect(Cam);
+	}
+	
 	public void Update(Camera Cam)
 	{
 		ter.Update();
@@ -107,6 +118,7 @@ public class GameWorld
 			break;
 			
 		case ATTACKSELECT:
+			UpdateAttackSelect(Cam);
 			break;
 			
 		case ATTACKUPDATE:
@@ -121,13 +133,19 @@ public class GameWorld
 	
 	private void DrawTargets(SpriteBatch Batch, Camera Cam)
 	{
-		if (currentstage != MOVESELECT)
+		if (currentstage != MOVESELECT && currentstage != ATTACKSELECT)
 			return;
 		
 		// only friendly units can have target positions drawn
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().DrawTargets(Batch, Cam);
+		{
+			if (currentstage == MOVESELECT) {
+				f.next().DrawTargetPos(Batch, Cam);
+			} else if (currentstage == ATTACKSELECT) {
+				f.next().DrawTargetSquad(Batch, Cam);
+			}
+		}
 	}
 	
 	private void DrawFogMask(SpriteBatch Batch, Camera Cam)
@@ -187,7 +205,7 @@ public class GameWorld
 		Shaders.SetShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().Draw(Batch, Cam, CheckTargets());
+			e.next().Draw(Batch, Cam, CheckTargets(), currentstage);
 		Shaders.RevertShader(Batch);
 		
 		FogOfWar.MaskOff(Batch);
@@ -207,7 +225,7 @@ public class GameWorld
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().Draw(Batch, Cam, false);
+			f.next().Draw(Batch, Cam, false, currentstage);
 		
 		MenuBar.Draw(Batch, Cam, currentstage, (currentstage == MOVESELECT || currentstage == ATTACKSELECT));
 	}

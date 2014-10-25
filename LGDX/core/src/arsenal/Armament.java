@@ -18,7 +18,7 @@ public class Armament
 	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
-		if (type != UNITTARGET || type != POINTTARGET)
+		if (type != UNITTARGET && type != POINTTARGET)
 			type = UNITTARGET;
 		
 		range = Range;
