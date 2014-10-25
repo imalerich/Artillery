@@ -23,7 +23,9 @@ import com.mygdx.game.MilitaryBase;
 public class UserArmy extends Army
 {
 	private SelectionStack optionstack;
-	private int prevstacksize;
+	private SelectionStack targetstack;
+	private int prevOptionStackSize;
+	private int prevTargetStackSize;
 	
 	private boolean menuactive;
 	private boolean menurelease;
@@ -40,14 +42,15 @@ public class UserArmy extends Army
 	
 	public UserArmy(MilitaryBase Base, Terrain Ter, Camera Cam)
 	{
+		ter = Ter;
 		base = Base;
 		UnitDeployer.SetPos(base.GetPos());
 		SetDeployBBox(Cam);
 		
-		ter = Ter;
-		
 		optionstack = new SelectionStack();
-		prevstacksize = 0;
+		targetstack = new SelectionStack();
+		prevOptionStackSize = 0;
+		prevTargetStackSize = 0;
 		
 		menuactive = false;
 		menurelease = false;
@@ -127,14 +130,43 @@ public class UserArmy extends Army
 		}
 	}
 	
+	public boolean UpdateTargetOptions(int Size)
+	{
+		if (Size != prevTargetStackSize) {
+			prevTargetStackSize = Size;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public SelectionStack GetTargetOptions()
+	{
+		return targetstack;
+	}
+	
+	public void SetTargetSquad(Squad Target)
+	{
+		if (selected != null && targetenemies) {
+			selected.SetTargetSquad(Target);
+		}
+	}
+	
 	public boolean IsTargeting()
 	{
 		return targetenemies;
 	}
 	
-	public void InitStage()
+	public void InitStage(int NewStage)
 	{
 		squadspawned = false;
+		
+		if (NewStage == GameWorld.ATTACKSELECT) {
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext()) {
+				s.next().SetTargetSquad(null);
+			}
+		}
 	}
 	
 	public void UpdateMove(Camera Cam)
@@ -174,24 +206,16 @@ public class UserArmy extends Army
 		/*
 		 *  no change occured leave the method and do not recalc the option stack
 		 */
-		if (stacksize == prevstacksize) {
-			prevstacksize = stacksize;
+		if (stacksize == prevOptionStackSize) {
 			return;
 		}
 
 		// a change occured
-		prevstacksize = stacksize;
+		prevOptionStackSize = stacksize;
 		
 		// reset the optionstack and recalculate its contents
 		optionstack.Reset();
-		
-		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext()) {
-			Squad c = s.next();
-			
-			if (c.IsMouseOver(Cam.GetPos()))
-				optionstack.AddSquadOver(c);
-		}
+		GetMouseOver(optionstack, Cam);
 		
 		if (!IncludeDeployer)
 			return;
@@ -204,27 +228,24 @@ public class UserArmy extends Army
 	private void ProcStackChange()
 	{
 		// cycle though current option stack
-		if (Gdx.input.isKeyJustPressed(Keys.TAB))
+		if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
 			optionstack.IncSelection();
+			targetstack.IncSelection();
+		}
 		
-		if (Cursor.getScrollDirection() > 0)
+		if (Cursor.getScrollDirection() > 0) {
 			optionstack.DecSelection();
-		else if (Cursor.getScrollDirection() < 0)
+			targetstack.DecSelection();
+		} else if (Cursor.getScrollDirection() < 0) {
 			optionstack.IncSelection();
+			targetstack.IncSelection();
+		}
 	}
 	
 	private int CalcOptionStackSize(Camera Cam)
 	{
 		int size = 0;
-		
-		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext()) {
-			Squad c = s.next();
-			
-			// size increases for each unit over
-			if (c.IsMouseOver(Cam.GetPos()))
-				size++;
-		}
+		size += GetMouseOverCount(Cam);
 		
 		// size increased if a the mouse is over a deployer
 		int selected = UnitDeployer.GetSelected(Cam);
@@ -259,7 +280,8 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
-			SpawnUnit(selected, 6, Cam, 80);
+			//SpawnUnit(selected, 6, Cam, 80);
+			SpawnUnit(selected, 6, Cam, 160);
 			squadspawned = true;
 		}
 	}
@@ -400,7 +422,8 @@ public class UserArmy extends Army
 		switch (event)
 		{
 		case ButtonOptions.STOP:
-			// leave the menu
+			// leave the menu and do not select a squad
+			selected.SetTargetSquad(null);
 			menuactive = false;
 			menurelease = false;
 			offensemenu.ResetClock();
@@ -442,10 +465,33 @@ public class UserArmy extends Army
 	
 	private void UpdateTargets()
 	{
-		if (selected == null || Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+		// INVALID - do not select a unit
+		if (selected == null) {
 			targetenemies = false;
 			return;
 		}
+		
+		// leave targeting, do not select a unit
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			selected.SetTargetSquad(null);
+			targetenemies = false;
+			return;
+		}
+		
+		// leave the current unit selected and leave targeting for this squad
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			targetenemies = false;
+			return;
+		}
+		
+		// check stack changes
+		ProcStackChange();
+		if (targetstack.GetSquadOver() != null) {
+			targetstack.GetSquadOver().SetAsTarget();
+		}
+		
+		// update target data
+		selected.SetTargetSquad( targetstack.GetSquadOver() );
 	}
 	
 	private void UpdateProfile()
@@ -517,7 +563,7 @@ public class UserArmy extends Army
 			Squad c = s.next();
 			
 			boolean highlight = HighlightSquad(c, Cam);
-			c.Draw(Batch, Cam, highlight, false);
+			c.Draw(Batch, Cam, highlight);
 		}
 		
 		DrawDeployer(Batch, Cam);

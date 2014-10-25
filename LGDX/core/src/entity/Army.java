@@ -10,7 +10,6 @@ import arsenal.Armament;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
-import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 
 public class Army 
@@ -52,7 +51,7 @@ public class Army
 		squadspawned = Set;
 	}
 	
-	public void InitStage()
+	public void InitStage(int NewStage)
 	{
 		//
 	}
@@ -97,6 +96,21 @@ public class Army
 		}
 	}
 	
+	public boolean UpdateTargetOptions(int Size)
+	{
+		return false;
+	}
+	
+	public SelectionStack GetTargetOptions()
+	{
+		return null;
+	}
+	
+	public void SetTargetSquad(Squad Target)
+	{
+		//
+	}
+	
 	public void AddSquad(Squad Add)
 	{
 		squads.add(Add);
@@ -117,6 +131,30 @@ public class Army
 	public void UpdateAttackSelect(Camera Cam)
 	{
 		//
+	}
+	
+	public int GetMouseOverCount(Camera Cam)
+	{
+		int count = 0;
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			if (s.next().IsMouseOver(Cam.GetPos()))
+				count++;
+		}
+		
+		return count;
+	}
+	
+	public void GetMouseOver(SelectionStack Stack, Camera Cam)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			
+			if (squad.IsMouseOver(Cam.GetPos())) {
+				Stack.AddSquadOver(squad);
+			}
+		}
 	}
 	
 	public void DrawBase(SpriteBatch Batch, Camera Cam)
@@ -148,9 +186,7 @@ public class Army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
-			boolean mouseover = Cursor.IsMouseOver(squad.GetBBox(), Cam.GetPos());
-			
-			squad.Draw(Batch, Cam, false, CheckTargets && mouseover);
+			squad.Draw(Batch, Cam, false);
 		}
 	}
 }

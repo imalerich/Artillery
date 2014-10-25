@@ -40,6 +40,7 @@ public class Squad
 	private int targetpos;
 	private boolean ismoving;
 	
+	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
 	
@@ -72,6 +73,12 @@ public class Squad
 		
 		pointerheight = (int)(Math.random()*MAXHEIGHT);
 		direction = true; // up
+		isTarget = false;
+	}
+	
+	public void SetAsTarget()
+	{
+		isTarget = true;
 	}
 	
 	public Vector<Unit> GetUnits()
@@ -377,8 +384,8 @@ public class Squad
 		if (targetsquad == null)
 			return;
 		
-		float xpos = targetsquad.GetBBox().x;
-		float ypos = targetsquad.GetBBox().y + targetsquad.GetBBox().height;
+		float xpos = targetsquad.GetBBox().x + targetsquad.GetBBox().width/2f;
+		float ypos = ter.GetHeight((int)xpos) - targetsquad.GetBBox().height;
 		SetPointerHeight();
 		
 		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
@@ -412,10 +419,13 @@ public class Squad
 		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
-			i.next().Draw(Batch, Cam, Highlight, Target);
+			i.next().Draw(Batch, Cam, Highlight, isTarget);
+		
+		// must manually be set to true each frame by the squad who is targeting
+		isTarget = false;
 	}
 }

@@ -78,6 +78,9 @@ public class SelectionStack
 	
 	public Squad GetSquadOver()
 	{
+		if (selection >= reference.size())
+			return null;
+		
 		return reference.get(selection);
 	}
 }

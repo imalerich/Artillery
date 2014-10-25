@@ -133,7 +133,7 @@ public class Game extends ApplicationAdapter
 		physics = new GameWorld(ter);
 		
 		UserArmy a0 = new UserArmy(b0, ter, cam);
-		physics.AddFriendlyArmy(a0);
+		physics.SetUserArmy(a0);
 		
 		Squad st0 = new Squad(ter);
 		Tank tank0 = new Tank("img/tanks/Tank1.png", "img/tanks/Barrel.png", ter, 40);
@@ -145,7 +145,7 @@ public class Game extends ApplicationAdapter
 		Army a1 = new Army(b1, ter);
 		Squad st1 = new Squad(ter);
 		Tank tank1 = new Tank("img/tanks/Tank0.png", "img/tanks/Barrel.png", ter, 40);
-		tank1.SetPos( new Vector2(b1.GetPos().x+MilitaryBase.GetWidth()+64, b1.GetPos().y) );
+		tank1.SetPos( new Vector2(b1.GetPos().x+70, b1.GetPos().y) );
 		tank1.SetBarrelOffset( new Vector2(17, 29) );
 		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );
 		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
