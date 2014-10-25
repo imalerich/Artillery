@@ -16,8 +16,7 @@ public class DesktopLauncher
 		config.title = "Shoot All Teh Things";
 		
 		config.stencil = 8;
-		config.backgroundFPS = 0;
-		config.foregroundFPS = 0;
+		config.foregroundFPS = -1;
 		
 		config.width = 1366;
 		config.height = 768;

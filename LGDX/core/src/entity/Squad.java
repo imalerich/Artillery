@@ -327,10 +327,11 @@ public class Squad
 	private void SetPointerHeight()
 	{
 		// increment the pointer height
-		if (direction)
+		if (direction) {
 			pointerheight += Gdx.graphics.getDeltaTime()*16;
-		else
+		} else {
 			pointerheight -= Gdx.graphics.getDeltaTime()*16;
+		}
 		
 		// switch direction at the bounds 
 		if (pointerheight > MAXHEIGHT) {

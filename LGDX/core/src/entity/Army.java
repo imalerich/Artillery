@@ -9,6 +9,7 @@ import ui.UnitDeployer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 
 public class Army 
@@ -28,6 +29,11 @@ public class Army
 		ter = Ter;
 		base = Base;
 		squads = new Vector<Squad>();
+	}
+	
+	public boolean IsTargeting()
+	{
+		return false;
 	}
 	
 	public boolean IsStageCompleted(int Stage)
@@ -123,10 +129,14 @@ public class Army
 		//
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets) 
 	{
 		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext())
-			s.next().Draw(Batch, Cam, false, true);
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			boolean mouseover = Cursor.IsMouseOver(squad.GetBBox(), Cam.GetPos());
+			
+			squad.Draw(Batch, Cam, false, CheckTargets && mouseover);
+		}
 	}
 }

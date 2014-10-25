@@ -32,6 +32,7 @@ public class UserArmy extends Army
 	private PointSelect moveselect;
 	private boolean moveactive;
 	private boolean profileactive;
+	private boolean targetenemies;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -58,6 +59,8 @@ public class UserArmy extends Army
 		moveactive = false;
 		profileactive = false;
 		squadspawned = false;
+		targetenemies = true;
+		
 		prevdeployi = -1;
 		selected = null;
 	}
@@ -99,7 +102,12 @@ public class UserArmy extends Army
 			return true;
 			
 		case GameWorld.ATTACKSELECT:
-			return true;
+			// check the end turn conditions
+			if (Gdx.input.isKeyPressed(Keys.ENTER))
+				return true;
+			else if (MenuBar.IsEndTurn())
+				return true;
+			else return false;
 			
 		case GameWorld.ATTACKUPDATE:
 			return true;
@@ -107,6 +115,11 @@ public class UserArmy extends Army
 		default:
 			return false;
 		}
+	}
+	
+	public boolean IsTargeting()
+	{
+		return targetenemies;
 	}
 	
 	public void InitStage()
@@ -388,7 +401,7 @@ public class UserArmy extends Army
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {

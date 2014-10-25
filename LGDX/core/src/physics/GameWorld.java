@@ -141,6 +141,21 @@ public class GameWorld
 		FogOfWar.End(Batch);
 	}
 	
+	private boolean CheckTargets()
+	{
+		if (currentstage != ATTACKSELECT)
+			return false;
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext()) {
+			if (f.next().IsTargeting()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private void DrawHidden(SpriteBatch Batch, Camera Cam)
 	{
 		// enable fog of war and draw the background
@@ -172,7 +187,7 @@ public class GameWorld
 		Shaders.SetShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().Draw(Batch, Cam);
+			e.next().Draw(Batch, Cam, CheckTargets());
 		Shaders.RevertShader(Batch);
 		
 		FogOfWar.MaskOff(Batch);
@@ -192,9 +207,9 @@ public class GameWorld
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().Draw(Batch, Cam);
+			f.next().Draw(Batch, Cam, false);
 		
-		MenuBar.Draw(Batch, Cam, currentstage == MOVESELECT);
+		MenuBar.Draw(Batch, Cam, currentstage, (currentstage == MOVESELECT || currentstage == ATTACKSELECT));
 	}
 	
 	private boolean IsArmiesStageCompleted()
