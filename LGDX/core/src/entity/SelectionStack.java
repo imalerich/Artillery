@@ -44,7 +44,7 @@ public class SelectionStack
 	
 	public void IncSelection()
 	{
-		selection = selection+1;
+		selection++;
 		
 		// wrap to 0
 		if (selection == actions.size())
@@ -60,9 +60,21 @@ public class SelectionStack
 			selection = actions.size()-1;
 	}
 	
-	public boolean IsOverSquad()
+	public boolean IsSelectionValid()
 	{
 		if (actions.size() == 0)
+			return false;
+		else if (selection >= reference.size())
+			return false;
+		else if (selection < 0)
+			return false;
+		
+		return true;
+	}
+	
+	public boolean IsOverSquad()
+	{
+		if (!IsSelectionValid())
 			return false;
 		
 		return (actions.get(selection) == OVERSQUAD);
@@ -70,7 +82,7 @@ public class SelectionStack
 	
 	public boolean IsOverAdd()
 	{
-		if (actions.size() == 0)
+		if (!IsSelectionValid())
 			return false;
 		
 		return (actions.get(selection) == OVERADD);
@@ -78,7 +90,7 @@ public class SelectionStack
 	
 	public Squad GetSquadOver()
 	{
-		if (selection >= reference.size())
+		if (!IsSelectionValid())
 			return null;
 		
 		return reference.get(selection);

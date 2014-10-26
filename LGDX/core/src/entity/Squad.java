@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
@@ -21,6 +22,7 @@ import com.mygdx.game.Game;
 public class Squad 
 {
 	private static Texture pointer;
+	private static AnimTex target;
 	private static TextureRegion[] mugshots;
 	private static final int MUGSHOTCOUNT = 4;
 	private static final int SPACING = 2;
@@ -40,6 +42,7 @@ public class Squad
 	private int targetpos;
 	private boolean ismoving;
 	
+	private boolean isFiring;
 	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
@@ -48,6 +51,11 @@ public class Squad
 	{
 		if (pointer == null)
 			pointer = new Texture( Gdx.files.internal("img/ui/indicators/pointer.png") );
+		
+		if (target == null) {
+			target = new AnimTex("img/ui/indicators/target.png", 1, 3, 1);
+			target.NewAnimation(0, 3, 0, 2, 0.12f);
+		}
 		
 		if (mugshots == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/profile/mugshots.png") );
@@ -59,6 +67,9 @@ public class Squad
 	{
 		if (pointer != null)
 			pointer.dispose();
+		
+		if (target != null)
+			target.Release();
 	}
 	
 	public Squad(Terrain Ter)
@@ -74,6 +85,16 @@ public class Squad
 		pointerheight = (int)(Math.random()*MAXHEIGHT);
 		direction = true; // up
 		isTarget = false;
+	}
+	
+	public void SetFiring(boolean IsFiring)
+	{
+		isFiring = IsFiring;
+	}
+	
+	public boolean IsFiring()
+	{
+		return isFiring;
 	}
 	
 	public void SetAsTarget()
@@ -140,6 +161,23 @@ public class Squad
 	public int GetUnitCount()
 	{
 		return units.size();
+	}
+	
+	public float GetBarrelAngle()
+	{
+		return arms.GetAngle();
+	}
+	
+	public void SetBarrelAngle(float Angle)
+	{
+		// all squad members must have the same angle
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			
+			unit.SetBarrelAngle(Angle);
+			arms.SetAngle( unit.GetBarrelAbsoluteAngle() );
+		}
 	}
 	
 	private void CalcBoundingBox(Vector2 Campos)
@@ -380,6 +418,22 @@ public class Squad
 	
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
+		if (isFiring && units.size() > 0) {
+			float xpos = bbox.x + bbox.width/2f - target.GetFrameWidth()/2f;
+			float ypos = bbox.y + bbox.height/2f - target.GetFrameHeight()/2f;
+			float dist = bbox.width*1.5f;
+			
+			if (units.get(0).forward) {
+				xpos += Math.cos( Math.toRadians( arms.GetAngle() ))*dist;
+			} else {
+				xpos -= Math.cos( Math.toRadians( arms.GetAngle() ))*dist;
+			}
+				
+			ypos += Math.sin( Math.toRadians( arms.GetAngle() ))*dist;
+			target.UpdateClock();
+			target.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
+		}
+		
 		// a target squad must be set
 		if (targetsquad == null)
 			return;

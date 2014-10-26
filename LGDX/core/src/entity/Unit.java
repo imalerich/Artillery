@@ -19,7 +19,6 @@ public class Unit
 	protected int health;
 	
 	protected int viewRadius = 256;
-	protected float barrelPhi = 0.0f;
 	protected int width = 0;
 	protected int height = 0;
 	
@@ -33,6 +32,21 @@ public class Unit
 	public Rectangle GetBBox()
 	{
 		return new Rectangle(pos.x, pos.y, width, height);
+	}
+	
+	public float GetAngle()
+	{
+		return 0.0f;
+	}
+	
+	public float GetBarrelAbsoluteAngle()
+	{
+		return 0.0f;
+	}
+	
+	public void SetBarrelAngle(float Angle)
+	{
+		//
 	}
 	
 	public int GetMugShotIndex()

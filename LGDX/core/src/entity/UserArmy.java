@@ -37,6 +37,7 @@ public class UserArmy extends Army
 	private boolean moveactive;
 	private boolean profileactive;
 	private boolean targetenemies;
+	private boolean targetpoint;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -69,6 +70,7 @@ public class UserArmy extends Army
 		profileactive = false;
 		squadspawned = false;
 		targetenemies = false;
+		targetpoint = false;
 		
 		prevdeployi = -1;
 		selected = null;
@@ -164,7 +166,9 @@ public class UserArmy extends Army
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			Iterator<Squad> s = squads.iterator();
 			while (s.hasNext()) {
-				s.next().SetTargetSquad(null);
+				Squad squad = s.next();
+				squad.SetTargetSquad(null);
+				squad.SetFiring(false);
 			}
 		}
 	}
@@ -336,7 +340,10 @@ public class UserArmy extends Army
 			UpdateOffenseButtons(Cam.GetPos());
 		
 		if (targetenemies)
-			UpdateTargets();
+			UpdateTargetSquads();
+		
+		if (targetpoint)
+			UpdateTargetPoint(Cam );
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
@@ -437,6 +444,8 @@ public class UserArmy extends Army
 			
 			if (selected.GetArmament().GetType() == Armament.UNITTARGET) {
 				targetenemies = true;
+			} else if (selected.GetArmament().GetType() == Armament.POINTTARGET) {
+				targetpoint = true;
 			}
 			
 			break;
@@ -463,7 +472,7 @@ public class UserArmy extends Army
 			moveactive = false;
 	}
 	
-	private void UpdateTargets()
+	private void UpdateTargetSquads()
 	{
 		// INVALID - do not select a unit
 		if (selected == null) {
@@ -494,6 +503,42 @@ public class UserArmy extends Army
 		selected.SetTargetSquad( targetstack.GetSquadOver() );
 	}
 	
+	private void UpdateTargetPoint(Camera Cam)
+	{
+		// INVALID - do not select a point
+		if (selected == null) {
+			targetpoint = false;
+			return;
+		}
+		
+		// leave targeting, do not select a point
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			targetpoint = false;
+			return;
+		}
+		
+		// leave the current unit selected and leave targeting for this squad
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			selected.SetFiring(true);
+			targetpoint = false;
+			return;
+		}
+		
+		// set the angle for the barrel
+		float xpos = selected.GetBBox().x + selected.GetBBox().width/2f;
+		float ypos = selected.GetBBox().y + selected.GetBBox().height/2f;
+		Vector2 sourcepos = new Vector2(xpos, ypos);
+		
+		xpos = Cursor.GetMouseX(Cam.GetPos()) + Cam.GetPos().x;
+		ypos = Cursor.GetMouseY() + Cam.GetPos().y;
+		Vector2 destpos = new Vector2(xpos, ypos);
+		
+		float xdist = Math.abs(sourcepos.x - destpos.x);
+		float ydist = destpos.y - sourcepos.y;
+		float theta = (float)( Math.toDegrees(Math.atan(ydist/xdist)) );
+		selected.SetBarrelAngle(theta);
+	}
+	
 	private void UpdateProfile()
 	{
 		if (selected == null) {
@@ -507,7 +552,7 @@ public class UserArmy extends Army
 	
 	private boolean IsMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)

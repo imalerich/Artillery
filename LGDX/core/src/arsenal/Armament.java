@@ -14,6 +14,7 @@ public class Armament
 	private int strength;
 	private int speed;
 	private float accuracy;
+	private float angle;
 	
 	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
@@ -25,6 +26,7 @@ public class Armament
 		firerate = FireRate;
 		strength = Strength;
 		speed = Speed;
+		angle = 0f;
 		
 		// accuracy is floaing point in the bounds 0f -> 1f
 		accuracy = Accuracy;
@@ -61,5 +63,15 @@ public class Armament
 	public int GetSpeed()
 	{
 		return speed;
+	}
+	
+	public float GetAngle()
+	{
+		return angle;
+	}
+	
+	public void SetAngle(float Angle)
+	{
+		angle = Angle;
 	}
 }

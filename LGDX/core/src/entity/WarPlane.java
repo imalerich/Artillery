@@ -65,7 +65,7 @@ public class WarPlane extends Unit
 		else pos.y = flightheight;
 	}
 	
-	private float GetAngle()
+	public float GetAngle()
 	{
 		float phi = 0.0f;
 		float h0 = ter.GetHeight( (int)pos.x+(halfwidth/2) );

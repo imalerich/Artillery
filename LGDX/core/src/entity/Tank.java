@@ -12,6 +12,9 @@ import com.mygdx.game.Shaders;
 
 public class Tank extends Unit 
 {
+	private static float MAXANGLE = 25;
+	private static float MINANGLE = -15;
+	
 	private Texture tex;
 	private Texture barrel;
 	
@@ -19,12 +22,9 @@ public class Tank extends Unit
 	
 	private int halfwidth;
 	
+	protected float barrelPhi = 0.0f;
 	private int barrelwidth;
 	private int barrelheight;
-	
-	private static float MAXANGLE = 25;
-	private static float MINANGLE = -15;
-	private static int TURNRATE = 30;
 	
 	public void Release()
 	{
@@ -59,18 +59,6 @@ public class Tank extends Unit
 		barrelOffset = Offset;
 	}
 	
-	public void MoveBarrelUp()
-	{
-		barrelPhi += Gdx.graphics.getDeltaTime()*TURNRATE;
-		barrelPhi = Math.min(barrelPhi, MAXANGLE);
-	}
-	
-	public void MoveBarrelDown()
-	{
-		barrelPhi -= Gdx.graphics.getDeltaTime()*TURNRATE;
-		barrelPhi = Math.max(barrelPhi, MINANGLE);
-	}
-	
 	private Vector2 RotateCoord(Vector2 Coord, float Theta)
 	{
 		float x = Coord.x;
@@ -85,7 +73,7 @@ public class Tank extends Unit
 		return Coord;
 	}
 	
-	private float GetAngle()
+	public float GetAngle()
 	{
 		float theta = 0.0f;
 		int x0 = (int)pos.x + halfwidth/2;
@@ -102,6 +90,28 @@ public class Tank extends Unit
 		
 		theta = -(float)Math.atan( (h1-h0)/(float)halfwidth );
 		return (float)Math.toDegrees(theta);
+	}
+	
+	public float GetBarrelAbsoluteAngle()
+	{
+		if (forward) {
+			return barrelPhi + GetAngle();
+		} else {
+			return barrelPhi - GetAngle();
+		}
+	}
+	
+	public void SetBarrelAngle(float Angle)
+	{
+		if (forward) {
+			barrelPhi = Angle - GetAngle();
+		} else {
+			barrelPhi = Angle + GetAngle();
+		}
+		
+		// clamp the angle
+		barrelPhi = Math.max(barrelPhi, MINANGLE);
+		barrelPhi = Math.min(barrelPhi, MAXANGLE);
 	}
 	
 	private void DrawOutline(SpriteBatch Batch, Camera Cam)
