@@ -53,8 +53,8 @@ public class Squad
 			pointer = new Texture( Gdx.files.internal("img/ui/indicators/pointer.png") );
 		
 		if (target == null) {
-			target = new AnimTex("img/ui/indicators/target.png", 1, 3, 1);
-			target.NewAnimation(0, 3, 0, 2, 0.12f);
+			target = new AnimTex("img/ui/indicators/target.png", 1, 4, 1);
+			target.NewAnimation(0, 4, 0, 3, 0.12f);
 		}
 		
 		if (mugshots == null) {

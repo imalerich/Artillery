@@ -26,6 +26,8 @@ public class GameWorld
 	public static final int ATTACKUPDATE = 3;
 	private int currentstage;
 	
+	private CombatResolver resolver;
+	
 	private Terrain ter;
 	private Army userArmy;
 	private Vector<Army> friendlyArmy;
@@ -36,6 +38,7 @@ public class GameWorld
 		ter = Ter;
 		currentstage = MOVESELECT;
 		
+		resolver = new CombatResolver();
 		userArmy = null;
 		friendlyArmy = new Vector<Army>();
 		enemyArmy = new Vector<Army>();
@@ -110,6 +113,11 @@ public class GameWorld
 			e.next().UpdateAttackSelect(Cam);
 	}
 	
+	private void UpdateAttack(Camera Cam)
+	{
+		resolver.UpdateSimulation();
+	}
+	
 	private int GetTargetSize(Camera Cam)
 	{
 		int count = 0;
@@ -155,6 +163,7 @@ public class GameWorld
 			break;
 			
 		case ATTACKUPDATE:
+			UpdateAttack(Cam);
 			break;
 			
 		default:
@@ -251,6 +260,10 @@ public class GameWorld
 		
 		userArmy.Draw(Batch, Cam, false, currentstage);
 		
+		if (currentstage == ATTACKUPDATE) {
+			resolver.DrawSimulation(Batch, Cam);
+		}
+		
 		MenuBar.Draw(Batch, Cam, currentstage, (currentstage == MOVESELECT || currentstage == ATTACKSELECT));
 	}
 	
@@ -273,7 +286,31 @@ public class GameWorld
 				return false;
 		}
 		
+		if (currentstage == ATTACKUPDATE && !resolver.IsSimulationCompleted()) {
+			return false;
+		}
+		
 		return true;
+	}
+	
+	private void InitResolver()
+	{
+		if (currentstage != ATTACKUPDATE) {
+			return;
+		}
+		
+		resolver.StartSimulation();
+		Iterator<Army> f = friendlyArmy.iterator();
+		Iterator<Army> e = enemyArmy.iterator();
+		
+		userArmy.AddCombatData(resolver);
+		while (f.hasNext()) {
+			f.next().AddCombatData(resolver);
+		}
+		
+		while (e.hasNext()) {
+			e.next().AddCombatData(resolver);
+		}
 	}
 	
 	private void InitNewStage()
@@ -288,6 +325,8 @@ public class GameWorld
 
 		while (e.hasNext())
 			e.next().InitStage(currentstage);
+		
+		InitResolver();
 	}
 	
 	public void CheckNextStage()

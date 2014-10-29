@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import physics.CombatResolver;
 import terrain.Terrain;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -77,21 +78,35 @@ public class Army
 			{
 			case UnitDeployer.GUNMAN:	
 				s.AddUnit( new Gunman(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.8f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.8f));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
 				s.AddUnit( new StealthTroop(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.7f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.7f));
 				break;
 				
 			case UnitDeployer.SPECOPS:
 				s.AddUnit( new SpecOps(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 200, 0.95f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.95f));
 				break;
 				
 			default:
 				break;
+			}
+		}
+	}
+	
+	public void AddCombatData(CombatResolver Resolver)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			
+			// add each squad and its target to the combat resolver
+			if (squad.GetTargetSquad() != null && 
+					squad.GetArmament().GetType() == Armament.UNITTARGET) {
+				Resolver.AddConflict(squad, squad.GetTargetSquad());
 			}
 		}
 	}

@@ -536,6 +536,8 @@ public class UserArmy extends Army
 		float xdist = Math.abs(sourcepos.x - destpos.x);
 		float ydist = destpos.y - sourcepos.y;
 		float theta = (float)( Math.toDegrees(Math.atan(ydist/xdist)) );
+		
+		selected.SetFiring(false);
 		selected.SetBarrelAngle(theta);
 	}
 	

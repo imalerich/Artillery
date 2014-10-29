@@ -5,11 +5,11 @@ import java.util.Vector;
 
 import arsenal.Armament;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
@@ -18,12 +18,12 @@ import entity.Unit;
 
 public class CombatResolver 
 {
-	private static final Color BULLETCOL = new Color(54/255f, 51/255f, 48/255f, 1f);
-	private static final int BULLETDIMMENSIONS = 2;
+	public static final Color BULLETCOL = new Color(128/255f, 128/255f, 128/255f, 1f);
+	public static final int BULLETDIMMENSIONS = 3;
+	public static final float HALFWIDTH = BULLETDIMMENSIONS/2f;
 	private static Texture bullet;
 	
-	private Vector<CombatPacket> combatqueue;
-	private float time = 0.0f;
+	private Vector<CombatPacket> combatqueue = new Vector<CombatPacket>();
 	
 	public static void Init()
 	{
@@ -43,23 +43,9 @@ public class CombatResolver
 			bullet.dispose();
 	}
 	
-	private int GetDirection(float StartX, float StartWidth, float TargetX)
+	public void StartSimulation()
 	{
-		// check the distance to the target in each direction
-		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
-		if (TargetX > StartX+StartWidth)
-			rdist = TargetX-(StartX+StartWidth);
-		
-		float ldist = StartX + (Game.WORLDW-TargetX);
-		if (TargetX < StartX)
-			ldist = (StartX-TargetX);
-		
-		if (rdist < ldist)
-			return 1;
-		else if (ldist < rdist)
-			return -1;
-		else
-			return 0;
+		combatqueue.clear();
 	}
 		
 	public void AddConflict(Squad Offense, Squad Defense)
@@ -94,16 +80,6 @@ public class CombatResolver
 		}
 	}
 	
-	public void ClearQueue()
-	{
-		combatqueue.clear();
-	}
-	
-	private void EndSimulation()
-	{
-		time = 0.0f;
-	}
-	
 	public boolean IsSimulationCompleted()
 	{
 		boolean completed = true;
@@ -115,16 +91,20 @@ public class CombatResolver
 			}
 		}
 		
-		if (!completed) {
-			EndSimulation();
-		}
-		
 		return completed;
 	}
 	
 	public void UpdateSimulation()
 	{
-		time += Gdx.graphics.getDeltaTime();
+		Iterator<CombatPacket> i = combatqueue.iterator();
+		while (i.hasNext()) {
+			CombatPacket p = i.next();
+			if (p.IsCompleted()) {
+				continue;
+			}
+			
+			p.UpdatePosition();
+		}
 	}
 	
 	public void DrawSimulation(SpriteBatch Batch, Camera Cam)
@@ -137,44 +117,27 @@ public class CombatResolver
 				continue;
 			}
 			
-			float sourcex = p.GetOffense().GetPos().x;
-			float sourcey = p.GetOffense().GetPos().y;
-			float destx = p.GetDefense().GetPos().x;
-			float desty = p.GetDefense().GetPos().y;
-			
-			float xpos = sourcex + ((destx-sourcex)*time * p.GetArmament().GetSpeed());
-			float ypos = sourcey + ((desty-sourcey)*time * p.GetArmament().GetSpeed());
-			Batch.draw(bullet, Cam.GetRenderX(xpos), Cam.GetRenderY(ypos));
-			
-			if (IsXPosMet(sourcex, destx, xpos) && IsYPosMet(sourcey, desty, ypos)) {
-				p.SetCompleted();
-			}
+			Vector2 pos = p.GetPosition();
+			Batch.draw(bullet, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y));
 		}
 	}
 	
-	public boolean IsXPosMet(float SourceX, float DestX, float XPos)
+	private int GetDirection(float StartX, float StartWidth, float TargetX)
 	{
-		if (XPos == DestX) {
-			return true;
-		} if (SourceX < DestX && XPos < SourceX) {
-			return true;
-		} else if (SourceX > DestX && XPos > SourceX) {
-			return true;
-		}
+		// check the distance to the target in each direction
+		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
+		if (TargetX > StartX+StartWidth)
+			rdist = TargetX-(StartX+StartWidth);
 		
-		return false;
-	}
-	
-	public boolean IsYPosMet(float SourceY, float DestY, float YPos)
-	{
-		if (YPos == DestY) {
-			return true;
-		} else if (DestY < SourceY && YPos < DestY) {
-			return true;
-		} else if (DestY > SourceY && YPos > DestY) {
-			return true;
-		}
+		float ldist = StartX + (Game.WORLDW-TargetX);
+		if (TargetX < StartX)
+			ldist = (StartX-TargetX);
 		
-		return false;
+		if (rdist < ldist)
+			return 1;
+		else if (ldist < rdist)
+			return -1;
+		else
+			return 0;
 	}
 }
