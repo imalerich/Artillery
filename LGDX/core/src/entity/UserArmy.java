@@ -161,6 +161,7 @@ public class UserArmy extends Army
 	
 	public void InitStage(int NewStage)
 	{
+		super.InitStage(NewStage);
 		squadspawned = false;
 		
 		if (NewStage == GameWorld.ATTACKSELECT) {

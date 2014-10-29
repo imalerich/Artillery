@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import physics.CombatResolver;
+import physics.GameWorld;
 import terrain.Terrain;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -54,7 +55,15 @@ public class Army
 	
 	public void InitStage(int NewStage)
 	{
-		//
+		// set the each squad as not firing
+		if (NewStage == GameWorld.MOVESELECT) {
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext()) {
+				Squad squad = s.next();
+				squad.SetFiring(false);
+				squad.SetTargetSquad(null);
+			}
+		}
 	}
 	
 	public void SpawnUnit(int UnitType, int Count, Camera Cam, int Speed)

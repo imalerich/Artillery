@@ -22,11 +22,17 @@ public class Unit
 	protected int width = 0;
 	protected int height = 0;
 	
+	protected boolean isFiring = false;
 	protected int mugshotIndex = 0;
 	
 	public void Release()
 	{
 		// override in implementation classes
+	}
+	
+	public void SetFiring(boolean IsFiring)
+	{
+		isFiring = IsFiring;
 	}
 	
 	public Rectangle GetBBox()

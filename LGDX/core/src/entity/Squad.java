@@ -476,8 +476,13 @@ public class Squad
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
 		Iterator<Unit> i = units.iterator();
-		while (i.hasNext())
-			i.next().Draw(Batch, Cam, Highlight, isTarget);
+		while (i.hasNext()) {
+			Unit u = i.next();
+			
+			// tell the unit whether or not it should be in firing position
+			u.SetFiring(isFiring || targetsquad != null);
+			u.Draw(Batch, Cam, Highlight, isTarget);
+		}
 		
 		// must manually be set to true each frame by the squad who is targeting
 		isTarget = false;

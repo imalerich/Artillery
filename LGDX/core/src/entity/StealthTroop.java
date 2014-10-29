@@ -30,9 +30,10 @@ public class StealthTroop extends Unit
 		if (anim == null) {
 			spritesheet = new Texture( Gdx.files.internal("img/units/stealthtroops.png") );
 			
-			anim = new AnimTex(spritesheet, 1, 2, 2);
+			anim = new AnimTex(spritesheet, 1, 3, 3);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
+			anim.NewAnimation(2, 1, 2, 2, 0.0f);
 		}
 		
 		halfwidth = anim.GetFrameWidth();
@@ -50,7 +51,7 @@ public class StealthTroop extends Unit
 		speed = Speed;
 	}
 	
-	private void DrawOutline(SpriteBatch Batch, Camera Cam)
+	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
@@ -59,41 +60,45 @@ public class StealthTroop extends Unit
 				Coords.y += y;
 				
 				if (forward)
-					anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
-				else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
+					anim.Render(Batch, Cam, Index, Coords, 1.0f, 1.0f);
+				else anim.Render(Batch, Cam, Index, Coords, -1.0f, 1.0f);
 			}
 		}
 	}
 	
-	private void DrawTarget(SpriteBatch Batch, Camera Cam)
+	private void DrawTarget(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		Shaders.SetShader(Batch, Shaders.target);
-		DrawOutline(Batch, Cam);
+		DrawOutline(Batch, Cam, Index);
 		Shaders.RevertShader(Batch);
 	}
 	
-	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	private void DrawHighlight(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		Shaders.SetShader(Batch, Shaders.hili);
-		DrawOutline(Batch, Cam);
+		DrawOutline(Batch, Cam, Index);
 		Shaders.RevertShader(Batch);
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		Vector2 Coords = new Vector2(pos);
+		int index = 1;
+		if (isFiring) {
+			index = 2;
+		}
 		
 		if (moving)
 			anim.UpdateClock();
 		
 		if (Highlight)
-			DrawHighlight(Batch, Cam);
+			DrawHighlight(Batch, Cam, index);
 		else if (Target)
-			DrawTarget(Batch, Cam);
+			DrawTarget(Batch, Cam, index);
 		
 		if (forward)
-			anim.Render(Batch, Cam, 1, Coords, 1.0f, 1.0f);
-		else anim.Render(Batch, Cam, 1, Coords, -1.0f, 1.0f);
+			anim.Render(Batch, Cam, index, Coords, 1.0f, 1.0f);
+		else anim.Render(Batch, Cam, index, Coords, -1.0f, 1.0f);
 		moving = false;
 	}
 }
