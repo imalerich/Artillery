@@ -21,6 +21,7 @@ import com.mygdx.game.Game;
 
 public class Squad 
 {
+	private static float EPSILON = 2f;
 	private static Texture pointer;
 	private static AnimTex target;
 	private static TextureRegion[] mugshots;
@@ -36,6 +37,7 @@ public class Squad
 	
 	private Vector<Unit> units;
 	private Rectangle bbox;
+	private float minx, maxx;
 	private Terrain ter;
 	
 	private Squad targetsquad;
@@ -78,6 +80,7 @@ public class Squad
 	{
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
+		minx = maxx = 0f;
 		
 		ter = Ter;
 		targetsquad = null;
@@ -206,37 +209,59 @@ public class Squad
 	
 	private void CalcBoundingBox(Vector2 Campos)
 	{
-		// set to max to guarantee override
-		float miny = Float.MAX_VALUE;
-		float maxy = Float.MIN_VALUE;
+		// do not calculate the bounding box if there are no units in this squad
+		if (units.size() == 0) {
+			return;
+		}
 		
-		float maxh = Float.MIN_VALUE;
-		float maxw = Float.MIN_VALUE;
+		// set to max to guarantee override
+		Vector2 min = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
+		Vector2 max = new Vector2(Float.MIN_VALUE, Float.MIN_VALUE);
+		minx = Float.MAX_VALUE;
+		maxx = Float.MIN_VALUE;
+		
+		// the first x position determines the orientation of the bounding box relative to the world map
+		float firstx = units.get(0).GetPos().x;
 		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
 		{
 			// convert he position to screen coordinates
 			Unit n = i.next();
-			Vector2 pos = new Vector2( n.GetPos() );
+			Rectangle r = n.GetBBox();
 			
-			if (pos.y < miny)
-				miny = pos.y;
-			if (pos.y > maxy)
-				maxy = pos.y;
+			// used for determing whether or not to draw the target position
+			if (r.x < minx)
+				minx = r.x;
+			if (r.x > maxx)
+				maxx = r.x;
 			
-			int height = n.GetHeight();
-			if (height > maxh)
-				maxh = height;
+			// used for mouse over operations
+			if (r.x >= firstx) {
+				if (r.x < min.x)
+					min.x = r.x;
+				if (r.x+r.width > max.x)
+					max.x = r.x+r.width;
+			} else {
+				// units should be in ascending order
+				if (r.x + Game.WORLDW < min.x)
+					min.x = r.x + Game.WORLDW;
+				if (r.x + Game.WORLDW + r.width > max.x)
+					max.x = r.x + Game.WORLDW + r.width;
+			}
 			
-			int width = n.GetWidth();
-			if (width > maxw)
-				maxw = width;
+			if (r.y < min.y)
+				min.y = r.y;
+			if (r.y+r.height > max.y)
+				max.y = r.y+r.height;
 		}
 		
 		// construct the new bounding box
-		float minx = units.firstElement().GetPos().x;
-		bbox = new Rectangle(minx, miny, (units.size()-1)*squadspacing + maxw, maxy-miny + maxh);
+		bbox = new Rectangle(min.x, min.y, max.x-min.x, max.y-min.y);
+		if (bbox.x < 0)
+			bbox.x += Game.WORLDW;
+		else if (bbox.x > Game.WORLDW)
+			bbox.x -= Game.WORLDW;
 	}
 	
 	public boolean IsMouseOver(Vector2 Campos)
@@ -264,10 +289,6 @@ public class Squad
 	{
 		// get the position at which to add this unit
 		Vector2 addp =  new Vector2(Add.GetPos());
-		/*if (units.size() > 0) {
-			addp = new Vector2(units.lastElement().GetPos());
-			addp.x += squadspacing;
-		}*/
 		
 		Add.SetPos(addp);
 		Add.SetHeight();
@@ -348,6 +369,9 @@ public class Squad
 	
 	public void Move(Vector2 Campos)
 	{
+		// calculate the bounding box
+		CalcBoundingBox(Campos);
+		
 		// for each unit in this squad
 		Iterator<Unit> i = units.iterator();
 		int index = -1; // start at 0
@@ -387,9 +411,6 @@ public class Squad
 			CalcBoundingBox(Campos);
 			ismoving = false;
 		} else ismoving = true;
-		
-		// recalculate the bounding box
-		CalcBoundingBox(Campos);
 	}
 	
 	public void DrawView(Camera Cam)
@@ -487,6 +508,11 @@ public class Squad
 		// set to world bounds
 		if (xpos > Game.WORLDW)
 			xpos -= Game.WORLDW;
+		else if (xpos < 0)
+			xpos += Game.WORLDW;
+		
+		if (Math.abs(minx - xpos) < EPSILON || Math.abs(maxx-xpos) < EPSILON)
+			return;
 		
 		if (bbox.x <= xpos && bbox.x+bbox.width >= xpos)
 			return;

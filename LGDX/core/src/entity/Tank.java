@@ -5,6 +5,7 @@ import terrain.Terrain;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
@@ -71,6 +72,52 @@ public class Tank extends Unit
 		speed = Speed;
 	}
 	
+	public Rectangle GetBBox()
+	{
+		// get the tanks angle
+		float theta = (float)Math.toRadians( GetAngle() );
+		
+		// get the points describing the boundaries
+		Vector2[] coords = new Vector2[4];
+		coords[0] = new Vector2(-width/2f, 0f);
+		coords[1] = new Vector2(-width/2f, height);
+		
+		coords[2]= new Vector2(width/2f, 0f);
+		coords[3]= new Vector2(width/2f, height);
+		
+		// rotate the coordinates we are using to describe the bounding box
+		for (int i=0; i<4; i++) {
+			coords[i] = RotateCoord(coords[i], theta);
+		}
+		
+		// get the min and maxes from these coordinates
+		Vector2 min = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
+		Vector2 max = new Vector2(Float.MIN_VALUE, Float.MIN_VALUE);
+		
+		for (int i=0; i<4; i++) {
+			if (coords[i].x < min.x)
+				min.x = coords[i].x;
+			
+			if (coords[i].x > max.x)
+				max.x = coords[i].x;
+			
+			if (coords[i].y < min.y)
+				min.y = coords[i].y;
+			
+			if (coords[i].y > max.y)
+				max.y = coords[i].y;
+		}
+		
+		// return an axis aligned bounding box encompasing the tank
+		Rectangle r = new Rectangle(min.x + pos.x + width/2f, min.y + pos.y, max.x-min.x, max.y-min.y);
+		if (r.x < 0)
+			r.x += Game.WORLDW;
+		else if (r.x > Game.WORLDW)
+			r.x -= Game.WORLDW;
+		
+		return r;
+	}
+	
 	public void SetBarrelOffset(Vector2 Offset)
 	{
 		barrelOffset = Offset;
@@ -84,10 +131,10 @@ public class Tank extends Unit
 		float cos = (float)Math.cos( Theta );
 		float sin = (float)Math.sin( Theta );
 		
-		Coord.x = x*cos - y*sin;
-		Coord.y = x*sin + y*cos;
+		float rx = x*cos - y*sin;
+		float ry = x*sin + y*cos;
 		
-		return Coord;
+		return new Vector2(rx, ry);
 	}
 	
 	public float GetAngle()
