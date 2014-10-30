@@ -41,11 +41,13 @@ public class Squad
 	private Squad targetsquad;
 	private int targetpos;
 	private boolean ismoving;
+	private boolean isforward;
 	
 	private boolean isFiring;
 	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
+	private Vector2 barrelsrc;
 	
 	public static void Init()
 	{
@@ -85,6 +87,28 @@ public class Squad
 		pointerheight = (int)(Math.random()*MAXHEIGHT);
 		direction = true; // up
 		isTarget = false;
+		isforward = true;
+		
+		barrelsrc = new Vector2();
+	}
+	
+	public void SetBarrelSrc(Vector2 Pos)
+	{
+		barrelsrc = Pos;
+	}
+	
+	public Vector2 GetBarrelSrc()
+	{
+		if (isforward) {
+			return new Vector2(barrelsrc);
+		} else {
+			return new Vector2(bbox.width - barrelsrc.x, barrelsrc.y);
+		}
+	}
+	
+	public boolean IsForward()
+	{
+		return isforward;
 	}
 	
 	public void SetFiring(boolean IsFiring)
@@ -217,6 +241,7 @@ public class Squad
 	
 	public boolean IsMouseOver(Vector2 Campos)
 	{
+		CalcBoundingBox(Campos);
 		return Cursor.IsMouseOver(bbox, Campos);
 	}
 	
@@ -419,8 +444,8 @@ public class Squad
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
 		if (isFiring && units.size() > 0) {
-			float xpos = bbox.x + bbox.width/2f - target.GetFrameWidth()/2f;
-			float ypos = bbox.y + bbox.height/2f - target.GetFrameHeight()/2f;
+			float xpos = bbox.x + barrelsrc.x - target.GetFrameWidth()/2f;
+			float ypos = bbox.y + barrelsrc.y - target.GetFrameHeight()/2f;
 			float dist = bbox.width*1.5f;
 			
 			if (units.get(0).forward) {
@@ -432,6 +457,7 @@ public class Squad
 			ypos += Math.sin( Math.toRadians( arms.GetAngle() ))*dist;
 			target.UpdateClock();
 			target.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
+			return;
 		}
 		
 		// a target squad must be set
@@ -475,6 +501,10 @@ public class Squad
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
+		// draw and determine whether this squad is forward or not
+		int forwardc = 0;
+		isforward = false;
+		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
 			Unit u = i.next();
@@ -482,6 +512,13 @@ public class Squad
 			// tell the unit whether or not it should be in firing position
 			u.SetFiring(isFiring || targetsquad != null);
 			u.Draw(Batch, Cam, Highlight, isTarget);
+			
+			if (u.IsForward() && !isforward) {
+				forwardc++;
+				if (forwardc > units.size()/2) {
+					isforward = true;
+				}
+			}
 		}
 		
 		// must manually be set to true each frame by the squad who is targeting

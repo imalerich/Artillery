@@ -38,7 +38,7 @@ public class GameWorld
 		ter = Ter;
 		currentstage = MOVESELECT;
 		
-		resolver = new CombatResolver();
+		resolver = new CombatResolver(Ter);
 		userArmy = null;
 		friendlyArmy = new Vector<Army>();
 		enemyArmy = new Vector<Army>();

@@ -116,6 +116,8 @@ public class Army
 			if (squad.GetTargetSquad() != null && 
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
 				Resolver.AddConflict(squad, squad.GetTargetSquad());
+			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
+				Resolver.AddProjectile(squad);
 			}
 		}
 	}

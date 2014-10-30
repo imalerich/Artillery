@@ -16,7 +16,7 @@ public class Tank extends Unit
 	private static float MINANGLE = -15;
 	
 	private Texture tex;
-	private Texture barrel;
+	private static Texture barrel;
 	
 	private Vector2 barrelOffset; // coordinates of the barrel relative to the tank
 	
@@ -26,16 +26,33 @@ public class Tank extends Unit
 	private int barrelwidth;
 	private int barrelheight;
 	
+	public static void Init()
+	{
+		if (barrel == null) {
+			barrel = new Texture( Gdx.files.internal("img/tanks/Barrel.png") );
+		}
+	}
+	
+	public static int GetBarrelWidth()
+	{
+		if (barrel != null) {
+			return barrel.getWidth();
+		} else {
+			return 0;
+		}
+	}
+	
 	public void Release()
 	{
 		tex.dispose();
-		barrel.dispose();
+		
+		if (barrel != null)
+			barrel.dispose();
 	}
 	
-	public Tank(String Filename, String Barrel, Terrain Ter, int Speed)
+	public Tank(String Filename, Terrain Ter, int Speed)
 	{
 		tex = new Texture(Gdx.files.internal(Filename) );
-		barrel = new Texture( Gdx.files.internal(Barrel) );
 		
 		halfwidth = tex.getWidth()/2;
 		width = tex.getWidth();
@@ -139,6 +156,7 @@ public class Tank extends Unit
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		SetHeight();
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
 		else if (Target)

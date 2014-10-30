@@ -3,11 +3,9 @@ package physics;
 import java.util.Iterator;
 import java.util.Vector;
 
+import terrain.Terrain;
 import arsenal.Armament;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
@@ -18,34 +16,48 @@ import entity.Unit;
 
 public class CombatResolver 
 {
-	public static final Color BULLETCOL = new Color(128/255f, 128/255f, 128/255f, 1f);
-	public static final int BULLETDIMMENSIONS = 3;
-	public static final float HALFWIDTH = BULLETDIMMENSIONS/2f;
-	private static Texture bullet;
+	private static final int UNITSTAGE = 0;
+	private static final int POINTSTAGE = 1;
+	private static final int COMPLETED = 2;
 	
+	private Vector<Missile> projectilequeue = new Vector<Missile>();
 	private Vector<CombatPacket> combatqueue = new Vector<CombatPacket>();
+	private Terrain ter;
+	private int stage;
 	
-	public static void Init()
+	public CombatResolver(Terrain Ter)
 	{
-		if (bullet == null)
-		{
-			Pixmap tmp = new Pixmap(BULLETDIMMENSIONS, BULLETDIMMENSIONS, Pixmap.Format.RGB888);
-			tmp.setColor(BULLETCOL);
-			tmp.fill();
-			bullet = new Texture(tmp);
-			tmp.dispose();
-		}
-	}
-	
-	public static void Release()
-	{
-		if (bullet != null)
-			bullet.dispose();
+		ter = Ter;
+		stage = COMPLETED;
 	}
 	
 	public void StartSimulation()
 	{
+		stage = UNITSTAGE;
 		combatqueue.clear();
+	}
+	
+	public void AddProjectile(Squad Offense)
+	{
+		// calculate the starting velocity
+		Armament arms = Offense.GetArmament();
+		double theta = Math.toRadians( Offense.GetBarrelAngle() );
+		Vector2 vel = new Vector2((float)Math.cos(theta) * arms.GetSpeed(), 
+				(float)Math.sin(theta) * arms.GetSpeed());
+		
+		// calculate the starting position
+		Vector2 pos = new Vector2(Offense.GetBBox().x, Offense.GetBBox().y);
+		Vector2 barrelsrc = Offense.GetBarrelSrc();
+		pos.x += barrelsrc.x;
+		pos.y += barrelsrc.y;
+		
+		// check if the projectile should be fired to the left
+		if (!Offense.IsForward()) {
+			vel.x = -vel.x;
+		}
+		
+		// add the projectile
+		projectilequeue.add( new Missile(ter, pos, vel) );
 	}
 		
 	public void AddConflict(Squad Offense, Squad Defense)
@@ -65,7 +77,7 @@ public class CombatResolver
 			// look for a target for this unit
 			Unit offense = i.next();
 			Unit defense = u.get(index);
-			combatqueue.add( new CombatPacket(offense, defense, arms) );
+			combatqueue.add( new CombatPacket(ter, offense, defense, arms) );
 			
 			// increment the index
 			if (direction == 1)
@@ -82,19 +94,65 @@ public class CombatResolver
 	
 	public boolean IsSimulationCompleted()
 	{
-		boolean completed = true;
-		Iterator<CombatPacket> i = combatqueue.iterator();
-		while (i.hasNext()) 
-		{
-			if (!i.next().IsCompleted()) {
-				completed = false;
-			}
-		}
-		
-		return completed;
+		return stage == COMPLETED;
 	}
 	
 	public void UpdateSimulation()
+	{
+		// update the current stage
+		if (stage == UNITSTAGE) {
+			UpdateUnitStage();
+		} else if (stage == POINTSTAGE) {
+			UpdatePointStage();
+		}
+	}
+	
+	public void DrawSimulation(SpriteBatch Batch, Camera Cam)
+	{
+		// draw the state of the current stage
+		if (stage == UNITSTAGE) {
+			DrawUnitStage(Batch, Cam);
+		} else if (stage == POINTSTAGE) {
+			DrawPointStage(Batch, Cam);
+		}
+		
+		// check if we should move on to the next stage
+		CheckNextStage();
+	}
+	
+	private void CheckNextStage()
+	{
+		if (stage == UNITSTAGE) {
+			Iterator<CombatPacket> i = combatqueue.iterator();
+			while (i.hasNext()) 
+			{
+				if (!i.next().IsCompleted()) {
+					return;
+				}
+			}
+			
+			stage = POINTSTAGE;
+			return;
+			
+		} else if (stage == POINTSTAGE) {
+			Iterator<Missile> i = projectilequeue.iterator();
+			while (i.hasNext()) {
+				if (!i.next().HasHit()) {
+					return;
+				}
+			}
+			
+			// wait for the terrain to finish updating
+			if (!ter.IsValid()) {
+				return;
+			}
+
+			stage = COMPLETED;
+			return;
+		}
+	}
+	
+	private void UpdateUnitStage()
 	{
 		Iterator<CombatPacket> i = combatqueue.iterator();
 		while (i.hasNext()) {
@@ -103,11 +161,11 @@ public class CombatResolver
 				continue;
 			}
 			
-			p.UpdatePosition();
+			p.Update();
 		}
 	}
 	
-	public void DrawSimulation(SpriteBatch Batch, Camera Cam)
+	private void DrawUnitStage(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<CombatPacket> i = combatqueue.iterator();
 		while (i.hasNext())
@@ -117,8 +175,33 @@ public class CombatResolver
 				continue;
 			}
 			
-			Vector2 pos = p.GetPosition();
-			Batch.draw(bullet, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y));
+			p.Draw(Batch, Cam);
+		}
+	}
+	
+	private void UpdatePointStage()
+	{
+		Iterator<Missile> i = projectilequeue.iterator();
+		while (i.hasNext()) {
+			Missile m = i.next();
+			if (m.HasHit()) {
+				continue;
+			}
+			
+			m.Update();
+		}
+	}
+	
+	private void DrawPointStage(SpriteBatch Batch, Camera Cam)
+	{
+		Iterator<Missile> i = projectilequeue.iterator();
+		while (i.hasNext()) {
+			Missile m = i.next();
+			if (m.HasHit()) {
+				continue;
+			}
+			
+			m.Draw(Batch, Cam);;
 		}
 	}
 	

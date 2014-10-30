@@ -80,6 +80,7 @@ public class SpecOps extends Unit
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		SetHeight();
 		Vector2 Coords = new Vector2(pos);
 		int index = 1;
 		if (isFiring) {

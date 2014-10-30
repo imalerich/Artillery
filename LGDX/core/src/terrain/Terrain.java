@@ -368,6 +368,23 @@ public class Terrain {
 		}
 	}
 	
+	public boolean IsValid()
+	{
+		for (boolean b : isSegmentValid) {
+			// if a segment is not valid, return false
+			if (!b)
+				return false;
+		}
+		
+		// else return true;
+		return true;
+	}
+	
+	public boolean Contains(float X, float Y)
+	{
+		return Y < (Game.WORLDH - GetHeight((int)X));
+	}
+	
 	// call whenever processing is done on a segment
 	private void InvalidateTex(int Segment)
 	{
