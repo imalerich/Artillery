@@ -82,6 +82,12 @@ public class AnimTex
 		time += Gdx.graphics.getDeltaTime();
 	}
 	
+	public TextureRegion GetCurrent(int Index)
+	{
+		currentframe = animations[Index].getKeyFrame(time, true);
+		return currentframe;
+	}
+	
 	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale)
 	{
 		currentframe = animations[Index].getKeyFrame(time, true);

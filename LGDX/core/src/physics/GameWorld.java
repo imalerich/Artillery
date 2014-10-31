@@ -253,13 +253,12 @@ public class GameWorld
 		DrawFogMask(Batch, Cam);
 		DrawHidden(Batch, Cam);
 		
-		DrawTargets(Batch, Cam);
-		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
 			f.next().Draw(Batch, Cam, false, currentstage);
 		
 		userArmy.Draw(Batch, Cam, false, currentstage);
+		DrawTargets(Batch, Cam);
 		
 		if (currentstage == ATTACKUPDATE) {
 			resolver.DrawSimulation(Batch, Cam);

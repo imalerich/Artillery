@@ -193,6 +193,11 @@ public class Unit
 		pos.y = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
 	}
 	
+	public void DrawTargetAngle(SpriteBatch Batch, Camera Cam)
+	{
+		// override in implementation classes
+	}
+	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		// override in implementation classes

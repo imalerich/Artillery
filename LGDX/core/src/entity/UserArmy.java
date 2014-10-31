@@ -434,6 +434,8 @@ public class UserArmy extends Army
 		case ButtonOptions.STOP:
 			// leave the menu and do not select a squad
 			selected.SetTargetSquad(null);
+			selected.SetFiring(false);
+			
 			menuactive = false;
 			menurelease = false;
 			offensemenu.ResetClock();

@@ -224,18 +224,46 @@ public class Tank extends Unit
 		
 		float phi = barrelPhi;
 		if (!forward)
-			phi = -phi + 180;
+			phi = 180 - phi;
 		
 		// draw the tanks barrel
 		Batch.draw(barrel, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
 				Cam.GetRenderY(pos.y + offset.y + OffsetY),
-				0, barrelheight/2, barrelwidth, barrelheight, 1.0f, 1.0f, 
+				0, barrelheight/2f, barrelwidth, barrelheight, 1f, 1f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
 		
 		// draw the tank
 		Batch.draw(tex, Cam.GetRenderX(pos.x + OffsetX),
 				Cam.GetRenderY(pos.y + OffsetY),
-				halfwidth, 0, width, height, 1.0f, 1.0f, 
+				halfwidth, 0, width, height, 1f, 1f, 
 				theta, 0, 0, width, height, !forward, false);
+	}
+	
+	public void DrawTargetAngle(SpriteBatch Batch, Camera Cam)
+	{
+		float theta = GetAngle();
+		float phi = barrelPhi;
+		
+		float width = Squad.target.GetFrameWidth();
+		float height = Squad.target.GetFrameHeight();
+		Vector2 src = new Vector2(barrelOffset.x-halfwidth, 
+				barrelOffset.y);
+		if (!forward)
+			src.x = halfwidth - barrelOffset.x;
+		src = RotateCoord( src, (float)Math.toRadians(theta));
+		
+		Vector2 offset = new Vector2(barrelwidth*1.8f, 0f);
+		if (!forward) {
+			offset.x = -barrelwidth*1.8f;
+			phi = -phi;
+		}
+		
+		offset = RotateCoord( offset, (float)Math.toRadians(phi + theta) );
+		offset.x += src.x;
+		offset.y += src.y;
+		
+		Squad.target.UpdateClock();
+		Batch.draw(Squad.target.GetCurrent(0), Cam.GetRenderX(pos.x + halfwidth + offset.x - width/2f),
+				Cam.GetRenderY(pos.y + offset.y - height/2f));
 	}
 }

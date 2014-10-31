@@ -22,8 +22,8 @@ import com.mygdx.game.Game;
 
 public class Squad 
 {
-	private static Texture pointer;
-	private static AnimTex target;
+	public static Texture pointer;
+	public static AnimTex target;
 	private static TextureRegion[] mugshots;
 	private static final int MUGSHOTCOUNT = 4;
 	private static final int SPACING = 2;
@@ -476,19 +476,11 @@ public class Squad
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
 		if (isFiring && units.size() > 0) {
-			float xpos = bbox.x + barrelsrc.x - target.GetFrameWidth()/2f;
-			float ypos = bbox.y + barrelsrc.y - target.GetFrameHeight()/2f;
-			float dist = bbox.width*1.5f;
-			
-			if (units.get(0).forward) {
-				xpos += Math.cos( Math.toRadians( arms.GetAngle() ))*dist;
-			} else {
-				xpos -= Math.cos( Math.toRadians( arms.GetAngle() ))*dist;
+			Iterator<Unit> u = units.iterator();
+			while (u.hasNext()) {
+				u.next().DrawTargetAngle(Batch, Cam);
 			}
-				
-			ypos += Math.sin( Math.toRadians( arms.GetAngle() ))*dist;
-			target.UpdateClock();
-			target.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
+			
 			return;
 		}
 		
