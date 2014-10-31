@@ -12,7 +12,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Game;
 
-public class Terrain {
+public class Terrain 
+{
+	private static final int BASESPEED = 1;
+	private static final int MAXSPEED = 4;
+	private float speed = BASESPEED;
 	
 	// image data
 	private static Color col;
@@ -263,11 +267,11 @@ public class Terrain {
 		data[s].drawPixel(localx, Y);
 	}
 	
-	private void UpdateDropping()
+	private void UpdateDropping(int Count)
 	{
-		dropclock += Gdx.graphics.getDeltaTime();
-		if (dropclock < 0.01) return;
-		dropclock = 0.0;
+		if (Count == 0) {
+			return;
+		}
 		
 		// declare the variables only once for the loop
 		int sety = height;
@@ -315,11 +319,28 @@ public class Terrain {
 			// processing was done on the segment, invalidate it
 			InvalidateTex(i);
 		}
+		
+		// recurse down updating the terrain
+		UpdateDropping(Count - 1);
 	}
 	
 	public void Update()
 	{
-		UpdateDropping();
+		dropclock += Gdx.graphics.getDeltaTime();
+		if (dropclock < 0.01) return;
+		
+		if (IsValid()) {
+			speed = BASESPEED;
+			return;
+		} else {
+			speed += Gdx.graphics.getDeltaTime()*4;
+			if (speed > MAXSPEED) {
+				speed = MAXSPEED;
+			}
+		}
+		
+		dropclock = 0.0;
+		UpdateDropping((int)speed);
 	}
 	
 	public void CutHole(int X, int Y, int Radius)
