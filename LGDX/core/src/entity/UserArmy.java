@@ -165,6 +165,8 @@ public class UserArmy extends Army
 		squadspawned = false;
 		
 		if (NewStage == GameWorld.ATTACKSELECT) {
+			targetstack.Reset();
+			
 			Iterator<Squad> s = squads.iterator();
 			while (s.hasNext()) {
 				Squad squad = s.next();

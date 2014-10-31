@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import physics.GameWorld;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import arsenal.Armament;
@@ -178,6 +179,17 @@ public class Squad
 	public void SetTargetSquad(Squad Target)
 	{
 		targetsquad = Target;
+		if (targetsquad == null)
+			return;
+		
+		// face the target squad
+		int direction = GameWorld.GetDirection(bbox.x, bbox.width, 
+				targetsquad.GetBBox().x, targetsquad.GetBBox().width);
+		
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			u.next().SetForward(direction == 1);
+		}
 	}
 	
 	public Rectangle GetBoundingBox()

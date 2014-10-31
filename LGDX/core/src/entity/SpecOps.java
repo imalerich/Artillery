@@ -30,9 +30,10 @@ public class SpecOps extends Unit
 		if (anim == null) {
 			spritesheet = new Texture( Gdx.files.internal("img/units/specops.png") );
 			
-			anim = new AnimTex(spritesheet, 1, 2, 2);
+			anim = new AnimTex(spritesheet, 1, 3, 3);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
+			anim.NewAnimation(2, 1, 2, 2, 0.0f);
 		}
 		
 		halfwidth = anim.GetFrameWidth();

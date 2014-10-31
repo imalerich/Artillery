@@ -12,6 +12,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
 import entity.Army;
@@ -341,5 +342,24 @@ public class GameWorld
 			currentstage = 0;
 		
 		InitNewStage();
+	}
+	
+	public static int GetDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)
+	{
+		// check the distance to the target in each direction
+		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
+		if (TargetX > StartX+StartWidth)
+			rdist = TargetX-(StartX+StartWidth);
+		
+		float ldist = StartX + (Game.WORLDW-(TargetX+TargetWidth));
+		if (TargetX < StartX)
+			ldist = (StartX-(TargetX+TargetWidth));
+		
+		if (rdist < ldist)
+			return 1;
+		else if (ldist < rdist)
+			return -1;
+		else
+			return 0;
 	}
 }

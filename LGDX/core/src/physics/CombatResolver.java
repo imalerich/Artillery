@@ -9,7 +9,6 @@ import arsenal.Armament;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
-import com.mygdx.game.Game;
 
 import entity.Squad;
 import entity.Unit;
@@ -64,7 +63,8 @@ public class CombatResolver
 	{
 		Armament arms = Offense.GetArmament();
 		
-		int direction = GetDirection(Offense.GetBBox().x, Offense.GetBBox().width, Defense.GetBBox().x);
+		int direction = GameWorld.GetDirection(Offense.GetBBox().x, Offense.GetBBox().width, 
+				Defense.GetBBox().x, Defense.GetBBox().width);
 		
 		Vector<Unit> u = Defense.GetUnits();
 		int index = 0;
@@ -82,7 +82,8 @@ public class CombatResolver
 			// increment the index
 			if (direction == 1)
 				index++;
-			else index--;
+			else 
+				index--;
 			
 			if (index == u.size()) {
 				index = 0;
@@ -90,6 +91,10 @@ public class CombatResolver
 				index = u.size()-1;
 			}
 		}
+		
+		// set the offense to have no target
+		Offense.SetTargetSquad(null);
+		Offense.SetFiring(false);
 	}
 	
 	public boolean IsSimulationCompleted()
@@ -203,24 +208,5 @@ public class CombatResolver
 			
 			m.Draw(Batch, Cam);;
 		}
-	}
-	
-	private int GetDirection(float StartX, float StartWidth, float TargetX)
-	{
-		// check the distance to the target in each direction
-		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
-		if (TargetX > StartX+StartWidth)
-			rdist = TargetX-(StartX+StartWidth);
-		
-		float ldist = StartX + (Game.WORLDW-TargetX);
-		if (TargetX < StartX)
-			ldist = (StartX-TargetX);
-		
-		if (rdist < ldist)
-			return 1;
-		else if (ldist < rdist)
-			return -1;
-		else
-			return 0;
 	}
 }

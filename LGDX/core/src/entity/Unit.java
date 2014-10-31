@@ -100,6 +100,11 @@ public class Unit
 		pos = Pos;
 	}
 	
+	public void SetForward(boolean IsForward)
+	{
+		forward = IsForward;
+	}
+	
 	public boolean IsForward()
 	{
 		return forward;
