@@ -361,4 +361,21 @@ public class GameWorld
 		else
 			return 0;
 	}
+	
+	public static float GetDistance(float StartX, float StartWidth, float TargetX, float TargetWidth)
+	{
+		// check the distance to the target in each direction
+		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
+		if (TargetX > StartX+StartWidth)
+			rdist = TargetX-(StartX+StartWidth);
+		
+		float ldist = StartX + (Game.WORLDW-(TargetX+TargetWidth));
+		if (TargetX < StartX)
+			ldist = (StartX-(TargetX+TargetWidth));
+		
+		if (rdist < ldist)
+			return rdist;
+		else 
+			return ldist;
+	}
 }

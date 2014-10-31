@@ -539,12 +539,15 @@ public class UserArmy extends Army
 		Vector2 destpos = new Vector2(xpos, ypos);
 		
 		// do not set the angle when the mouse is on the incorrect side of the selected unit
-		if (xpos < selected.GetBBox().x + selected.GetBBox().width/2f && selected.IsForward())
+		float startx = selected.GetBBox().x + selected.GetBBox().width/2f;
+		int direction = GameWorld.GetDirection(startx, 0f, 
+				xpos, 0f);
+		if (direction != 1 && selected.IsForward())
 			return;
-		else if (xpos > selected.GetBBox().x + selected.GetBBox().width/2f && !selected.IsForward())
+		else if (direction != -1 && !selected.IsForward())
 			return;
 		
-		float xdist = Math.abs(sourcepos.x - destpos.x);
+		float xdist = GameWorld.GetDistance(startx, 0f, xpos, 0f);
 		float ydist = destpos.y - sourcepos.y;
 		float theta = (float)( Math.toDegrees(Math.atan(ydist/xdist)) );
 		
