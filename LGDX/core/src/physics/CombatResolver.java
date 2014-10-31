@@ -62,14 +62,8 @@ public class CombatResolver
 	public void AddConflict(Squad Offense, Squad Defense)
 	{
 		Armament arms = Offense.GetArmament();
-		
-		int direction = GameWorld.GetDirection(Offense.GetBBox().x, Offense.GetBBox().width, 
-				Defense.GetBBox().x, Defense.GetBBox().width);
-		
 		Vector<Unit> u = Defense.GetUnits();
 		int index = 0;
-		if (direction == -1)
-			index = u.size()-1;
 		
 		Iterator<Unit> i = Offense.GetUnits().iterator();
 		while (i.hasNext())
@@ -80,15 +74,9 @@ public class CombatResolver
 			combatqueue.add( new CombatPacket(ter, offense, defense, arms) );
 			
 			// increment the index
-			if (direction != -1) {
-				index++;
-				if (index >= u.size())
-					index = 0;
-			} else  {
-				index--;
-				if (index < 0) 
-					index = u.size()-1;
-			}
+			index++;
+			if (index >= u.size())
+				index = 0;
 		}
 		
 		// set the offense to have no target

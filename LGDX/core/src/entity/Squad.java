@@ -182,8 +182,8 @@ public class Squad
 			return;
 		
 		// face the target squad
-		int direction = GameWorld.GetDirection(bbox.x, bbox.width, 
-				targetsquad.GetBBox().x, targetsquad.GetBBox().width);
+		int direction = GameWorld.GetDirection(bbox.x, 1, 
+				targetsquad.GetBBox().x, 1);
 		
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {

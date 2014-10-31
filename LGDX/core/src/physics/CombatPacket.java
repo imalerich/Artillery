@@ -27,6 +27,7 @@ public class CombatPacket
 	private final Unit defense;
 	private final Armament arms;
 	private boolean iscompleted;
+	private int prevdir;
 	
 	private Vector2 pos;
 	private Vector2 target;
@@ -60,6 +61,7 @@ public class CombatPacket
 		defense = Defense;
 		arms = Arms;
 		iscompleted = false;
+		prevdir = 0;
 		
 		// set the initial position and the target position
 		pos = new Vector2(offense.GetPos().x + offense.GetWidth()/2f, 
@@ -68,6 +70,10 @@ public class CombatPacket
 		
 		// calculate the speed in each direction
 		speed = new Vector2(target);
+		int direction = GetMoveDirection();
+		if (direction == -1)
+			speed.x += defense.GetWidth();
+		
 		speed.x -= pos.x;
 		speed.y -= pos.y;
 		speed.nor();
@@ -82,17 +88,17 @@ public class CombatPacket
 	{
 		// check if this unit has reached his position
 		if (targetBBox.contains(pos.x + HALFWIDTH, 
-				pos.y + HALFWIDTH)) {
-			iscompleted = true;
-			return;
-		}
-		
-		if (ter.Contains(pos.x, pos.y)) {
+				pos.y + HALFWIDTH) || ter.Contains(pos.x, pos.y)) {
 			iscompleted = true;
 			return;
 		}
 			
 		int direction = GetMoveDirection();
+		if (direction == 0 || direction == -prevdir) {
+			iscompleted = true;
+			return;
+		}
+		
 		pos.x += (direction * speed.x * Gdx.graphics.getDeltaTime());
 		pos.y += (speed.y * Gdx.graphics.getDeltaTime());
 		
@@ -102,10 +108,7 @@ public class CombatPacket
 			pos.x -= Game.WORLDW;
 		}
 		
-		if (direction == 0) {
-			iscompleted = true;
-			return;
-		}
+		prevdir = direction;
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
