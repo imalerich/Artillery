@@ -14,8 +14,9 @@ import com.mygdx.game.Game;
 
 public class Terrain 
 {
+	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
-	private static final int MAXSPEED = 4;
+	private static final int MAXSPEED = 8;
 	private float speed = BASESPEED;
 	
 	// image data
@@ -34,6 +35,7 @@ public class Terrain
 	private double dropclock;
 	
 	// divide the world into segments of SEGMENTWIDTH and invalidate them when damaged
+	private boolean[] tmpValid;
 	private boolean[] isSegmentValid;
 	private int segmentcount;
 	
@@ -75,8 +77,6 @@ public class Terrain
 		
 		// generate the terrain
 		GenerateFromSeed(Seed);
-		for (int i=0; i<segmentcount; i++)
-			InvalidateTex(i);
 		
 		// generate the texture
 		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
@@ -91,6 +91,9 @@ public class Terrain
 		tmp.fill();
 		clreg = new Texture(tmp);
 		tmp.dispose();
+		
+		for (int i=0; i<segmentcount; i++)
+			InvalidateSegment(i);
 	}
 	
 	private void InitSegments()
@@ -98,8 +101,11 @@ public class Terrain
 		// generate the validation segments
 		segmentcount = (int)(Math.ceil( (float)width/SEGMENTWIDTH) );
 		isSegmentValid = new boolean[segmentcount];
-		for (int i=0; i<segmentcount; i++)
-			isSegmentValid[i] = true;
+		tmpValid = new boolean[segmentcount];
+		for (int i=0; i<segmentcount; i++) {
+			tmpValid[i] = true;
+			isSegmentValid[i] = false;
+		}
 		
 		// generate the data buffers
 		data = new Pixmap[segmentcount];
@@ -269,7 +275,7 @@ public class Terrain
 	
 	private void UpdateDropping(int Count)
 	{
-		if (Count == 0) {
+		if (Count == -1) {
 			return;
 		}
 		
@@ -308,7 +314,7 @@ public class Terrain
 						SetPixel(x + i*SEGMENTWIDTH, y+1, false);
 						
 						// set this region as invalid, continue processing
-						isSegmentValid[i] = false; // set this region as invalid, continue processing
+						isSegmentValid[i] = false;
 					}
 
 					// set the last state
@@ -316,12 +322,29 @@ public class Terrain
 				}
 			}
 			
-			// processing was done on the segment, invalidate it
-			InvalidateTex(i);
+			// if this is the final iteration and the segment is invalid, invalidate it 
+			if (!isSegmentValid[i] && Count == 0) {
+				InvalidateSegment(i);
+			}
+			
+			// if the previous stage was invalid but it is now valid, invalidate the texture
+			else if (isSegmentValid[i] && !tmpValid[i]) {
+				InvalidateSegment(i);
+			}
+			
+			// copy to the tmp array
+			tmpValid[i] = isSegmentValid[i];
 		}
 		
 		// recurse down updating the terrain
 		UpdateDropping(Count - 1);
+	}
+	
+	public void ClearTmp()
+	{
+		for (int i=0; i<segmentcount; i++) {
+			tmpValid[i] = true;
+		}
 	}
 	
 	public void Update()
@@ -333,13 +356,14 @@ public class Terrain
 			speed = BASESPEED;
 			return;
 		} else {
-			speed += Gdx.graphics.getDeltaTime()*4;
+			speed += Gdx.graphics.getDeltaTime()*ACCELERATION;
 			if (speed > MAXSPEED) {
 				speed = MAXSPEED;
 			}
 		}
 		
 		dropclock = 0.0;
+		ClearTmp();
 		UpdateDropping((int)speed);
 	}
 	
@@ -362,7 +386,7 @@ public class Terrain
 			
 			data[i].setColor(Color.CLEAR);
 			data[i].fillCircle(localx, Y, Radius);
-			InvalidateTex(i);
+			InvalidateSegment(i);
 		}
 	}
 	
@@ -385,7 +409,7 @@ public class Terrain
 			
 			data[i].setColor(Color.CLEAR);
 			data[i].fillRectangle(localx, Y, Width, Height);
-			InvalidateTex(i);
+			InvalidateSegment(i);
 		}
 	}
 	
@@ -397,23 +421,21 @@ public class Terrain
 				return false;
 		}
 		
-		// else return true;
 		return true;
 	}
 	
-	public boolean Contains(float X, float Y)
-	{
-		return Y < (Game.WORLDH - GetHeight((int)X));
-	}
-	
-	// call whenever processing is done on a segment
-	private void InvalidateTex(int Segment)
+	public void InvalidateSegment(int Segment)
 	{
 		if (mask[Segment] != null)
 			mask[Segment].dispose();
 		
 		SetBedrock(Segment);
 		mask[Segment] = new Texture( data[Segment] );
+	}
+	
+	public boolean Contains(float X, float Y)
+	{
+		return Y < (Game.WORLDH - GetHeight((int)X));
 	}
 	
 	public void Draw(SpriteBatch Batch, Vector2 Campos)
