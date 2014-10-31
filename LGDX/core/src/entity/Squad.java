@@ -22,7 +22,6 @@ import com.mygdx.game.Game;
 
 public class Squad 
 {
-	private static float EPSILON = 2f;
 	private static Texture pointer;
 	private static AnimTex target;
 	private static TextureRegion[] mugshots;
@@ -243,10 +242,10 @@ public class Squad
 			Rectangle r = n.GetBBox();
 			
 			// used for determing whether or not to draw the target position
-			if (r.x < minx)
-				minx = r.x;
-			if (r.x > maxx)
-				maxx = r.x;
+			if (n.GetPos().x < minx)
+				minx = n.GetPos().x;
+			if (n.GetPos().x + n.GetWidth() > maxx)
+				maxx = n.GetPos().x + n.GetWidth();
 			
 			// used for mouse over operations
 			if (r.x >= firstx) {
@@ -523,13 +522,8 @@ public class Squad
 		else if (xpos < 0)
 			xpos += Game.WORLDW;
 		
-		if (Math.abs(minx - xpos) < EPSILON || Math.abs(maxx-xpos) < EPSILON)
-			return;
-		
-		if (bbox.x <= xpos && bbox.x+bbox.width >= xpos)
-			return;
-		
-		if (bbox.x <= xpos+Game.WORLDW && bbox.x+bbox.width >= xpos+Game.WORLDW)
+		// check if this unit has reached his position
+		if (xpos >= minx && xpos <= maxx)
 			return;
 		
 		SetPointerHeight();

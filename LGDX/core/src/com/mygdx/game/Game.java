@@ -138,7 +138,7 @@ public class Game extends ApplicationAdapter
 		physics.SetUserArmy(a0);
 		
 		Squad st0 = new Squad(ter);
-		Tank tank0 = new Tank("img/tanks/Tank2.png", ter, 40);
+		Tank tank0 = new Tank("img/tanks/Tank2.png", ter, 100);
 		//tank0.SetBarrelOffset( new Vector2(17, 64-35) );
 		tank0.SetBarrelOffset( new Vector2(18, 64-36) );
 		st0.AddUnit(tank0, cam);
