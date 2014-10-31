@@ -80,15 +80,14 @@ public class CombatResolver
 			combatqueue.add( new CombatPacket(ter, offense, defense, arms) );
 			
 			// increment the index
-			if (direction == 1)
+			if (direction != -1) {
 				index++;
-			else 
+				if (index >= u.size())
+					index = 0;
+			} else  {
 				index--;
-			
-			if (index == u.size()) {
-				index = 0;
-			} else if (index < 0) {
-				index = u.size()-1;
+				if (index < 0) 
+					index = u.size()-1;
 			}
 		}
 		

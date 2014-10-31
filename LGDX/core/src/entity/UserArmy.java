@@ -346,7 +346,7 @@ public class UserArmy extends Army
 			UpdateTargetSquads();
 		
 		if (targetpoint)
-			UpdateTargetPoint(Cam );
+			UpdateTargetPoint(Cam);
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
@@ -537,6 +537,12 @@ public class UserArmy extends Army
 		xpos = Cursor.GetMouseX(Cam.GetPos()) + Cam.GetPos().x;
 		ypos = Cursor.GetMouseY() + Cam.GetPos().y;
 		Vector2 destpos = new Vector2(xpos, ypos);
+		
+		// do not set the angle when the mouse is on the incorrect side of the selected unit
+		if (xpos < selected.GetBBox().x + selected.GetBBox().width/2f && selected.IsForward())
+			return;
+		else if (xpos > selected.GetBBox().x + selected.GetBBox().width/2f && !selected.IsForward())
+			return;
 		
 		float xdist = Math.abs(sourcepos.x - destpos.x);
 		float ydist = destpos.y - sourcepos.y;
