@@ -90,7 +90,9 @@ public class Cursor
 	{
 		if (R.contains(Campos.x + GetMouseX(Campos), Campos.y + GetMouseY()))
 			return true;
-		else if (R.contains(Campos.x + GetMouseX(Campos)+Game.WORLDW, Campos.y + GetMouseY()))
+		else if (R.contains(Campos.x + GetMouseX(Campos) + Game.WORLDW, Campos.y + GetMouseY()))
+			return true;
+		else if (R.contains(Campos.x + GetMouseX(Campos) - Game.WORLDW, Campos.y + GetMouseY()))
 			return true;
 		
 		return false;
