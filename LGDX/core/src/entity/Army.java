@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import particles.Particles;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
@@ -106,7 +107,7 @@ public class Army
 		}
 	}
 	
-	public void AddCombatData(CombatResolver Resolver)
+	public void AddCombatData(CombatResolver Resolver, Particles Particle)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
@@ -117,7 +118,7 @@ public class Army
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
 				Resolver.AddConflict(squad, squad.GetTargetSquad());
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(squad, 1f);
+				Resolver.AddProjectile(Particle, squad, 1f);
 			}
 		}
 	}

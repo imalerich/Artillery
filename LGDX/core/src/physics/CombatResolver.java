@@ -3,6 +3,7 @@ package physics;
 import java.util.Iterator;
 import java.util.Vector;
 
+import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
 
@@ -36,7 +37,7 @@ public class CombatResolver
 		combatqueue.clear();
 	}
 	
-	public void AddProjectile(Squad Offense, float Power)
+	public void AddProjectile(Particles Particle, Squad Offense, float Power)
 	{
 		// calculate the starting velocity
 		Armament arms = Offense.GetArmament();
@@ -56,7 +57,7 @@ public class CombatResolver
 		}
 		
 		// add the projectile
-		projectilequeue.add( new Missile(ter, pos, vel) );
+		projectilequeue.add( new Missile(ter, Particle, pos, vel) );
 	}
 		
 	public void AddConflict(Squad Offense, Squad Defense)

@@ -1,5 +1,6 @@
 package physics;
 
+import particles.Particles;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
@@ -19,9 +20,12 @@ public class Missile
 	private static Texture tex;
 	
 	private Terrain ter;
+	private Particles particle;
 	private Vector2 pos;
 	private Vector2 vel;
 	private boolean hashit;
+	
+	private double time;
 	
 	public static void Init()
 	{
@@ -37,9 +41,10 @@ public class Missile
 		}
 	}
 	
-	public Missile(Terrain Ter, Vector2 Source, Vector2 Velocity)
+	public Missile(Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity)
 	{
 		ter = Ter;
+		particle = Particle;
 		pos = Source;
 		vel = Velocity;
 		hashit = false;
@@ -50,6 +55,9 @@ public class Missile
 		
 		pos.x += tmp.x*Tank.GetBarrelWidth();
 		pos.y += tmp.y*Tank.GetBarrelWidth();
+		
+		time = 1f;
+		AddParticle();
 	}
 	
 	public void Update()
@@ -60,6 +68,9 @@ public class Missile
 		
 		// apply gravity to the velocity
 		vel.y -= GRAVITY * Gdx.graphics.getDeltaTime();
+		
+		time += Gdx.graphics.getDeltaTime();
+		AddParticle();
 		
 		// update the position
 		pos.x += vel.x;
@@ -100,5 +111,17 @@ public class Missile
 	public boolean HasHit()
 	{
 		return hashit;
+	}
+	
+	private void AddParticle()
+	{
+		if (time < 0.001666) {
+			return;
+		}
+		
+		float radius = (float)Math.random()*18 + 12;
+		Vector2 vel = new Vector2((float)Math.random()*16, (float)Math.random()*16);
+		particle.AddParticle(radius, new Vector2(pos), vel);
+		time = 0.0;
 	}
 }

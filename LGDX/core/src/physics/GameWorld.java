@@ -3,6 +3,7 @@ package physics;
 import java.util.Iterator;
 import java.util.Vector;
 
+import particles.Particles;
 import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
@@ -30,6 +31,8 @@ public class GameWorld
 	private CombatResolver resolver;
 	
 	private Terrain ter;
+	private Particles particles;
+	
 	private Army userArmy;
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
@@ -40,6 +43,8 @@ public class GameWorld
 		currentstage = MOVESELECT;
 		
 		resolver = new CombatResolver(Ter);
+		particles = new Particles();
+		
 		userArmy = null;
 		friendlyArmy = new Vector<Army>();
 		enemyArmy = new Vector<Army>();
@@ -148,6 +153,7 @@ public class GameWorld
 	public void Update(Camera Cam)
 	{
 		ter.Update();
+		particles.Update();
 		
 		switch (currentstage)
 		{
@@ -264,6 +270,7 @@ public class GameWorld
 			resolver.DrawSimulation(Batch, Cam);
 		}
 		
+		particles.Draw(Batch, Cam);
 		MenuBar.Draw(Batch, Cam, currentstage, 
 				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.IsMenuOpen());
 	}
@@ -304,13 +311,13 @@ public class GameWorld
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 		
-		userArmy.AddCombatData(resolver);
+		userArmy.AddCombatData(resolver, particles);
 		while (f.hasNext()) {
-			f.next().AddCombatData(resolver);
+			f.next().AddCombatData(resolver, particles);
 		}
 		
 		while (e.hasNext()) {
-			e.next().AddCombatData(resolver);
+			e.next().AddCombatData(resolver, particles);
 		}
 	}
 	
