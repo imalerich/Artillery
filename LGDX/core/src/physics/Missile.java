@@ -15,7 +15,7 @@ import entity.Tank;
 public class Missile 
 {
 	public static final Color COLOR = new Color(128/255f, 128/255f, 128/255f, 1f);
-	private static final int GRAVITY = 144/3; // px's per second
+	private static final int GRAVITY = 144/2; // px's per second
 	private static Texture tex;
 	
 	private Terrain ter;
