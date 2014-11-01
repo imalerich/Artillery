@@ -7,8 +7,8 @@ import com.mygdx.game.Camera;
 
 public class Particle 
 {
-	private static final int GRAVITY = 80;
-	private static final float DECAY = 6f;
+	private static final int GRAVITY = 40;
+	private static final float DECAY = 5f;
 	
 	private float radius;
 	private Vector2 pos;

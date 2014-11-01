@@ -17,6 +17,8 @@ public class Missile
 {
 	public static final Color COLOR = new Color(128/255f, 128/255f, 128/255f, 1f);
 	private static final int GRAVITY = 144/2; // px's per second
+	private static final int PPS = 400; // particles per second
+	private static final float DECAY = 0.6f;
 	private static Texture tex;
 	
 	private Terrain ter;
@@ -24,8 +26,8 @@ public class Missile
 	private Vector2 pos;
 	private Vector2 vel;
 	private boolean hashit;
-	
 	private double time;
+	private double totaltime;
 	
 	public static void Init()
 	{
@@ -56,7 +58,9 @@ public class Missile
 		pos.x += tmp.x*Tank.GetBarrelWidth();
 		pos.y += tmp.y*Tank.GetBarrelWidth();
 		
-		time = 1f;
+		// the ammount of particles to add at the tanks barrel on launch relative to PPS
+		time = 0.1f;
+		totaltime = 0.0;
 		AddParticle();
 	}
 	
@@ -69,7 +73,6 @@ public class Missile
 		// apply gravity to the velocity
 		vel.y -= GRAVITY * Gdx.graphics.getDeltaTime();
 		
-		time += Gdx.graphics.getDeltaTime();
 		AddParticle();
 		
 		// update the position
@@ -115,13 +118,33 @@ public class Missile
 	
 	private void AddParticle()
 	{
-		if (time < 0.001666) {
+		totaltime += Gdx.graphics.getDeltaTime();
+		time += Gdx.graphics.getDeltaTime();
+		
+		int addcount = (int)(PPS*time);
+		if (addcount == 0) {
 			return;
+		} else {
+			time = 0.0f;
 		}
 		
-		float radius = (float)Math.random()*18 + 12;
-		Vector2 vel = new Vector2((float)Math.random()*16, (float)Math.random()*16);
-		particle.AddParticle(radius, new Vector2(pos), vel);
-		time = 0.0;
+		for (int i=0; i<addcount; i++) {
+			float radius = (float)Math.random()*24 + 12;
+			radius *= GetRadiusMod();
+			Vector2 vel = new Vector2((float)Math.random()*16, (float)Math.random()*16);
+			
+			float xpos = pos.x + vel.x * (i/(float)addcount);
+			float ypos = pos.y + vel.y * (i/(float)addcount);
+			
+			particle.AddParticle(radius, new Vector2(xpos, ypos), vel);
+		}
+	}
+	
+	private float GetRadiusMod()
+	{
+		if (totaltime > DECAY)
+			return 0f;
+		else 
+			return (DECAY - (float)totaltime)/DECAY;
 	}
 }
