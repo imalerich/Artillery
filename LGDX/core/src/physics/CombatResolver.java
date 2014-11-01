@@ -36,13 +36,13 @@ public class CombatResolver
 		combatqueue.clear();
 	}
 	
-	public void AddProjectile(Squad Offense)
+	public void AddProjectile(Squad Offense, float Power)
 	{
 		// calculate the starting velocity
 		Armament arms = Offense.GetArmament();
 		double theta = Math.toRadians( Offense.GetBarrelAngle() );
-		Vector2 vel = new Vector2((float)Math.cos(theta) * arms.GetSpeed(), 
-				(float)Math.sin(theta) * arms.GetSpeed());
+		Vector2 vel = new Vector2((float)Math.cos(theta) * arms.GetSpeed() * Power, 
+				(float)Math.sin(theta) * arms.GetSpeed() * Power);
 		
 		// calculate the starting position
 		Vector2 pos = new Vector2(Offense.GetBBox().x, Offense.GetBBox().y);

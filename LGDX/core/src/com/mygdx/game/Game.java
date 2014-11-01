@@ -9,6 +9,7 @@ import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
 import ui.MenuBar;
+import ui.PowerButtons;
 import ui.Profile;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -82,6 +83,7 @@ public class Game extends ApplicationAdapter
 		CombatPacket.Init();
 		Missile.Init();
 		Profile.Init();
+		PowerButtons.Init();
 	}
 	
 	public void Release()
@@ -94,6 +96,7 @@ public class Game extends ApplicationAdapter
 		CombatPacket.Release();
 		Missile.Release();
 		Profile.Release();
+		PowerButtons.Release();
 		
 		physics.Release();
 	}

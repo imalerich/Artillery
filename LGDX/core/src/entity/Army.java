@@ -117,7 +117,7 @@ public class Army
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
 				Resolver.AddConflict(squad, squad.GetTargetSquad());
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(squad);
+				Resolver.AddProjectile(squad, 1f);
 			}
 		}
 	}
@@ -181,6 +181,11 @@ public class Army
 				Stack.AddSquadOver(squad);
 			}
 		}
+	}
+	
+	public boolean IsMenuOpen()
+	{
+		return false;
 	}
 	
 	public void DrawBase(SpriteBatch Batch, Camera Cam)

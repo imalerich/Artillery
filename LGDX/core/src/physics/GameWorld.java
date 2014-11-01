@@ -264,7 +264,8 @@ public class GameWorld
 			resolver.DrawSimulation(Batch, Cam);
 		}
 		
-		MenuBar.Draw(Batch, Cam, currentstage, (currentstage == MOVESELECT || currentstage == ATTACKSELECT));
+		MenuBar.Draw(Batch, Cam, currentstage, 
+				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.IsMenuOpen());
 	}
 	
 	private boolean IsArmiesStageCompleted()

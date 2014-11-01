@@ -14,8 +14,12 @@ public class MenuBar
 	private static Texture bar;
 	private static Texture endbutton;
 	private static Texture endinactive;
+	private static Texture powerbar;
+	private static Texture powerindicator;
 	private static TextureRegion[] currentstage;
 	private static Rectangle bbox;
+	
+	private static float powerlevel = PowerButtons.DEFAULTPOWER/PowerButtons.MAXPOWER;
 	
 	public static void Init()
 	{
@@ -27,6 +31,12 @@ public class MenuBar
 		
 		if (endinactive == null)
 			endinactive = new Texture( Gdx.files.internal("img/ui/menubar/EndInactive.png") );
+		
+		if (powerbar == null)
+			powerbar = new Texture( Gdx.files.internal("img/ui/menubar/powerbar.png") );
+		
+		if (powerindicator == null)
+			powerindicator = new Texture( Gdx.files.internal("img/ui/menubar/powerindicator.png") );
 		
 		if (currentstage == null)
 		{
@@ -48,6 +58,17 @@ public class MenuBar
 		
 		if (endinactive != null)
 			endinactive.dispose();
+		
+		if (powerbar != null)
+			powerbar.dispose();
+		
+		if (powerindicator != null)
+			powerindicator.dispose();
+	}
+	
+	public static void SetPowerLevel(float Level, float Maximum)
+	{
+		powerlevel = Level/Maximum;
 	}
 	
 	public static void SetEndButttonPos()
@@ -81,7 +102,13 @@ public class MenuBar
 		else
 			Batch.draw(endinactive, bbox.x, bbox.y);
 		
+		Batch.draw(powerbar, 2, Game.SCREENH-powerbar.getHeight()+3);
+		Batch.draw(powerindicator, 6, Game.SCREENH-powerbar.getHeight()+14, 
+				(int)(powerindicator.getWidth()*powerlevel), powerindicator.getHeight(), 
+				0, 0, (int)(powerindicator.getWidth()*powerlevel), 
+				(int)powerindicator.getHeight(), false, false);
+		
 		Batch.draw(currentstage[CurrentStage], Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 2,
-				Game.SCREENH-endbutton.getHeight()+2);
+				Game.SCREENH-currentstage[CurrentStage].getRegionHeight()+3);
 	}
 }

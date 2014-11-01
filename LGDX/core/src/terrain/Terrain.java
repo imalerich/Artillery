@@ -16,7 +16,7 @@ public class Terrain
 {
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
-	private static final int MAXSPEED = 8;
+	private static final int MAXSPEED = 6;
 	private float speed = BASESPEED;
 	
 	// image data

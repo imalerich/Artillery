@@ -2,11 +2,13 @@ package entity;
 
 import java.util.Iterator;
 
+import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.MenuBar;
 import ui.PointSelect;
+import ui.PowerButtons;
 import ui.Profile;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -34,10 +36,12 @@ public class UserArmy extends Army
 	
 	private int prevdeployi;
 	private PointSelect moveselect;
+	private PowerButtons powerselect;
 	private boolean moveactive;
 	private boolean profileactive;
 	private boolean targetenemies;
 	private boolean targetpoint;
+	private boolean targetpower;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -66,11 +70,13 @@ public class UserArmy extends Army
 		offensemenu.SetGlyph(1, ButtonOptions.STOP);
 		
 		moveselect = new PointSelect(Ter);
+		powerselect = new PowerButtons();
 		moveactive = false;
 		profileactive = false;
 		squadspawned = false;
 		targetenemies = false;
 		targetpoint = false;
+		targetpower = false;
 		
 		prevdeployi = -1;
 		selected = null;
@@ -129,6 +135,23 @@ public class UserArmy extends Army
 			
 		default:
 			return false;
+		}
+	}
+	
+	public void AddCombatData(CombatResolver Resolver)
+	{
+		// uses the power modifier for projectiles
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			
+			// add each squad and its target to the combat resolver
+			if (squad.GetTargetSquad() != null && 
+					squad.GetArmament().GetType() == Armament.UNITTARGET) {
+				Resolver.AddConflict(squad, squad.GetTargetSquad());
+			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
+				Resolver.AddProjectile(squad, powerselect.GetPower()/PowerButtons.MAXPOWER);
+			}
 		}
 	}
 	
@@ -342,11 +365,14 @@ public class UserArmy extends Army
 		if (menuactive)
 			UpdateOffenseButtons(Cam.GetPos());
 		
-		if (targetenemies)
+		else if (targetenemies)
 			UpdateTargetSquads();
 		
-		if (targetpoint)
+		else if (targetpoint)
 			UpdateTargetPoint(Cam);
+		
+		else if (targetpower)
+			UpdateTargetPower(Cam);
 	}
 	
 	private void UpdateButtons(Vector2 Campos)
@@ -523,9 +549,11 @@ public class UserArmy extends Army
 		}
 		
 		// leave the current unit selected and leave targeting for this squad
-		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+		if (Cursor.isButtonJustReleased(Cursor.LEFT)) {
 			selected.SetFiring(true);
 			targetpoint = false;
+			targetpower = true;
+			powerselect.SetPos(Cursor.GetMouseX(Cam.GetPos())+Cam.GetPos().x, Cursor.GetMouseY()+Cam.GetPos().y);
 			return;
 		}
 		
@@ -555,6 +583,32 @@ public class UserArmy extends Army
 		selected.SetBarrelAngle(theta);
 	}
 	
+	private void UpdateTargetPower(Camera Cam)
+	{
+		// INVALID - do not select a point
+		if (selected == null) {
+			targetpower = false;
+			return;
+		}
+		
+		// leave targeting, do not select a point
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			selected.SetFiring(false);
+			targetpoint = false;
+			return;
+		}
+		
+		// leave the current unit selected and leave targeting for this squad
+		if (powerselect.DoFire(Cam)) {
+			selected.SetFiring(true);
+			targetpower = false;
+			return;
+		}
+		
+		powerselect.Update(Cam);
+		MenuBar.SetPowerLevel(powerselect.GetPower(), PowerButtons.MAXPOWER);
+	}
+	
 	private void UpdateProfile()
 	{
 		if (selected == null) {
@@ -566,9 +620,9 @@ public class UserArmy extends Army
 			profileactive = false;
 	}
 	
-	private boolean IsMenuOpen()
+	public boolean IsMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
@@ -611,6 +665,10 @@ public class UserArmy extends Army
 	
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
+		// do not draw while in the power selection menu
+		if (targetpower)
+			return;
+		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			s.next().DrawTargetSquad(Batch, Cam);
@@ -643,6 +701,10 @@ public class UserArmy extends Army
 		
 		if (moveactive && selected != null) {
 			moveselect.Draw(Batch, Cam);
+		}
+		
+		if (targetpower && selected != null) {
+			powerselect.Draw(Batch, Cam);
 		}
 		
 		if (profileactive && selected != null) {
