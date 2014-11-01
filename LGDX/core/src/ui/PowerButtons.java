@@ -80,7 +80,6 @@ public class PowerButtons
 	
 	public void SetPos(float X, float Y)
 	{
-		power = DEFAULTPOWER;
 		SetPos(new Vector2(X, Y));
 	}
 	

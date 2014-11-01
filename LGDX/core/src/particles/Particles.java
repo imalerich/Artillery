@@ -1,7 +1,6 @@
 package particles;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.Arrays;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -9,11 +8,14 @@ import com.mygdx.game.Camera;
 
 public class Particles 
 {
-	private Vector<Particle> particles;
+	private static final int SIZE = 100;
+	private Particle[] particles;
+	private int addindex;
 	
 	public Particles()
 	{
-		particles = new Vector<Particle>();
+		particles = new Particle[SIZE];
+		addindex =  0;
 	}
 	
 	public void AddParticle(float Radius, Vector2 Pos)
@@ -21,7 +23,9 @@ public class Particles
 		if (Radius <= 0f)
 			return;
 		
-		particles.add(new Particle(Radius, Pos, new Vector2()));
+		Expand();
+		particles[addindex] = new Particle(Radius, Pos, new Vector2());
+		addindex++;
 	}
 	
 	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel)
@@ -29,30 +33,47 @@ public class Particles
 		if (Radius <= 0f)
 			return;
 		
-		particles.add(new Particle(Radius, Pos, Vel));
+		Expand();
+		particles[addindex] = new Particle(Radius, Pos, Vel);
+		addindex++;
 	}
 	
 	public void Update()
 	{
-		Iterator<Particle> p = particles.iterator();
-		while (p.hasNext()) {
-			Particle next = p.next();
-			
-			next.Update();
-			if (!next.IsAlive())
-				p.remove();
+		for (int i=0; i<addindex; i++)
+		{
+			particles[i].Update();
+			if (!particles[i].IsAlive())
+				Remove(i);
 		}
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		ParticleMask.Begin(Batch);
-		Iterator<Particle> p = particles.iterator();
-		while (p.hasNext()) {
-			p.next().Draw(Batch, Cam);;
+		for (int i=0; i<addindex; i++)
+		{
+			particles[i].Draw(Batch, Cam);
+			if (!particles[i].IsAlive())
+				Remove(i);
 		}
 		
 		ParticleMask.End(Batch);
 		ParticleMask.Draw(Batch);
+	}
+	
+	private void Expand()
+	{
+		if (addindex >= particles.length) {
+			// increase the size of the array
+			particles = Arrays.copyOf(particles, particles.length+SIZE);
+		}
+	}
+	
+	private void Remove(int Index)
+	{
+		// replace this particle with the last particle added
+		particles[Index] = particles[addindex-1];
+		addindex--;
 	}
 }

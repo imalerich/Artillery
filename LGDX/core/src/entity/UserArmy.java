@@ -595,7 +595,7 @@ public class UserArmy extends Army
 		// leave targeting, do not select a point
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			selected.SetFiring(false);
-			targetpoint = false;
+			targetpower = false;
 			return;
 		}
 		
