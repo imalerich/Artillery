@@ -1,5 +1,6 @@
 package physics;
 
+import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
 
@@ -21,6 +22,9 @@ public class CombatPacket
 	public static final int BULLETDIMMENSIONX = 3;
 	public static final int BULLETDIMMENSIONY = 2;
 	public static final float HALFWIDTH = BULLETDIMMENSIONX/2f;
+	
+	private static final int PPS = 400; // particles per second
+	private static final float DECAY = 0.4f;
 	private static Texture tex;
 	
 	private final Unit offense;
@@ -34,7 +38,11 @@ public class CombatPacket
 	private Vector2 speed;
 	
 	private Terrain ter;
+	private Particles particle;
 	private Rectangle targetBBox;
+	
+	private double time;
+	private double totaltime;
 	
 	public static void Init()
 	{
@@ -54,9 +62,10 @@ public class CombatPacket
 			tex.dispose();
 	}
 	
-	public CombatPacket(Terrain Ter, Unit Offense, Unit Defense, Armament Arms)
+	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, Armament Arms)
 	{
 		ter = Ter;
+		particle = Particles;
 		offense = Offense;
 		defense = Defense;
 		arms = Arms;
@@ -82,6 +91,11 @@ public class CombatPacket
 		
 		// set the target bounding box
 		targetBBox = new Rectangle(target.x, target.y, defense.GetWidth(), defense.GetHeight());
+		
+		// the ammount of particles to add at the tanks barrel on launch relative to PPS
+		time = 0.0;
+		totaltime = 0.0;
+		AddParticle();
 	}
 	
 	public void Update()
@@ -92,6 +106,8 @@ public class CombatPacket
 			iscompleted = true;
 			return;
 		}
+		
+		AddParticle();
 			
 		int direction = GetMoveDirection();
 		if (direction == 0 || direction == -prevdir) {
@@ -166,6 +182,40 @@ public class CombatPacket
 			return -1;
 		} else {
 			return 0;
+		}
+	}
+	
+	private void AddParticle()
+	{
+		totaltime += Gdx.graphics.getDeltaTime();
+		time += Gdx.graphics.getDeltaTime();
+		
+		int addcount = (int)(PPS*time);
+		if (addcount == 0) {
+			return;
+		} else {
+			time = 0.0f;
+		}
+		
+		int direction = GetMoveDirection();
+		for (int i=0; i<addcount; i++) {
+			float radius = (float)Math.random()*8+ 2;
+			radius *= GetRadiusMod();
+			Vector2 vel = new Vector2((float)Math.random()*4, (float)Math.random()*4);
+			
+			float xpos = pos.x + direction * speed.x * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			float ypos = pos.y + speed.y * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			
+			particle.AddParticle(radius, new Vector2(xpos, ypos), vel);
+		}
+	}
+	
+	private float GetRadiusMod()
+	{
+		if (totaltime > DECAY) {
+			return 0f;
+		} else {
+			return (DECAY - (float)totaltime)/DECAY;
 		}
 	}
 }

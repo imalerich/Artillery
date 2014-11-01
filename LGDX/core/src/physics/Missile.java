@@ -17,7 +17,7 @@ public class Missile
 {
 	public static final Color COLOR = new Color(128/255f, 128/255f, 128/255f, 1f);
 	private static final int GRAVITY = 144/2; // px's per second
-	private static final int PPS = 400; // particles per second
+	private static final int PPS = 600; // particles per second
 	private static final float DECAY = 0.6f;
 	private static Texture tex;
 	
@@ -131,20 +131,21 @@ public class Missile
 		for (int i=0; i<addcount; i++) {
 			float radius = (float)Math.random()*24 + 12;
 			radius *= GetRadiusMod();
-			Vector2 vel = new Vector2((float)Math.random()*16, (float)Math.random()*16);
+			Vector2 v = new Vector2((float)Math.random()*16, (float)Math.random()*16);
 			
-			float xpos = pos.x + vel.x * (i/(float)addcount);
-			float ypos = pos.y + vel.y * (i/(float)addcount);
+			float xpos = pos.x + vel.x * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			float ypos = pos.y + vel.y * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
 			
-			particle.AddParticle(radius, new Vector2(xpos, ypos), vel);
+			particle.AddParticle(radius, new Vector2(xpos, ypos), v);
 		}
 	}
 	
 	private float GetRadiusMod()
 	{
-		if (totaltime > DECAY)
+		if (totaltime > DECAY) {
 			return 0f;
-		else 
+		} else {
 			return (DECAY - (float)totaltime)/DECAY;
+		}
 	}
 }

@@ -116,7 +116,7 @@ public class Army
 			// add each squad and its target to the combat resolver
 			if (squad.GetTargetSquad() != null && 
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
-				Resolver.AddConflict(squad, squad.GetTargetSquad());
+				Resolver.AddConflict(Particle, squad, squad.GetTargetSquad());
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
 				Resolver.AddProjectile(Particle, squad, 1f);
 			}

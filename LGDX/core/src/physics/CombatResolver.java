@@ -60,7 +60,7 @@ public class CombatResolver
 		projectilequeue.add( new Missile(ter, Particle, pos, vel) );
 	}
 		
-	public void AddConflict(Squad Offense, Squad Defense)
+	public void AddConflict(Particles Particle, Squad Offense, Squad Defense)
 	{
 		Armament arms = Offense.GetArmament();
 		Vector<Unit> u = Defense.GetUnits();
@@ -72,7 +72,7 @@ public class CombatResolver
 			// look for a target for this unit
 			Unit offense = i.next();
 			Unit defense = u.get(index);
-			combatqueue.add( new CombatPacket(ter, offense, defense, arms) );
+			combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms) );
 			
 			// increment the index
 			index++;

@@ -38,7 +38,7 @@ public class Particle
 	
 	public boolean IsAlive()
 	{
-		return radius > 8f;
+		return radius > 0f;
 	}
 	
 	public void Update()
