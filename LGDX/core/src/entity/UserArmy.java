@@ -571,10 +571,11 @@ public class UserArmy extends Army
 		float startx = selected.GetBBox().x + selected.GetBBox().width/2f;
 		int direction = GameWorld.GetDirection(startx, 0f, 
 				xpos, 0f);
-		if (direction != 1 && selected.IsForward())
-			return;
-		else if (direction != -1 && !selected.IsForward())
-			return;
+		if (direction != 1 && selected.IsForward()) {
+			selected.SetForward(false);
+		} else if (direction != -1 && !selected.IsForward()) {
+			selected.SetForward(true);
+		}
 		
 		float xdist = GameWorld.GetDistance(startx, 0f, xpos, 0f);
 		float ydist = destpos.y - sourcepos.y;

@@ -13,7 +13,7 @@ import com.mygdx.game.Shaders;
 
 public class Tank extends Unit 
 {
-	private static float MAXANGLE = 60;
+	private static float MAXANGLE = 180+15;
 	private static float MINANGLE = -15;
 	
 	private Texture tex;

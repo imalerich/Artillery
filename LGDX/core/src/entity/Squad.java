@@ -275,6 +275,14 @@ public class Squad
 			bbox.x -= Game.WORLDW;
 	}
 	
+	public void SetForward(boolean Forward)
+	{
+		Iterator<Unit> i = units.iterator();
+		while (i.hasNext()) {
+			i.next().SetForward(Forward);
+		}
+	}
+	
 	public boolean IsMouseOver(Vector2 Campos)
 	{
 		CalcBoundingBox(Campos);
