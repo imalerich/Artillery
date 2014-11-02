@@ -104,7 +104,7 @@ public class UserArmy extends Army
 				return false;
 			
 			// check the end turn conditions
-			if (Gdx.input.isKeyPressed(Keys.ENTER))
+			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
 				return true;
 			else if (MenuBar.IsEndTurn())
 				return true;
@@ -125,7 +125,7 @@ public class UserArmy extends Army
 				return false;
 			
 			// check the end turn conditions
-			if (Gdx.input.isKeyPressed(Keys.ENTER))
+			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
 				return true;
 			else if (MenuBar.IsEndTurn())
 				return true;

@@ -15,6 +15,7 @@ public class ParticleMask
 	private static int height;
 	private static int xpos0;
 	private static int xpos1;
+	private static float time;
 	
 	private static ShapeRenderer sr;
 	
@@ -27,6 +28,7 @@ public class ParticleMask
 		}
 		
 		sr = new ShapeRenderer();
+		time = 0.0f;
 	}
 	
 	public static void Release()
@@ -70,8 +72,12 @@ public class ParticleMask
 	{
 		MaskOn(Batch);
 		
-		xpos0 = (int)(Math.random()*2);
-		xpos1 = (int)(Math.random()*2);
+		time += Gdx.graphics.getDeltaTime();
+		if (time > 0.1f) {
+			xpos0 = (int)(Math.random()*2);
+			xpos1 = (int)(Math.random()*2);
+			time = 0.0f;
+		}
 		
 		for (int i=-2; i<Game.SCREENW/width + 2; i++) {
 			for (int j=-2; j<Game.SCREENH/height + 2; j++) {

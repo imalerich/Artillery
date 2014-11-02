@@ -16,7 +16,7 @@ import entity.Tank;
 public class Missile 
 {
 	public static final Color COLOR = new Color(128/255f, 128/255f, 128/255f, 1f);
-	private static final int GRAVITY = 144/2; // px's per second
+	private static final int GRAVITY = 144*8; // px's per second
 	private static final int PPS = 600; // particles per second
 	private static final float DECAY = 0.6f;
 	private static Texture tex;
@@ -76,8 +76,8 @@ public class Missile
 		AddParticle();
 		
 		// update the position
-		pos.x += vel.x;
-		pos.y += vel.y;
+		pos.x += vel.x * Gdx.graphics.getDeltaTime();
+		pos.y += vel.y * Gdx.graphics.getDeltaTime();
 		
 		// wrap the x position
 		if (pos.x >= Game.WORLDW) {
@@ -124,8 +124,6 @@ public class Missile
 		int addcount = (int)(PPS*time);
 		if (addcount == 0) {
 			return;
-		} else {
-			time = 0.0f;
 		}
 		
 		for (int i=0; i<addcount; i++) {
@@ -133,11 +131,12 @@ public class Missile
 			radius *= GetRadiusMod();
 			Vector2 v = new Vector2((float)Math.random()*16, (float)Math.random()*16);
 			
-			float xpos = pos.x + vel.x * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
-			float ypos = pos.y + vel.y * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			float xpos = pos.x + vel.x * (i/(float)addcount) * (float)time;
+			float ypos = pos.y + vel.y * (i/(float)addcount) * (float)time;
 			
 			particle.AddParticle(radius, new Vector2(xpos, ypos), v);
 		}
+		time = 0.0f;
 	}
 	
 	private float GetRadiusMod()
