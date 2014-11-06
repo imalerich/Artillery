@@ -16,7 +16,7 @@ public class Unit
 	protected boolean forward;
 	protected boolean moving;
 	protected int speed;
-	protected int health;
+	protected float health;
 	
 	protected int viewRadius = 256;
 	protected int width = 0;
@@ -75,17 +75,22 @@ public class Unit
 		viewRadius = Radius;
 	}
 	
-	public int GetHealth()
+	public boolean IsAlive()
+	{
+		return health > 0;
+	}
+	
+	public float GetHealth()
 	{
 		return health;
 	}
 	
-	public void Damage(int Dmg)
+	public void Damage(float Dmg)
 	{
 		health -= Dmg;
 	}
 	
-	public void Heal(int Amt)
+	public void Heal(float Amt)
 	{
 		health += Amt;
 	}

@@ -70,6 +70,7 @@ public class Tank extends Unit
 		barrelPhi = 0.0f;
 		ter = Ter;
 		speed = Speed;
+		health = Float.MAX_VALUE;
 	}
 	
 	public Rectangle GetBBox()

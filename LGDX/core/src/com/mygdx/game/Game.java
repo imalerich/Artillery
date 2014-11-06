@@ -86,6 +86,7 @@ public class Game extends ApplicationAdapter
 		Profile.Init();
 		PowerButtons.Init();
 		ParticleMask.Init();
+		Terrain.Init();
 	}
 	
 	public void Release()

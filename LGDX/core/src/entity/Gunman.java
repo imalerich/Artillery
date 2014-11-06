@@ -48,6 +48,7 @@ public class Gunman extends Unit
 		ter = Ter;
 		speed = Speed;
 		mugshotIndex = 0;
+		health = 10;
 	}
 	
 	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
@@ -82,6 +83,7 @@ public class Gunman extends Unit
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		health -= Gdx.graphics.getDeltaTime();
 		SetHeight();
 		Vector2 Coords = new Vector2(pos);
 		int index = 1;

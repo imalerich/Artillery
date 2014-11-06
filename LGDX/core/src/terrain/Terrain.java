@@ -14,6 +14,7 @@ import com.mygdx.game.Game;
 
 public class Terrain 
 {
+	private static Pixmap DEADTROOP;
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
 	private static final int MAXSPEED = 6;
@@ -42,6 +43,13 @@ public class Terrain
 	private static final int SEGMENTWIDTH = 64;
 	private static final int ALPHAMASK = 255;
 	
+	public static void Init()
+	{
+		if (DEADTROOP == null) {
+			DEADTROOP = new Pixmap( Gdx.files.internal("img/units/deadtroop.png") );
+		}
+	}
+	
 	public static void SetColor(Color Col)
 	{
 		col = Col;
@@ -54,6 +62,10 @@ public class Terrain
 	
 	public void Release()
 	{
+		if (DEADTROOP != null) {
+			DEADTROOP.dispose();
+		}
+		
 		for (int i=0; i<segmentcount; i++) {
 			mask[i].dispose();
 			data[i].dispose();
@@ -402,7 +414,7 @@ public class Terrain
 		region1 = Math.min(region1, segmentcount-1);
 		
 		// for each segment, invalidate it, and cut the region
-		for (int i=region0; i<region1; i++)
+		for (int i=region0; i<=region1; i++)
 		{
 			int localx = X - i*SEGMENTWIDTH;
 			isSegmentValid[i] = false;
@@ -411,6 +423,38 @@ public class Terrain
 			data[i].fillRectangle(localx, Y, Width, Height);
 			InvalidateSegment(i);
 		}
+	}
+	
+	public void AddDeceasedTroop(int X)
+	{
+		Pixmap.setBlending(Blending.SourceOver);
+		
+		int width = DEADTROOP.getWidth();
+		int height = DEADTROOP.getHeight();
+		
+		int x0 = X;
+		int x1 = X+width;
+		int y = GetHeight(X + width/2)-height;
+		
+		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
+		region0 = Math.max(region0, 0);
+		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
+		region1 = Math.min(region1, segmentcount-1);
+		
+		for (int i=region0; i<=region1; i++)
+		{
+			int localx = X - i*SEGMENTWIDTH;
+			if (localx+width < 0 || localx > SEGMENTWIDTH) {
+				continue;
+			}
+			
+			isSegmentValid[i] = false;
+			
+			data[i].drawPixmap(DEADTROOP, localx, y);
+			InvalidateSegment(i);
+		}
+		
+		Pixmap.setBlending(Blending.None);
 	}
 	
 	public boolean IsValid()

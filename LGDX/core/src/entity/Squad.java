@@ -109,6 +109,20 @@ public class Squad
 		}
 	}
 	
+	public void CheckAlive()
+	{
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+		{
+			// remove all dead units
+			Unit unit = u.next();
+			if (!unit.IsAlive()) {
+				ter.AddDeceasedTroop((int)unit.GetPos().x);
+				u.remove();
+			}
+		}
+	}
+	
 	public boolean IsForward()
 	{
 		return isforward;
@@ -533,6 +547,8 @@ public class Squad
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
+		CheckAlive();
+		
 		// draw and determine whether this squad is forward or not
 		int forwardc = 0;
 		isforward = false;
