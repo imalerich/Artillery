@@ -14,6 +14,7 @@ import com.mygdx.game.Shaders;
 public class StealthTroop extends Unit
 {
 	private AnimTex anim;
+	private AnimTex death;
 	private static Texture spritesheet;
 	private static int halfwidth;
 	
@@ -36,6 +37,12 @@ public class StealthTroop extends Unit
 			anim.NewAnimation(2, 1, 2, 2, 0.0f);
 		}
 		
+		if (death == null) {
+			death = new AnimTex(Gunman.DEATHANIM, 1, 3, 1);
+			death.NewAnimation(0, 3, 0, 2, 0.1f);
+			death.SetTime(0.0f);
+		}
+		
 		halfwidth = anim.GetFrameWidth();
 		
 		mugshotIndex = 1;
@@ -49,6 +56,12 @@ public class StealthTroop extends Unit
 		forward = true;
 		ter = Ter;
 		speed = Speed;
+		health = 10;
+	}
+	
+	public boolean IsAlive()
+	{
+		return !death.IsCompleted(0);
 	}
 	
 	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
@@ -80,8 +93,23 @@ public class StealthTroop extends Unit
 		Shaders.RevertShader(Batch);
 	}
 	
+	public void DrawDieing(SpriteBatch Batch, Camera Cam)
+	{
+		death.UpdateClock();
+		
+		if (forward)
+			death.Render(Batch, Cam, 0, pos, 1.0f, 1.0f, false);
+		else
+			death.Render(Batch, Cam, 0, pos, -1.0f, 1.0f, false);
+	}
+	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		if (health <= 0) {
+			DrawDieing(Batch, Cam);
+			return;
+		}
+		
 		SetHeight();
 		Vector2 Coords = new Vector2(pos);
 		int index = 1;

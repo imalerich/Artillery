@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import entity.Army;
+import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
 import entity.UserArmy;
@@ -74,6 +75,7 @@ public class Game extends ApplicationAdapter
 		Terrain.SetColor( new Color(16/255f, 16/255f, 16/255f, 1f));
 		
 		Tank.Init();
+		Gunman.Init();
 		Squad.Init();
 		Shaders.Init();
 		Cursor.Init();

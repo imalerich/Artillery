@@ -117,7 +117,7 @@ public class Squad
 			// remove all dead units
 			Unit unit = u.next();
 			if (!unit.IsAlive()) {
-				ter.AddDeceasedTroop((int)unit.GetPos().x);
+				ter.AddDeceasedTroop((int)unit.GetPos().x, unit.IsForward());
 				u.remove();
 			}
 		}

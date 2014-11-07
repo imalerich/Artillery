@@ -14,7 +14,9 @@ import com.mygdx.game.Game;
 
 public class Terrain 
 {
-	private static Pixmap DEADTROOP;
+	private static Pixmap DEADTROOPR;
+	private static Pixmap DEADTROOPL;
+	
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
 	private static final int MAXSPEED = 6;
@@ -45,8 +47,12 @@ public class Terrain
 	
 	public static void Init()
 	{
-		if (DEADTROOP == null) {
-			DEADTROOP = new Pixmap( Gdx.files.internal("img/units/deadtroop.png") );
+		if (DEADTROOPR == null) {
+			DEADTROOPR = new Pixmap( Gdx.files.internal("img/units/deadtroopR.png") );
+		}
+		
+		if (DEADTROOPL == null) {
+			DEADTROOPL = new Pixmap( Gdx.files.internal("img/units/deadtroopL.png") );
 		}
 	}
 	
@@ -62,8 +68,12 @@ public class Terrain
 	
 	public void Release()
 	{
-		if (DEADTROOP != null) {
-			DEADTROOP.dispose();
+		if (DEADTROOPR != null) {
+			DEADTROOPR.dispose();
+		}
+		
+		if (DEADTROOPL != null) {
+			DEADTROOPL.dispose();
 		}
 		
 		for (int i=0; i<segmentcount; i++) {
@@ -425,12 +435,12 @@ public class Terrain
 		}
 	}
 	
-	public void AddDeceasedTroop(int X)
+	public void AddDeceasedTroop(int X, boolean Forward)
 	{
 		Pixmap.setBlending(Blending.SourceOver);
 		
-		int width = DEADTROOP.getWidth();
-		int height = DEADTROOP.getHeight();
+		int width = DEADTROOPR.getWidth();
+		int height = DEADTROOPR.getHeight();
 		
 		int x0 = X;
 		int x1 = X+width;
@@ -450,7 +460,10 @@ public class Terrain
 			
 			isSegmentValid[i] = false;
 			
-			data[i].drawPixmap(DEADTROOP, localx, y);
+			if (Forward)
+				data[i].drawPixmap(DEADTROOPR, localx, y);
+			else
+				data[i].drawPixmap(DEADTROOPL, localx, y);
 			InvalidateSegment(i);
 		}
 		
@@ -493,12 +506,12 @@ public class Terrain
 		// draw each segment
 		int s0 = GetSegment((int)Campos.x) - 1;
 		s0 = (int)Math.max(s0, 0);
-		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 4;
+		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 5;
 		
 		// render the extension
 		int e0 = GetSegment((int)Campos.x) - segmentcount;
 		e0 = (int)Math.max(e0, 0);
-		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 4;
+		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 5;
 		e1 = Math.min(e1, mask.length-1);
 		
 		if (s1 > segmentcount)

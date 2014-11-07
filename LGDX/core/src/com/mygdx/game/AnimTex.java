@@ -74,7 +74,12 @@ public class AnimTex
 		}
 		
 		animations[Index] = new Animation(TimeStep, frames);
-		time = (float)(Math.random()*TimeStep);
+		time = (float)(Math.random()*TimeStep*FrameCount);
+	}
+	
+	public void SetTime(float Time)
+	{
+		time = Time;
 	}
 	
 	public void UpdateClock()
@@ -82,15 +87,30 @@ public class AnimTex
 		time += Gdx.graphics.getDeltaTime();
 	}
 	
+	public boolean IsCompleted(int Index)
+	{
+		return animations[Index].isAnimationFinished(time-animations[Index].getFrameDuration());
+	}
+	
 	public TextureRegion GetCurrent(int Index)
 	{
-		currentframe = animations[Index].getKeyFrame(time, true);
+		return GetCurrent(Index, true);
+	}
+	
+	public TextureRegion GetCurrent(int Index, boolean Looping)
+	{
+		currentframe = animations[Index].getKeyFrame(time, Looping);
 		return currentframe;
 	}
 	
 	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale)
 	{
-		currentframe = animations[Index].getKeyFrame(time, true);
+		Render(Batch, Cam, Index, Pos, XScale, YScale, true);
+	}
+	
+	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, boolean Looping)
+	{
+		currentframe = animations[Index].getKeyFrame(time, Looping);
 		
 		Batch.draw(currentframe, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
 				width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);

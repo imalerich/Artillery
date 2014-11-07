@@ -13,27 +13,48 @@ import com.mygdx.game.Shaders;
 
 public class Gunman extends Unit
 {
+	public static Texture DEATHANIM;
+	public static Texture SPRITESHEET;
+	
+	private AnimTex death;
 	private AnimTex anim;
-	private static Texture spritesheet;
 	private static int halfwidth;
+	
+	public static void Init()
+	{
+		SPRITESHEET = new Texture( Gdx.files.internal("img/units/gunman.png") );
+		DEATHANIM = new Texture( Gdx.files.internal("img/units/deathanim.png") );
+	}
 	
 	public void Release()
 	{
-		if (spritesheet != null)
-			spritesheet.dispose();
+		if (SPRITESHEET != null)
+			SPRITESHEET.dispose();
+		
+		if (DEATHANIM != null)
+			DEATHANIM.dispose();
 		
 		anim.Release();
+	}
+	
+	public boolean IsAlive()
+	{
+		return !death.IsCompleted(0);
 	}
 	
 	public Gunman(Terrain Ter, Vector2 Pos, int Speed)
 	{
 		if (anim == null) {
-			spritesheet = new Texture( Gdx.files.internal("img/units/gunman.png") );
-			
-			anim = new AnimTex(spritesheet, 1, 3, 3);
+			anim = new AnimTex(SPRITESHEET, 1, 3, 3);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
 			anim.NewAnimation(2, 1, 2, 2, 0.0f);
+		}
+		
+		if (death == null) {
+			death = new AnimTex(DEATHANIM, 1, 3, 1);
+			death.NewAnimation(0, 3, 0, 2, 0.1f);
+			death.SetTime(0.0f);
 		}
 		
 		halfwidth = anim.GetFrameWidth();
@@ -81,8 +102,23 @@ public class Gunman extends Unit
 		Shaders.RevertShader(Batch);
 	}
 	
+	public void DrawDieing(SpriteBatch Batch, Camera Cam)
+	{
+		death.UpdateClock();
+		
+		if (forward)
+			death.Render(Batch, Cam, 0, pos, 1.0f, 1.0f, false);
+		else
+			death.Render(Batch, Cam, 0, pos, -1.0f, 1.0f, false);
+	}
+	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		if (health <= 0) {
+			DrawDieing(Batch, Cam);
+			return;
+		}
+		
 		health -= Gdx.graphics.getDeltaTime();
 		SetHeight();
 		Vector2 Coords = new Vector2(pos);
