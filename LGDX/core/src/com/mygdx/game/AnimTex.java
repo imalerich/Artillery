@@ -115,4 +115,17 @@ public class AnimTex
 		Batch.draw(currentframe, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
 				width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);
 	}
+	
+	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, 
+			boolean Looping, int SrcWidth, int SrcHeight)
+	{
+		currentframe = animations[Index].getKeyFrame(time, Looping);
+		TextureRegion tmp = new TextureRegion(currentframe);
+		tmp.setRegionY(height-SrcHeight);
+		tmp.setRegionHeight(SrcHeight);
+		tmp.setRegionWidth(SrcWidth);
+		
+		Batch.draw(tmp, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
+				width/2.0f, height/2.0f, SrcWidth, SrcHeight, XScale, YScale, 0.0f);
+	}
 }

@@ -17,6 +17,7 @@ public class Unit
 	protected boolean moving;
 	protected int speed;
 	protected float health;
+	protected float maxhealth;
 	
 	protected int viewRadius = 256;
 	protected int width = 0;

@@ -109,7 +109,7 @@ public class Squad
 		}
 	}
 	
-	public void CheckAlive()
+	public void CheckAlive(Vector2 Campos)
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
@@ -121,6 +121,8 @@ public class Squad
 				u.remove();
 			}
 		}
+		
+		CalcBoundingBox(Campos);
 	}
 	
 	public boolean IsForward()
@@ -547,8 +549,6 @@ public class Squad
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
-		CheckAlive();
-		
 		// draw and determine whether this squad is forward or not
 		int forwardc = 0;
 		isforward = false;

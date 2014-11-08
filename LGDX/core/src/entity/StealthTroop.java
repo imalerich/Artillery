@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -57,6 +58,7 @@ public class StealthTroop extends Unit
 		ter = Ter;
 		speed = Speed;
 		health = 10;
+		maxhealth = 10;
 	}
 	
 	public boolean IsAlive()
@@ -125,9 +127,24 @@ public class StealthTroop extends Unit
 		else if (Target)
 			DrawTarget(Batch, Cam, index);
 		
-		if (forward)
-			anim.Render(Batch, Cam, index, Coords, 1.0f, 1.0f);
-		else anim.Render(Batch, Cam, index, Coords, -1.0f, 1.0f);
+		int width = anim.GetFrameWidth();
+		int height = anim.GetFrameHeight();
+		DrawAnim(Batch, Cam, index, Coords, width, height);
+		
+		if (Cursor.IsMouseOver(GetBBox(), Cam.GetPos())) {
+			Shaders.SetShader(Batch, Shaders.health);
+			int h = (int)(height * (float)health/maxhealth);
+			DrawAnim(Batch, Cam, index, Coords, width, h);
+			Shaders.RevertShader(Batch);
+		}
+		
 		moving = false;
+	}
+	
+	private void DrawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
+	{
+		if (forward)
+			anim.Render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
+		else anim.Render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
 	}
 }

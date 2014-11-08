@@ -9,6 +9,7 @@ public class Shaders
 	public static ShaderProgram hili;
 	public static ShaderProgram target;
 	public static ShaderProgram enemy;
+	public static ShaderProgram health;
 	
 	private static ShaderProgram current;
 	private static ShaderProgram prev;
@@ -23,6 +24,9 @@ public class Shaders
 		
 		if (target != null)
 			target.dispose();
+		
+		if (health != null)
+			health.dispose();
 	}
 	
 	public static void Init()
@@ -36,10 +40,12 @@ public class Shaders
 		String fshader = Gdx.files.internal("shaders/hili.fs").readString();
 		String tfshader = Gdx.files.internal("shaders/target.fs").readString();
 		String efshader = Gdx.files.internal("shaders/enemy.fs").readString();
+		String healthshader = Gdx.files.internal("shaders/health.fs").readString();
 		
 		hili = new ShaderProgram(vshader, fshader);
 		enemy = new ShaderProgram(vshader, efshader);
 		target = new ShaderProgram(vshader, tfshader);
+		health = new ShaderProgram(vshader, healthshader);
 	}
 	
 	public static void SetShader(SpriteBatch Batch, ShaderProgram Prog)

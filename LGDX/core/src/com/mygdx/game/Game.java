@@ -14,6 +14,7 @@ import ui.PowerButtons;
 import ui.Profile;
 import ui.UnitDeployer;
 import arsenal.Armament;
+import arsenal.Armor;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -152,6 +153,7 @@ public class Game extends ApplicationAdapter
 		//tank0.SetBarrelOffset( new Vector2(18, 64-36) );
 		st0.AddUnit(tank0, cam);
 		st0.SetArmament( new Armament(Armament.POINTTARGET, 256, 1, 10, 1500, 0.8f));
+		st0.SetArmor( new Armor(100, 20) );
 		st0.SetBarrelSrc( new Vector2(17, 64-35) );
 		//st0.SetBarrelSrc( new Vector2(18, 64-36) );
 		a0.AddSquad(st0);
@@ -164,6 +166,7 @@ public class Game extends ApplicationAdapter
 		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );
 		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
 		st1.AddUnit(tank1, cam);
+		st1.SetArmor( new Armor(100, 20) );
 		a1.AddSquad(st1);
 		a1.SpawnUnit(UnitDeployer.GUNMAN, 6, cam, 20);
 		physics.AddEnemyArmy(a1);

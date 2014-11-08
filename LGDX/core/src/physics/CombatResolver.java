@@ -6,6 +6,7 @@ import java.util.Vector;
 import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
+import arsenal.Armor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -63,6 +64,7 @@ public class CombatResolver
 	public void AddConflict(Particles Particle, Squad Offense, Squad Defense)
 	{
 		Armament arms = Offense.GetArmament();
+		Armor armor = Defense.GetArmor();
 		Vector<Unit> u = Defense.GetUnits();
 		int index = 0;
 		
@@ -72,7 +74,7 @@ public class CombatResolver
 			// look for a target for this unit
 			Unit offense = i.next();
 			Unit defense = u.get(index);
-			combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms) );
+			combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor) );
 			
 			// increment the index
 			index++;

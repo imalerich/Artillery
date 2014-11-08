@@ -3,6 +3,7 @@ package physics;
 import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
+import arsenal.Armor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -30,6 +31,7 @@ public class CombatPacket
 	private final Unit offense;
 	private final Unit defense;
 	private final Armament arms;
+	private final Armor armor;
 	private boolean iscompleted;
 	private int prevdir;
 	
@@ -62,13 +64,14 @@ public class CombatPacket
 			tex.dispose();
 	}
 	
-	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, Armament Arms)
+	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, Armament Arms, Armor Armor)
 	{
 		ter = Ter;
 		particle = Particles;
 		offense = Offense;
 		defense = Defense;
 		arms = Arms;
+		armor = Armor;
 		iscompleted = false;
 		prevdir = 0;
 		
@@ -100,10 +103,14 @@ public class CombatPacket
 	
 	public void Update()
 	{
+		if (iscompleted) {
+			return;
+		}
+		
 		// check if this unit has reached his position
 		if (targetBBox.contains(pos.x + HALFWIDTH, 
 				pos.y + HALFWIDTH) || ter.Contains(pos.x, pos.y)) {
-			iscompleted = true;
+			SetCompleted();
 			return;
 		}
 		
@@ -111,7 +118,7 @@ public class CombatPacket
 			
 		int direction = GetMoveDirection();
 		if (direction == 0 || direction == -prevdir) {
-			iscompleted = true;
+			SetCompleted();
 			return;
 		}
 		
@@ -154,12 +161,33 @@ public class CombatPacket
 	
 	public void SetCompleted()
 	{
+		// avoid repeat offenders
+		if (iscompleted) {
+			return;
+		}
+		
 		iscompleted = true;
+		ProcHit();
 	}
 	
 	public boolean IsCompleted()
 	{
 		return iscompleted;
+	}
+	
+	private void ProcHit()
+	{
+		double doeshit = Math.random();
+		if (doeshit > arms.GetAccuracy()) {
+			// return early, the attack missed
+			return;
+		}
+		
+		float dmg = Math.max(arms.GetStrength() - armor.GetStrength(), 0);
+		System.out.println("Dmg: " + dmg);
+		armor.Damage(arms.GetStrength());
+		
+		defense.Damage(dmg);
 	}
 	
 	private int GetMoveDirection()

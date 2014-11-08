@@ -75,6 +75,50 @@ public class GameWorld
 		enemyArmy.add(Add);
 	}
 	
+	public void Update(Camera Cam)
+	{
+		ter.Update();
+		particles.Update();
+		
+		switch (currentstage)
+		{
+		case MOVESELECT:
+			UpdateMoveSelect(Cam);
+			break;
+			
+		case MOVEUPDATE:
+			UpdateMove(Cam);
+			break;
+			
+		case ATTACKSELECT:
+			UpdateAttackSelect(Cam);
+			break;
+			
+		case ATTACKUPDATE:
+			UpdateAttack(Cam);
+			break;
+			
+		default:
+			break;
+		}
+		
+		CheckForDeaths(Cam);
+		CheckNextStage();
+	}
+	
+	public void CheckForDeaths(Camera Cam)
+	{
+		userArmy.CheckForDeaths(Cam);
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().CheckForDeaths(Cam);
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().CheckForDeaths(Cam);
+	}
+	
 	public void UpdateMoveSelect(Camera Cam)
 	{
 		userArmy.UpdateMoveSelect(Cam);
@@ -148,36 +192,6 @@ public class GameWorld
 		while (e.hasNext()) {
 			e.next().GetMouseOver(stack, Cam);
 		}
-	}
-	
-	public void Update(Camera Cam)
-	{
-		ter.Update();
-		particles.Update();
-		
-		switch (currentstage)
-		{
-		case MOVESELECT:
-			UpdateMoveSelect(Cam);
-			break;
-			
-		case MOVEUPDATE:
-			UpdateMove(Cam);
-			break;
-			
-		case ATTACKSELECT:
-			UpdateAttackSelect(Cam);
-			break;
-			
-		case ATTACKUPDATE:
-			UpdateAttack(Cam);
-			break;
-			
-		default:
-			break;
-		}
-		
-		CheckNextStage();
 	}
 	
 	private void DrawTargets(SpriteBatch Batch, Camera Cam)

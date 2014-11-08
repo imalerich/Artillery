@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -70,6 +71,7 @@ public class Gunman extends Unit
 		speed = Speed;
 		mugshotIndex = 0;
 		health = 10;
+		maxhealth = 10;
 	}
 	
 	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
@@ -119,7 +121,6 @@ public class Gunman extends Unit
 			return;
 		}
 		
-		health -= Gdx.graphics.getDeltaTime();
 		SetHeight();
 		Vector2 Coords = new Vector2(pos);
 		int index = 1;
@@ -135,9 +136,24 @@ public class Gunman extends Unit
 		else if (Target)
 			DrawTarget(Batch, Cam, index);
 		
-		if (forward)
-			anim.Render(Batch, Cam, index, Coords, 1.0f, 1.0f);
-		else anim.Render(Batch, Cam, index, Coords, -1.0f, 1.0f);
+		int width = anim.GetFrameWidth();
+		int height = anim.GetFrameHeight();
+		DrawAnim(Batch, Cam, index, Coords, width, height);
+		
+		if (Cursor.IsMouseOver(GetBBox(), Cam.GetPos())) {
+			Shaders.SetShader(Batch, Shaders.health);
+			int h = (int)(height * (float)health/maxhealth);
+			DrawAnim(Batch, Cam, index, Coords, width, h);
+			Shaders.RevertShader(Batch);
+		}
+		
 		moving = false;
+	}
+	
+	private void DrawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
+	{
+		if (forward)
+			anim.Render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
+		else anim.Render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
 	}
 }

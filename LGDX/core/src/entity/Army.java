@@ -9,6 +9,7 @@ import physics.GameWorld;
 import terrain.Terrain;
 import ui.UnitDeployer;
 import arsenal.Armament;
+import arsenal.Armor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -67,6 +68,20 @@ public class Army
 		}
 	}
 	
+	public void CheckForDeaths(Camera Cam)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			squad.CheckAlive(Cam.GetPos());
+			
+			// check if the squad no longer has any surviving members
+			if (squad.GetUnitCount() == 0) {
+				s.remove();
+			}
+		}
+	}
+	
 	public void SpawnUnit(int UnitType, int Count, Camera Cam, int Speed)
 	{
 		int offset = 76;
@@ -88,17 +103,20 @@ public class Army
 			{
 			case UnitDeployer.GUNMAN:	
 				s.AddUnit( new Gunman(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.8f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 5, 800, 0.8f));
+				s.SetArmor( new Armor(10, 5));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
 				s.AddUnit( new StealthTroop(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.7f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 5, 800, 0.7f));
+				s.SetArmor( new Armor(10, 5));
 				break;
 				
 			case UnitDeployer.SPECOPS:
 				s.AddUnit( new SpecOps(ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 10, 800, 0.95f));
+				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 5, 800, 0.95f));
+				s.SetArmor( new Armor(10, 5));
 				break;
 				
 			default:
