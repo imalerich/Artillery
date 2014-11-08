@@ -74,7 +74,11 @@ public class CombatResolver
 			// look for a target for this unit
 			Unit offense = i.next();
 			Unit defense = u.get(index);
-			combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor) );
+			
+			for (int k=0; k<arms.GetFireRate(); k++) {
+				// for each roudn a second apart
+				combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor, k) );
+			}
 			
 			// increment the index
 			index++;

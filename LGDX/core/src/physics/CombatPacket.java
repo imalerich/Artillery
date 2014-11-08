@@ -43,6 +43,9 @@ public class CombatPacket
 	private Particles particle;
 	private Rectangle targetBBox;
 	
+	private double delayclock;
+	private double delay;
+	
 	private double time;
 	private double totaltime;
 	
@@ -64,8 +67,10 @@ public class CombatPacket
 			tex.dispose();
 	}
 	
-	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, Armament Arms, Armor Armor)
+	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, 
+			Armament Arms, Armor Armor, float Delay)
 	{
+		delay = Delay;
 		ter = Ter;
 		particle = Particles;
 		offense = Offense;
@@ -103,7 +108,7 @@ public class CombatPacket
 	
 	public void Update()
 	{
-		if (iscompleted) {
+		if (iscompleted || !CheckDelay()) {
 			return;
 		}
 		
@@ -136,6 +141,10 @@ public class CombatPacket
 	
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
+		if (iscompleted || !CheckDelay()) {
+			return;
+		}
+		
 		Batch.draw(tex, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y));
 	}
 	
@@ -184,7 +193,6 @@ public class CombatPacket
 		}
 		
 		float dmg = Math.max(arms.GetStrength() - armor.GetStrength(), 0);
-		System.out.println("Dmg: " + dmg);
 		armor.Damage(arms.GetStrength());
 		
 		defense.Damage(dmg);
@@ -223,7 +231,7 @@ public class CombatPacket
 			return;
 		} else {
 			time = 0.0f;
-		}
+		} 
 		
 		int direction = GetMoveDirection();
 		for (int i=0; i<addcount; i++) {
@@ -236,6 +244,16 @@ public class CombatPacket
 			
 			particle.AddParticle(radius, new Vector2(xpos, ypos), vel);
 		}
+	}
+	
+	private boolean CheckDelay()
+	{
+		if (delay < delayclock) {
+			return true;
+		}
+		
+		delayclock += Gdx.graphics.getDeltaTime();
+		return false;
 	}
 	
 	private float GetRadiusMod()
