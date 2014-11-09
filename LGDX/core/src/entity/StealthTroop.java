@@ -18,6 +18,8 @@ public class StealthTroop extends Unit
 	private AnimTex death;
 	private static Texture spritesheet;
 	private static int halfwidth;
+	private float lasthealth;
+	private double dmgclock;
 	
 	public void Release()
 	{
@@ -32,10 +34,11 @@ public class StealthTroop extends Unit
 		if (anim == null) {
 			spritesheet = new Texture( Gdx.files.internal("img/units/stealthtroops.png") );
 			
-			anim = new AnimTex(spritesheet, 1, 3, 3);
+			anim = new AnimTex(spritesheet, 1, 4, 4);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
 			anim.NewAnimation(2, 1, 2, 2, 0.0f);
+			anim.NewAnimation(3, 1, 3, 3, 0.0f);
 		}
 		
 		if (death == null) {
@@ -59,6 +62,8 @@ public class StealthTroop extends Unit
 		speed = Speed;
 		health = 10;
 		maxhealth = 10;
+		lasthealth = health;
+		dmgclock = 0f;
 	}
 	
 	public boolean IsAlive()
@@ -117,6 +122,14 @@ public class StealthTroop extends Unit
 		int index = 1;
 		if (isFiring) {
 			index = 2;
+		} else if (lasthealth != health) {
+			dmgclock += Gdx.graphics.getDeltaTime();
+			index = 3;
+			
+			if (dmgclock > 0.2f) {
+				lasthealth = health;
+				dmgclock = 0f;
+			}
 		}
 		
 		if (moving)

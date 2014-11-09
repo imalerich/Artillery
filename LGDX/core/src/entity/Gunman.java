@@ -20,6 +20,8 @@ public class Gunman extends Unit
 	private AnimTex death;
 	private AnimTex anim;
 	private static int halfwidth;
+	private float lasthealth;
+	private double dmgclock;
 	
 	public static void Init()
 	{
@@ -46,10 +48,11 @@ public class Gunman extends Unit
 	public Gunman(Terrain Ter, Vector2 Pos, int Speed)
 	{
 		if (anim == null) {
-			anim = new AnimTex(SPRITESHEET, 1, 3, 3);
+			anim = new AnimTex(SPRITESHEET, 1, 4, 4);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
 			anim.NewAnimation(2, 1, 2, 2, 0.0f);
+			anim.NewAnimation(3, 1, 3, 3, 0.0f);
 		}
 		
 		if (death == null) {
@@ -72,6 +75,8 @@ public class Gunman extends Unit
 		mugshotIndex = 0;
 		health = 10;
 		maxhealth = 10;
+		lasthealth = health;
+		dmgclock = 0f;
 	}
 	
 	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
@@ -126,6 +131,14 @@ public class Gunman extends Unit
 		int index = 1;
 		if (isFiring) {
 			index = 2;
+		} else if (lasthealth != health) {
+			dmgclock += Gdx.graphics.getDeltaTime();
+			index = 3;
+			
+			if (dmgclock > 0.4f) {
+				lasthealth = health;
+				dmgclock = 0f;
+			}
 		}
 		
 		if (moving)
