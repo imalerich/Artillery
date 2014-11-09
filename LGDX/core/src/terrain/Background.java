@@ -7,8 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Game;
 
 public class Background {
-	public static final Color BGCOLOR = new Color(40/255f, 20/255f, 18/255f, 1f);
-	public static final Color FGCOLOR = new Color(60/255f, 25/255f, 22/255f, 1f);
+	//public static final Color BGCOLOR = new Color(40/255f, 20/255f, 18/255f, 1f);
+	public static final Color BGCOLOR = new Color(60/255f, 25/255f, 22/255f, 1f);
+	public static final Color FGCOLOR = new Color(80/255f, 45/255f, 32/255f, 1f);
 	
 	private static Texture bg;
 	private static Texture fg;

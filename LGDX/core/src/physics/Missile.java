@@ -4,6 +4,7 @@ import particles.Particles;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,6 +20,7 @@ public class Missile
 	private static final int GRAVITY = 144*8; // px's per second
 	private static final int PPS = 600; // particles per second
 	private static final float DECAY = 0.6f;
+	private static Sound sfx;
 	private static Texture tex;
 	
 	private Terrain ter;
@@ -29,10 +31,16 @@ public class Missile
 	private double time;
 	private double totaltime;
 	
+	private boolean hasfired;
+	
 	public static void Init()
 	{
 		if (tex == null) {
 			tex = new Texture(Gdx.files.internal("img/weaponry/missile.png"));
+		}
+		
+		if (sfx == null) {
+			sfx = Gdx.audio.newSound(Gdx.files.internal("aud/sfx/tankshot.wav"));
 		}
 	}
 	
@@ -40,6 +48,10 @@ public class Missile
 	{
 		if (tex != null) {
 			tex.dispose();
+		}
+		
+		if (sfx == null) {
+			sfx.dispose();
 		}
 	}
 	
@@ -58,16 +70,23 @@ public class Missile
 		pos.x += tmp.x*Tank.GetBarrelWidth();
 		pos.y += tmp.y*Tank.GetBarrelWidth();
 		
-		// the ammount of particles to add at the tanks barrel on launch relative to PPS
+		// the amount of particles to add at the tanks barrel on launch relative to PPS
 		time = 0.1f;
 		totaltime = 0.0;
 		AddParticle();
+		
+		hasfired = false;
 	}
 	
 	public void Update()
 	{
 		if (hashit) {
 			return;
+		}
+		
+		if (!hasfired) {
+			sfx.play();
+			hasfired = true;
 		}
 		
 		// apply gravity to the velocity

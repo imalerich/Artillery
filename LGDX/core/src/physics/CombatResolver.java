@@ -68,19 +68,22 @@ public class CombatResolver
 		Vector<Unit> u = Defense.GetUnits();
 		int index = 0;
 		
+		int c = 0;
 		Iterator<Unit> i = Offense.GetUnits().iterator();
 		while (i.hasNext())
 		{
 			// look for a target for this unit
 			Unit offense = i.next();
 			Unit defense = u.get(index);
-			
+
+			float offset = 0.15f * c;
 			for (int k=0; k<arms.GetFireRate(); k++) {
-				// for each roudn a second apart
-				combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor, k) );
+				// for each round a second apart
+				combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor, 2*k, offset) );
 			}
 			
 			// increment the index
+			c++;
 			index++;
 			if (index >= u.size())
 				index = 0;

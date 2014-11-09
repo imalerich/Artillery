@@ -5,6 +5,7 @@ import terrain.Terrain;
 import arsenal.Armament;
 import arsenal.Armor;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -19,6 +20,8 @@ import entity.Unit;
 
 public class CombatPacket 
 {
+	public static Sound sfx;
+	public static Sound reload;
 	public static final Color BULLETCOL = new Color(128/255f, 128/255f, 128/255f, 1f);
 	public static final int BULLETDIMMENSIONX = 3;
 	public static final int BULLETDIMMENSIONY = 2;
@@ -45,9 +48,12 @@ public class CombatPacket
 	
 	private double delayclock;
 	private double delay;
+	private double offset;
 	
 	private double time;
 	private double totaltime;
+	
+	private boolean hasfired;
 	
 	public static void Init()
 	{
@@ -59,18 +65,33 @@ public class CombatPacket
 			tex = new Texture(tmp);
 			tmp.dispose();
 		}
+		
+		if (sfx == null) {
+			sfx = Gdx.audio.newSound(Gdx.files.internal("aud/sfx/rifle0.wav"));
+		}
+		
+		if (reload == null) {
+			reload = Gdx.audio.newSound(Gdx.files.internal("aud/sfx/reload.wav"));
+		}
 	}
 	
 	public static void Release()
 	{
 		if (tex != null)
 			tex.dispose();
+		
+		if (sfx != null)
+			sfx.dispose();
+		
+		if (reload != null)
+			reload.dispose();
 	}
 	
 	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, 
-			Armament Arms, Armor Armor, float Delay)
+			Armament Arms, Armor Armor, float Delay, float Offset)
 	{
 		delay = Delay;
+		offset = Offset;
 		ter = Ter;
 		particle = Particles;
 		offense = Offense;
@@ -100,16 +121,25 @@ public class CombatPacket
 		// set the target bounding box
 		targetBBox = new Rectangle(target.x, target.y, defense.GetWidth(), defense.GetHeight());
 		
-		// the ammount of particles to add at the tanks barrel on launch relative to PPS
+		// the amount of particles to add at the tanks barrel on launch relative to PPS
 		time = 0.0;
 		totaltime = 0.0;
 		AddParticle();
+		
+		// determines whether or not play the sound effect
+		hasfired = false;
 	}
 	
 	public void Update()
 	{
 		if (iscompleted || !CheckDelay()) {
 			return;
+		}
+		
+		if (!hasfired) {
+			float pan = 2f*(float)(offset/0.74f)-1f;
+			sfx.play((float)(Math.random()*0.35f)+0.05f, 1f, pan);
+			hasfired = true;
 		}
 		
 		// check if this unit has reached his position
@@ -248,7 +278,7 @@ public class CombatPacket
 	
 	private boolean CheckDelay()
 	{
-		if (delay < delayclock) {
+		if (delay + offset < delayclock) {
 			return true;
 		}
 		
