@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import particles.Particles;
+import particles.Weather;
 import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
@@ -238,6 +239,7 @@ public class GameWorld
 		
 		// temporarily disable the stencil test to draw the terrain
 		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
+		//Weather.Draw(Batch, Cam);
 		ter.Draw(Batch, Cam.GetPos());
 		Batch.flush();
 		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);

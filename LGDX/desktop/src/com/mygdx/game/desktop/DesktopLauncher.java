@@ -11,7 +11,7 @@ public class DesktopLauncher
 	{
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.addIcon("img/icons/Icon128.png", Files.FileType.Local);
-		config.addIcon("img/icons/Icon64.png", Files.FileType.Local);
+	    config.addIcon("img/icons/Icon64.png", Files.FileType.Local);
 		config.addIcon("img/icons/Icon32.png", Files.FileType.Local);
 		config.title = "Shoot All Teh Things";
 		

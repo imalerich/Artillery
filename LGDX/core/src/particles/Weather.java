@@ -14,35 +14,30 @@ public class Weather {
 	private static float offset2;
 	private static final int SPEED = 16;
 	
-	public static void Init(){
-		
+	public static void Init()
+	{
 		if (tex == null) {
 			tex = new Texture( Gdx.files.internal("img/particles/snow.png") );
 			offset1 = 0;
-			
 		}
 		
 	}
-	public static void Release(){
+	
+	public static void Release()
+	{
 		if (tex != null)
 			tex.dispose();
 	}
 	
 	public static void Draw(SpriteBatch Batch, Camera cam)
 	{
-	    
 	    offset1 -= Gdx.graphics.getDeltaTime() * SPEED;
 	    offset2 =  cam.GetPos().x % tex.getWidth();
-
-
 	    
-	    if (offset1 < -tex.getHeight())
-	    {
+	    if (offset1 < -tex.getHeight()) {
 	        offset1 = 0;
 	    }
-
-	    
-	    
+    
 	    for (int i=0; i<Game.SCREENW/tex.getWidth() +2; i++)
 	    {
 	        for (int j=-1; j<Game.SCREENH/tex.getHeight() + 2; j++)

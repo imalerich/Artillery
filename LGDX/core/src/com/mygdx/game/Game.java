@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import particles.ParticleMask;
+import particles.Weather;
 import physics.CombatPacket;
 import physics.GameWorld;
 import physics.Missile;
@@ -90,6 +91,7 @@ public class Game extends ApplicationAdapter
 		PowerButtons.Init();
 		ParticleMask.Init();
 		Terrain.Init();
+		Weather.Init();
 	}
 	
 	public void Release()
@@ -104,6 +106,7 @@ public class Game extends ApplicationAdapter
 		Profile.Release();
 		PowerButtons.Release();
 		ParticleMask.Release();
+		Weather.Release();
 		
 		physics.Release();
 	}
