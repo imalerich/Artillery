@@ -74,7 +74,7 @@ public class Game extends ApplicationAdapter
 	
 	public void Init()
 	{
-		Terrain.SetColor( new Color(16/255f, 16/255f, 16/255f, 1f));
+		Terrain.SetColor( new Color(54/255f, 47/255f, 43/255f, 1f));
 		
 		Tank.Init();
 		Gunman.Init();

@@ -71,9 +71,8 @@ public class Missile
 		pos.y += tmp.y*Tank.GetBarrelWidth();
 		
 		// the amount of particles to add at the tanks barrel on launch relative to PPS
-		time = 0.1f;
+		time = 0f;
 		totaltime = 0.0;
-		AddParticle();
 		
 		hasfired = false;
 	}
@@ -87,6 +86,9 @@ public class Missile
 		if (!hasfired) {
 			sfx.play();
 			hasfired = true;
+			
+			time = 0.1f;
+			AddParticle();
 		}
 		
 		// apply gravity to the velocity

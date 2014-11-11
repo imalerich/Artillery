@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MilitaryBase 
 {
+	public static final Color BGCOLOR = Background.BGCOLOR; //new Color(56/255f, 17/255f, 14/255f, 1f);
+	
 	public static final int LOGOCOUNT = 4;
 	private static final int LOGOOFFSETX = -2;
 	private static final int LOGOOFFSETY = 185;
@@ -123,11 +125,11 @@ public class MilitaryBase
 	public void Draw(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the base
-		Batch.setColor( Terrain.GetColor() );
+		Batch.setColor( BGCOLOR );
 		Batch.draw(tex, Cam.GetRenderX(xpos), Cam.GetRenderY(ypos));
 		
 		// draw the flag 
-		Batch.setColor( Terrain.GetColor() );
+		Batch.setColor( BGCOLOR );
 		flag.UpdateClock();
 		flag.Render(Batch, Cam, 0, new Vector2(xpos+GetWidth()-2, ypos), 1f, 1f);
 		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
