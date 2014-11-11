@@ -40,8 +40,8 @@ public class Weather {
 	    float camoff =  cam.GetPos().x % tex.getWidth();
 	    
     
-	    for (int i=0; i<Game.SCREENW/tex.getWidth() +2; i++) {
-	        for (int j=-1; j<Game.SCREENH/tex.getHeight() + 2; j++) {
+	    for (int i=0; i<Game.SCREENW/tex.getWidth() + 3; i++) {
+	        for (int j=-1; j<Game.SCREENH/tex.getHeight() +  2; j++) {
 	            Batch.draw(tex, i*tex.getWidth() + offsetx - camoff, j*tex.getHeight() + offsety);
 	            
 	        }
