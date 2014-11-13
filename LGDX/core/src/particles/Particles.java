@@ -24,7 +24,7 @@ public class Particles
 			return;
 		
 		Expand();
-		particles[addindex] = new Particle(Radius, Pos, new Vector2());
+		particles[addindex] = new Particle(Radius, Pos, new Vector2(), 0f);
 		addindex++;
 	}
 	
@@ -34,7 +34,17 @@ public class Particles
 			return;
 		
 		Expand();
-		particles[addindex] = new Particle(Radius, Pos, Vel);
+		particles[addindex] = new Particle(Radius, Pos, Vel, 0f);
+		addindex++;
+	}
+	
+	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime)
+	{
+		if (Radius <= 0f)
+			return;
+		
+		Expand();
+		particles[addindex] = new Particle(Radius, Pos, Vel, SlowTime);
 		addindex++;
 	}
 	

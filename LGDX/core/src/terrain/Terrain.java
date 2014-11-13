@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Game;
 
@@ -19,7 +20,7 @@ public class Terrain
 	
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
-	private static final int MAXSPEED = 6;
+	private static final int MAXSPEED = 2;
 	private float speed = BASESPEED;
 	
 	// image data
@@ -33,6 +34,9 @@ public class Terrain
 	private int width;
 	private int height;
 	private int minlevel;
+	
+	// base locatiosn (terrain underneath is invulnerable)
+	private Rectangle[] baseregions;
 	
 	// clocks
 	private double dropclock;
@@ -88,6 +92,7 @@ public class Terrain
 	public Terrain(TerrainSeed Seed)
 	{
 		// init colors and dimensions
+		baseregions = new Rectangle[Seed.GetBases().size()];
 		width = Seed.GetWidth();
 		height = Seed.GetHeight();
 		minlevel = Seed.GetMinLevel();
@@ -231,6 +236,12 @@ public class Terrain
 			data[i].setColor(0.0f, 0.0f, 0.0f, 0.0f);
 			data[i].fillRectangle(0, 0, SEGMENTWIDTH, 2);
 		}
+		
+		// construct the base positions
+		for (int i=0; i<baseregions.length; i++) {
+			Vector2 base = Seed.GetBases().get(i);
+			baseregions[i] = new Rectangle(base.x, 0, base.y-base.x, GetHeight((int)base.x));
+		}
 	}
 	
 	private int GetSegment(int X)
@@ -243,6 +254,10 @@ public class Terrain
 		// set the bottom layer to bedrock so it cannot be destroyed
 		data[Segment].setColor(Color.WHITE);
 		data[Segment].fillRectangle(0, height-minlevel, SEGMENTWIDTH, minlevel);
+		
+		for (Rectangle r : baseregions) {
+			AddRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height);
+		}
 	}
 	
 	public int GetHeight(int X)
@@ -432,6 +447,28 @@ public class Terrain
 			data[i].setColor(Color.CLEAR);
 			data[i].fillRectangle(localx, Y, Width, Height);
 			InvalidateSegment(i);
+		}
+	}
+	
+	private void AddRegion(int X, int Y, int Width, int Height)
+	{
+		// determine the segments this hole belongs to
+		int x0 = X;
+		int x1 = X + Width;
+		
+		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
+		region0 = Math.max(region0, 0);
+		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
+		region1 = Math.min(region1, segmentcount-1);
+		
+		// for each segment, invalidate it, and cut the region
+		for (int i=region0; i<=region1; i++)
+		{
+			int localx = X - i*SEGMENTWIDTH;
+			isSegmentValid[i] = false;
+			
+			data[i].setColor(Color.WHITE);
+			data[i].fillRectangle(localx, Y, Width, Height);
 		}
 	}
 	

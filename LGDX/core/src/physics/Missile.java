@@ -20,6 +20,11 @@ public class Missile
 	private static final int GRAVITY = 144*8; // px's per second
 	private static final int PPS = 600; // particles per second
 	private static final float DECAY = 0.6f;
+	
+	private static final float DUSTTIME = 0.3f;
+	private static final float DUSTDECAY = 1f;
+	private static final double DUSTSPEED = 512.0;
+	
 	private static Sound sfx;
 	private static Texture tex;
 	
@@ -27,9 +32,13 @@ public class Missile
 	private Particles particle;
 	private Vector2 pos;
 	private Vector2 vel;
+	
 	private boolean hashit;
 	private double time;
 	private double totaltime;
+	
+	private double posttime;
+	private double posttotaltime;
 	
 	private boolean hasfired;
 	
@@ -71,8 +80,10 @@ public class Missile
 		pos.y += tmp.y*Tank.GetBarrelWidth();
 		
 		// the amount of particles to add at the tanks barrel on launch relative to PPS
-		time = 0f;
+		time = 0.0;
 		totaltime = 0.0;
+		posttime = 0.0;
+		posttotaltime = 0.0;
 		
 		hasfired = false;
 	}
@@ -80,6 +91,8 @@ public class Missile
 	public void Update()
 	{
 		if (hashit) {
+			AddTerrainParticles();
+			
 			return;
 		}
 		
@@ -109,6 +122,7 @@ public class Missile
 		
 		if (ter.Contains(pos.x, pos.y)) {
 			ter.CutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
+			pos. y = Game.WORLDH - ter.GetHeight((int)pos.x);
 			hashit = true;
 		}
 	}
@@ -130,6 +144,11 @@ public class Missile
 				0, 0, tex.getWidth(), tex.getHeight(),
 				1f, 1f, theta, 0, 0, tex.getWidth(), tex.getHeight(), false, false);
 		Batch.setColor(Color.WHITE);
+	}
+	
+	public boolean IsCompleted()
+	{
+		return hashit && (posttotaltime > DUSTTIME);
 	}
 	
 	public boolean HasHit()
@@ -157,7 +176,56 @@ public class Missile
 			
 			particle.AddParticle(radius, new Vector2(xpos, ypos), v);
 		}
-		time = 0.0f;
+		
+		time = 0.0;
+	}
+	
+	private void AddTerrainParticles()
+	{
+		double prevtot = posttotaltime;
+		posttotaltime += Gdx.graphics.getDeltaTime();
+		posttime += Gdx.graphics.getDeltaTime();
+		
+		if (posttotaltime > DUSTTIME) {
+			return;
+		}
+		
+		int addcount = (int)(PPS*posttime*2);
+		if (addcount == 0) {
+			return;
+		}
+		
+		float x0 = Game.WORLDH - ter.GetHeight((int)pos.x - 8);
+		float x1 = Game.WORLDH - ter.GetHeight((int)pos.x + 8);
+		
+		Vector2 v0 = new Vector2(-8, x0-pos.y);
+		Vector2 v1 = new Vector2(8, x1-pos.y);
+		v0 = v0.nor();
+		v1 = v1.nor();
+		
+		float theta = (float)Math.acos( Vector2.dot(v0.x, v0.y, v1.x, v1.y) );
+		theta = -(float)Math.toDegrees(theta);
+		
+		for (int i=0; i<addcount; i++) {
+			double time = prevtot + (float)(posttime) * (i/(float)addcount);
+			float radius = (float)Math.random()*24 + 12;
+			radius *= GetPostRadiusMod(time);
+			
+			Vector2 v = new Vector2(v0);
+			v = v.nor();
+			
+			v.x *= (DUSTSPEED * GetPostRadiusMod(time));
+			v.y *= (DUSTSPEED * GetPostRadiusMod(time));
+			v.rotate((int)(Math.random()*theta));
+		
+			Vector2 p = new Vector2(pos);
+			p.x += v.x * (float)(posttime) * (i/(float)addcount);
+			p.y += v.y * (float)(posttime) * (i/(float)addcount);
+			
+			particle.AddParticle(radius, p, v, DUSTDECAY);
+		}
+		
+		posttime = 0.0;
 	}
 	
 	private float GetRadiusMod()
@@ -166,6 +234,15 @@ public class Missile
 			return 0f;
 		} else {
 			return (DECAY - (float)totaltime)/DECAY;
+		}
+	}
+	
+	private float GetPostRadiusMod(double TotalTime)
+	{
+		if (TotalTime > DUSTTIME) {
+			return 0f;
+		} else {
+			return  (DUSTTIME-(float)TotalTime)/DUSTTIME;
 		}
 	}
 }

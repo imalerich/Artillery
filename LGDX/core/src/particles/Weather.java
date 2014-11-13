@@ -9,8 +9,8 @@ import com.mygdx.game.Game;
 
 public class Weather {
 	private static final Color COLOR = new Color(1f, 1f, 1f, 0.2f);
-	private static final int SPEEDY = 32;
-	private static final int SPEEDX = 16;
+	private static final int SPEEDY = 16;
+	private static final int SPEEDX = 8;
 	
 	private static Texture tex;
 	private static float offsety = 0;

@@ -140,7 +140,7 @@ public class CombatResolver
 		} else if (stage == POINTSTAGE) {
 			Iterator<Missile> i = projectilequeue.iterator();
 			while (i.hasNext()) {
-				if (!i.next().HasHit()) {
+				if (!i.next().IsCompleted()) {
 					return;
 				}
 			}
@@ -187,7 +187,7 @@ public class CombatResolver
 		Iterator<Missile> i = projectilequeue.iterator();
 		while (i.hasNext()) {
 			Missile m = i.next();
-			if (m.HasHit()) {
+			if (m.IsCompleted()) {
 				continue;
 			}
 			
