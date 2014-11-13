@@ -230,6 +230,18 @@ public class GameWorld
 		return false;
 	}
 	
+	private void DisableStencil(SpriteBatch Batch)
+	{
+		Batch.flush();
+		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
+	}
+	
+	private void EnableStencil(SpriteBatch Batch)
+	{
+		Batch.flush();
+		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
+	}
+	
 	private void DrawHidden(SpriteBatch Batch, Camera Cam)
 	{
 		// enable fog of war and draw the background
@@ -237,27 +249,32 @@ public class GameWorld
 		Background.DrawFG(Batch);
 		Batch.flush();
 		
-		// temporarily disable the stencil test to draw the terrain
-		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
-		Weather.Draw(Batch, Cam);
-		ter.Draw(Batch, Cam.GetPos());
-		Batch.flush();
-		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
+		DisableStencil(Batch);
 		
-		// draw enemy base hidden by fog
+		// draw the weather and the bases
+		userArmy.DrawBase(Batch, Cam);
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().DrawBase(Batch, Cam);
 		
-		// temporarily disable the stencil test to draw the friendly terrain
-		Batch.flush();
-		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
+		EnableStencil(Batch);
+		
+		// draw the base logos with the stencil test enabled
+		userArmy.DrawBaseLogo(Batch, Cam);
+		e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().DrawBaseLogo(Batch, Cam);
+		
+		DisableStencil(Batch);
+		
+		Weather.Draw(Batch, Cam);
+		ter.Draw(Batch, Cam.GetPos());
+		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
 			f.next().DrawBase(Batch, Cam);
-		userArmy.DrawBase(Batch, Cam);
-		Batch.flush();
-		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
+		
+		EnableStencil(Batch);
 		
 		// draw all enemy untis above the terrain, but hidden by the fog 
 		Shaders.SetShader(Batch, Shaders.enemy);

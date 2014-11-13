@@ -76,7 +76,7 @@ public class CombatResolver
 			Unit offense = i.next();
 			Unit defense = u.get(index);
 
-			float offset = 0.015f * c;
+			float offset = 0.055f * c;
 			
 			for (int k=0; k<arms.GetFireRate(); k++) {
 				// for each round a second apart

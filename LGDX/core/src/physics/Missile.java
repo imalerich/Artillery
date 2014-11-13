@@ -16,7 +16,6 @@ import entity.Tank;
 
 public class Missile 
 {
-	public static final Color COLOR = new Color(128/255f, 128/255f, 128/255f, 1f);
 	private static final int GRAVITY = 144*8; // px's per second
 	private static final int PPS = 600; // particles per second
 	private static final float DECAY = 0.6f;
@@ -122,6 +121,9 @@ public class Missile
 		
 		if (ter.Contains(pos.x, pos.y)) {
 			ter.CutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
+			
+			float theta = GetTheta();
+			pos.x += Math.cos(theta)*64;
 			pos. y = Game.WORLDH - ter.GetHeight((int)pos.x);
 			hashit = true;
 		}
@@ -133,17 +135,10 @@ public class Missile
 			return;
 		}
 		
-		// the angle to draw the missile at
-		float theta = (float)Math.toDegrees( Math.atan( vel.y/vel.x ) );
-		if (vel.x < 0) {
-			theta += 180f;
-		}
-		
-		Batch.setColor(COLOR);
+		float theta = GetTheta();
 		Batch.draw(tex, Cam.GetRenderX(pos.x + tex.getWidth()/2f), Cam.GetRenderY(pos.y + tex.getHeight()/2f), 
 				0, 0, tex.getWidth(), tex.getHeight(),
 				1f, 1f, theta, 0, 0, tex.getWidth(), tex.getHeight(), false, false);
-		Batch.setColor(Color.WHITE);
 	}
 	
 	public boolean IsCompleted()
@@ -154,6 +149,18 @@ public class Missile
 	public boolean HasHit()
 	{
 		return hashit;
+	}
+	
+	private float GetTheta()
+	{
+		
+		// the angle to draw the missile at
+		float theta = (float)Math.toDegrees( Math.atan( vel.y/vel.x ) );
+		if (vel.x < 0) {
+			theta += 180f;
+		}
+		
+		return theta;
 	}
 	
 	private void AddParticle()

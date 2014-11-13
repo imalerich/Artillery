@@ -212,6 +212,11 @@ public class Army
 		base.Draw(Batch, Cam);
 	}
 	
+	public void DrawBaseLogo(SpriteBatch Batch, Camera Cam)
+	{
+		base.DrawLogo(Batch, Cam);
+	}
+	
 	public void DrawView(Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();

@@ -133,7 +133,10 @@ public class MilitaryBase
 		flag.UpdateClock();
 		flag.Render(Batch, Cam, 0, new Vector2(xpos+GetWidth()-2, ypos), 1f, 1f);
 		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
-		
+	}
+	
+	public void DrawLogo(SpriteBatch Batch, Camera Cam)
+	{
 		// draw the flags logo
 		Batch.setColor(Background.FGCOLOR);
 		Batch.draw(logos[logo], Cam.GetRenderX(xpos+GetWidth()-2+LOGOOFFSETX),
