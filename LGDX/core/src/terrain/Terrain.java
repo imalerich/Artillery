@@ -257,6 +257,11 @@ public class Terrain
 		
 		for (Rectangle r : baseregions) {
 			AddRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height);
+			
+			double theta = (float)Math.PI/2f;
+			int width = (int)((r.height/Math.sin(Math.PI-theta))*Math.sin(theta));
+			AddTriangleRegion((int)r.x-width, width, height, (int)r.x, (int)(height-r.height));
+			AddTriangleRegion((int)(r.x+r.width), width, height, (int)(r.x+r.width), (int)(height-r.height));
 		}
 	}
 	
@@ -450,6 +455,34 @@ public class Terrain
 		}
 	}
 	
+	private void AddTriangleRegion(int X0, int Width, int Y0, int X1, int Y1)
+	{
+		if (X0 < 0) {
+			X0 += Game.WORLDW;
+			X1 += Game.WORLDW;
+		}
+		
+		// determine the segments this hole belongs to
+		int x0 = X0;
+		int x1 = X0 + Width;
+		
+		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
+		region0 = Math.max(region0, 0);
+		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
+		region1 = Math.min(region1, segmentcount-1);
+		
+		// for each segment, add the region
+		for (int i=region0; i<=region1; i++)
+		{
+			int localx0 = X0 - i*SEGMENTWIDTH;
+			int localx1 = X1 - i*SEGMENTWIDTH;
+			isSegmentValid[i] = false;
+			
+			data[i].setColor(Color.WHITE);
+			data[i].fillTriangle(localx0, Y0, localx0+Width, Y0, localx1, Y1);
+		}
+	}
+	
 	private void AddRegion(int X, int Y, int Width, int Height)
 	{
 		// determine the segments this hole belongs to
@@ -461,7 +494,7 @@ public class Terrain
 		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
 		region1 = Math.min(region1, segmentcount-1);
 		
-		// for each segment, invalidate it, and cut the region
+		// for each segment, add the region
 		for (int i=region0; i<=region1; i++)
 		{
 			int localx = X - i*SEGMENTWIDTH;
