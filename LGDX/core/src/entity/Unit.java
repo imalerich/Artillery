@@ -1,5 +1,9 @@
 package entity;
 
+import java.util.Vector;
+
+import particles.Particles;
+import physics.NullTank;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
@@ -187,6 +191,11 @@ public class Unit
 		moving = true;
 		
 		SetHeight();
+	}
+	
+	public void SetAsDeceased(Vector<NullTank> Deceased, Particles Part)
+	{
+		ter.AddDeceasedTroop((int)pos.x, forward);
 	}
 	
 	public void SetHeight()

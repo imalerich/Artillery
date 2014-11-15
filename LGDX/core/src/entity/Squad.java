@@ -3,7 +3,9 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import particles.Particles;
 import physics.GameWorld;
+import physics.NullTank;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import arsenal.Armament;
@@ -109,7 +111,7 @@ public class Squad
 		}
 	}
 	
-	public void CheckAlive(Vector2 Campos)
+	public void CheckAlive(Vector2 Campos, Vector<NullTank> Deceased, Particles Part)
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
@@ -117,7 +119,7 @@ public class Squad
 			// remove all dead units
 			Unit unit = u.next();
 			if (!unit.IsAlive()) {
-				ter.AddDeceasedTroop((int)unit.GetPos().x, unit.IsForward());
+				unit.SetAsDeceased(Deceased, Part);
 				u.remove();
 			}
 		}

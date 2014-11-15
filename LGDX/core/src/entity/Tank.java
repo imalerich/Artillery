@@ -1,5 +1,9 @@
 package entity;
 
+import java.util.Vector;
+
+import particles.Particles;
+import physics.NullTank;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
@@ -17,30 +21,29 @@ public class Tank extends Unit
 {
 	private static float MAXANGLE = 180+15;
 	private static float MINANGLE = -15;
+	public static Texture BARREL;
 	
 	private Texture tex;
 	private TextureRegion tr;
-	private static Texture barrel;
 	
 	private Vector2 barrelOffset; // coordinates of the barrel relative to the tank
 	
-	private int halfwidth;
-	
 	protected float barrelPhi = 0.0f;
+	private int halfwidth;
 	private int barrelwidth;
 	private int barrelheight;
 	
 	public static void Init()
 	{
-		if (barrel == null) {
-			barrel = new Texture( Gdx.files.internal("img/tanks/Barrel.png") );
+		if (BARREL == null) {
+			BARREL = new Texture( Gdx.files.internal("img/tanks/Barrel.png") );
 		}
 	}
 	
 	public static int GetBarrelWidth()
 	{
-		if (barrel != null) {
-			return barrel.getWidth();
+		if (BARREL != null) {
+			return BARREL.getWidth();
 		} else {
 			return 0;
 		}
@@ -51,8 +54,8 @@ public class Tank extends Unit
 	{
 		tex.dispose();
 		
-		if (barrel != null)
-			barrel.dispose();
+		if (BARREL != null)
+			BARREL.dispose();
 	}
 	
 	public Tank(String Filename, Terrain Ter, int Speed)
@@ -64,8 +67,8 @@ public class Tank extends Unit
 		width = tex.getWidth();
 		height = tex.getHeight();
 		
-		barrelwidth = barrel.getWidth();
-		barrelheight = barrel.getHeight();
+		barrelwidth = BARREL.getWidth();
+		barrelheight = BARREL.getHeight();
 		
 		pos = new Vector2(64, 0);
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;
@@ -128,6 +131,16 @@ public class Tank extends Unit
 			r.x -= Game.WORLDW;
 		
 		return r;
+	}
+	
+	public void SetAsDeceased(Vector<NullTank> Deceased, Particles Part)
+	{
+		Deceased.add(CreateNullTank(Part));
+	}
+	
+	public NullTank CreateNullTank(Particles Part)
+	{
+		return new NullTank(Part, ter, tex, barrelOffset, pos, barrelPhi, forward);
 	}
 	
 	public void SetBarrelOffset(Vector2 Offset)
@@ -244,7 +257,6 @@ public class Tank extends Unit
 		float theta = GetAngle();
 		
 		// draw the tank
-		tr = new TextureRegion(tex, 0, height-SrcHeight, width, SrcHeight);
 		tr.setRegion(0, height-SrcHeight, width, SrcHeight);
 		tr.flip(!forward, false);
 		
@@ -252,7 +264,7 @@ public class Tank extends Unit
 				Cam.GetRenderY(pos.y + OffsetY), halfwidth, 0, width, SrcHeight, 1f, 1f, theta);
 	}
 	
-	public void RenderBarrel(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
+	private void RenderBarrel(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
 	{
 		float theta = GetAngle();
 		float phi = barrelPhi;
@@ -265,7 +277,7 @@ public class Tank extends Unit
 		offset = RotateCoord( offset, (float)Math.toRadians(theta) );
 		
 		// draw the tanks barrel
-		Batch.draw(barrel, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
+		Batch.draw(BARREL, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
 				Cam.GetRenderY(pos.y + offset.y + OffsetY),
 				0, barrelheight/2f, barrelwidth, barrelheight, 1f, 1f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);

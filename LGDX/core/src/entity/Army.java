@@ -6,6 +6,7 @@ import java.util.Vector;
 import particles.Particles;
 import physics.CombatResolver;
 import physics.GameWorld;
+import physics.NullTank;
 import terrain.Terrain;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -68,12 +69,12 @@ public class Army
 		}
 	}
 	
-	public void CheckForDeaths(Camera Cam)
+	public void CheckForDeaths(Camera Cam, Vector<NullTank> Deceased, Particles Part)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
-			squad.CheckAlive(Cam.GetPos());
+			squad.CheckAlive(Cam.GetPos(), Deceased, Part);
 			
 			// check if the squad no longer has any surviving members
 			if (squad.GetUnitCount() == 0) {

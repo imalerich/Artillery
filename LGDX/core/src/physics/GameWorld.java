@@ -37,6 +37,7 @@ public class GameWorld
 	private Army userArmy;
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
+	private Vector<NullTank> nullTanks;
 	
 	public GameWorld(Terrain Ter)
 	{
@@ -49,6 +50,7 @@ public class GameWorld
 		userArmy = null;
 		friendlyArmy = new Vector<Army>();
 		enemyArmy = new Vector<Army>();
+		nullTanks = new Vector<NullTank>();
 	}
 	
 	public void Release()
@@ -103,21 +105,29 @@ public class GameWorld
 			break;
 		}
 		
+		UpdateNullTanks(Cam);
 		CheckForDeaths(Cam);
 		CheckNextStage();
 	}
 	
+	public void UpdateNullTanks(Camera Cam)
+	{
+		Iterator<NullTank> t = nullTanks.iterator();
+		while (t.hasNext())
+			t.next().Update(Cam);
+	}
+	
 	public void CheckForDeaths(Camera Cam)
 	{
-		userArmy.CheckForDeaths(Cam);
+		userArmy.CheckForDeaths(Cam, nullTanks, particles);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().CheckForDeaths(Cam);
+			f.next().CheckForDeaths(Cam, nullTanks, particles);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().CheckForDeaths(Cam);
+			e.next().CheckForDeaths(Cam, nullTanks, particles);
 	}
 	
 	public void UpdateMoveSelect(Camera Cam)
@@ -242,6 +252,13 @@ public class GameWorld
 		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
 	}
 	
+	private void DrawNullTanks(SpriteBatch Batch, Camera Cam)
+	{
+		Iterator<NullTank> t = nullTanks.iterator();
+		while (t.hasNext()) 
+			t.next().Draw(Batch, Cam);
+	}
+	
 	private void DrawHidden(SpriteBatch Batch, Camera Cam)
 	{
 		// enable fog of war and draw the background
@@ -269,6 +286,7 @@ public class GameWorld
 		
 		Weather.Draw(Batch, Cam);
 		ter.Draw(Batch, Cam.GetPos());
+		DrawNullTanks(Batch, Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())

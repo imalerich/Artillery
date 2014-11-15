@@ -211,6 +211,9 @@ public class Missile
 		
 		float theta = (float)Math.acos( Vector2.dot(v0.x, v0.y, v1.x, v1.y) );
 		theta = -(float)Math.toDegrees(theta);
+		if (theta > -100) {
+			theta = -100;
+		}
 		
 		for (int i=0; i<addcount; i++) {
 			double time = prevtot + (float)(posttime) * (i/(float)addcount);

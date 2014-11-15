@@ -48,7 +48,7 @@ public class Game extends ApplicationAdapter
 	public static int SCREENW = 960;
 	public static int SCREENH = 800;
 	
-	public static final int WORLDW = 1920;
+	public static final int WORLDW = 1920*2;
 	public static final int WORLDH = 1200;
 	
 	public static final int GRAVITY	= 160;

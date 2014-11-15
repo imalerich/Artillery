@@ -8,7 +8,7 @@ import com.mygdx.game.Game;
 
 public class Particle 
 {
-	private static final int GRAVITY = 40;
+	public static final int GRAVITY = 40;
 	private static final float DECAY = 5f;
 	
 	private float radius;
