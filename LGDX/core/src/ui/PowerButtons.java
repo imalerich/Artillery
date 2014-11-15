@@ -126,6 +126,7 @@ public class PowerButtons
 			mouseover = 0;
 			timer = 0f;
 		}
+		power += Gdx.graphics.getDeltaTime() * SPEED * Cursor.getScrollDirection();
 	}
 	
 	public boolean DoFire(Camera Cam)
