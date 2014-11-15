@@ -48,7 +48,7 @@ public class Game extends ApplicationAdapter
 	public static int SCREENW = 960;
 	public static int SCREENH = 800;
 	
-	public static final int WORLDW = 1920*2;
+	public static final int WORLDW = 1920;
 	public static final int WORLDH = 1200;
 	
 	public static final int GRAVITY	= 160;
@@ -169,7 +169,7 @@ public class Game extends ApplicationAdapter
 		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );
 		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
 		st1.AddUnit(tank1, cam);
-		st1.SetArmor( new Armor(100, 20) );
+		st1.SetArmor( new Armor(10, 10) );
 		a1.AddSquad(st1);
 		a1.SpawnUnit(UnitDeployer.GUNMAN, 6, cam, 20);
 		physics.AddEnemyArmy(a1);

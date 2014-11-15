@@ -5,9 +5,11 @@ import terrain.Terrain;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
@@ -17,6 +19,7 @@ public class Tank extends Unit
 	private static float MINANGLE = -15;
 	
 	private Texture tex;
+	private TextureRegion tr;
 	private static Texture barrel;
 	
 	private Vector2 barrelOffset; // coordinates of the barrel relative to the tank
@@ -43,6 +46,7 @@ public class Tank extends Unit
 		}
 	}
 	
+	@Override
 	public void Release()
 	{
 		tex.dispose();
@@ -54,6 +58,7 @@ public class Tank extends Unit
 	public Tank(String Filename, Terrain Ter, int Speed)
 	{
 		tex = new Texture(Gdx.files.internal(Filename) );
+		tr = new TextureRegion(tex);
 		
 		halfwidth = tex.getWidth()/2;
 		width = tex.getWidth();
@@ -65,14 +70,20 @@ public class Tank extends Unit
 		pos = new Vector2(64, 0);
 		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;
 		
-		barrelOffset = new Vector2();
+		barrelOffset = new Vector2();		/*Batch.draw(tr, Cam.GetRenderX(pos.x + OffsetX),
+		Cam.GetRenderY(pos.y + OffsetY),
+		halfwidth, 0, width, tr.getRegionHeight(), 1f, 1f, 
+		theta, 0, 0, width, tr.getRegionHeight(), !forward, false);*/
+
 		forward = true;
 		barrelPhi = 0.0f;
 		ter = Ter;
 		speed = Speed;
-		health = Float.MAX_VALUE;
+		health = 30f;
+		maxhealth = 30f;
 	}
 	
+	@Override
 	public Rectangle GetBBox()
 	{
 		// get the tanks angle
@@ -138,6 +149,7 @@ public class Tank extends Unit
 		return new Vector2(rx, ry);
 	}
 	
+	@Override
 	public float GetAngle()
 	{
 		float theta = 0.0f;
@@ -157,6 +169,7 @@ public class Tank extends Unit
 		return (float)Math.toDegrees(theta);
 	}
 	
+	@Override
 	public float GetBarrelAbsoluteAngle()
 	{
 		if (forward) {
@@ -166,6 +179,7 @@ public class Tank extends Unit
 		}
 	}
 	
+	@Override
 	public void SetBarrelAngle(float Angle)
 	{
 		if (forward) {
@@ -183,7 +197,8 @@ public class Tank extends Unit
 	{
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
-				Render(Batch, Cam, x, y);
+				RenderBarrel(Batch, Cam, x, y);
+				Render(Batch, Cam, x, y, height);
 			}
 		}
 	}
@@ -202,6 +217,7 @@ public class Tank extends Unit
 		Shaders.RevertShader(Batch);
 	}
 	
+	@Override
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		SetHeight();
@@ -210,36 +226,52 @@ public class Tank extends Unit
 		else if (Target)
 			DrawTarget(Batch, Cam);
 		
-		Render(Batch, Cam, 0, 0);
+		RenderBarrel(Batch, Cam, 0, 0);
+		Render(Batch, Cam, 0, 0, height);
+		
+		// draw the tanks health
+		if (Cursor.IsMouseOver(GetBBox(), Cam.GetPos())) {
+			Shaders.SetShader(Batch, Shaders.health);
+			int h = (int)(height * (float)health/maxhealth);
+			
+			Render(Batch, Cam, 0, 0, h);
+			Shaders.RevertShader(Batch);
+		}
 	}
 	
-	public void Render(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
+	private void Render(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY, int SrcHeight)
 	{
 		float theta = GetAngle();
+		
+		// draw the tank
+		tr = new TextureRegion(tex, 0, height-SrcHeight, width, SrcHeight);
+		tr.setRegion(0, height-SrcHeight, width, SrcHeight);
+		tr.flip(!forward, false);
+		
+		Batch.draw(tr, Cam.GetRenderX(pos.x + OffsetX), 
+				Cam.GetRenderY(pos.y + OffsetY), halfwidth, 0, width, SrcHeight, 1f, 1f, theta);
+	}
+	
+	public void RenderBarrel(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
+	{
+		float theta = GetAngle();
+		float phi = barrelPhi;
+		if (!forward)
+			phi = 180 - phi;
 		
 		// draw the tanks barrel
 		Vector2 offset = new Vector2(barrelOffset.x-halfwidth, barrelOffset.y);
 		if (!forward) offset.x = halfwidth - barrelOffset.x;
-		
 		offset = RotateCoord( offset, (float)Math.toRadians(theta) );
-		
-		float phi = barrelPhi;
-		if (!forward)
-			phi = 180 - phi;
 		
 		// draw the tanks barrel
 		Batch.draw(barrel, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
 				Cam.GetRenderY(pos.y + offset.y + OffsetY),
 				0, barrelheight/2f, barrelwidth, barrelheight, 1f, 1f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
-		
-		// draw the tank
-		Batch.draw(tex, Cam.GetRenderX(pos.x + OffsetX),
-				Cam.GetRenderY(pos.y + OffsetY),
-				halfwidth, 0, width, height, 1f, 1f, 
-				theta, 0, 0, width, height, !forward, false);
 	}
 	
+	@Override
 	public void DrawTargetAngle(SpriteBatch Batch, Camera Cam)
 	{
 		float theta = GetAngle();

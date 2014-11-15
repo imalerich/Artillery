@@ -29,6 +29,7 @@ public class Gunman extends Unit
 		DEATHANIM = new Texture( Gdx.files.internal("img/units/deathanim.png") );
 	}
 	
+	@Override
 	public void Release()
 	{
 		if (SPRITESHEET != null)
@@ -40,6 +41,7 @@ public class Gunman extends Unit
 		anim.Release();
 	}
 	
+	@Override
 	public boolean IsAlive()
 	{
 		return !death.IsCompleted(0);
@@ -119,6 +121,7 @@ public class Gunman extends Unit
 			death.Render(Batch, Cam, 0, pos, -1.0f, 1.0f, false);
 	}
 	
+	@Override
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		if (health <= 0) {
