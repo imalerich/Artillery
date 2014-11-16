@@ -133,6 +133,11 @@ public class CombatPacket
 	public void Update()
 	{
 		if (iscompleted || !CheckDelay()) {
+			// do not fire again if the target is dead
+			if (!defense.IsAlive()) {
+				iscompleted = true;
+			}
+			
 			return;
 		}
 		
