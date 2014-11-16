@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import particles.Particles;
+import physics.Blast;
 import physics.CombatResolver;
 import physics.GameWorld;
 import physics.NullTank;
@@ -54,6 +55,15 @@ public class Army
 	public void setSpawnedSquad(boolean Set)
 	{
 		squadspawned = Set;
+	}
+	
+	public void ProcBlasts(Blast B)
+	{
+		// process all blasts on this army
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			s.next().ProcBlasts(B);
+		}
 	}
 	
 	public void InitStage(int NewStage)
@@ -126,7 +136,7 @@ public class Army
 		}
 	}
 	
-	public void AddCombatData(CombatResolver Resolver, Particles Particle)
+	public void AddCombatData(CombatResolver Resolver)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
@@ -135,9 +145,9 @@ public class Army
 			// add each squad and its target to the combat resolver
 			if (squad.GetTargetSquad() != null && 
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
-				Resolver.AddConflict(Particle, squad, squad.GetTargetSquad());
+				Resolver.AddConflict(squad, squad.GetTargetSquad());
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(Particle, squad, 1f);
+				Resolver.AddProjectile(squad, 1f, squad.GetArmament().GetStrength());
 			}
 		}
 	}

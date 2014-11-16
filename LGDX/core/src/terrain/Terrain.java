@@ -20,7 +20,7 @@ public class Terrain
 	
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 1;
-	private static final int MAXSPEED = 2;
+	private static final int MAXSPEED = 4;
 	private float speed = BASESPEED;
 	
 	// image data
@@ -364,6 +364,11 @@ public class Terrain
 				}
 			}
 			
+			if (!isSegmentValid[i]) {
+				InvalidateSegment(i);
+				// TODO System.out.println("Segment Invalid: " + i);
+			}
+			
 			// if this is the final iteration and the segment is invalid, invalidate it 
 			if (!isSegmentValid[i] && Count == 0) {
 				InvalidateSegment(i);
@@ -379,7 +384,7 @@ public class Terrain
 		}
 		
 		// recurse down updating the terrain
-		UpdateDropping(Count - 1);
+		//UpdateDropping(Count - 1);
 	}
 	
 	public void ClearTmp()

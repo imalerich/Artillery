@@ -28,8 +28,11 @@ public class Missile
 	
 	private Terrain ter;
 	private Particles particle;
+	private GameWorld gw;
+	
 	private Vector2 pos;
 	private Vector2 vel;
+	private float strength;
 	
 	private boolean hashit;
 	private double time;
@@ -62,12 +65,15 @@ public class Missile
 		}
 	}
 	
-	public Missile(Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity)
+	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength)
 	{
 		ter = Ter;
+		gw = GW;
 		particle = Particle;
+		
 		pos = Source;
 		vel = Velocity;
+		strength = Strength;
 		hashit = false;
 		
 		// offset the position by a the velocity by the length of the barrel
@@ -118,13 +124,17 @@ public class Missile
 			pos.x += Game.WORLDW;
 		}
 		
-		if (ter.Contains(pos.x, pos.y)) {
+		if (ter.Contains(pos.x, pos.y) && !hashit) {
 			ter.CutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
 			
-			float theta = GetTheta();
-			pos.x += Math.cos(theta)*64;
-			pos. y = Game.WORLDH - ter.GetHeight((int)pos.x);
+			float x0 = Game.WORLDH - ter.GetHeight((int)pos.x - 8);
+			Vector2 v0 = new Vector2(-8, x0-pos.y);
+			Vector2 v = GetParticleVelocity(v0, -50f-Math.random()*25);
+			particle.AddParticle(64, new Vector2(pos.x, pos.y), v, DUSTDECAY);
 			hashit = true;
+			
+			// process the blast
+			gw.ProcBlast( new Blast(pos, 64, strength));
 		}
 	}
 	
@@ -186,6 +196,18 @@ public class Missile
 		time = 0.0;
 	}
 	
+	private Vector2 GetParticleVelocity(Vector2 V0, double Theta)
+	{
+		Vector2 v = new Vector2(V0);
+		v = v.nor();
+
+		v.x *= (DUSTSPEED * GetPostRadiusMod(time));
+		v.y *= (DUSTSPEED * GetPostRadiusMod(time));
+		v.rotate((int)(Theta));
+
+		return v;
+	}
+	
 	private void AddTerrainParticles()
 	{
 		double prevtot = posttotaltime;
@@ -220,12 +242,7 @@ public class Missile
 			float radius = (float)Math.random()*24 + 12;
 			radius *= GetPostRadiusMod(time);
 			
-			Vector2 v = new Vector2(v0);
-			v = v.nor();
-			
-			v.x *= (DUSTSPEED * GetPostRadiusMod(time));
-			v.y *= (DUSTSPEED * GetPostRadiusMod(time));
-			v.rotate((int)(Math.random()*theta));
+			Vector2 v = GetParticleVelocity(v0, Math.random()*theta);
 		
 			Vector2 p = new Vector2(pos);
 			p.x += v.x * (float)(posttime) * (i/(float)addcount);

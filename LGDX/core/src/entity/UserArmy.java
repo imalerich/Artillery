@@ -2,7 +2,6 @@ package entity;
 
 import java.util.Iterator;
 
-import particles.Particles;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
@@ -139,7 +138,8 @@ public class UserArmy extends Army
 		}
 	}
 	
-	public void AddCombatData(CombatResolver Resolver, Particles Particle)
+	@Override
+	public void AddCombatData(CombatResolver Resolver)
 	{
 		// uses the power modifier for projectiles
 		Iterator<Squad> s = squads.iterator();
@@ -149,9 +149,10 @@ public class UserArmy extends Army
 			// add each squad and its target to the combat resolver
 			if (squad.GetTargetSquad() != null && 
 					squad.GetArmament().GetType() == Armament.UNITTARGET) {
-				Resolver.AddConflict(Particle, squad, squad.GetTargetSquad());
+				Resolver.AddConflict(squad, squad.GetTargetSquad());
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(Particle, squad, powerselect.GetPower()/PowerButtons.MAXPOWER);
+				Resolver.AddProjectile(squad, powerselect.GetPower()/PowerButtons.MAXPOWER,
+						squad.GetArmament().GetStrength());
 			}
 		}
 	}

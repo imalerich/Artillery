@@ -155,8 +155,8 @@ public class Game extends ApplicationAdapter
 		tank0.SetBarrelOffset( new Vector2(17, 64-35) );
 		//tank0.SetBarrelOffset( new Vector2(18, 64-36) );
 		st0.AddUnit(tank0, cam);
-		st0.SetArmament( new Armament(Armament.POINTTARGET, 256, 1, 10, 1500, 0.8f));
-		st0.SetArmor( new Armor(100, 20) );
+		st0.SetArmament( new Armament(Armament.POINTTARGET, 256, 1, 30, 1500, 0.8f));
+		st0.SetArmor( new Armor(10, 10) );
 		st0.SetBarrelSrc( new Vector2(17, 64-35) );
 		//st0.SetBarrelSrc( new Vector2(18, 64-36) );
 		a0.AddSquad(st0);

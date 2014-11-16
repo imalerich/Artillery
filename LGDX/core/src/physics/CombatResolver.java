@@ -24,11 +24,15 @@ public class CombatResolver
 	private Vector<Missile> projectilequeue = new Vector<Missile>();
 	private Vector<CombatPacket> combatqueue = new Vector<CombatPacket>();
 	private Terrain ter;
+	private Particles particles;
+	private GameWorld gw;
 	private int stage;
 	
-	public CombatResolver(Terrain Ter)
+	public CombatResolver(GameWorld GW, Terrain Ter, Particles Particle)
 	{
 		ter = Ter;
+		particles = Particle;
+		gw = GW;
 		stage = COMPLETED;
 	}
 	
@@ -38,7 +42,7 @@ public class CombatResolver
 		combatqueue.clear();
 	}
 	
-	public void AddProjectile(Particles Particle, Squad Offense, float Power)
+	public void AddProjectile(Squad Offense, float Power, float Strength)
 	{
 		// calculate the starting velocity
 		Armament arms = Offense.GetArmament();
@@ -58,10 +62,10 @@ public class CombatResolver
 		}
 		
 		// add the projectile
-		projectilequeue.add( new Missile(ter, Particle, pos, vel) );
+		projectilequeue.add( new Missile(gw, ter, particles, pos, vel, Strength) );
 	}
 		
-	public void AddConflict(Particles Particle, Squad Offense, Squad Defense)
+	public void AddConflict(Squad Offense, Squad Defense)
 	{
 		Armament arms = Offense.GetArmament();
 		Armor armor = Defense.GetArmor();
@@ -80,7 +84,7 @@ public class CombatResolver
 			
 			for (int k=0; k<arms.GetFireRate(); k++) {
 				// for each round a second apart
-				combatqueue.add( new CombatPacket(ter, Particle, offense, defense, arms, armor, 2*k, offset) );
+				combatqueue.add( new CombatPacket(ter, particles, offense, defense, arms, armor, 2*k, offset) );
 			}
 			
 			// increment the index

@@ -43,9 +43,8 @@ public class GameWorld
 	{
 		ter = Ter;
 		currentstage = MOVESELECT;
-		
-		resolver = new CombatResolver(Ter);
 		particles = new Particles();
+		resolver = new CombatResolver(this, ter, particles);
 		
 		userArmy = null;
 		friendlyArmy = new Vector<Army>();
@@ -164,10 +163,8 @@ public class GameWorld
 		}
 		
 		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext()) {
-			Army army = f.next();
-			army.UpdateAttackSelect(Cam);
-		}
+		while (f.hasNext()) 
+			f.next().UpdateAttackSelect(Cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
@@ -176,7 +173,22 @@ public class GameWorld
 	
 	private void UpdateAttack(Camera Cam)
 	{
+		// update the combat resolver
 		resolver.UpdateSimulation();
+	}
+	
+	public void ProcBlast(Blast B)
+	{
+		// process any blasts on all armies
+		userArmy.ProcBlasts(B);
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().ProcBlasts(B);
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().ProcBlasts(B);
 	}
 	
 	private int GetTargetSize(Camera Cam)
@@ -362,13 +374,13 @@ public class GameWorld
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 		
-		userArmy.AddCombatData(resolver, particles);
+		userArmy.AddCombatData(resolver);
 		while (f.hasNext()) {
-			f.next().AddCombatData(resolver, particles);
+			f.next().AddCombatData(resolver);
 		}
 		
 		while (e.hasNext()) {
-			e.next().AddCombatData(resolver, particles);
+			e.next().AddCombatData(resolver);
 		}
 	}
 	
