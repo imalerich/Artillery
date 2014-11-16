@@ -9,19 +9,21 @@ import com.mygdx.game.Game;
 public class Particle 
 {
 	public static final int GRAVITY = 40;
-	private static final float DECAY = 5f;
+	private final float DECAY;
 	
 	private float radius;
 	private Vector2 pos;
 	private Vector2 vel;
 	private Vector2 slowrate;
 	
-	public Particle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime)
+	public Particle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
 	{
 		radius = Radius;
 		pos = Pos;
 		vel = Vel;
 		slowrate = new Vector2();
+		DECAY = Decay;
+		
 		if (SlowTime != 0f)	 {
 			slowrate = new Vector2(vel.x/SlowTime, vel.y/SlowTime);
 			slowrate.x = Math.abs(vel.x);

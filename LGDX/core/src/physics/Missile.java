@@ -126,11 +126,6 @@ public class Missile
 		
 		if (ter.Contains(pos.x, pos.y) && !hashit) {
 			ter.CutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
-			
-			float x0 = Game.WORLDH - ter.GetHeight((int)pos.x - 8);
-			Vector2 v0 = new Vector2(-8, x0-pos.y);
-			Vector2 v = GetParticleVelocity(v0, -50f-Math.random()*25);
-			particle.AddParticle(64, new Vector2(pos.x, pos.y), v, DUSTDECAY);
 			hashit = true;
 			
 			// process the blast
@@ -239,7 +234,7 @@ public class Missile
 		
 		for (int i=0; i<addcount; i++) {
 			double time = prevtot + (float)(posttime) * (i/(float)addcount);
-			float radius = (float)Math.random()*24 + 12;
+			float radius = (float)Math.random()*32 + 32;
 			radius *= GetPostRadiusMod(time);
 			
 			Vector2 v = GetParticleVelocity(v0, Math.random()*theta);
@@ -248,7 +243,7 @@ public class Missile
 			p.x += v.x * (float)(posttime) * (i/(float)addcount);
 			p.y += v.y * (float)(posttime) * (i/(float)addcount);
 			
-			particle.AddParticle(radius, p, v, DUSTDECAY);
+			particle.AddParticle(radius, p, v, DUSTDECAY, 20f);
 		}
 		
 		posttime = 0.0;

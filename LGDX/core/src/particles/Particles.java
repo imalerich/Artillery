@@ -9,6 +9,7 @@ import com.mygdx.game.Camera;
 public class Particles 
 {
 	private static final int SIZE = 100;
+	private static final float DEFAULTDECAY = 5f;
 	private Particle[] particles;
 	private int addindex;
 	
@@ -24,7 +25,7 @@ public class Particles
 			return;
 		
 		Expand();
-		particles[addindex] = new Particle(Radius, Pos, new Vector2(), 0f);
+		particles[addindex] = new Particle(Radius, Pos, new Vector2(), 0f, DEFAULTDECAY);
 		addindex++;
 	}
 	
@@ -34,17 +35,17 @@ public class Particles
 			return;
 		
 		Expand();
-		particles[addindex] = new Particle(Radius, Pos, Vel, 0f);
+		particles[addindex] = new Particle(Radius, Pos, Vel, 0f, DEFAULTDECAY);
 		addindex++;
 	}
 	
-	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime)
+	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
 	{
 		if (Radius <= 0f)
 			return;
 		
 		Expand();
-		particles[addindex] = new Particle(Radius, Pos, Vel, SlowTime);
+		particles[addindex] = new Particle(Radius, Pos, Vel, SlowTime, Decay);
 		addindex++;
 	}
 	

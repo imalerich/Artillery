@@ -19,7 +19,7 @@ public class Terrain
 	private static Pixmap DEADTROOPL;
 	
 	private static final int ACCELERATION = 16;
-	private static final int BASESPEED = 1;
+	private static final int BASESPEED = 0;
 	private static final int MAXSPEED = 4;
 	private float speed = BASESPEED;
 	
@@ -256,12 +256,12 @@ public class Terrain
 		data[Segment].fillRectangle(0, height-minlevel, SEGMENTWIDTH, minlevel);
 		
 		for (Rectangle r : baseregions) {
-			AddRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height);
+			AddRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height, Segment);
 			
 			double theta = (float)Math.PI/2f;
 			int width = (int)((r.height/Math.sin(Math.PI-theta))*Math.sin(theta));
-			AddTriangleRegion((int)r.x-width, width, height, (int)r.x, (int)(height-r.height));
-			AddTriangleRegion((int)(r.x+r.width), width, height, (int)(r.x+r.width), (int)(height-r.height));
+			AddTriangleRegion((int)r.x-width, width, height, (int)r.x, (int)(height-r.height), Segment);
+			AddTriangleRegion((int)(r.x+r.width), width, height, (int)(r.x+r.width), (int)(height-r.height), Segment);
 		}
 	}
 	
@@ -364,11 +364,6 @@ public class Terrain
 				}
 			}
 			
-			if (!isSegmentValid[i]) {
-				InvalidateSegment(i);
-				// TODO System.out.println("Segment Invalid: " + i);
-			}
-			
 			// if this is the final iteration and the segment is invalid, invalidate it 
 			if (!isSegmentValid[i] && Count == 0) {
 				InvalidateSegment(i);
@@ -384,7 +379,7 @@ public class Terrain
 		}
 		
 		// recurse down updating the terrain
-		//UpdateDropping(Count - 1);
+		UpdateDropping(Count - 1);
 	}
 	
 	public void ClearTmp()
@@ -460,54 +455,27 @@ public class Terrain
 		}
 	}
 	
-	private void AddTriangleRegion(int X0, int Width, int Y0, int X1, int Y1)
+	private void AddTriangleRegion(int X0, int Width, int Y0, int X1, int Y1, int Segment)
 	{
 		if (X0 < 0) {
 			X0 += Game.WORLDW;
 			X1 += Game.WORLDW;
 		}
 		
-		// determine the segments this hole belongs to
-		int x0 = X0;
-		int x1 = X0 + Width;
-		
-		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
-		region0 = Math.max(region0, 0);
-		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
-		region1 = Math.min(region1, segmentcount-1);
-		
-		// for each segment, add the region
-		for (int i=region0; i<=region1; i++)
-		{
-			int localx0 = X0 - i*SEGMENTWIDTH;
-			int localx1 = X1 - i*SEGMENTWIDTH;
-			isSegmentValid[i] = false;
-			
-			data[i].setColor(Color.WHITE);
-			data[i].fillTriangle(localx0, Y0, localx0+Width, Y0, localx1, Y1);
-		}
+		int localx0 = X0 - Segment*SEGMENTWIDTH;
+		int localx1 = X1 - Segment*SEGMENTWIDTH;
+		isSegmentValid[Segment] = false;
+
+		data[Segment].setColor(Color.WHITE);
+		data[Segment].fillTriangle(localx0, Y0, localx0+Width, Y0, localx1, Y1);
 	}
 	
-	private void AddRegion(int X, int Y, int Width, int Height)
+	private void AddRegion(int X, int Y, int Width, int Height, int Segment)
 	{
-		// determine the segments this hole belongs to
-		int x0 = X;
-		int x1 = X + Width;
-		
-		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
-		region0 = Math.max(region0, 0);
-		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
-		region1 = Math.min(region1, segmentcount-1);
-		
-		// for each segment, add the region
-		for (int i=region0; i<=region1; i++)
-		{
-			int localx = X - i*SEGMENTWIDTH;
-			isSegmentValid[i] = false;
-			
-			data[i].setColor(Color.WHITE);
-			data[i].fillRectangle(localx, Y, Width, Height);
-		}
+		int localx = X - Segment*SEGMENTWIDTH;
+
+		data[Segment].setColor(Color.WHITE);
+		data[Segment].fillRectangle(localx, Y, Width, Height);
 	}
 	
 	public void AddDeceasedTroop(int X, boolean Forward)
