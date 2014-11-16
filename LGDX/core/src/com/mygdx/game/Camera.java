@@ -25,7 +25,7 @@ public class Camera
 	public float GetRenderX(float XPos)
 	{
 		float xpos = XPos;
-		if (pos.x > Game.SCREENW && XPos < Game.SCREENW)
+		if (pos.x > Game.WORLDW/2 && XPos < Game.SCREENW)
 			xpos += Game.WORLDW;
 		
 		return xpos - pos.x;

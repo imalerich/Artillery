@@ -103,19 +103,19 @@ public class Army
 			switch (UnitType)
 			{
 			case UnitDeployer.GUNMAN:	
-				s.AddUnit( new Gunman(ter, pos, Speed), Cam);
+				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, Speed), Cam);
 				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 3, 2, 800, 0.8f));
 				s.SetArmor( new Armor(10, 5));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
-				s.AddUnit( new StealthTroop(ter, pos, Speed), Cam);
+				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, Speed), Cam);
 				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 2, 3, 800, 0.7f));
 				s.SetArmor( new Armor(10, 5));
 				break;
 				
 			case UnitDeployer.SPECOPS:
-				s.AddUnit( new SpecOps(ter, pos, Speed), Cam);
+				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, Speed), Cam);
 				s.SetArmament( new Armament(Armament.UNITTARGET, 256, 1, 6, 800, 0.95f));
 				s.SetArmor( new Armor(10, 5));
 				break;

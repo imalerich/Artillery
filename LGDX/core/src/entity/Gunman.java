@@ -15,7 +15,9 @@ import com.mygdx.game.Shaders;
 public class Gunman extends Unit
 {
 	public static Texture DEATHANIM;
-	public static Texture SPRITESHEET;
+	public static Texture GUNMAN;
+	public static Texture SPECOPS;
+	public static Texture STEALTHTROOPS;
 	
 	private AnimTex death;
 	private AnimTex anim;
@@ -25,15 +27,23 @@ public class Gunman extends Unit
 	
 	public static void Init()
 	{
-		SPRITESHEET = new Texture( Gdx.files.internal("img/units/gunman.png") );
+		GUNMAN = new Texture( Gdx.files.internal("img/units/gunman.png") );
+		STEALTHTROOPS = new Texture( Gdx.files.internal("img/units/stealthtroops.png") );
+		SPECOPS = new Texture( Gdx.files.internal("img/units/specops.png") );
 		DEATHANIM = new Texture( Gdx.files.internal("img/units/deathanim.png") );
 	}
 	
 	@Override
 	public void Release()
 	{
-		if (SPRITESHEET != null)
-			SPRITESHEET.dispose();
+		if (GUNMAN != null)
+			GUNMAN.dispose();
+		
+		if (STEALTHTROOPS != null)
+			STEALTHTROOPS.dispose();
+		
+		if (SPECOPS != null)
+			SPECOPS.dispose();
 		
 		if (DEATHANIM != null)
 			DEATHANIM.dispose();
@@ -47,10 +57,10 @@ public class Gunman extends Unit
 		return !death.IsCompleted(0);
 	}
 	
-	public Gunman(Terrain Ter, Vector2 Pos, int Speed)
+	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed)
 	{
 		if (anim == null) {
-			anim = new AnimTex(SPRITESHEET, 1, 4, 4);
+			anim = new AnimTex(Tex, 1, 4, 4);
 			anim.NewAnimation(0, 1, 0, 0, 0.0f);
 			anim.NewAnimation(1, 2, 0, 1, 0.2f);
 			anim.NewAnimation(2, 1, 2, 2, 0.0f);
