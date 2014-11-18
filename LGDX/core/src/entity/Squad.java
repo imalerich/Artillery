@@ -147,6 +147,11 @@ public class Squad
 		}
 	}
 	
+	public Iterator<Unit> GetUnitIterator()
+	{
+		return units.iterator();
+	}
+	
 	public boolean IsForward()
 	{
 		return isforward;
@@ -311,6 +316,23 @@ public class Squad
 			bbox.x += Game.WORLDW;
 		else if (bbox.x > Game.WORLDW)
 			bbox.x -= Game.WORLDW;
+	}
+	
+	public boolean IsIntersectingView(Rectangle R)
+	{
+		// find if any of the squads units view overlaps the target
+		Iterator<Unit> u = GetUnitIterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			Circle c = new Circle(unit.GetPos().x + unit.GetWidth()/2, 
+					unit.GetPos().y + unit.GetHealth()/2, unit.GetViewRadius());
+
+			if (Intersector.overlaps(c, R)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void SetForward(boolean Forward)

@@ -16,6 +16,8 @@ import arsenal.Armament;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
@@ -529,11 +531,16 @@ public class UserArmy extends Army
 		// check stack changes
 		ProcStackChange();
 		if (targetstack.GetSquadOver() != null) {
-			targetstack.GetSquadOver().SetAsTarget();
+			Squad t = targetstack.GetSquadOver();
+			
+			if (selected.IsIntersectingView(t.GetBBox())) {
+				selected.SetTargetSquad(t);
+				t.SetAsTarget();
+			}
+		} else {
+			selected.SetTargetSquad(null);
 		}
 		
-		// update target data
-		selected.SetTargetSquad( targetstack.GetSquadOver() );
 	}
 	
 	private void UpdateTargetPoint(Camera Cam)
