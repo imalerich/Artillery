@@ -68,6 +68,7 @@ public class Game extends ApplicationAdapter
 	public void resize(int width, int height)
 	{
 		ResizeScreen(width, height);
+		
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
 	}
@@ -175,23 +176,6 @@ public class Game extends ApplicationAdapter
 		physics.AddEnemyArmy(a1);
 	}
 	
-	private void ResizeScreen(int Width, int Height)
-	{
-		WINDOWW = Width;
-		WINDOWH = Height;
-		
-		SCREENH = WINDOWH;
-		if (SCREENH < MINHEIGHT)
-			SCREENH = MINHEIGHT;
-		else if (SCREENH>MAXHEIGHT)
-			SCREENH /= (SCREENH/MAXHEIGHT + 1);
-		
-		SCREENRATIOY = (float)SCREENH/WINDOWH;
-		
-		SCREENW = (int)(WINDOWW*SCREENRATIOY);
-		SCREENRATIOX = (float)SCREENW/WINDOWW;
-	}
-	
 	public static OrthographicCamera GetProj()
 	{
 		return proj;
@@ -250,6 +234,49 @@ public class Game extends ApplicationAdapter
 			cam.MoveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
 		else if (Gdx.input.isKeyPressed(Keys.S))
 			cam.MoveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+		
+		if (Gdx.input.isKeyJustPressed(Keys.PLUS)) {
+			ZoomScreen(-32);
+		} else if (Gdx.input.isKeyJustPressed(Keys.MINUS)) {
+			ZoomScreen(32);
+		} else if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && Cursor.getScrollDirection() == -1) {
+			ZoomScreen(-32);
+		} else if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && Cursor.getScrollDirection() == 1) {
+			ZoomScreen(32);
+		}
+	}
+	
+	private void ZoomScreen(int Zoom)
+	{
+		int prevh = SCREENH;
+		int prevw = SCREENW;
+		SCREENH += Zoom;
+		SCREENH = Math.max(Math.min(SCREENH, WORLDH), MINHEIGHT);
+		
+		SCREENRATIOY = (float)SCREENH/WINDOWH;
+		SCREENW = (int)(WINDOWW*SCREENRATIOY);
+		SCREENRATIOX = (float)SCREENW/WINDOWW;
+		proj.setToOrtho(false, SCREENW, SCREENH);
+	
+		cam.MoveVertical(-((SCREENH-prevh)/2) * SCREENRATIOY);
+		cam.MoveHorizontal(-((SCREENW-prevw)/2) * SCREENRATIOX);
+	}
+	
+	private void ResizeScreen(int Width, int Height)
+	{
+		WINDOWW = Width;
+		WINDOWH = Height;
+		
+		SCREENH = WINDOWH;
+		if (SCREENH < MINHEIGHT)
+			SCREENH = MINHEIGHT;
+		else if (SCREENH>MAXHEIGHT)
+			SCREENH /= (SCREENH/MAXHEIGHT + 1);
+		
+		SCREENRATIOY = (float)SCREENH/WINDOWH;
+		
+		SCREENW = (int)(WINDOWW*SCREENRATIOY);
+		SCREENRATIOX = (float)SCREENW/WINDOWW;
 	}
 	
 	private void UpdateScene()

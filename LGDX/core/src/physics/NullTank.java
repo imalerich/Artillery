@@ -60,6 +60,7 @@ public class NullTank
 	
 	public void Update(Camera Cam)
 	{
+		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x) - 3;
 		time += Gdx.graphics.getDeltaTime();
 		
 		int addcount = (int)(PPS*time*2);
