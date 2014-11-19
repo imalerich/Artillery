@@ -16,8 +16,6 @@ import arsenal.Armament;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
@@ -261,6 +259,16 @@ public class UserArmy extends Army
 	
 	private void ProcStackChange()
 	{
+		// remove all invalid references from the target stack
+		if (selected != null && targetstack.GetSize() != 0) {
+			Iterator<SelectionElement> i = targetstack.GetIterator();
+			while (i.hasNext()) {
+				if (!selected.IsIntersectingView(i.next().ref.GetBBox())) {
+					i.remove();
+				}
+			}
+		}
+		
 		// cycle though current option stack
 		if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
 			optionstack.IncSelection();
@@ -530,15 +538,10 @@ public class UserArmy extends Army
 		
 		// check stack changes
 		ProcStackChange();
-		if (targetstack.GetSquadOver() != null) {
-			Squad t = targetstack.GetSquadOver();
-			
-			if (selected.IsIntersectingView(t.GetBBox())) {
-				selected.SetTargetSquad(t);
-				t.SetAsTarget();
-			}
-		} else {
-			selected.SetTargetSquad(null);
+		Squad t = targetstack.GetSquadOver();
+		selected.SetTargetSquad(t);
+		if (t != null) {
+			t.SetAsTarget();
 		}
 		
 	}

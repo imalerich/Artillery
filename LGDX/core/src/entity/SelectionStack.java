@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 public class SelectionStack
@@ -7,39 +8,34 @@ public class SelectionStack
 	public static final int OVERSQUAD = 0;
 	public static final int OVERADD = 1;
 	
-	private Vector<Integer> actions;
-	private Vector<Squad> reference;
+	private Vector<SelectionElement> references;
 	private int selection;
 	
 	public SelectionStack()
 	{
 		selection = 0;
-		actions = new Vector<Integer>();
-		reference = new Vector<Squad>();
+		references = new Vector<SelectionElement>();
 	}
 	
 	public void Reset()
 	{
 		selection = 0;
-		actions.clear();
-		reference.clear();
+		references.clear();
 	}
 	
 	public int GetSize()
 	{
-		return actions.size();
+		return references.size();
 	}
 	
 	public void AddSquadOver(Squad Ref)
 	{
-		actions.add(OVERSQUAD);
-		reference.add(Ref);
+		references.add( new SelectionElement(OVERSQUAD, Ref) );
 	}
 	
 	public void AddBarracksOver()
 	{
-		actions.add(OVERADD);
-		reference.add(null);
+		references.add( new SelectionElement(OVERADD, null) );
 	}
 	
 	public void IncSelection()
@@ -47,7 +43,7 @@ public class SelectionStack
 		selection++;
 		
 		// wrap to 0
-		if (selection == actions.size())
+		if (selection == references.size())
 			selection = 0;
 	}
 	
@@ -57,14 +53,14 @@ public class SelectionStack
 		
 		// wrap to max
 		if (selection < 0)
-			selection = actions.size()-1;
+			selection = references.size()-1;
 	}
 	
 	public boolean IsSelectionValid()
 	{
-		if (actions.size() == 0)
+		if (references.size() == 0)
 			return false;
-		else if (selection >= reference.size())
+		else if (selection >= references.size())
 			return false;
 		else if (selection < 0)
 			return false;
@@ -77,7 +73,7 @@ public class SelectionStack
 		if (!IsSelectionValid())
 			return false;
 		
-		return (actions.get(selection) == OVERSQUAD);
+		return (references.get(selection).action == OVERSQUAD);
 	}
 	
 	public boolean IsOverAdd()
@@ -85,7 +81,7 @@ public class SelectionStack
 		if (!IsSelectionValid())
 			return false;
 		
-		return (actions.get(selection) == OVERADD);
+		return (references.get(selection).action == OVERADD);
 	}
 	
 	public Squad GetSquadOver()
@@ -93,6 +89,11 @@ public class SelectionStack
 		if (!IsSelectionValid())
 			return null;
 		
-		return reference.get(selection);
+		return references.get(selection).ref;
+	}
+	
+	public Iterator<SelectionElement> GetIterator()
+	{
+		return references.iterator();
 	}
 }
