@@ -23,12 +23,20 @@ public class Unit
 	protected float health;
 	protected float maxhealth;
 	
-	protected int viewRadius = 256;
+	protected int viewRadius = 512;
 	protected int width = 0;
 	protected int height = 0;
 	
 	protected boolean isFiring = false;
 	protected int mugshotIndex = 0;
+	
+	public void SetUnitData(int Speed, float Health, int ViewRadius)
+	{
+		speed = Speed;
+		health = Health;
+		maxhealth = Health;
+		viewRadius = ViewRadius;
+	}
 	
 	public void Release()
 	{
