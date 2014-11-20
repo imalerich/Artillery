@@ -1,0 +1,25 @@
+ # contains the settings for the default tank
+
+UNIT
+
+	count: 1
+	speed: 130
+	health: 46
+
+END
+
+ARMOR
+
+	health: 32
+	strength: 12
+
+END
+
+ARMAMENT
+
+	type: POINT
+	firerate: 1
+	strength: 22
+	speed: 1500
+
+END

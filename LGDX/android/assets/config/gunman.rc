@@ -1,4 +1,4 @@
- # contains settings for the default gunman
+ # contains the settings for the default gunman
 
 UNIT
 
@@ -30,9 +30,9 @@ ARMAMENT
 
 	type: UNIT 
 	range: 768
-	firerate: 2
+	firerate: 1
 	strength: 8
 	speed: 800
-	accuracy: 0.75
+	accuracy: 0.8
 
 END

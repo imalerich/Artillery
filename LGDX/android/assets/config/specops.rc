@@ -1,0 +1,27 @@
+ # contains the settings for a spec ops unit
+
+UNIT
+
+	count: 4
+	speed: 160
+	health: 22
+
+END
+
+ARMOR
+
+	health: 14
+	strength: 8
+
+END
+
+ARMAMENT
+
+	type: UNIT
+	range: 768
+	firerate: 1
+	strength: 14
+	speed: 800
+	accuracy: 0.9
+
+END
