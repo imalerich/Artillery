@@ -325,7 +325,7 @@ public class Squad
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Circle c = new Circle(unit.GetPos().x + unit.GetWidth()/2, 
-					unit.GetPos().y + unit.GetHealth()/2, unit.GetViewRadius());
+					unit.GetPos().y + unit.GetHealth()/2, arms.GetRange());
 
 			if (Intersector.overlaps(c, R)) {
 				return true;
@@ -502,7 +502,7 @@ public class Squad
 			pos.y += u.GetHeight()/2;
 			
 			FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
-					Cam.GetRenderY(pos.y), u.GetViewRadius());
+					Cam.GetRenderY(pos.y), arms.GetRange());
 		}
 	}
 	

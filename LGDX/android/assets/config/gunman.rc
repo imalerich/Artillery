@@ -1,0 +1,38 @@
+ # contains settings for the default gunman
+
+UNIT
+
+	count: 6
+	speed: 160
+	health: 16
+
+END
+
+ARMOR
+
+	health: 12
+	strength: 8
+
+END
+
+ARMAMENT
+
+	type: UNIT 
+	range: 512
+	firerate: 1
+	strength: 8
+	speed: 800
+	accuracy: 0.8
+
+END
+
+ARMAMENT
+
+	type: UNIT 
+	range: 768
+	firerate: 2
+	strength: 8
+	speed: 800
+	accuracy: 0.75
+
+END

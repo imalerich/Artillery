@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import config.ConfigGenerator;
 import entity.Army;
 import entity.Gunman;
 import entity.Squad;
@@ -75,6 +76,8 @@ public class Game extends ApplicationAdapter
 	
 	public void Init()
 	{
+		ConfigGenerator.LoadConfiguration("config/gunman.rc");
+		
 		Terrain.SetColor( new Color(54/255f, 47/255f, 43/255f, 1f));
 		
 		Tank.Init();
