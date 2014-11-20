@@ -8,6 +8,15 @@ public class Armor
 	private int health;
 	private int strength;
 	
+	public Armor(Armor A)
+	{
+		maxhealth = A.maxhealth;
+		maxstrength = A.maxstrength;
+		
+		health = maxhealth;
+		strength = maxstrength;
+	}
+	
 	public Armor(int Health, int Strength)
 	{
 		maxhealth = Health;

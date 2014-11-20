@@ -2,9 +2,9 @@
 
 UNIT
 
-	count: 1
 	speed: 130
 	health: 46
+	movedist: 768
 
 END
 

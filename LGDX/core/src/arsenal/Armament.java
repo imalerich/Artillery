@@ -16,7 +16,7 @@ public class Armament
 	private float accuracy;
 	private float angle;
 	
-	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
+	public void Init(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
 		if (type != UNITTARGET && type != POINTTARGET)
@@ -32,6 +32,16 @@ public class Armament
 		accuracy = Accuracy;
 		accuracy = Math.min(accuracy, 1.0f);
 		accuracy = Math.max(accuracy, 0.0f);
+	}
+	
+	public Armament(Armament A)
+	{
+		Init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy);
+	}
+	
+	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
+	{
+		Init(Type, Range, FireRate, Strength, Speed, Accuracy);
 	}
 	
 	// getter methods for the properties of this armament

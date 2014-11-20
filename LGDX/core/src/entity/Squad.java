@@ -35,6 +35,7 @@ public class Squad
 	
 	private static int MAXHEIGHT = 12;
 	private int squadspacing = 32;
+	private int maxmovedist = 0;
 	
 	// the armor and armament that is used by this squadbn
 	private Armament arms;
@@ -81,11 +82,12 @@ public class Squad
 			target.Release();
 	}
 	
-	public Squad(Terrain Ter)
+	public Squad(Terrain Ter, int MoveDist)
 	{
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		minx = maxx = 0f;
+		maxmovedist = MoveDist;
 		
 		ter = Ter;
 		targetsquad = null;
@@ -152,6 +154,11 @@ public class Squad
 		return units.iterator();
 	}
 	
+	public int GetMoveDist()
+	{
+		return maxmovedist;
+	}
+	
 	public boolean IsForward()
 	{
 		return isforward;
@@ -184,7 +191,7 @@ public class Squad
 	
 	public void SetArmament(Armament Arms)
 	{
-		arms = Arms;
+		arms = new Armament(Arms);
 	}
 	
 	public Armament GetArmament()
@@ -194,7 +201,7 @@ public class Squad
 	
 	public void SetArmor(Armor Set)
 	{
-		armor = Set;
+		armor = new Armor(Set);
 	}
 	
 	public Armor GetArmor()

@@ -5,6 +5,7 @@ UNIT
 	count: 6
 	speed: 160
 	health: 16
+	movedist: 1024
 
 END
 

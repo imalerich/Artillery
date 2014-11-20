@@ -322,7 +322,7 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
-			SpawnUnit(selected, 6, Cam, 160);
+			SpawnUnit(selected, Cam);
 			squadspawned = true;
 		}
 	}
@@ -421,7 +421,7 @@ public class UserArmy extends Army
 			// set the movement
 			moveactive = true;
 			moveselect.SetPos((int)selected.GetBoundingBox().x, (int)selected.GetBoundingBox().width);
-			moveselect.SetMaxDist(512);
+			moveselect.SetMaxDist(selected.GetMoveDist());
 
 			// leave the menu
 			menuactive = false;

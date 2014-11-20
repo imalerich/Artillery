@@ -14,7 +14,7 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "ARMOR", "ARMAMENT", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "accuracy:", "#" };
+		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "#" };
 	
 	/**
 	 * Default count for a newly generate unit.
@@ -25,6 +25,11 @@ public class ConfigGenerator
 	 * Default movement speed of the generated unit.
 	 */
 	public static final int DEFAULT_SPEED = 120;
+	
+	/**
+	 * Default movement distance of the unit per turn;
+	 */
+	public static final int DEFAULT_MOVEDIST = 512;
 	
 	/**
 	 * Default maximum health held by the unit.
@@ -104,6 +109,7 @@ public class ConfigGenerator
 		int count = DEFAULT_COUNT;
 		int speed = DEFAULT_SPEED;
 		int health = DEFAULT_HEALTH;
+		int movedist = DEFAULT_MOVEDIST;
 		
 		boolean insegment = false;
 		int linenumber = 0;
@@ -135,11 +141,14 @@ public class ConfigGenerator
 			} else if (d.param.equals("health:")) {
 				health = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_HEALTH);
 				continue;
+			} else if (d.param.equals("movedist:")) {
+				movedist = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_MOVEDIST);
+				continue;
 			}
 		}
 		
 		// file processed succesfully, return the configuration setting
-		return new ConfigSettings(count, health, speed);
+		return new ConfigSettings(count, health, speed, movedist);
 	}
 	
 	/**

@@ -11,12 +11,14 @@ import physics.NullTank;
 import terrain.Terrain;
 import ui.UnitDeployer;
 import arsenal.Armament;
-import arsenal.Armor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
+
+import config.ConfigSettings;
+import config.SquadConfigurations;
 
 public class Army 
 {
@@ -93,7 +95,7 @@ public class Army
 		}
 	}
 	
-	public void SpawnUnit(int UnitType, int Count, Camera Cam, int Speed)
+	public void SpawnUnit(int UnitType, Camera Cam)
 	{
 		int offset = 76;
 		if (UnitType == UnitDeployer.STEALTHOPS)
@@ -101,33 +103,49 @@ public class Army
 		else if (UnitType == UnitDeployer.SPECOPS)
 			offset = 306;
 		
-		Squad s = new Squad(ter);
+		// get the appropriate configuration settings
+		ConfigSettings c = null;
+		switch (UnitType)
+		{
+		case UnitDeployer.GUNMAN:
+			c = SquadConfigurations.GetConfiguration(SquadConfigurations.GUNMAN);
+			break;
+			
+		case UnitDeployer.STEALTHOPS:
+			c = SquadConfigurations.GetConfiguration(SquadConfigurations.STEALTHOPS);
+			break;
+			
+		case UnitDeployer.SPECOPS:
+			c = SquadConfigurations.GetConfiguration(SquadConfigurations.SPECOPS);
+			break;
+		}
+		
+		Squad s = new Squad(ter, c.maxmovedist);
 		s.SetTargetX((int)base.GetPos().x+offset);
+		
 		int spacing = s.GetSquadSpacing();
 		AddSquad(s);
 		
-		for (int i=0; i<Count; i++)
+		// set the armor and armament for the squad
+		s.SetArmament(c.GetFirstArmament());
+		s.SetArmor(c.GetFirstArmor());
+		
+		for (int i=0; i<c.count; i++)
 		{
 			Vector2 pos = new Vector2(base.GetPos().x+offset + i*spacing, 0);
 			
 			switch (UnitType)
 			{
 			case UnitDeployer.GUNMAN:	
-				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 512, 3, 2, 800, 0.8f));
-				s.SetArmor( new Armor(10, 5));
+				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health), Cam);
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
-				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 512, 2, 3, 800, 0.7f));
-				s.SetArmor( new Armor(10, 5));
+				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health), Cam);
 				break;
 				
 			case UnitDeployer.SPECOPS:
-				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, Speed), Cam);
-				s.SetArmament( new Armament(Armament.UNITTARGET, 512, 1, 6, 800, 0.95f));
-				s.SetArmor( new Armor(10, 5));
+				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health), Cam);
 				break;
 				
 			default:

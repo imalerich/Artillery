@@ -22,7 +22,8 @@ public class SquadConfigurations
 	public static ConfigSettings GetConfiguration(int Index)
 	{
 		if (!IsValidConfig(Index)) {
-			System.err.println("Invalid Configuration Specified");
+			System.err.println("Invalid Configuration Specified at Index " + Index);
+			return null;
 		}
 		
 		return settings[Index];
@@ -30,6 +31,6 @@ public class SquadConfigurations
 	
 	private static boolean IsValidConfig(int Index)
 	{
-		return (Index > 0) && (Index < CONFIGCOUNT);
+		return (Index >= 0) && (Index < CONFIGCOUNT);
 	}
 }

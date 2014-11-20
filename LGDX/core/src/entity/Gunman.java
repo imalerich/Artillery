@@ -57,7 +57,7 @@ public class Gunman extends Unit
 		return !death.IsCompleted(0);
 	}
 	
-	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed)
+	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed, int Health)
 	{
 		if (anim == null) {
 			anim = new AnimTex(Tex, 1, 4, 4);
@@ -85,9 +85,9 @@ public class Gunman extends Unit
 		ter = Ter;
 		speed = Speed;
 		mugshotIndex = 0;
-		health = 10;
-		maxhealth = 10;
-		lasthealth = health;
+		health = Health;
+		maxhealth = Health;
+		lasthealth = Health;
 		dmgclock = 0f;
 	}
 	

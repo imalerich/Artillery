@@ -58,7 +58,7 @@ public class Tank extends Unit
 			BARREL.dispose();
 	}
 	
-	public Tank(String Filename, Terrain Ter, int Speed)
+	public Tank(String Filename, Terrain Ter, int Speed, int Health)
 	{
 		tex = new Texture(Gdx.files.internal(Filename) );
 		tr = new TextureRegion(tex);
@@ -82,8 +82,8 @@ public class Tank extends Unit
 		barrelPhi = 0.0f;
 		ter = Ter;
 		speed = Speed;
-		health = 30f;
-		maxhealth = 30f;
+		health = Health;
+		maxhealth = Health;
 	}
 	
 	@Override

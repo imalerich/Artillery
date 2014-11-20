@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import config.ConfigSettings;
 import config.SquadConfigurations;
 import entity.Army;
 import entity.Gunman;
@@ -153,28 +154,31 @@ public class Game extends ApplicationAdapter
 		UserArmy a0 = new UserArmy(b0, ter, cam);
 		physics.SetUserArmy(a0);
 		
-		Squad st0 = new Squad(ter);
-		Tank tank0 = new Tank("img/tanks/Tank1.png", ter, 100);
+		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
+		
+		Squad st0 = new Squad(ter, tankSettings.maxmovedist);
+		st0.SetArmament(tankSettings.GetFirstArmament());
+		st0.SetArmor(tankSettings.GetFirstArmor());
+		
+		Tank tank0 = new Tank("img/tanks/Tank1.png", ter, tankSettings.speed, tankSettings.health);
 		tank0.SetBarrelOffset( new Vector2(17, 64-35) );
-		//tank0.SetBarrelOffset( new Vector2(18, 64-36) );
 		st0.AddUnit(tank0, cam);
-		st0.SetArmament( new Armament(Armament.POINTTARGET, 256, 1, 30, 1500, 0.8f));
-		st0.SetArmor( new Armor(10, 10) );
 		st0.SetBarrelSrc( new Vector2(17, 64-35) );
-		//st0.SetBarrelSrc( new Vector2(18, 64-36) );
 		a0.AddSquad(st0);
 		
 		Army a1 = new Army(b1, ter);
-		Squad st1 = new Squad(ter);
-		Tank tank1 = new Tank("img/tanks/Tank0.png", ter, 40);
+		Squad st1 = new Squad(ter, tankSettings.maxmovedist);
+		st1.SetArmament(tankSettings.GetFirstArmament());
+		st1.SetArmor(tankSettings.GetFirstArmor());
+		
+		Tank tank1 = new Tank("img/tanks/Tank0.png", ter, tankSettings.speed, tankSettings.health);
 		tank1.SetPos( new Vector2(b1.GetPos().x+70, b1.GetPos().y) );
 		tank1.SetBarrelOffset( new Vector2(17, 29) );
 		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );
 		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
 		st1.AddUnit(tank1, cam);
-		st1.SetArmor( new Armor(10, 10) );
 		a1.AddSquad(st1);
-		a1.SpawnUnit(UnitDeployer.GUNMAN, 6, cam, 20);
+		a1.SpawnUnit(UnitDeployer.GUNMAN, cam);
 		physics.AddEnemyArmy(a1);
 	}
 	

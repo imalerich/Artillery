@@ -28,6 +28,11 @@ public class ConfigSettings
 	public final int speed;
 	
 	/**
+	 * Maximum move distance of the unit per turn.
+	 */
+	public final int maxmovedist;
+	
+	/**
 	 * Create a new configuration.
 	 * @param Count
 	 * 	default count
@@ -36,11 +41,12 @@ public class ConfigSettings
 	 * @param Speed
 	 * 	speed of the unit
 	 */
-	public ConfigSettings(int Count, int Health, int Speed)
+	public ConfigSettings(int Count, int Health, int Speed, int MaxMoveDist)
 	{
 		count = Count;
 		health = Health;
 		speed = Speed;
+		maxmovedist = MaxMoveDist;
 		
 		armor = new Vector<Armor>();
 		arms = new Vector<Armament>();
@@ -84,6 +90,26 @@ public class ConfigSettings
 	public Iterator<Armament> GetArmament()
 	{
 		return arms.iterator();
+	}
+	
+	/**
+	 * Get the first set of armor in the list.
+	 * @return
+	 * 	The first set of armor.
+	 */
+	public Armor GetFirstArmor()
+	{
+		return armor.firstElement();
+	}
+	
+	/**
+	 * Get the first armement in the list.
+	 * @return
+	 * 	The first armament.
+	 */
+	public Armament GetFirstArmament()
+	{
+		return arms.firstElement();
 	}
 	
 	/**
