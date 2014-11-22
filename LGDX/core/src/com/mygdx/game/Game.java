@@ -14,8 +14,6 @@ import ui.MenuBar;
 import ui.PowerButtons;
 import ui.Profile;
 import ui.UnitDeployer;
-import arsenal.Armament;
-import arsenal.Armor;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
