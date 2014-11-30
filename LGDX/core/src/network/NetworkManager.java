@@ -23,8 +23,6 @@ public class NetworkManager
 		
 		Kryo k = h.GetKryo();
 		k.register(String.class);
-		k.register(Request.class);
-		k.register(Response.class);
 		k.register(Ping.class);
 		k.register(java.util.Vector.class);
 		k.register(Integer.class);
@@ -44,8 +42,6 @@ public class NetworkManager
 		
 		Kryo k = c.GetKryo();
 		k.register(String.class);
-		k.register(Request.class);
-		k.register(Response.class);
 		k.register(Ping.class);
 		k.register(java.util.Vector.class);
 		k.register(Integer.class);

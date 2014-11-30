@@ -39,12 +39,7 @@ public class Recipient
 			}
 			
 			public void received(Connection connection, Object object)  {
-				if (object instanceof Response) {
-					System.out.println( ((Response)object).dat );
-				} if (object instanceof TerrainSeed) {
-					seed = (TerrainSeed)object;
-					System.out.println("Received terrain seed from server");
-				} if (object instanceof Ping) {
+				if (object instanceof Ping) {
 					ping = (1000 * pingtime);
 				}
 			}

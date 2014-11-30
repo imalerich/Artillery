@@ -37,12 +37,7 @@ public class Host
 			}
 			
 			public void received(Connection connection, Object object)  {
-				if (object instanceof Request) {
-					System.out.println( ((Request)object).dat );
-					Response r = new Response();
-					r.dat = "Get me a Soda Cunt";
-					connection.sendTCP(r); 
-				} if (object instanceof Ping) {
+				if (object instanceof Ping) {
 					Ping p = new Ping();
 					p.dat = "ping";
 					connection.sendTCP(p);
