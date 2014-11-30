@@ -13,7 +13,6 @@ public class Host
 	public Host()
 	{
 		s = new Server();
-		s.start();
 	}
 	
 	public void RegisterObject(Object o)
@@ -23,6 +22,8 @@ public class Host
 	
 	public void StartServer()
 	{
+		s.start();
+		
 		try {
 			s.bind(54555, 54777);
 		} catch (IOException e) {

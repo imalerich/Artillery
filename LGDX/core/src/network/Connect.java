@@ -14,7 +14,6 @@ public class Connect
 	public Connect()
 	{
 		c = new Client();
-		c.start();
 	}
 	
 	public void RegisterObject(Object o)
@@ -24,6 +23,8 @@ public class Connect
 	
 	public void ConnectToServer()
 	{
+		c.start();
+		
 		try {
 			InetAddress address = c.discoverHost(54777, 5000);
 			
