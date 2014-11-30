@@ -1,9 +1,14 @@
 package com.mygdx.game;
 
+import network.NetworkManager;
+
 import com.badlogic.gdx.Gdx;
 
 public class FrameRate 
 {
+	public static boolean SHOWFPS = false;
+	public static boolean SHOWPING = false;
+	
 	private static double fps = 0.0f;
 	private static double msPerFrame = 0.0f;
 	
@@ -15,11 +20,15 @@ public class FrameRate
 		timePassed += Gdx.graphics.getDeltaTime();
 		frames++;
 		
+		if (SHOWPING) {
+			NetworkManager.UpdatePing();
+		}
+		
 		// update the frame rate once per second
 		if (timePassed >= 1)
 		{
-			if (fps > 0)
-				System.out.println(fps);
+			if (fps > 0 && SHOWFPS)
+				System.out.println("fps --- " + fps);
 			
 			// calculate the frame rate and the milliseconds per frame
 			fps = frames/timePassed;
@@ -28,6 +37,15 @@ public class FrameRate
 			// reset the variables
 			timePassed = 0.0;
 			frames = 0;
+			
+			// if the previous ping was non zero, output it
+			double ping = NetworkManager.GetPing();
+			if (SHOWPING)
+				System.out.println("ping --- " + ping);
+			
+			// issue a ping to the host
+			if (SHOWPING)
+				NetworkManager.Ping();
 		}
 	}
 	

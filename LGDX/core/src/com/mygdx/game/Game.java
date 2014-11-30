@@ -8,7 +8,6 @@ import physics.GameWorld;
 import physics.Missile;
 import terrain.Background;
 import terrain.FogOfWar;
-import terrain.SeedGenerator;
 import terrain.Terrain;
 import terrain.TerrainSeed;
 import ui.MenuBar;
@@ -40,6 +39,7 @@ public class Game extends ApplicationAdapter
 	 */
 	private static final int MINHEIGHT = 400;
 	private static final int MAXHEIGHT = 1200;
+	private final boolean ISHOST;
 	
 	public static int WINDOWW =	960;
 	public static int WINDOWH = 1200;
@@ -61,8 +61,9 @@ public class Game extends ApplicationAdapter
 	private Camera cam;
 	private GameWorld physics;
 	
-	public Game(int WindowW, int WindowH)
+	public Game(int WindowW, int WindowH, boolean IsHost)
 	{
+		ISHOST = IsHost;
 		ResizeScreen(WindowW, WindowH);
 	}
 	
@@ -95,6 +96,11 @@ public class Game extends ApplicationAdapter
 		Terrain.Init();
 		Weather.Init();
 		SquadConfigurations.Init();
+	
+		if (ISHOST)
+			NetworkManager.InitHost();
+		else
+			NetworkManager.InitClient();
 	}
 	
 	public void Release()
@@ -126,7 +132,7 @@ public class Game extends ApplicationAdapter
 		proj.setToOrtho(false, SCREENW, SCREENH);
 
 		// generate the terrain
-		TerrainSeed seed = SeedGenerator.GenerateSeed(WORLDW, WORLDH);
+		TerrainSeed seed = NetworkManager.GetSeed();
 		seed.AddBase(0, MilitaryBase.GetWidth());
 		seed.AddBase(WORLDW/2, MilitaryBase.GetWidth());
 		Terrain ter = new Terrain( seed );
@@ -209,12 +215,6 @@ public class Game extends ApplicationAdapter
 		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
 			Release(); // release data
 			Gdx.app.exit();
-		}
-		
-		if (Gdx.input.isKeyJustPressed(Keys.F4)){
-			NetworkManager.InitHost();
-		} else if (Gdx.input.isKeyJustPressed(Keys.F11)){
-			NetworkManager.InitClient();
 		}
 		
 		// clear input from CursorInput
