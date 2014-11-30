@@ -1,5 +1,6 @@
 package network;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
 
 public class NetworkManager 
@@ -11,8 +12,10 @@ public class NetworkManager
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		h = new Host();
-		h.GetKryo().register(CoreRequest.class);
-		h.GetKryo().register(CoreResponse.class);
+		
+		Kryo k = h.GetKryo();
+		k.register(CoreRequest.class);
+		k.register(CoreResponse.class);
 		
 		h.StartServer();
 	}
@@ -21,8 +24,10 @@ public class NetworkManager
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		c = new Connect();
-		c.GetKryo().register(CoreRequest.class);
-		c.GetKryo().register(CoreResponse.class);
+		
+		Kryo k = c.GetKryo();
+		k.register(CoreRequest.class);
+		k.register(CoreResponse.class);
 		
 		c.ConnectToServer();
 	}

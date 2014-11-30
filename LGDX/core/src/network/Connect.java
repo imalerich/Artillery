@@ -8,6 +8,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 public class Connect 
 {
@@ -28,14 +29,23 @@ public class Connect
 	{
 		Start();
 		
-		c.addListener(new Listener() {
-			public void received(Connection connection, Object object) 
-			{
+		c.addListener( new ThreadedListener( new Listener() {
+			
+			public void connected(Connection connection) {
+				System.out.println("Connected to Host");
+			}
+			
+			public void received(Connection connection, Object object)  {
 				if (object instanceof CoreResponse) {
 					System.out.println( ((CoreResponse)object).dat );
 				}
 			}
-		} );
+			
+			public void disconnected(Connection connection) {
+				Gdx.app.exit();
+			}
+			
+		} ) );
 		
 		c.sendTCP( new CoreRequest("I'm Derk, and I suck.") );
 	}
@@ -47,6 +57,7 @@ public class Connect
 			
 			c.connect(5000, address, 54555, 54777);
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.err.println("Error: Failed to Connect to the Remote Server.");
 			return;
 		}
