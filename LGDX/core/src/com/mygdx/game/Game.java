@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import network.NetworkManager;
 import particles.ParticleMask;
 import particles.Weather;
 import physics.CombatPacket;
@@ -94,6 +95,9 @@ public class Game extends ApplicationAdapter
 		Terrain.Init();
 		Weather.Init();
 		SquadConfigurations.Init();
+		
+		// NetworkManager.InitHost();
+		NetworkManager.InitClient();
 	}
 	
 	public void Release()
