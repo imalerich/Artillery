@@ -119,8 +119,9 @@ public class Recipient
 	private void Start()
 	{
 		try {
-			InetAddress address = c.discoverHost(54777, 5000);
-			c.connect(5000, address, 54555, 54777);
+			//InetAddress address = c.discoverHost(54777, 5000);
+			//c.connect(5000, address, 54555, 54777);
+			c.connect(5000, "10.36.183.11", 54555, 54777);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
