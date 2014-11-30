@@ -8,8 +8,8 @@ public class NetworkManager
 	public static void InitHost()
 	{
 		h = new Host();
-		h.RegisterObject(CoreRequest.class);
-		h.RegisterObject(CoreResponse.class);
+		h.GetKryo().register(CoreRequest.class);
+		h.GetKryo().register(CoreResponse.class);
 		
 		h.StartServer();
 	}
@@ -17,8 +17,8 @@ public class NetworkManager
 	public static void InitClient()
 	{
 		c = new Connect();
-		c.RegisterObject(CoreRequest.class);
-		c.RegisterObject(CoreResponse.class);
+		c.GetKryo().register(CoreRequest.class);
+		c.GetKryo().register(CoreResponse.class);
 		
 		c.ConnectToServer();
 	}

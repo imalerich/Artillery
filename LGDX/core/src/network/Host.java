@@ -2,6 +2,7 @@ package network;
 
 import java.io.IOException;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -15,9 +16,9 @@ public class Host
 		s = new Server();
 	}
 	
-	public void RegisterObject(Object o)
+	public Kryo GetKryo()
 	{
-		s.getKryo().register(o.getClass());
+		return s.getKryo();
 	}
 	
 	public void StartServer()
