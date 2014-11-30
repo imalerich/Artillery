@@ -24,13 +24,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-import config.ConfigSettings;
 import config.SquadConfigurations;
-import entity.Army;
 import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
-import entity.UserArmy;
 
 public class Game extends ApplicationAdapter 
 {
@@ -60,6 +57,7 @@ public class Game extends ApplicationAdapter
 
 	private Camera cam;
 	private GameWorld physics;
+	private NetworkManager network;
 	
 	public Game(int WindowW, int WindowH, boolean IsHost)
 	{
@@ -96,11 +94,6 @@ public class Game extends ApplicationAdapter
 		Terrain.Init();
 		Weather.Init();
 		SquadConfigurations.Init();
-	
-		if (ISHOST)
-			NetworkManager.InitHost();
-		else
-			NetworkManager.InitClient();
 	}
 	
 	public void Release()
@@ -132,22 +125,17 @@ public class Game extends ApplicationAdapter
 		proj.setToOrtho(false, SCREENW, SCREENH);
 
 		// generate the terrain
-		TerrainSeed seed = NetworkManager.GetSeed();
-		seed.AddBase(0, MilitaryBase.GetWidth());
-		seed.AddBase(WORLDW/2, MilitaryBase.GetWidth());
+		network = new NetworkManager(ISHOST);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			System.err.println("Error: thread sleep interrupted.");
+		}
+		
+		TerrainSeed seed = network.GetSeed();
 		Terrain ter = new Terrain( seed );
 		
-		// init the bases
-		MilitaryBase b0 = new MilitaryBase( 0, ter );
-		b0.SetLogo((int)(Math.random()*4));
-		MilitaryBase b1 = new MilitaryBase( WORLDW/2, ter );
-
-		if (b0.GetLogo() != 0)
-			b1.SetLogo( b0.GetLogo()-1 );
-		else
-			b1.SetLogo(1);
-		
-		// create the camera with the position to follow
+		// create the camera
 		cam = new Camera();
 		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
@@ -155,36 +143,7 @@ public class Game extends ApplicationAdapter
 		
 		// initialize the physics world
 		physics = new GameWorld(ter);
-		
-		UserArmy a0 = new UserArmy(b0, ter, cam);
-		physics.SetUserArmy(a0);
-		
-		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
-		
-		Squad st0 = new Squad(ter, tankSettings.maxmovedist);
-		st0.SetArmament(tankSettings.GetFirstArmament());
-		st0.SetArmor(tankSettings.GetFirstArmor());
-		
-		Tank tank0 = new Tank("img/tanks/Tank1.png", ter, tankSettings.speed, tankSettings.health);
-		tank0.SetBarrelOffset( new Vector2(17, 64-35) );
-		st0.AddUnit(tank0, cam);
-		st0.SetBarrelSrc( new Vector2(17, 64-35) );
-		a0.AddSquad(st0);
-		
-		Army a1 = new Army(b1, ter);
-		Squad st1 = new Squad(ter, tankSettings.maxmovedist);
-		st1.SetArmament(tankSettings.GetFirstArmament());
-		st1.SetArmor(tankSettings.GetFirstArmor());
-		
-		Tank tank1 = new Tank("img/tanks/Tank0.png", ter, tankSettings.speed, tankSettings.health);
-		tank1.SetPos( new Vector2(b1.GetPos().x+70, b1.GetPos().y) );
-		tank1.SetBarrelOffset( new Vector2(17, 29) );
-		//tank1.SetBarrelOffset( new Vector2(17, 64-35) );
-		//tank1.SetBarrelOffset( new Vector2(18, 64-36) );
-		st1.AddUnit(tank1, cam);
-		a1.AddSquad(st1);
-		a1.SpawnUnit(UnitDeployer.GUNMAN, cam);
-		physics.AddEnemyArmy(a1);
+		network.SetGameWorld(physics);
 	}
 	
 	public static OrthographicCamera GetProj()

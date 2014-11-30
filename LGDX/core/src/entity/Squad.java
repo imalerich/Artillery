@@ -371,7 +371,7 @@ public class Squad
 		return squadspacing;
 	}
 	
-	public void AddUnit(Unit Add, Camera Cam)
+	public void AddUnit(Unit Add)
 	{
 		// get the position at which to add this unit
 		Vector2 addp =  new Vector2(Add.GetPos());
@@ -379,8 +379,6 @@ public class Squad
 		Add.SetPos(addp);
 		Add.SetHeight();
 		units.add(Add);
-		
-		CalcBoundingBox(Cam.GetPos());
 	}
 	
 	public void Update(Vector2 Campos)

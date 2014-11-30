@@ -10,15 +10,24 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.mygdx.game.Game;
+import com.mygdx.game.MilitaryBase;
 
 public class Host 
 {
+	public static final int LOBBYSIZE = 2;
 	public final TerrainSeed seed;
+	
 	private Server s;
 	
 	public Host()
 	{
-		seed = SeedGenerator.GenerateSeed(Game.WORLDW, Game.WORLDH);
+		seed = SeedGenerator.GenerateSeed(Game.WORLDW, Game.WORLDH);		
+		
+		int offset = Game.WORLDW/LOBBYSIZE;
+		for (int i=0; i<LOBBYSIZE; i++) {
+			seed.AddBase(offset*i, MilitaryBase.GetWidth());
+		}
+		
 		s = new Server();
 	}
 	
@@ -31,9 +40,8 @@ public class Host
 	{
 		s.addListener(new Listener() {
 			public void connected(Connection connection) {
-				System.out.println("Connected " + connection.toString());
 				connection.sendTCP(seed);
-				System.out.println("Terrain Seed sent to the client");
+				System.out.println("Terrain seed sent to client at " + connection.toString());
 			}
 			
 			public void received(Connection connection, Object object)  {

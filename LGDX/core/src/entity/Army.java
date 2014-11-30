@@ -137,15 +137,15 @@ public class Army
 			switch (UnitType)
 			{
 			case UnitDeployer.GUNMAN:	
-				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health), Cam);
+				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
-				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health), Cam);
+				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health));
 				break;
 				
 			case UnitDeployer.SPECOPS:
-				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health), Cam);
+				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health));
 				break;
 				
 			default:

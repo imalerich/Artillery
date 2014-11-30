@@ -15,13 +15,20 @@ public class FrameRate
 	private static double timePassed = 0.0;
 	private static int frames = 0;
 	
+	private static NetworkManager network;
+	
+	public static void SetNetwork(NetworkManager Network)
+	{
+		network = Network;
+	}
+	
 	public static void Update()
 	{
 		timePassed += Gdx.graphics.getDeltaTime();
 		frames++;
 		
-		if (SHOWPING) {
-			NetworkManager.UpdatePing();
+		if (SHOWPING && network != null) {
+			network.UpdatePing();
 		}
 		
 		// update the frame rate once per second
@@ -39,13 +46,13 @@ public class FrameRate
 			frames = 0;
 			
 			// if the previous ping was non zero, output it
-			double ping = NetworkManager.GetPing();
-			if (SHOWPING)
+			if (network != null && SHOWPING) {
+				double ping = network.GetPing();
 				System.out.println("ping --- " + ping);
-			
-			// issue a ping to the host
-			if (SHOWPING)
-				NetworkManager.Ping();
+
+				// issue a ping to the host
+				network.Ping();
+			}
 		}
 	}
 	

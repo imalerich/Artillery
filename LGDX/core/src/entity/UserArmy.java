@@ -45,12 +45,12 @@ public class UserArmy extends Army
 	
 	private Squad selected; // the currently selected squad, or null
 	
-	public UserArmy(MilitaryBase Base, Terrain Ter, Camera Cam)
+	public UserArmy(MilitaryBase Base, Terrain Ter)
 	{
 		ter = Ter;
 		base = Base;
 		UnitDeployer.SetPos(base.GetPos());
-		SetDeployBBox(Cam);
+		SetDeployBBox();
 		
 		optionstack = new SelectionStack();
 		targetstack = new SelectionStack();
@@ -82,7 +82,7 @@ public class UserArmy extends Army
 		selected = null;
 	}
 	
-	private void SetDeployBBox(Camera Cam)
+	private void SetDeployBBox()
 	{
 		Rectangle r0 = new Rectangle(base.GetPos().x+76, base.GetPos().y, 110, 79);
 		Rectangle r1 = new Rectangle(base.GetPos().x+192, base.GetPos().y, 110, 79);

@@ -1,5 +1,6 @@
 package network;
 
+import physics.GameWorld;
 import terrain.TerrainSeed;
 
 import com.badlogic.gdx.math.Vector2;
@@ -8,21 +9,31 @@ import com.esotericsoftware.minlog.Log;
 
 public class NetworkManager 
 {
-	private static final int NONE = -1;
-	private static final int SERVER = 0;
-	private static final int CLIENT = 1;
-	private static int state = NONE;
+	private Host h;
+	private Recipient c;
 	
-	private static Host h;
-	private static Recipient c;
+	public NetworkManager(boolean IsHost)
+	{
+		if (IsHost) {
+			InitHost();
+			InitClient();
+		} else {
+			InitClient();
+		}
+	}
 	
-	public static void InitHost()
+	public void SetGameWorld(GameWorld Game)
+	{
+		c.SetGameWorld(Game);
+	}
+	
+	private void InitHost()
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		h = new Host();
 		
 		Kryo k = h.GetKryo();
-		k.register(String.class);
+		k.register(Integer.class);
 		k.register(Ping.class);
 		k.register(java.util.Vector.class);
 		k.register(Integer.class);
@@ -31,17 +42,16 @@ public class NetworkManager
 		
 		h.StartServer();
 		
-		System.out.println("Host Started");
-		state = SERVER;
+		System.out.println("Host Started.");
 	}
 	
-	public static void InitClient()
+	private void InitClient()
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		c = new Recipient();
 		
 		Kryo k = c.GetKryo();
-		k.register(String.class);
+		k.register(Integer.class);
 		k.register(Ping.class);
 		k.register(java.util.Vector.class);
 		k.register(Integer.class);
@@ -49,60 +59,37 @@ public class NetworkManager
 		k.register(TerrainSeed.class);
 		
 		c.ConnectToServer();
-		state = CLIENT;
+		
+		System.out.println("Client Connected.");
 	}
 	
-	public static TerrainSeed GetSeed()
+	public TerrainSeed GetSeed()
 	{
-		if (IsClient())
+		if (c != null)
 			return c.GetSeed();
-		else if (IsServer())
+		else if (HasServer())
 			return h.seed;
 		else
 			return null;
 	}
 	
-	public static void Ping()
+	public void Ping()
 	{
-		if (!IsClient())
-			return;
-		
 		c.Ping();
 	}
 	
-	public static void UpdatePing()
+	public void UpdatePing()
 	{
-		if (!IsClient())
-			return;
-		
 		c.UpdatePing();
 	}
 	
-	public static double GetPing()
+	public double GetPing()
 	{
-		if (!IsClient())
-			return 0.0;
-		
 		return c.GetPing();
 	}
 	
-	public static boolean IsClient()
+	public boolean HasServer()
 	{
-		return state == CLIENT;
-	}
-	
-	public static boolean IsServer()
-	{
-		return state == SERVER;
-	}
-	
-	public static Host GetServer()
-	{
-		return h;
-	}
-	
-	public static Recipient GetClient()
-	{
-		return c;
+		return h != null;
 	}
 }
