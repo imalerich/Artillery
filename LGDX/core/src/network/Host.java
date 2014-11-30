@@ -23,17 +23,20 @@ public class Host
 	
 	public void StartServer()
 	{
-		Start();
-		
 		s.addListener(new Listener() {
-			public void received(Connection connection, Object object) 
-			{
+			public void received(Connection connection, Object object)  {
 				if (object instanceof CoreRequest) {
 					System.out.println( ((CoreRequest)object).dat );
 					connection.sendTCP( new CoreResponse("Get me a Soda, Cunt."));
 				}
 			}
+			
+			public void disconnected(Connection connection) {
+				System.err.println("Disconnected");
+			}
 		} );
+		
+		Start();
 	}
 	
 	private void Start()

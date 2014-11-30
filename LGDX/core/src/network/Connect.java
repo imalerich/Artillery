@@ -42,6 +42,7 @@ public class Connect
 			}
 			
 			public void disconnected(Connection connection) {
+				System.err.println("Disconnected");
 				Gdx.app.exit();
 			}
 			
