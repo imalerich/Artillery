@@ -15,7 +15,15 @@ public class Connect
 	{
 		c = new Client();
 		c.start();
-		
+	}
+	
+	public void RegisterObject(Object o)
+	{
+		c.getKryo().register(o.getClass());
+	}
+	
+	public void ConnectToServer()
+	{
 		try {
 			InetAddress address = c.discoverHost(54777, 5000);
 			
@@ -26,22 +34,14 @@ public class Connect
 		}
 		
 		System.out.println("Client started.");
-	}
-	
-	public void RegisterObject(Object o)
-	{
-		c.getKryo().register(o.getClass());
-	}
-	
-	public void ConnectToServer()
-	{
-		c.sendTCP( new Request("I'm Derk, and I suck.") );
+		
+		c.sendTCP( new CoreRequest("I'm Derk, and I suck.") );
 		
 		c.addListener(new Listener() {
 			public void received(Connection connection, Object object) 
 			{
-				if (object instanceof Response) {
-					System.out.println( ((Response)object).dat );
+				if (object instanceof CoreResponse) {
+					System.out.println( ((CoreResponse)object).dat );
 				}
 			}
 		} );

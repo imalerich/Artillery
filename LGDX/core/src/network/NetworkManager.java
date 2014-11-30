@@ -8,8 +8,8 @@ public class NetworkManager
 	public static void InitHost()
 	{
 		h = new Host();
-		h.RegisterObject(Request.class);
-		h.RegisterObject(Response.class);
+		h.RegisterObject(CoreRequest.class);
+		h.RegisterObject(CoreResponse.class);
 		
 		h.StartServer();
 	}
@@ -17,8 +17,8 @@ public class NetworkManager
 	public static void InitClient()
 	{
 		c = new Connect();
-		c.RegisterObject(Request.class);
-		c.RegisterObject(Response.class);
+		c.RegisterObject(CoreRequest.class);
+		c.RegisterObject(CoreResponse.class);
 		
 		c.ConnectToServer();
 	}

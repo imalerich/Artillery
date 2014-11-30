@@ -14,14 +14,6 @@ public class Host
 	{
 		s = new Server();
 		s.start();
-		
-		try {
-			s.bind(54555, 54777);
-		} catch (IOException e) {
-			System.err.println("Error: Failed to Start Server.");
-		}
-		
-		System.out.println("Server started");
 	}
 	
 	public void RegisterObject(Object o)
@@ -31,12 +23,20 @@ public class Host
 	
 	public void StartServer()
 	{
+		try {
+			s.bind(54555, 54777);
+		} catch (IOException e) {
+			System.err.println("Error: Failed to Start Server.");
+		}
+		
+		System.out.println("Server started");
+		
 		s.addListener(new Listener() {
 			public void received(Connection connection, Object object) 
 			{
-				if (object instanceof Request) {
-					System.out.println( ((Request)object).dat );
-					connection.sendTCP( new Response("Get me a Soda, Cunt."));
+				if (object instanceof CoreRequest) {
+					System.out.println( ((CoreRequest)object).dat );
+					connection.sendTCP( new CoreResponse("Get me a Soda, Cunt."));
 				}
 			}
 		} );
