@@ -96,8 +96,8 @@ public class Game extends ApplicationAdapter
 		Weather.Init();
 		SquadConfigurations.Init();
 		
-		// NetworkManager.InitHost();
-		NetworkManager.InitClient();
+		NetworkManager.InitHost();
+		// NetworkManager.InitClient();
 	}
 	
 	public void Release()
