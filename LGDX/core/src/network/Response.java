@@ -1,10 +1,10 @@
 package network;
 
-public class CoreResponse 
+public class Response 
 {
-	public final String dat;
+	public String dat;
 	
-	public CoreResponse(String Dat) 
+	public Response(String Dat) 
 	{
 		dat = Dat;
 	}

@@ -1,10 +1,10 @@
 package network;
 
-public class CoreRequest 
+public class Request 
 {
-	public final String dat;
+	public String dat;
 	
-	public CoreRequest(String Dat)
+	public Request(String Dat)
 	{
 		dat = Dat;
 	}

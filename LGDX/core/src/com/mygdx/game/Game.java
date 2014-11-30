@@ -95,9 +95,6 @@ public class Game extends ApplicationAdapter
 		Terrain.Init();
 		Weather.Init();
 		SquadConfigurations.Init();
-		
-		NetworkManager.InitHost();
-		// NetworkManager.InitClient();
 	}
 	
 	public void Release()
@@ -212,6 +209,12 @@ public class Game extends ApplicationAdapter
 		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
 			Release(); // release data
 			Gdx.app.exit();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.F4)){
+			NetworkManager.InitHost();
+		} else if (Gdx.input.isKeyJustPressed(Keys.F11)){
+			NetworkManager.InitClient();
 		}
 		
 		// clear input from CursorInput

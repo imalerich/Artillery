@@ -14,10 +14,12 @@ public class NetworkManager
 		h = new Host();
 		
 		Kryo k = h.GetKryo();
-		k.register(CoreRequest.class);
-		k.register(CoreResponse.class);
+		k.register(Request.class);
+		k.register(Response.class);
 		
 		h.StartServer();
+		
+		System.out.println("Host Started");
 	}
 	
 	public static void InitClient()
@@ -26,9 +28,11 @@ public class NetworkManager
 		c = new Connect();
 		
 		Kryo k = c.GetKryo();
-		k.register(CoreRequest.class);
-		k.register(CoreResponse.class);
+		k.register(Request.class);
+		k.register(Response.class);
 		
 		c.ConnectToServer();
+		
+		System.out.println("Client connected to Host");
 	}
 }

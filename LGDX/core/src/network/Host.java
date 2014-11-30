@@ -25,14 +25,14 @@ public class Host
 	{
 		s.addListener(new Listener() {
 			public void received(Connection connection, Object object)  {
-				if (object instanceof CoreRequest) {
-					System.out.println( ((CoreRequest)object).dat );
-					connection.sendTCP( new CoreResponse("Get me a Soda, Cunt."));
+				if (object instanceof Request) {
+					System.out.println( ((Request)object).dat );
+					connection.sendTCP( new Response("Get me a Soda, Cunt."));
 				}
 			}
 			
 			public void disconnected(Connection connection) {
-				System.err.println("Disconnected");
+				System.err.println("Disconnected " + connection.toString());
 			}
 		} );
 		
@@ -44,7 +44,9 @@ public class Host
 		try {
 			s.bind(54555, 54777);
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.err.println("Error: Failed to Start Server.");
+			return;
 		}
 		
 		s.start();
