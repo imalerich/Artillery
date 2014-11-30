@@ -46,9 +46,7 @@ public class Connect
 		} );
 		
 		Start();
-		Request r = new Request();
-		r.dat = "Im Derk and I suck.";
-		c.sendTCP(r);
+		c.sendTCP( new Request("Im Derk and I suck."));
 	}
 	
 	private void Start()
