@@ -1,5 +1,7 @@
 package network;
 
+import com.esotericsoftware.minlog.Log;
+
 public class NetworkManager 
 {
 	private static Host h;
@@ -7,6 +9,7 @@ public class NetworkManager
 	
 	public static void InitHost()
 	{
+		Log.set(Log.LEVEL_DEBUG);
 		h = new Host();
 		h.GetKryo().register(CoreRequest.class);
 		h.GetKryo().register(CoreResponse.class);
@@ -16,6 +19,7 @@ public class NetworkManager
 	
 	public static void InitClient()
 	{
+		Log.set(Log.LEVEL_DEBUG);
 		c = new Connect();
 		c.GetKryo().register(CoreRequest.class);
 		c.GetKryo().register(CoreResponse.class);
