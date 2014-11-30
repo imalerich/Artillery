@@ -23,6 +23,8 @@ public class Host
 	
 	public void StartServer()
 	{
+		Start();
+		
 		s.addListener(new Listener() {
 			public void received(Connection connection, Object object) 
 			{
@@ -32,18 +34,16 @@ public class Host
 				}
 			}
 		} );
-		
-		Start();
 	}
 	
 	private void Start()
 	{
+		s.start();
+		
 		try {
 			s.bind(54555, 54777);
 		} catch (IOException e) {
 			System.err.println("Error: Failed to Start Server.");
 		}
-		
-		s.start();
 	}
 }

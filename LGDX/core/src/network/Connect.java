@@ -16,6 +16,7 @@ public class Connect
 	public Connect()
 	{
 		c = new Client();
+		c.start();
 	}
 	
 	public Kryo GetKryo()
@@ -25,21 +26,17 @@ public class Connect
 	
 	public void ConnectToServer()
 	{
+		Start();
+		
 		c.addListener(new Listener() {
 			public void received(Connection connection, Object object) 
 			{
-				while (true) {
-					if (object instanceof CoreResponse) {
-						Gdx.app.exit();
-						System.out.println( ((CoreResponse)object).dat );
-					} else {
-						System.out.println(object.toString());
-					}
+				if (object instanceof CoreResponse) {
+					System.out.println( ((CoreResponse)object).dat );
 				}
 			}
 		} );
 		
-		Start();
 		c.sendTCP( new CoreRequest("I'm Derk, and I suck.") );
 	}
 	
@@ -53,7 +50,5 @@ public class Connect
 			System.err.println("Error: Failed to Connect to the Remote Server.");
 			return;
 		}
-		
-		c.start();
 	}
 }
