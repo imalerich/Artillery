@@ -3,6 +3,7 @@ package network;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -24,8 +25,26 @@ public class Connect
 	
 	public void ConnectToServer()
 	{
-		c.start();
+		c.addListener(new Listener() {
+			public void received(Connection connection, Object object) 
+			{
+				while (true) {
+					if (object instanceof CoreResponse) {
+						Gdx.app.exit();
+						System.out.println( ((CoreResponse)object).dat );
+					} else {
+						System.out.println(object.toString());
+					}
+				}
+			}
+		} );
 		
+		Start();
+		c.sendTCP( new CoreRequest("I'm Derk, and I suck.") );
+	}
+	
+	private void Start()
+	{
 		try {
 			InetAddress address = c.discoverHost(54777, 5000);
 			
@@ -35,17 +54,6 @@ public class Connect
 			return;
 		}
 		
-		System.out.println("Client started.");
-		
-		c.sendTCP( new CoreRequest("I'm Derk, and I suck.") );
-		
-		c.addListener(new Listener() {
-			public void received(Connection connection, Object object) 
-			{
-				if (object instanceof CoreResponse) {
-					System.out.println( ((CoreResponse)object).dat );
-				}
-			}
-		} );
+		c.start();
 	}
 }

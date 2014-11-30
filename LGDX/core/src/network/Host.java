@@ -23,16 +23,6 @@ public class Host
 	
 	public void StartServer()
 	{
-		s.start();
-		
-		try {
-			s.bind(54555, 54777);
-		} catch (IOException e) {
-			System.err.println("Error: Failed to Start Server.");
-		}
-		
-		System.out.println("Server started");
-		
 		s.addListener(new Listener() {
 			public void received(Connection connection, Object object) 
 			{
@@ -42,5 +32,18 @@ public class Host
 				}
 			}
 		} );
+		
+		Start();
+	}
+	
+	private void Start()
+	{
+		try {
+			s.bind(54555, 54777);
+		} catch (IOException e) {
+			System.err.println("Error: Failed to Start Server.");
+		}
+		
+		s.start();
 	}
 }
