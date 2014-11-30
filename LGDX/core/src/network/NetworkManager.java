@@ -32,7 +32,5 @@ public class NetworkManager
 		k.register(Response.class);
 		
 		c.ConnectToServer();
-		
-		System.out.println("Client connected to Host");
 	}
 }
