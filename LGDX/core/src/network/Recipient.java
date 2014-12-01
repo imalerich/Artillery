@@ -2,6 +2,8 @@ package network;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.Vector;
 
 import physics.GameWorld;
 import terrain.TerrainSeed;
@@ -17,28 +19,42 @@ import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
 import config.SquadConfigurations;
+import entity.RemoteArmy;
 import entity.Squad;
 import entity.Tank;
 import entity.UserArmy;
 
 public class Recipient 
 {
+	private Vector<ArmyConnection> remoteconnections;
 	private TerrainSeed seed;
 	private GameWorld game;
 	private Client c;
 	
+	private int lobbysize = 0;
+	private boolean islobbyfull = false;
 	private double pingtime = 0.0;
 	private double ping = 0.0;
 	private int id = 0;
 	
 	public Recipient()
 	{
+		remoteconnections = new Vector<ArmyConnection>();
 		c = new Client();
 		c.start();
 	}
 	
 	public void SetGameWorld(GameWorld World)
 	{
+		// if we have not yet recieved the lobby size from the server, wait for it
+		try {
+			while (lobbysize == 0) {
+				Thread.sleep(50);
+			}
+		} catch (InterruptedException e) {
+			System.err.println("Error: thread sleep interrupted.");
+		}
+		
 		// register the game world this host belongs to
 		game = World;
 		
@@ -47,7 +63,7 @@ public class Recipient
 		// add the hosts base to the game world
 		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
 		
-		int offset = (id-1) * Game.WORLDW/Host.LOBBYSIZE;
+		int offset = (id-1) * Game.WORLDW/lobbysize;
 		MilitaryBase base = new MilitaryBase(offset, game.GetTerrain());
 		UserArmy army = new UserArmy(base, game.GetTerrain());
 		game.SetUserArmy(army);
@@ -64,6 +80,16 @@ public class Recipient
 		army.AddSquad(squad);
 	}
 	
+	public void ReadRemoteArmies()
+	{
+		Iterator<ArmyConnection> i = remoteconnections.iterator();
+		while (i.hasNext()) {
+			System.out.println("Networked Army added to physics world");
+			ArmyConnection a = i.next();
+			AddNetworkedArmy(a.pos, a.tankoff);
+		}
+	}
+	
 	public Kryo GetKryo()
 	{
 		return c.getKryo();
@@ -76,14 +102,34 @@ public class Recipient
 			public void connected(Connection connection) {
 				id = connection.getID();
 				System.out.println("Connected to Host at " + connection.toString());
+				
+				// request the lobby size from the server
+				Request r = new Request();
+				r.req = "LobbySize";
+				connection.sendTCP(r);
 			}
 			
 			public void received(Connection connection, Object object)  {
 				if (object instanceof TerrainSeed) {
 					seed = (TerrainSeed)object;
-					System.out.println("Terrain seed recieved from host.");
+					
 				} else if (object instanceof Ping) {
 					ping = (1000 * pingtime);
+					
+				} else if (object instanceof ArmyConnection) {
+					ArmyConnection a = (ArmyConnection)object;
+					
+					if (a.id != id) {
+						remoteconnections.add(new ArmyConnection(a));
+					}
+				} else if (object instanceof Response) {
+					Response r = (Response)object;
+					if (r.request.equals("IsLobbyFull")) {
+						islobbyfull = r.b;
+					} if (r.request.equals("LobbySize")) {
+						lobbysize = r.i;
+						System.out.println("Lobby size is: " + r.i);
+					}
 				}
 			}
 			
@@ -95,6 +141,24 @@ public class Recipient
 		} );
 		
 		Start();
+	}
+	
+	public boolean ArmiesRecieved()
+	{
+		return remoteconnections.size() >= lobbysize-1;
+	}
+	
+	public void PollLobby()
+	{
+		Request req = new Request();
+		req.req = "IsLobbyFull";
+		
+		c.sendTCP(req);
+	}
+	
+	public boolean IsLobbyFull()
+	{
+		return islobbyfull;
 	}
 	
 	public void Ping()
@@ -119,9 +183,8 @@ public class Recipient
 	private void Start()
 	{
 		try {
-			//InetAddress address = c.discoverHost(54777, 5000);
-			//c.connect(5000, address, 54555, 54777);
-			c.connect(5000, "10.36.183.11", 54555, 54777);
+			InetAddress address = c.discoverHost(54777, 5000);
+			c.connect(5000, address, 54555, 54777);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -133,5 +196,27 @@ public class Recipient
 	public TerrainSeed GetSeed()
 	{
 		return seed;
+	}
+	
+	public void AddNetworkedArmy(int Pos, int TankOffset)
+	{
+		// add the hosts base to the game world
+		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
+		
+		MilitaryBase base = new MilitaryBase(Pos, game.GetTerrain());
+		RemoteArmy army = new RemoteArmy(base, game.GetTerrain());
+		
+		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
+		squad.SetArmament(tankSettings.GetFirstArmament());
+		squad.SetArmor(tankSettings.GetFirstArmor());
+		
+		Tank tank = new Tank("img/tanks/Tank1.png", game.GetTerrain(), tankSettings.speed, tankSettings.health);
+		tank.SetPos( new Vector2(base.GetPos().x + TankOffset, base.GetPos().y) );
+		tank.SetBarrelOffset( new Vector2(17, 64-35) );
+		squad.AddUnit(tank);
+		squad.SetBarrelSrc( new Vector2(17, 64-35) );
+		army.AddSquad(squad);
+		
+		game.AddEnemyArmy(army);
 	}
 }

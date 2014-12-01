@@ -125,14 +125,14 @@ public class Game extends ApplicationAdapter
 		proj.setToOrtho(false, SCREENW, SCREENH);
 
 		// generate the terrain
-		network = new NetworkManager(ISHOST);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			System.err.println("Error: thread sleep interrupted.");
-		}
+		network = new NetworkManager();
+		if (ISHOST)
+			network.InitHost();
+		network.InitClient();
 		
 		TerrainSeed seed = network.GetSeed();
+		while (seed == null)
+			seed = network.GetSeed();
 		Terrain ter = new Terrain( seed );
 		
 		// create the camera
@@ -144,6 +144,26 @@ public class Game extends ApplicationAdapter
 		// initialize the physics world
 		physics = new GameWorld(ter);
 		network.SetGameWorld(physics);
+	
+		try {
+			// wait for the lobby to fill
+			while (!network.IsLobbyFull()) {
+				Thread.sleep(50);
+			}
+			
+			// if host, dispatch armies to clients
+			network.DispatchRemoteArmies();
+			
+			
+			// wait for the client to recieve the armies
+			while (!network.RecievedAllArmies()) {
+				Thread.sleep(50);
+			}
+			
+			network.ReadRemoteArmies();
+		} catch (InterruptedException e) {
+			System.err.println("Error: thread sleep interrupted.");
+		}
 	}
 	
 	public static OrthographicCamera GetProj()

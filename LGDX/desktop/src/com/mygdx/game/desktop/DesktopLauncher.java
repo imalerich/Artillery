@@ -84,11 +84,11 @@ public class DesktopLauncher
 		Run = false;
 		
 		System.out.println("-----------------------------------------------------------");
-		System.out.println("<?>  <--help> --- Display all launch options.");
-		System.out.println("<-f> <--fullscreen> --- Run in fullscreen mode.");
-		System.out.println("<-s> <--showfps> --- Show framerate counter in the console.");
-		System.out.println("<-p> <--showping> --- Show the ping counter in the console.");
-		System.out.println("<-c> <--client> --- Run as client, not as host.");
+		System.out.println("<?>  <--help>\t\t+ Display all launch options.");
+		System.out.println("<-f> <--fullscreen>\t+ Run in fullscreen mode.");
+		System.out.println("<-s> <--showfps>\t+ Show framerate counter in the console.");
+		System.out.println("<-p> <--showping>\t+ Show the ping counter in the console.");
+		System.out.println("<-c> <--client>\t\t+ Run as client, not as host.");
 		System.out.println("-----------------------------------------------------------");
 	}
 }
