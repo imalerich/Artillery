@@ -14,6 +14,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
@@ -26,10 +27,13 @@ import entity.UserArmy;
 
 public class Recipient 
 {
+	private NetworkManager parent;
 	private Vector<ArmyConnection> remoteconnections;
 	private TerrainSeed seed;
 	private GameWorld game;
 	private Client c;
+	
+	private UserArmy owned;
 	
 	private int lobbysize = 0;
 	private boolean islobbyfull = false;
@@ -37,16 +41,17 @@ public class Recipient
 	private double ping = 0.0;
 	private int id = 0;
 	
-	public Recipient()
+	public Recipient(NetworkManager Network)
 	{
+		parent = Network;
 		remoteconnections = new Vector<ArmyConnection>();
 		c = new Client();
 		c.start();
 	}
 	
-	public void SetGameWorld(GameWorld World)
+	public void SetGameWorld(GameWorld World, Camera Cam)
 	{
-		// if we have not yet recieved the lobby size from the server, wait for it
+		// if we have not yet received the lobby size from the server, wait for it
 		try {
 			while (lobbysize == 0) {
 				Thread.sleep(50);
@@ -65,8 +70,8 @@ public class Recipient
 		
 		int offset = (id-1) * Game.WORLDW/lobbysize;
 		MilitaryBase base = new MilitaryBase(offset, game.GetTerrain());
-		UserArmy army = new UserArmy(base, game.GetTerrain());
-		game.SetUserArmy(army);
+		owned = new UserArmy(base, game.GetTerrain(), parent);
+		game.SetUserArmy(owned);
 		
 		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
 		squad.SetArmament(tankSettings.GetFirstArmament());
@@ -77,7 +82,12 @@ public class Recipient
 		tank.SetBarrelOffset( new Vector2(17, 64-35) );
 		squad.AddUnit(tank);
 		squad.SetBarrelSrc( new Vector2(17, 64-35) );
-		army.AddSquad(squad);
+		owned.AddSquad(squad);
+		
+		// set the camera to center the base
+		Vector2 campos = Cam.GetPos();
+		campos.x = offset;
+		Cam.SetPos(campos);
 	}
 	
 	public void ReadRemoteArmies()
@@ -86,7 +96,7 @@ public class Recipient
 		while (i.hasNext()) {
 			System.out.println("Networked Army added to physics world");
 			ArmyConnection a = i.next();
-			AddNetworkedArmy(a.pos, a.tankoff);
+			AddNetworkedArmy(a.pos, a.tankoff, a.id);
 		}
 	}
 	
@@ -126,10 +136,35 @@ public class Recipient
 					Response r = (Response)object;
 					if (r.request.equals("IsLobbyFull")) {
 						islobbyfull = r.b;
-					} if (r.request.equals("LobbySize")) {
+					} else if (r.request.equals("LobbySize")) {
 						lobbysize = r.i;
 						System.out.println("Lobby size is: " + r.i);
+					} else if (r.army != -1) {
+						// let the army process the response to its message
+						game.GetArmy(r.army).ProcMessage(r);
 					}
+					
+				} else if (object instanceof Request) {
+					Request r = (Request)object;
+					Response res = new Response();
+						
+					if (r.req.equals("MOVESTAGESTATUS")) {
+						res.request = r.req;
+						res.dest = r.source;
+						res.source = r.dest;
+						res.army = r.army;
+						res.b = owned.IsStageCompleted(GameWorld.MOVESELECT);
+						
+					} else if (r.req.equals("ATTACKSTAGESTATUS")) {
+						res.request = r.req;
+						res.dest = r.source;
+						res.source = r.dest;
+						res.army = r.army;
+						res.b = owned.IsStageCompleted(GameWorld.ATTACKSELECT);
+						
+					}
+					
+					connection.sendTCP(res);
 				}
 			}
 			
@@ -198,13 +233,18 @@ public class Recipient
 		return seed;
 	}
 	
-	public void AddNetworkedArmy(int Pos, int TankOffset)
+	public Client GetClient()
+	{
+		return c;
+	}
+	
+	public void AddNetworkedArmy(int Pos, int TankOffset, int ID)
 	{
 		// add the hosts base to the game world
 		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
 		
 		MilitaryBase base = new MilitaryBase(Pos, game.GetTerrain());
-		RemoteArmy army = new RemoteArmy(base, game.GetTerrain());
+		RemoteArmy army = new RemoteArmy(base, game.GetTerrain(), parent, ID);
 		
 		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
 		squad.SetArmament(tankSettings.GetFirstArmament());

@@ -1,11 +1,15 @@
 package network;
 
+
 public class Response 
 {
-	String request;
+	public String request;
+	public Integer source;
+	public Integer dest;
+	public Integer army = -1;
 	
-	Boolean b;
-	Integer i;
-	Double d;
-	String s;
+	public Boolean b;
+	public Integer i;
+	public Double d;
+	public String s;
 }

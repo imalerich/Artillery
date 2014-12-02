@@ -7,16 +7,22 @@ import terrain.TerrainSeed;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import com.mygdx.game.Camera;
+
+import entity.Army;
 
 public class NetworkManager 
 {
 	private Host h;
 	private Recipient c;
 	
-	public void SetGameWorld(GameWorld Game)
+	public void SetGameWorld(GameWorld Game, Camera Cam)
 	{
-		c.SetGameWorld(Game);
+		c.SetGameWorld(Game, Cam);
 	}
 
 	public void InitHost()
@@ -26,6 +32,10 @@ public class NetworkManager
 		
 		Kryo k = h.GetKryo();
 		k.register(ArmyConnection.class);
+		k.register(Connection.class);
+		k.register(Connection[].class);
+		k.register(Server.class);
+		k.register(Army.class);
 		k.register(Request.class);
 		k.register(Response.class);
 		k.register(Ping.class);
@@ -42,10 +52,14 @@ public class NetworkManager
 	public void InitClient()
 	{
 		Log.set(Log.LEVEL_DEBUG);
-		c = new Recipient();
+		c = new Recipient(this);
 		
 		Kryo k = c.GetKryo();
 		k.register(ArmyConnection.class);
+		k.register(Connection.class);
+		k.register(Connection[].class);
+		k.register(Server.class);
+		k.register(Army.class);
 		k.register(Request.class);
 		k.register(Response.class);
 		k.register(Ping.class);
@@ -107,5 +121,15 @@ public class NetworkManager
 	public boolean HasServer()
 	{
 		return h != null;
+	}
+	
+	public Server GetServer()
+	{
+		return h.GetServer();
+	}
+	
+	public Client GetClient()
+	{
+		return c.GetClient();
 	}
 }

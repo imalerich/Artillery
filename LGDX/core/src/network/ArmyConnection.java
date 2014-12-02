@@ -1,5 +1,6 @@
 package network;
 
+
 public class ArmyConnection 
 {
 	public Integer pos;

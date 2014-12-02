@@ -143,7 +143,7 @@ public class Game extends ApplicationAdapter
 		
 		// initialize the physics world
 		physics = new GameWorld(ter);
-		network.SetGameWorld(physics);
+		network.SetGameWorld(physics, cam);
 	
 		try {
 			// wait for the lobby to fill

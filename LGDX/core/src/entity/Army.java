@@ -3,6 +3,8 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import network.NetworkManager;
+import network.Response;
 import particles.Particles;
 import physics.Blast;
 import physics.CombatResolver;
@@ -20,33 +22,68 @@ import com.mygdx.game.MilitaryBase;
 import config.ConfigSettings;
 import config.SquadConfigurations;
 
-public class Army 
+public abstract class Army 
 {
+	private int id = 0;
+	private int connection = -1;
+	
+	protected boolean[] stagecompleted;
+	protected NetworkManager network;
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
 	protected Terrain ter;
 	protected boolean squadspawned;
 	
-	public Army()
+	public abstract boolean IsTargeting();
+	
+	public abstract boolean IsStageCompleted(int Stage);
+	
+	public abstract SelectionStack GetTargetOptions();
+	
+	public abstract void SetTargetSquad(Squad Target);
+	
+	public abstract void UpdateMoveSelect(Camera Cam);
+	
+	public abstract void UpdateAttackSelect(Camera Cam);
+	
+	public abstract void DrawTargetPos(SpriteBatch Batch, Camera Cam);
+	
+	public abstract void DrawTargetSquad(SpriteBatch Batch, Camera Cam);
+	
+	public abstract boolean IsMenuOpen();
+	
+	public abstract boolean UpdateTargetOptions(int Size);
+	
+	public abstract void ProcMessage(Response r);
+	
+	public void SetID(int ID)
 	{
-		squads = new Vector<Squad>();
+		id = ID;
 	}
 	
-	public Army(MilitaryBase Base, Terrain Ter)
+	public int GetID()
 	{
-		ter = Ter;
-		base = Base;
-		squads = new Vector<Squad>();
+		return id;
 	}
 	
-	public boolean IsTargeting()
+	public void SetStageCompleted(int Stage, boolean State)
 	{
-		return false;
+		stagecompleted[Stage] = State;
 	}
 	
-	public boolean IsStageCompleted(int Stage)
+	public void SetConnection(int ID)
 	{
-		return true;
+		connection = ID;
+	}
+	
+	public int GetConnection()
+	{
+		if (connection == -1) {
+			System.err.println("Error: Invalid connection - using connection 0 instead.");
+			return 0;
+		}
+		
+		return connection;
 	}
 	
 	public boolean hasSpawnedSquad()
@@ -167,22 +204,8 @@ public class Army
 			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
 				Resolver.AddProjectile(squad, 1f, squad.GetArmament().GetStrength());
 			}
-		}
-	}
-	
-	public boolean UpdateTargetOptions(int Size)
-	{
-		return false;
-	}
-	
-	public SelectionStack GetTargetOptions()
-	{
-		return null;
-	}
-	
-	public void SetTargetSquad(Squad Target)
-	{
-		//
+		}	
+
 	}
 	
 	public void AddSquad(Squad Add)
@@ -195,16 +218,6 @@ public class Army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext())
 			s.next().Update(Cam.GetPos());
-	}
-	
-	public void UpdateMoveSelect(Camera Cam)
-	{
-		//
-	}
-	
-	public void UpdateAttackSelect(Camera Cam)
-	{
-		//
 	}
 	
 	public int GetMouseOverCount(Camera Cam)
@@ -231,11 +244,6 @@ public class Army
 		}
 	}
 	
-	public boolean IsMenuOpen()
-	{
-		return false;
-	}
-	
 	public void DrawBase(SpriteBatch Batch, Camera Cam)
 	{
 		base.Draw(Batch, Cam);
@@ -253,16 +261,6 @@ public class Army
 			s.next().DrawView(Cam);
 		
 		base.DrawView(Cam);
-	}
-	
-	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
-	{
-		//
-	}
-	
-	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
-	{
-		//
 	}
 	
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 

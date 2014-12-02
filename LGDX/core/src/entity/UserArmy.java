@@ -1,7 +1,10 @@
 package entity;
 
 import java.util.Iterator;
+import java.util.Vector;
 
+import network.NetworkManager;
+import network.Response;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
@@ -45,10 +48,13 @@ public class UserArmy extends Army
 	
 	private Squad selected; // the currently selected squad, or null
 	
-	public UserArmy(MilitaryBase Base, Terrain Ter)
+	public UserArmy(MilitaryBase Base, Terrain Ter, NetworkManager Network)
 	{
 		ter = Ter;
 		base = Base;
+		network = Network;
+		squads = new Vector<Squad>();
+		
 		UnitDeployer.SetPos(base.GetPos());
 		SetDeployBBox();
 		
@@ -80,6 +86,17 @@ public class UserArmy extends Army
 		
 		prevdeployi = -1;
 		selected = null;
+		
+		stagecompleted = new boolean[GameWorld.STAGECOUNT];
+		for (int i=0; i<GameWorld.STAGECOUNT; i++) {
+			stagecompleted[i] = false;
+		}
+	}
+
+	@Override
+	public void ProcMessage(Response r) 
+	{
+		//
 	}
 	
 	private void SetDeployBBox()
@@ -93,6 +110,7 @@ public class UserArmy extends Army
 		UnitDeployer.SetBBox(r2, 2);
 	}
 	
+	@Override
 	public boolean IsStageCompleted(int Stage)
 	{
 		switch (Stage) 
@@ -104,10 +122,11 @@ public class UserArmy extends Army
 			
 			// check the end turn conditions
 			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
-				return true;
+				stagecompleted[Stage] = true;
 			else if (MenuBar.IsEndTurn())
-				return true;
-			else return false;
+				stagecompleted[Stage] = true;
+			
+			return stagecompleted[Stage];
 		
 		case GameWorld.MOVEUPDATE:
 			Iterator<Squad> s = squads.iterator();
@@ -125,16 +144,17 @@ public class UserArmy extends Army
 			
 			// check the end turn conditions
 			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
-				return true;
+				stagecompleted[Stage] = true;
 			else if (MenuBar.IsEndTurn())
-				return true;
-			else return false;
+				stagecompleted[Stage] = true;
+			
+			return stagecompleted[Stage];
 			
 		case GameWorld.ATTACKUPDATE:
 			return true;
 			
 		default:
-			return false;
+			return true;
 		}
 	}
 	
@@ -157,6 +177,7 @@ public class UserArmy extends Army
 		}
 	}
 	
+	@Override
 	public boolean UpdateTargetOptions(int Size)
 	{
 		if (Size != prevTargetStackSize) {
@@ -167,11 +188,13 @@ public class UserArmy extends Army
 		}
 	}
 	
+	@Override
 	public SelectionStack GetTargetOptions()
 	{
 		return targetstack;
 	}
 	
+	@Override
 	public void SetTargetSquad(Squad Target)
 	{
 		if (selected != null && targetenemies) {
@@ -179,11 +202,13 @@ public class UserArmy extends Army
 		}
 	}
 	
+	@Override
 	public boolean IsTargeting()
 	{
 		return targetenemies;
 	}
 	
+	@Override
 	public void InitStage(int NewStage)
 	{
 		super.InitStage(NewStage);
@@ -199,15 +224,24 @@ public class UserArmy extends Army
 				squad.SetFiring(false);
 			}
 		}
+		
+		// set the new stage as not completed
+		stagecompleted[NewStage] = false;
 	}
 	
+	@Override
 	public void UpdateMove(Camera Cam)
 	{
 		super.UpdateMove(Cam);
 	}
 	
+	@Override
 	public void UpdateMoveSelect(Camera Cam)
 	{
+		// do not update while waiting for others to complete
+		if (stagecompleted[GameWorld.MOVESELECT])
+			return;
+		
 		BuildOptionStack(Cam, true);
 		SetSelected();
 		UpdateDeployer(Cam);
@@ -215,8 +249,13 @@ public class UserArmy extends Army
 		UpdateMenu(Cam);
 	}
 	
+	@Override
 	public void UpdateAttackSelect(Camera Cam)
 	{
+		// do not update while waiting for others to complete
+		if (stagecompleted[GameWorld.ATTACKSELECT])
+			return;
+		
 		BuildOptionStack(Cam, false);
 		SetSelected();
 		
@@ -231,21 +270,21 @@ public class UserArmy extends Army
 			return;
 		}
 		
-		// proces input
+		// process input
 		ProcStackChange();
 		int stacksize = CalcOptionStackSize(Cam);
 
 		/*
-		 *  no change occured leave the method and do not recalc the option stack
+		 *  no change occurred leave the method and do not recalculate the option stack
 		 */
 		if (stacksize == prevOptionStackSize) {
 			return;
 		}
 
-		// a change occured
+		// a change occurred
 		prevOptionStackSize = stacksize;
 		
-		// reset the optionstack and recalculate its contents
+		// reset the option stack and recalculate its contents
 		optionstack.Reset();
 		GetMouseOver(optionstack, Cam);
 		
@@ -632,6 +671,7 @@ public class UserArmy extends Army
 			profileactive = false;
 	}
 	
+	@Override
 	public boolean IsMenuOpen()
 	{
 		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower);
@@ -667,6 +707,7 @@ public class UserArmy extends Army
 		return false;
 	}
 	
+	@Override
 	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
@@ -675,6 +716,7 @@ public class UserArmy extends Army
 		}
 	}
 	
+	@Override
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
 		// do not draw while in the power selection menu
@@ -687,6 +729,7 @@ public class UserArmy extends Army
 		}
 	}
 	
+	@Override
 	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage)
 	{
 		Iterator<Squad> s = squads.iterator();

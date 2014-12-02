@@ -37,6 +37,11 @@ public class Host
 		return s.getKryo();
 	}
 	
+	public Server GetServer()
+	{
+		return s;
+	}
+	
 	public void StartServer()
 	{
 		s.addListener(new Listener() {
@@ -67,7 +72,22 @@ public class Host
 						res.i = lobbysize;
 						connection.sendTCP(res);
 						
+					} else if (r.req.equals("MOVESTAGESTATUS")) {
+						// pass the message to the appropriate client
+						r.source = connection.getID();
+						s.sendToTCP(r.dest, r);
+						
+					} else if (r.req.equals("ATTACKSTAGESTATUS")) {
+						// pass the message to the appropriate client
+						r.source = connection.getID();
+						s.sendToTCP(r.dest, r);
+						
 					}
+				} else if (object instanceof Response) {
+					// response received to a clients request, send the data to them
+					Response r = (Response)object;
+					s.sendToTCP(r.dest, r);
+					
 				}
 			}
 			

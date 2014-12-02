@@ -2,5 +2,8 @@ package network;
 
 public class Request 
 {
-	String req;
+	public String req;
+	public Integer source;
+	public Integer dest;
+	public Integer army = -1;
 }

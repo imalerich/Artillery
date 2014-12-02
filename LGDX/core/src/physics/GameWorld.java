@@ -28,6 +28,7 @@ public class GameWorld
 	public static final int ATTACKSELECT = 2;
 	public static final int ATTACKUPDATE = 3;
 	private int currentstage;
+	private int armyid = 0;
 	
 	private CombatResolver resolver;
 	
@@ -42,6 +43,7 @@ public class GameWorld
 	public GameWorld(Terrain Ter)
 	{
 		ter = Ter;
+		
 		currentstage = MOVESELECT;
 		particles = new Particles();
 		resolver = new CombatResolver(this, ter, particles);
@@ -62,19 +64,48 @@ public class GameWorld
 		return ter;
 	}
 	
+	public Army GetArmy(int ID)
+	{
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext()) {
+			Army a = f.next();
+			if (a.GetID() == ID) 
+				return a;
+		}
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext()) {
+			Army a = e.next();
+			if (a.GetID() == ID) 
+				return a;
+		}
+		
+		if (userArmy.GetID() == ID) {
+			return userArmy;
+		}
+		
+		return null;
+	}
+	
 	public void SetUserArmy(Army Add)
 	{
 		userArmy = Add;
+		userArmy.SetID(armyid);
+		armyid++;
 	}
 	
 	public void AddFriendlyArmy(Army Add)
 	{
 		friendlyArmy.add(Add);
+		friendlyArmy.lastElement().SetID(armyid);
+		armyid++;
 	}
 	
 	public void AddEnemyArmy(Army Add)
 	{
 		enemyArmy.add(Add);
+		enemyArmy.lastElement().SetID(armyid);
+		armyid++;
 	}
 	
 	public void Update(Camera Cam)
@@ -335,7 +366,7 @@ public class GameWorld
 		
 		particles.Draw(Batch, Cam);
 		MenuBar.Draw(Batch, Cam, currentstage, 
-				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.IsMenuOpen());
+				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.IsMenuOpen() && !userArmy.IsStageCompleted(currentstage));
 	}
 	
 	private boolean IsArmiesStageCompleted()
