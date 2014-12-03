@@ -590,7 +590,7 @@ public class UserArmy extends Army
 		
 		moveselect.Update(Campos);
 
-		// set the target pos on left release, or cancel on right click
+		// set the target position on left release, or cancel on right click
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			selected.SetTargetX(moveselect.GetTargetX());
 			moveactive = false;
@@ -599,7 +599,7 @@ public class UserArmy extends Army
 			Response r = new Response();
 			r.request = "SQUADMOVE";
 			r.i0 = selected.GetID();
-			r.i1 = selected.GetTargetX();
+			r.i1 = moveselect.GetTargetX();
 			r.source = GetConnection();
 			
 			network.GetClient().sendTCP(r);
