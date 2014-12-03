@@ -630,15 +630,16 @@ public class UserArmy extends Army
 		}
 		
 		// check stack changes
+		Squad prev = selected.GetTargetSquad();
 		ProcStackChange();
 		Squad t = targetstack.GetSquadOver();
+		selected.SetTargetSquad(t);
 		if (t != null) {
 			t.SetAsTarget();
 		}
 	
 		// make sure a change was made to the selected target
-		if (t != selected.GetTargetSquad()) {
-			selected.SetTargetSquad(t);
+		if (prev != selected.GetTargetSquad() && t != null) {
 			
 			// send the information to all clients
 			Response r = new Response();
