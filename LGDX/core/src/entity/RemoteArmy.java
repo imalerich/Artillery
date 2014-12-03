@@ -59,15 +59,30 @@ public class RemoteArmy extends Army
 	@Override
 	public void ProcMessage(Response r) 
 	{
+		// check for stage completion
 		if (r.request.equals("MOVESELECT")) {
-			stagecompleted[GameWorld.MOVESELECT] = r.b;
+			stagecompleted[GameWorld.MOVESELECT] = r.b0;
+			return;
 			
 		} else if (r.request.equals("MOVEUPDATE")) {
-			stagecompleted[GameWorld.MOVEUPDATE] = r.b;
+			stagecompleted[GameWorld.MOVEUPDATE] = r.b0;
+			return;
 			
 		} else if (r.request.equals("ATTACKSELECT")) {
-			stagecompleted[GameWorld.ATTACKSELECT] = r.b;
+			stagecompleted[GameWorld.ATTACKSELECT] = r.b0;
+			return;
 			
+		}
+		
+		if (r.request.equals("SQUADMOVE")) {
+			int id = r.i0;
+			int targetx = r.i1;
+			
+			GetSquad(id).SetTargetX(targetx);
+		} else if (r.request.equals("SQUADSPAWNED")) {
+			// make sure the same id is used across all clients
+			int tmp = SpawnUnit(r.i0);
+			GetSquad(tmp).SetID(r.i1);
 		}
 	}
 

@@ -63,13 +63,13 @@ public class Host
 					if (r.req.equals("IsLobbyFull")) {
 						Response res = new Response();
 						res.request = r.req;
-						res.b = IsLobbyFull();
+						res.b0 = IsLobbyFull();
 						connection.sendTCP(res);
 						
 					} else if (r.req.equals("LobbySize")) {
 						Response res = new Response();
 						res.request = r.req;
-						res.i = lobbysize;
+						res.i0 = lobbysize;
 						connection.sendTCP(res);
 					
 					}

@@ -132,7 +132,7 @@ public class UserArmy extends Army
 			if (stagecompleted[Stage]) {
 				r.source = GetConnection();
 				r.request = "MOVESELECT";
-				r.b = true;
+				r.b0 = true;
 				
 				network.GetClient().sendTCP(r);
 			}
@@ -148,7 +148,7 @@ public class UserArmy extends Army
 			
 			r.source = GetConnection();
 			r.request = "MOVEUPDATE";
-			r.b = true;
+			r.b0 = true;
 
 			network.GetClient().sendTCP(r);
 				
@@ -168,7 +168,7 @@ public class UserArmy extends Army
 			if (stagecompleted[Stage]) {
 				r.source = GetConnection();
 				r.request = "ATTACKSELECT";
-				r.b = true;
+				r.b0 = true;
 				
 				network.GetClient().sendTCP(r);
 			}
@@ -386,8 +386,17 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
-			SpawnUnit(selected, Cam);
+			int id = SpawnUnit(selected);
 			squadspawned = true;
+			
+			// tell all clients of the newly spawned squad
+			Response r = new Response();
+			r.source = GetConnection();
+			r.request = "SQUADSPAWNED";
+			r.i0 = selected;
+			r.i1 = id;
+			
+			network.GetClient().sendTCP(r);
 		}
 	}
 	
@@ -476,6 +485,16 @@ public class UserArmy extends Army
 		case ButtonOptions.STOP:
 			// leave the menu
 			selected.SetTargetX(-1);
+			
+			// tell all clients which squad is moving
+			Response r = new Response();
+			r.request = "SQUADMOVE";
+			r.i0 = selected.GetID();
+			r.i1 = selected.GetTargetX();
+			r.source = GetConnection();
+			
+			network.GetClient().sendTCP(r);
+			
 			menuactive = false;
 			menurelease = false;
 			menu.ResetClock();
@@ -574,6 +593,16 @@ public class UserArmy extends Army
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			selected.SetTargetX(moveselect.GetTargetX());
 			moveactive = false;
+			
+			// tell all clients which squad is moving
+			Response r = new Response();
+			r.request = "SQUADMOVE";
+			r.i0 = selected.GetID();
+			r.i1 = selected.GetTargetX();
+			r.source = GetConnection();
+			
+			network.GetClient().sendTCP(r);
+			
 		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
 			moveactive = false;
 	}

@@ -26,6 +26,7 @@ public abstract class Army
 {
 	private int id = 0;
 	private int connection = -1;
+	private int squadid = 0;
 	
 	protected boolean[] stagecompleted;
 	protected NetworkManager network;
@@ -132,7 +133,7 @@ public abstract class Army
 		}
 	}
 	
-	public void SpawnUnit(int UnitType, Camera Cam)
+	public int SpawnUnit(int UnitType)
 	{
 		int offset = 76;
 		if (UnitType == UnitDeployer.STEALTHOPS)
@@ -189,6 +190,8 @@ public abstract class Army
 				break;
 			}
 		}
+		
+		return s.GetID();
 	}
 	
 	public void AddCombatData(CombatResolver Resolver)
@@ -210,7 +213,25 @@ public abstract class Army
 	
 	public void AddSquad(Squad Add)
 	{
+		// set the id for this squad
+		Add.SetID(squadid);
+		squadid++;
+		
 		squads.add(Add);
+	}
+	
+	public Squad GetSquad(int ID)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			if (squad.GetID() == ID) {
+				return squad;
+			}
+		}
+		
+		System.err.println("Error: Squad not found at id: " + ID);
+		return null;
 	}
 	
 	public void UpdateMove(Camera Cam)

@@ -63,8 +63,6 @@ public class Recipient
 		// register the game world this host belongs to
 		game = World;
 		
-		System.out.println("Initializing Army at ID " + id);
-		
 		// add the hosts base to the game world
 		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
 		
@@ -94,7 +92,6 @@ public class Recipient
 	{
 		Iterator<ArmyConnection> i = remoteconnections.iterator();
 		while (i.hasNext()) {
-			System.out.println("Networked Army added to physics world");
 			ArmyConnection a = i.next();
 			AddNetworkedArmy(a.pos, a.tankoff, a.id);
 		}
@@ -135,11 +132,10 @@ public class Recipient
 				} else if (object instanceof Response) {
 					Response r = (Response)object;
 					if (r.request.equals("IsLobbyFull")) {
-						islobbyfull = r.b;
+						islobbyfull = r.b0;
 						
 					} else if (r.request.equals("LobbySize")) {
-						lobbysize = r.i;
-						System.out.println("Lobby size is: " + r.i);
+						lobbysize = r.i0;
 						
 					} else if (r.source != -1) {
 						// get the army it pertains to to process the message

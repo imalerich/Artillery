@@ -36,6 +36,7 @@ public class Squad
 	private static int MAXHEIGHT = 12;
 	private int squadspacing = 32;
 	private int maxmovedist = 0;
+	private int id = -1;
 	
 	// the armor and armament that is used by this squadbn
 	private Armament arms;
@@ -100,6 +101,16 @@ public class Squad
 		isforward = true;
 		
 		barrelsrc = new Vector2();
+	}
+	
+	public void SetID(int ID)
+	{
+		id = ID;
+	}
+	
+	public int GetID()
+	{
+		return id;
 	}
 	
 	public void SetBarrelSrc(Vector2 Pos)
