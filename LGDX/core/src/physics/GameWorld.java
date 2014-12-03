@@ -342,7 +342,7 @@ public class GameWorld
 		
 		EnableStencil(Batch);
 		
-		// draw the base logos with the stencil test enabled
+		// draw the base logo's with the stencil test enabled
 		userArmy.DrawBaseLogo(Batch, Cam);
 		e = enemyArmy.iterator();
 		while (e.hasNext())

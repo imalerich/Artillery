@@ -71,6 +71,11 @@ public class MenuBar
 		powerlevel = Level/Maximum;
 	}
 	
+	public static float GetPowerLevel()
+	{
+		return powerlevel;
+	}
+	
 	public static void SetEndButttonPos()
 	{
 		bbox.x = Game.SCREENW/2 - endbutton.getWidth()/2;

@@ -58,6 +58,8 @@ public class Squad
 	private double pointerheight;
 	private Vector2 barrelsrc;
 	
+	private Army army;
+	
 	public static void Init()
 	{
 		if (pointer == null)
@@ -83,12 +85,13 @@ public class Squad
 			target.Release();
 	}
 	
-	public Squad(Terrain Ter, int MoveDist)
+	public Squad(Terrain Ter, int MoveDist, Army A)
 	{
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		minx = maxx = 0f;
 		maxmovedist = MoveDist;
+		army = A;
 		
 		ter = Ter;
 		targetsquad = null;
@@ -101,6 +104,11 @@ public class Squad
 		isforward = true;
 		
 		barrelsrc = new Vector2();
+	}
+	
+	public Army GetArmy()
+	{
+		return army;
 	}
 	
 	public void SetID(int ID)

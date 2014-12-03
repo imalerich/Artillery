@@ -48,8 +48,9 @@ public class UserArmy extends Army
 	
 	private Squad selected; // the currently selected squad, or null
 	
-	public UserArmy(MilitaryBase Base, Terrain Ter, NetworkManager Network, int Connection)
+	public UserArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int Connection)
 	{
+		world = World;
 		ter = Ter;
 		base = Base;
 		network = Network;
@@ -631,11 +632,24 @@ public class UserArmy extends Army
 		// check stack changes
 		ProcStackChange();
 		Squad t = targetstack.GetSquadOver();
-		selected.SetTargetSquad(t);
 		if (t != null) {
 			t.SetAsTarget();
 		}
-		
+	
+		// make sure a change was made to the selected target
+		if (t != selected.GetTargetSquad()) {
+			selected.SetTargetSquad(t);
+			
+			// send the information to all clients
+			Response r = new Response();
+			r.request = "UNITTARGET";
+			r.source = GetConnection();
+			r.i0 = selected.GetID(); // unit that will be shooting
+			r.i1 = t.GetArmy().GetConnection(); // army that is being shot at
+			r.i2 = t.GetID(); // squad that is being shot at
+			
+			network.GetClient().sendTCP(r);
+		}
 	}
 	
 	private void UpdateTargetPoint(Camera Cam)
@@ -658,6 +672,7 @@ public class UserArmy extends Army
 			targetpoint = false;
 			targetpower = true;
 			powerselect.SetPos(Cursor.GetMouseX(Cam.GetPos())+Cam.GetPos().x, Cursor.GetMouseY()+Cam.GetPos().y);
+			
 			return;
 		}
 		
@@ -700,6 +715,7 @@ public class UserArmy extends Army
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			selected.SetFiring(false);
 			targetpower = false;
+			
 			return;
 		}
 		
@@ -707,6 +723,19 @@ public class UserArmy extends Army
 		if (powerselect.DoFire(Cam)) {
 			selected.SetFiring(true);
 			targetpower = false;
+			
+			// send a message to all clients informing them who is firing and where
+			Response r = new Response();
+			r.source = GetConnection();
+			r.request = "TANKFIRING";
+			r.i0 = selected.GetID();
+			r.b0 = selected.IsFiring();
+			r.b1 = selected.IsForward();
+			r.f0 = selected.GetBarrelAngle();
+			r.f1 = powerselect.GetPower()/PowerButtons.MAXPOWER;
+			
+			network.GetClient().sendTCP(r);
+			
 			return;
 		}
 		

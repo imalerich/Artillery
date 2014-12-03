@@ -28,6 +28,7 @@ public abstract class Army
 	private int connection = -1;
 	private int squadid = 0;
 	
+	protected GameWorld world;
 	protected boolean[] stagecompleted;
 	protected NetworkManager network;
 	protected MilitaryBase base;
@@ -158,7 +159,7 @@ public abstract class Army
 			break;
 		}
 		
-		Squad s = new Squad(ter, c.maxmovedist);
+		Squad s = new Squad(ter, c.maxmovedist, this);
 		s.SetTargetX((int)base.GetPos().x+offset);
 		
 		int spacing = s.GetSquadSpacing();
@@ -208,7 +209,6 @@ public abstract class Army
 				Resolver.AddProjectile(squad, 1f, squad.GetArmament().GetStrength());
 			}
 		}	
-
 	}
 	
 	public void AddSquad(Squad Add)

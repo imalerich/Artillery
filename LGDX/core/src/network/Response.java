@@ -17,6 +17,7 @@ public class Response
 	public Boolean b1;
 	public Boolean b2;
 	
-	public Double d;
-	public String s;
+	public float f0;
+	public float f1;
+	public float f2;
 }

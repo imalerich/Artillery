@@ -68,10 +68,11 @@ public class Recipient
 		
 		int offset = (id-1) * Game.WORLDW/lobbysize;
 		MilitaryBase base = new MilitaryBase(offset, game.GetTerrain());
-		owned = new UserArmy(base, game.GetTerrain(), parent, c.getID());
+		base.SetLogo(id-1);
+		owned = new UserArmy(game, base, game.GetTerrain(), parent, c.getID());
 		game.SetUserArmy(owned);
 		
-		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
+		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist, owned);
 		squad.SetArmament(tankSettings.GetFirstArmament());
 		squad.SetArmor(tankSettings.GetFirstArmor());
 		
@@ -221,9 +222,10 @@ public class Recipient
 		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
 		
 		MilitaryBase base = new MilitaryBase(Pos, game.GetTerrain());
-		RemoteArmy army = new RemoteArmy(base, game.GetTerrain(), parent, ID);
+		base.SetLogo(id-1);
+		RemoteArmy army = new RemoteArmy(game, base, game.GetTerrain(), parent, ID);
 		
-		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
+		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist, army);
 		squad.SetArmament(tankSettings.GetFirstArmament());
 		squad.SetArmor(tankSettings.GetFirstArmor());
 		
