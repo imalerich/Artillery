@@ -48,12 +48,13 @@ public class UserArmy extends Army
 	
 	private Squad selected; // the currently selected squad, or null
 	
-	public UserArmy(MilitaryBase Base, Terrain Ter, NetworkManager Network)
+	public UserArmy(MilitaryBase Base, Terrain Ter, NetworkManager Network, int Connection)
 	{
 		ter = Ter;
 		base = Base;
 		network = Network;
 		squads = new Vector<Squad>();
+		SetConnection(Connection);
 		
 		UnitDeployer.SetPos(base.GetPos());
 		SetDeployBBox();
@@ -113,6 +114,8 @@ public class UserArmy extends Army
 	@Override
 	public boolean IsStageCompleted(int Stage)
 	{
+		Response r = new Response();
+				
 		switch (Stage) 
 		{
 		case GameWorld.MOVESELECT:
@@ -126,6 +129,14 @@ public class UserArmy extends Army
 			else if (MenuBar.IsEndTurn())
 				stagecompleted[Stage] = true;
 			
+			if (stagecompleted[Stage]) {
+				r.source = GetConnection();
+				r.request = "MOVESELECT";
+				r.b = true;
+				
+				network.GetClient().sendTCP(r);
+			}
+			
 			return stagecompleted[Stage];
 		
 		case GameWorld.MOVEUPDATE:
@@ -135,6 +146,12 @@ public class UserArmy extends Army
 					return false;
 			}
 			
+			r.source = GetConnection();
+			r.request = "MOVEUPDATE";
+			r.b = true;
+
+			network.GetClient().sendTCP(r);
+				
 			return true;
 			
 		case GameWorld.ATTACKSELECT:
@@ -147,6 +164,14 @@ public class UserArmy extends Army
 				stagecompleted[Stage] = true;
 			else if (MenuBar.IsEndTurn())
 				stagecompleted[Stage] = true;
+			
+			if (stagecompleted[Stage]) {
+				r.source = GetConnection();
+				r.request = "ATTACKSELECT";
+				r.b = true;
+				
+				network.GetClient().sendTCP(r);
+			}
 			
 			return stagecompleted[Stage];
 			

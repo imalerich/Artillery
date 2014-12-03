@@ -70,7 +70,7 @@ public class Recipient
 		
 		int offset = (id-1) * Game.WORLDW/lobbysize;
 		MilitaryBase base = new MilitaryBase(offset, game.GetTerrain());
-		owned = new UserArmy(base, game.GetTerrain(), parent);
+		owned = new UserArmy(base, game.GetTerrain(), parent, c.getID());
 		game.SetUserArmy(owned);
 		
 		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist);
@@ -136,35 +136,16 @@ public class Recipient
 					Response r = (Response)object;
 					if (r.request.equals("IsLobbyFull")) {
 						islobbyfull = r.b;
+						
 					} else if (r.request.equals("LobbySize")) {
 						lobbysize = r.i;
 						System.out.println("Lobby size is: " + r.i);
-					} else if (r.army != -1) {
-						// let the army process the response to its message
-						game.GetArmy(r.army).ProcMessage(r);
-					}
-					
-				} else if (object instanceof Request) {
-					Request r = (Request)object;
-					Response res = new Response();
 						
-					if (r.req.equals("MOVESTAGESTATUS")) {
-						res.request = r.req;
-						res.dest = r.source;
-						res.source = r.dest;
-						res.army = r.army;
-						res.b = owned.IsStageCompleted(GameWorld.MOVESELECT);
-						
-					} else if (r.req.equals("ATTACKSTAGESTATUS")) {
-						res.request = r.req;
-						res.dest = r.source;
-						res.source = r.dest;
-						res.army = r.army;
-						res.b = owned.IsStageCompleted(GameWorld.ATTACKSELECT);
+					} else if (r.source != -1) {
+						// get the army it pertains to to process the message
+						game.GetRemoteArmy(r.source).ProcMessage(r);
 						
 					}
-					
-					connection.sendTCP(res);
 				}
 			}
 			

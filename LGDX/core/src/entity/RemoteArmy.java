@@ -3,28 +3,22 @@ package entity;
 import java.util.Vector;
 
 import network.NetworkManager;
-import network.Request;
 import network.Response;
 import physics.GameWorld;
 import terrain.Terrain;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
 
 public class RemoteArmy extends Army
 {
-	private static final int DELAY = 100;
-	private double clock;
-	
 	public RemoteArmy(MilitaryBase Base, Terrain Ter, NetworkManager Network, int ID)
 	{
 		ter = Ter;
 		base = Base;
 		network = Network;
 		squads = new Vector<Squad>();
-		clock = 0.0;
 		
 		SetConnection(ID);
 		
@@ -43,6 +37,10 @@ public class RemoteArmy extends Army
 	@Override
 	public boolean IsStageCompleted(int Stage) 
 	{
+		if (Stage == GameWorld.ATTACKUPDATE) {
+			return true;
+		}
+		
 		return stagecompleted[Stage];
 	}
 
@@ -61,11 +59,14 @@ public class RemoteArmy extends Army
 	@Override
 	public void ProcMessage(Response r) 
 	{
-		if (r.request.equals("ATTACKSTAGESTATUS")) {
-			stagecompleted[GameWorld.ATTACKSELECT] = r.b;
-			
-		} else if (r.request.equals("MOVESTAGESTATUS")) {
+		if (r.request.equals("MOVESELECT")) {
 			stagecompleted[GameWorld.MOVESELECT] = r.b;
+			
+		} else if (r.request.equals("MOVEUPDATE")) {
+			stagecompleted[GameWorld.MOVEUPDATE] = r.b;
+			
+		} else if (r.request.equals("ATTACKSELECT")) {
+			stagecompleted[GameWorld.ATTACKSELECT] = r.b;
 			
 		}
 	}
@@ -73,29 +74,13 @@ public class RemoteArmy extends Army
 	@Override
 	public void UpdateMoveSelect(Camera Cam) 
 	{
-		if (!DoSendReq()) 
-			return;
-		
-		Request r = new Request();
-		r.req = "MOVESTAGESTATUS";
-		r.dest = GetConnection();
-		r.army = GetID();
-		
-		network.GetClient().sendTCP(r);
+		//
 	}
 
 	@Override
 	public void UpdateAttackSelect(Camera Cam) 
 	{
-		if (!DoSendReq()) 
-			return;
-		
-		Request r = new Request();
-		r.req = "ATTACKSTAGESTATUS";
-		r.dest = GetConnection();
-		r.army = GetID();
-		
-		network.GetClient().sendTCP(r);
+		//
 	}
 
 	@Override
@@ -124,12 +109,12 @@ public class RemoteArmy extends Army
 		return false;
 	}
 	
-	public boolean DoSendReq()
+	@Override
+	public void InitStage(int NewStage)
 	{
-		clock += Gdx.graphics.getDeltaTime();
-		if (clock > DELAY/1000f) {
-			clock = 0.0;
-			return true;
-		} else return false;
+		super.InitStage(NewStage);
+		
+		// set the new stage as not completed
+		stagecompleted[NewStage] = false;
 	}
 }

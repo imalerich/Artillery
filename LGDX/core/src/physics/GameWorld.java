@@ -87,6 +87,29 @@ public class GameWorld
 		return null;
 	}
 	
+	public Army GetRemoteArmy(int Connection)
+	{
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext()) {
+			Army a = f.next();
+			if (a.GetConnection() == Connection) 
+				return a;
+		}
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext()) {
+			Army a = e.next();
+			if (a.GetConnection() == Connection) 
+				return a;
+		}
+		
+		if (userArmy.GetConnection() == Connection) {
+			return userArmy;
+		}
+		
+		return null;
+	}
+	
 	public void SetUserArmy(Army Add)
 	{
 		userArmy = Add;

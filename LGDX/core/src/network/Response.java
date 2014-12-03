@@ -4,8 +4,8 @@ package network;
 public class Response 
 {
 	public String request;
-	public Integer source;
-	public Integer dest;
+	public Integer source = -1;
+	public Integer dest = -1;
 	public Integer army = -1;
 	
 	public Boolean b;

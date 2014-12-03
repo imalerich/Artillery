@@ -71,22 +71,12 @@ public class Host
 						res.request = r.req;
 						res.i = lobbysize;
 						connection.sendTCP(res);
-						
-					} else if (r.req.equals("MOVESTAGESTATUS")) {
-						// pass the message to the appropriate client
-						r.source = connection.getID();
-						s.sendToTCP(r.dest, r);
-						
-					} else if (r.req.equals("ATTACKSTAGESTATUS")) {
-						// pass the message to the appropriate client
-						r.source = connection.getID();
-						s.sendToTCP(r.dest, r);
-						
+					
 					}
 				} else if (object instanceof Response) {
-					// response received to a clients request, send the data to them
+					// pass the message to all other clients to be processed
 					Response r = (Response)object;
-					s.sendToTCP(r.dest, r);
+					s.sendToAllExceptTCP(r.source, r);
 					
 				}
 			}
