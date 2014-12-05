@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import network.Response;
 import particles.Particles;
 import physics.Blast;
 import physics.GameWorld;
@@ -548,10 +549,28 @@ public class Squad
 		}
 		
 		// if they have all met their positional conditional, stop moving them
-		if (updated == 0) {
+		if (updated == 0 && ismoving) {
 			CalcBoundingBox(Campos);
 			ismoving = false;
-		} else ismoving = true;
+			
+			// send a message of units position to clients
+			i = units.iterator();
+			while (i.hasNext()) {
+				Unit u = i.next();
+				
+				Response r = new Response();
+				r.source = GetArmy().GetConnection();
+				r.request = "UNITPOSITION";
+				r.i0 = GetID();
+				r.i1 = u.GetID();
+				r.f0 = u.GetPos().x;
+				r.f1 = u.GetPos().y;
+				GetArmy().GetNetwork().GetClient().sendTCP(r);
+			}
+			
+		} else if (updated > 0) {
+			ismoving = true;
+		}
 	}
 	
 	public void DrawView(Camera Cam)

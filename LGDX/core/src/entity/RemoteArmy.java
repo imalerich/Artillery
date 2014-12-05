@@ -11,6 +11,7 @@ import terrain.Terrain;
 import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
 
@@ -130,6 +131,11 @@ public class RemoteArmy extends Army
 			Unit u = GetSquad(r.i0).GetUnit(r.i1);
 			u.SetHealth(r.f0);
 			u.SetMaxHealth(r.f1);
+			return;
+			
+		} else if (r.request.equals("UNITPOSITION")) {
+			Unit u = GetSquad(r.i0).GetUnit(r.i1);
+			u.SetPos( new Vector2(r.f0, r.f1) );
 			return;
 			
 		}
