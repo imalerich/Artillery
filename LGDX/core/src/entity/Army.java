@@ -26,7 +26,7 @@ public abstract class Army
 {
 	private int id = 0;
 	private int connection = -1;
-	private int squadid = 0;
+	protected int squadid = 0;
 	
 	protected GameWorld world;
 	protected boolean[] stagecompleted;
@@ -35,6 +35,11 @@ public abstract class Army
 	protected Vector<Squad> squads;
 	protected Terrain ter;
 	protected boolean squadspawned;
+	
+	/**
+	 * Process methods from other threads.
+	 */
+	public abstract void UpdateThreads();
 	
 	public abstract boolean IsTargeting();
 	
@@ -56,7 +61,7 @@ public abstract class Army
 	
 	public abstract boolean UpdateTargetOptions(int Size);
 	
-	public abstract void ProcMessage(Response r);
+	public abstract void CatchMessage(Response r);
 	
 	public void SetID(int ID)
 	{
@@ -66,6 +71,11 @@ public abstract class Army
 	public int GetID()
 	{
 		return id;
+	}
+	
+	public NetworkManager GetNetwork()
+	{
+		return network;
 	}
 	
 	public void SetStageCompleted(int Stage, boolean State)

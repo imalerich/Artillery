@@ -96,7 +96,7 @@ public class UserArmy extends Army
 	}
 
 	@Override
-	public void ProcMessage(Response r) 
+	public void CatchMessage(Response r) 
 	{
 		//
 	}
@@ -212,6 +212,12 @@ public class UserArmy extends Army
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public void UpdateThreads() 
+	{
+		//
 	}
 	
 	@Override

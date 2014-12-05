@@ -2,6 +2,7 @@ package entity;
 
 import java.util.Vector;
 
+import network.Response;
 import particles.Particles;
 import physics.NullTank;
 import terrain.Terrain;
@@ -22,12 +23,16 @@ public class Unit
 	protected int speed;
 	protected float health;
 	protected float maxhealth;
+	protected boolean takedirectdamage = true;
 	
 	protected int width = 0;
 	protected int height = 0;
 	
 	protected boolean isFiring = false;
 	protected int mugshotIndex = 0;
+	protected int id;
+	
+	private Squad squad;
 	
 	public void SetUnitData(int Speed, float Health, int ViewRadius)
 	{
@@ -36,9 +41,39 @@ public class Unit
 		maxhealth = Health;
 	}
 	
+	public void SetSquad(Squad S)
+	{
+		squad = S;
+	}
+	
+	public Squad GetSquad()
+	{
+		return squad;
+	}
+	
 	public void Release()
 	{
 		// override in implementation classes
+	}
+	
+	public void SetID(int ID)
+	{
+		id = ID;
+	}
+	
+	public int GetID()
+	{
+		return id;
+	}
+	
+	public void SetDirectDamage(boolean B)
+	{
+		takedirectdamage = B;
+	}
+	
+	public boolean TakesDirectDamage()
+	{
+		return takedirectdamage;
 	}
 	
 	public void SetFiring(boolean IsFiring)
@@ -86,14 +121,58 @@ public class Unit
 		return health;
 	}
 	
+	public void SetHealth(float Health)
+	{
+		health = Health;
+	}
+	
+	public void SetMaxHealth(float MaxHealth)
+	{
+		maxhealth = MaxHealth;
+	}
+	
 	public void Damage(float Dmg)
 	{
+		if (!takedirectdamage) {
+			return;
+		}
+		
 		health -= Dmg;
+		
+		// inform remote squads of the damage
+		Response r = new Response();
+		r.source = GetSquad().GetArmy().GetConnection();
+		r.request = "UNITHEALTH";
+		r.i0 = GetSquad().GetID();
+		r.i1 = GetID();
+		r.f0 = health;
+		r.f1 = maxhealth;
+		
+		GetSquad().GetArmy().GetNetwork().GetClient().sendTCP(r);
+	}
+	
+	public void SetMaxHealth()
+	{
+		health = maxhealth;
 	}
 	
 	public void Heal(float Amt)
 	{
+		if (!takedirectdamage) {
+			return;
+		}
+		
 		health += Amt;
+		
+		// inform remote squads of the damage
+		Response r = new Response();
+		r.source = GetSquad().GetArmy().GetConnection();
+		r.request = "UNITHEALTH";
+		r.i0 = GetSquad().GetID();
+		r.i1 = GetID();
+		r.f0 = health;
+		
+		GetSquad().GetArmy().GetNetwork().GetClient().sendTCP(r);
 	}
 	
 	public Vector2 GetPos()

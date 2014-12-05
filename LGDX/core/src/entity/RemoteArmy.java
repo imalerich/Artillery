@@ -16,10 +16,12 @@ import com.mygdx.game.MilitaryBase;
 
 public class RemoteArmy extends Army
 {
+	private Vector<Response> response;
 	private float powerlevel;
 	
 	public RemoteArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int ID)
 	{
+		response = new Vector<Response>();
 		world = World;
 		ter = Ter;
 		base = Base;
@@ -61,9 +63,19 @@ public class RemoteArmy extends Army
 	{
 		//
 	}
-
+	
 	@Override
-	public void ProcMessage(Response r) 
+	public void UpdateThreads() 
+	{
+		// process each message
+		for (int i=0; i<response.size(); i++) {
+			ProcMessage(response.get(i));
+		}
+		
+		response.clear();
+	}
+	
+	public void ProcMessage(Response r)
 	{
 		// check for stage completion
 		if (r.request.equals("MOVESELECT")) {
@@ -112,8 +124,21 @@ public class RemoteArmy extends Army
 			}
 			
 			return;
+		}
+		
+		if (r.request.equals("UNITHEALTH")) {
+			Unit u = GetSquad(r.i0).GetUnit(r.i1);
+			u.SetHealth(r.f0);
+			u.SetMaxHealth(r.f1);
+			return;
 			
 		}
+	}
+
+	@Override
+	public void CatchMessage(Response r) 
+	{
+		response.add(r);
 	}
 	
 	@Override
@@ -180,5 +205,16 @@ public class RemoteArmy extends Army
 		
 		// set the new stage as not completed
 		stagecompleted[NewStage] = false;
+	}
+	
+	@Override
+	public void AddSquad(Squad Add)
+	{
+		// set the id for this squad
+		Add.SetID(squadid);
+		Add.TakesDirectDamage(false);
+		squadid++;
+		
+		squads.add(Add);
 	}
 }

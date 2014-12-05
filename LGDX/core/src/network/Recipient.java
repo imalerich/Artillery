@@ -140,7 +140,7 @@ public class Recipient
 						
 					} else if (r.source != -1) {
 						// get the army it pertains to to process the message
-						game.GetRemoteArmy(r.source).ProcMessage(r);
+						game.GetRemoteArmy(r.source).CatchMessage(r);
 						
 					}
 				}

@@ -131,8 +131,23 @@ public class GameWorld
 		armyid++;
 	}
 	
+	public void UpdateThreads()
+	{
+		// synchronize data between threads
+		userArmy.UpdateThreads();
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().UpdateThreads();
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().UpdateThreads();
+	}
+	
 	public void Update(Camera Cam)
 	{
+		UpdateThreads();
 		ter.Update();
 		particles.Update();
 		

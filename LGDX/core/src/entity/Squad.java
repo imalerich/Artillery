@@ -57,6 +57,8 @@ public class Squad
 	private boolean direction;
 	private double pointerheight;
 	private Vector2 barrelsrc;
+	private int addid = 0;
+	private boolean takesdirectdamage = true;
 	
 	private Army army;
 	
@@ -132,6 +134,25 @@ public class Squad
 			return new Vector2(barrelsrc);
 		} else {
 			return new Vector2(bbox.width - barrelsrc.x, barrelsrc.y);
+		}
+	}
+	
+	public void SetMaxHealth()
+	{
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+		{
+			u.next().SetMaxHealth();
+		}
+	}
+	
+	public void TakesDirectDamage(boolean B)
+	{
+		takesdirectdamage = B;
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+		{
+			u.next().SetDirectDamage(takesdirectdamage);
 		}
 	}
 	
@@ -398,6 +419,23 @@ public class Squad
 		Add.SetPos(addp);
 		Add.SetHeight();
 		units.add(Add);
+		units.lastElement().SetID(addid);
+		units.lastElement().SetDirectDamage(takesdirectdamage);
+		units.lastElement().SetSquad(this);
+		addid++;
+	}
+	
+	public Unit GetUnit(int ID)
+	{
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			if (unit.GetID() == ID) {
+				return unit;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void Update(Vector2 Campos)
