@@ -34,7 +34,7 @@ public abstract class Army
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
 	protected Terrain ter;
-	protected boolean squadspawned;
+	protected int requisition = 500;
 	
 	/**
 	 * Process methods from other threads.
@@ -96,16 +96,6 @@ public abstract class Army
 		}
 		
 		return connection;
-	}
-	
-	public boolean hasSpawnedSquad()
-	{
-		return squadspawned;
-	}
-	
-	public void setSpawnedSquad(boolean Set)
-	{
-		squadspawned = Set;
 	}
 	
 	public void ProcBlasts(Blast B)

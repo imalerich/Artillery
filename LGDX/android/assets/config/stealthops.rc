@@ -5,6 +5,7 @@ UNIT
  	count: 5
 	speed: 160
 	health: 16
+	reqcost: 500
 
 END
 

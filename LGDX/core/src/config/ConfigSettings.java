@@ -33,6 +33,11 @@ public class ConfigSettings
 	public final int maxmovedist;
 	
 	/**
+	 * Requistion cost for this unit.
+	 */
+	public final int reqcost;
+	
+	/**
 	 * Create a new configuration.
 	 * @param Count
 	 * 	default count
@@ -41,12 +46,13 @@ public class ConfigSettings
 	 * @param Speed
 	 * 	speed of the unit
 	 */
-	public ConfigSettings(int Count, int Health, int Speed, int MaxMoveDist)
+	public ConfigSettings(int Count, int Health, int Speed, int MaxMoveDist, int ReqCost)
 	{
 		count = Count;
 		health = Health;
 		speed = Speed;
 		maxmovedist = MaxMoveDist;
+		reqcost = ReqCost;
 		
 		armor = new Vector<Armor>();
 		arms = new Vector<Armament>();

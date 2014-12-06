@@ -14,7 +14,7 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "ARMOR", "ARMAMENT", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "#" };
+		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "#" };
 	
 	/**
 	 * Default count for a newly generate unit.
@@ -77,6 +77,11 @@ public class ConfigGenerator
 	public static final float DEFAULT_ARMAMENT_ACCURACY = 0.9f;
 	
 	/**
+	 * Default requistion cost.
+	 */
+	public static final int DEFAULT_REQUISITION_COST = 400;
+	
+	/**
 	 * Load a configuration from the specified file.
 	 * @param filename
 	 * 	File be loaded.
@@ -110,6 +115,7 @@ public class ConfigGenerator
 		int speed = DEFAULT_SPEED;
 		int health = DEFAULT_HEALTH;
 		int movedist = DEFAULT_MOVEDIST;
+		int reqcost = DEFAULT_REQUISITION_COST;
 		
 		boolean insegment = false;
 		int linenumber = 0;
@@ -144,11 +150,14 @@ public class ConfigGenerator
 			} else if (d.param.equals("movedist:")) {
 				movedist = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_MOVEDIST);
 				continue;
+			} else if (d.param.equals("reqcost:")) {
+				reqcost = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_REQUISITION_COST);
+				continue;
 			}
 		}
 		
 		// file processed succesfully, return the configuration setting
-		return new ConfigSettings(count, health, speed, movedist);
+		return new ConfigSettings(count, health, speed, movedist, reqcost);
 	}
 	
 	/**

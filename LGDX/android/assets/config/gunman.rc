@@ -6,6 +6,7 @@ UNIT
 	speed: 160
 	health: 16
 	movedist: 1024
+	reqcost: 400
 
 END
 

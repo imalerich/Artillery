@@ -25,8 +25,12 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 
+import config.SquadConfigurations;
+
 public class UserArmy extends Army
 {
+	public static final int REQBONUS = 100;
+	
 	private SelectionStack optionstack;
 	private SelectionStack targetstack;
 	private int prevOptionStackSize;
@@ -81,7 +85,6 @@ public class UserArmy extends Army
 		powerselect = new PowerButtons();
 		moveactive = false;
 		profileactive = false;
-		squadspawned = false;
 		targetenemies = false;
 		targetpoint = false;
 		targetpower = false;
@@ -244,7 +247,6 @@ public class UserArmy extends Army
 	public void InitStage(int NewStage)
 	{
 		super.InitStage(NewStage);
-		squadspawned = false;
 		
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			targetstack.Reset();
@@ -255,6 +257,8 @@ public class UserArmy extends Army
 				squad.SetTargetSquad(null);
 				squad.SetFiring(false);
 			}
+		} else if (NewStage == GameWorld.MOVESELECT) {
+			requisition += REQBONUS;
 		}
 		
 		// set the new stage as not completed
@@ -385,7 +389,7 @@ public class UserArmy extends Army
 	private void UpdateDeployer(Camera Cam)
 	{
 		// do not update the deployer while a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd() || squadspawned)
+		if (IsMenuOpen() || !optionstack.IsOverAdd())
 			return;
 		
 		int selected = UnitDeployer.GetSelected(Cam);
@@ -393,8 +397,16 @@ public class UserArmy extends Army
 		if (UnitDeployer.Contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
+			// get the requisition post spawning the unit
+			int postcost = ReqPostDeploy(selected);
+			if (postcost < 0) {
+				// user cannot afford to spawn the unit
+				return;
+			}
+			
+			// go ahead and spawn the unit
+			requisition = postcost;
 			int id = SpawnUnit(selected);
-			squadspawned = true;
 			
 			// tell all clients of the newly spawned squad
 			Response r = new Response();
@@ -404,6 +416,25 @@ public class UserArmy extends Army
 			r.i1 = id;
 			
 			network.GetClient().sendTCP(r);
+		}
+	}
+	
+	private int ReqPostDeploy(int Selected)
+	{
+		// get the cost of the selected unit
+		switch (Selected) {
+		case UnitDeployer.GUNMAN:
+			int r = requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.GUNMAN).reqcost;
+			return r;
+			
+		case UnitDeployer.SPECOPS:
+			return requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.SPECOPS).reqcost;
+			
+		case UnitDeployer.STEALTHOPS:
+			return requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.STEALTHOPS).reqcost;
+			
+		default:
+			return requisition;
 		}
 	}
 	
@@ -769,8 +800,11 @@ public class UserArmy extends Army
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
 	{
+		MenuBar.SetRequisition(requisition);
+		MenuBar.SetTmpRequisition(requisition);
+		
 		// do not draw the deployer when a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd() || squadspawned)
+		if (IsMenuOpen() || !optionstack.IsOverAdd())
 			return;
 		
 		int i = UnitDeployer.GetSelected(Cam);
@@ -781,6 +815,9 @@ public class UserArmy extends Army
 			
 		if (UnitDeployer.Contains(i))
 			UnitDeployer.Draw(Batch, Cam, i);
+		
+		int postcost = ReqPostDeploy(i);
+		MenuBar.SetTmpRequisition(postcost);
 	}
 	
 	private boolean HighlightSquad(Squad S, Camera Cam)
