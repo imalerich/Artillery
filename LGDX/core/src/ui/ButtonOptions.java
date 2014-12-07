@@ -15,6 +15,7 @@ public class ButtonOptions
 	public static final int ATTACK = 1;
 	public static final int STOP = 2;
 	public static final int UPGRADE = 3;
+	public static final int MOVEFOXHOLE = 4;
 	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;
@@ -27,6 +28,7 @@ public class ButtonOptions
 	private int xpos;
 	private int ypos;
 	private int count;
+	private int skipid = -1;
 	private int[] buttonGlyphs;
 	private Rectangle[] bbox;
 	
@@ -55,6 +57,16 @@ public class ButtonOptions
 		
 		bbox = new Rectangle[count];
 		SetPos(XPos, YPos, new Vector2(0, 0));
+	}
+	
+	public void NoSkip()
+	{
+		skipid = -1;
+	}
+	
+	public void SetSkip(int ID)
+	{
+		skipid = ID;
 	}
 	
 	public void ResetClock()
@@ -97,11 +109,23 @@ public class ButtonOptions
 	
 	public int GetButtonDown(Vector2 Campos)
 	{
+		int shift = 0;
+		if (skipid != -1)
+			shift++;
+		
 		// loop through each button and find if the user selects it
 		for (int i=0; i<count; i++)
 		{
-			if (Cursor.IsMouseOver(bbox[i], Campos))
-				return i;
+			int mod = 0;
+			if (i >= skipid && skipid != -1) {
+				mod++;
+				
+				if (i+mod >= count)
+					return -1;
+			}
+			
+			if (Cursor.IsMouseOver(bbox[i], new Vector2(Campos.x-shift*button.getWidth()/2, Campos.y)))
+				return i+mod;
 		}
 		
 		return -1;
@@ -121,6 +145,16 @@ public class ButtonOptions
 		for (int i=0; i<count; i++)
 		{
 			int x = xpos + i*button.getWidth() - width/2 + i*BUTTONGAP;
+			
+			if (i == skipid) {
+				continue;
+			} else if (i > skipid && skipid != -1) {
+				x = xpos + (i-1)*button.getWidth() - width/2 + (i-1)*BUTTONGAP;
+			}
+			
+			if (skipid != -1)
+				x += button.getWidth()/2;
+			
 			int xoff = (int)(button.getWidth()*(1-scale) )/2;
 			int yoff = (int)(button.getHeight()*(1-scale) )/2;
 			

@@ -8,6 +8,7 @@ import network.Response;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
+import ui.FoxHoleMenu;
 import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -138,6 +139,12 @@ public class RemoteArmy extends Army
 			u.SetPos( new Vector2(r.f0, r.f1) );
 			return;
 			
+		}
+		
+		if (r.request.equals("ADDFOX")) {
+			Vector2 pos = new Vector2(r.f0, r.f1);
+			FoxHoleMenu.CutRoom(ter, pos);
+			world.AddFoxHole(pos);
 		}
 	}
 

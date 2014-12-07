@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import objects.FoxHole;
 import network.NetworkManager;
 import particles.ParticleMask;
 import particles.Weather;
@@ -94,6 +95,7 @@ public class Game extends ApplicationAdapter
 		Terrain.Init();
 		Weather.Init();
 		SquadConfigurations.Init();
+		FoxHole.Init();
 	}
 	
 	public void Release()
@@ -109,6 +111,7 @@ public class Game extends ApplicationAdapter
 		PowerButtons.Release();
 		ParticleMask.Release();
 		Weather.Release();
+		FoxHole.Release();
 		
 		physics.Release();
 	}

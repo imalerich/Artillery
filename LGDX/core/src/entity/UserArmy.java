@@ -9,6 +9,7 @@ import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
 import ui.ButtonOptions;
+import ui.FoxHoleMenu;
 import ui.MenuBar;
 import ui.PointSelect;
 import ui.PowerButtons;
@@ -40,11 +41,13 @@ public class UserArmy extends Army
 	private boolean menurelease;
 	private ButtonOptions menu;
 	private ButtonOptions offensemenu;
+	private FoxHoleMenu foxselect;
 	
 	private int prevdeployi;
 	private PointSelect moveselect;
 	private PowerButtons powerselect;
 	private boolean moveactive;
+	private boolean foxactive;
 	private boolean profileactive;
 	private boolean targetenemies;
 	private boolean targetpoint;
@@ -71,15 +74,19 @@ public class UserArmy extends Army
 		
 		menuactive = false;
 		menurelease = false;
+		foxactive = false;
 		
-		menu = new ButtonOptions(0, 0, 3);
+		menu = new ButtonOptions(0, 0, 4);
 		menu.SetGlyph(0, ButtonOptions.MOVE);
-		menu.SetGlyph(1, ButtonOptions.UPGRADE);
-		menu.SetGlyph(2, ButtonOptions.STOP);
+		menu.SetGlyph(1, ButtonOptions.MOVEFOXHOLE);
+		menu.SetGlyph(2, ButtonOptions.UPGRADE);
+		menu.SetGlyph(3, ButtonOptions.STOP);
 		
 		offensemenu = new ButtonOptions(0, 0, 2);
 		offensemenu.SetGlyph(0, ButtonOptions.ATTACK);
 		offensemenu.SetGlyph(1, ButtonOptions.STOP);
+		
+		foxselect = new FoxHoleMenu(Ter);
 		
 		moveselect = new PointSelect(Ter);
 		powerselect = new PowerButtons();
@@ -464,6 +471,9 @@ public class UserArmy extends Army
 		
 		if (profileactive)
 			UpdateProfile();
+		
+		if (foxactive)
+			UpdateFox(Cam);
 	}
 	
 	private void UpdateOffenseMenu(Camera Cam)
@@ -503,6 +513,12 @@ public class UserArmy extends Army
 		if (selected == null) {
 			menuactive = false;
 			return;
+		}
+		
+		if (selected.GetArmament().GetType() == Armament.POINTTARGET) {
+			menu.SetSkip(1);
+		} else {
+			menu.NoSkip();
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -550,6 +566,16 @@ public class UserArmy extends Army
 			menu.ResetClock();
 			break;
 			
+		case ButtonOptions.MOVEFOXHOLE:
+			foxselect.SetSelected(selected);
+			foxactive = true;
+			
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.ResetClock();
+			break;
+			
 		case ButtonOptions.UPGRADE:
 			// activate the profile
 			profileactive = true;
@@ -564,6 +590,36 @@ public class UserArmy extends Army
 		default:
 			break;
 		}
+	}
+	
+	private void UpdateFox(Camera Cam)
+	{
+		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
+			foxactive = false;
+			return;
+		}
+		
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			if (foxselect.IsPosValid()) {
+				world.AddFoxHole(foxselect.GetPos());
+				FoxHoleMenu.CutRoom(ter, foxselect.GetPos());
+				foxselect.SetSelectedTarget(selected);
+		
+				// inform all clients of the added fox hole
+				Response r = new Response();
+				r.source = GetConnection();
+				r.request = "ADDFOX";
+				r.f0 = foxselect.GetPos().x;
+				r.f1 = foxselect.GetPos().y;
+				
+				network.GetClient().sendTCP(r);
+			}
+			
+			foxactive = false;
+			return;
+		}
+		
+		foxselect.Update(Cam);
 	}
 	
 	private void UpdateOffenseButtons(Vector2 Campos)
@@ -795,7 +851,7 @@ public class UserArmy extends Army
 	@Override
 	public boolean IsMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive);
 	}
 	
 	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
@@ -891,6 +947,10 @@ public class UserArmy extends Army
 		
 		if (profileactive && selected != null) {
 			Profile.Draw(Batch, selected, base.GetLogo());
+		}
+		
+		if (foxactive && selected != null) {
+			foxselect.Render(Batch, Cam);
 		}
 	}
 }

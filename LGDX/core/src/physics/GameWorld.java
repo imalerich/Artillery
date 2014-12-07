@@ -3,6 +3,7 @@ package physics;
 import java.util.Iterator;
 import java.util.Vector;
 
+import objects.FoxHole;
 import particles.Particles;
 import particles.Weather;
 import terrain.Background;
@@ -13,6 +14,7 @@ import ui.MenuBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
@@ -39,6 +41,7 @@ public class GameWorld
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
 	private Vector<NullTank> nullTanks;
+	private Vector<FoxHole> foxholes;
 	
 	public GameWorld(Terrain Ter)
 	{
@@ -49,9 +52,10 @@ public class GameWorld
 		resolver = new CombatResolver(this, ter, particles);
 		
 		userArmy = null;
-		friendlyArmy = new Vector<Army>();
-		enemyArmy = new Vector<Army>();
-		nullTanks = new Vector<NullTank>();
+		friendlyArmy	= new Vector<Army>();
+		enemyArmy		= new Vector<Army>();
+		nullTanks		= new Vector<NullTank>();
+		foxholes		= new Vector<FoxHole>();
 	}
 	
 	public void Release()
@@ -129,6 +133,11 @@ public class GameWorld
 		enemyArmy.add(Add);
 		enemyArmy.lastElement().SetID(armyid);
 		armyid++;
+	}
+	
+	public void AddFoxHole(Vector2 Pos)
+	{
+		foxholes.add(new FoxHole(Pos));
 	}
 	
 	public void UpdateThreads()
@@ -365,9 +374,22 @@ public class GameWorld
 		
 		DisableStencil(Batch);
 		
+		/*
+		 * Draw the terrain, weather and world objects.
+		 */
+		
 		Weather.Draw(Batch, Cam);
 		ter.Draw(Batch, Cam.GetPos());
+		
+		Iterator<FoxHole> holes = foxholes.iterator();
+		while (holes.hasNext())
+			holes.next().Render(Batch, Cam);
+		
+	
 		DrawNullTanks(Batch, Cam);
+		/*
+		 * Draw the terrain, weather and world objects.
+		 */
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
@@ -375,7 +397,7 @@ public class GameWorld
 		
 		EnableStencil(Batch);
 		
-		// draw all enemy untis above the terrain, but hidden by the fog 
+		// draw all enemy units above the terrain, but hidden by the fog 
 		Shaders.SetShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())

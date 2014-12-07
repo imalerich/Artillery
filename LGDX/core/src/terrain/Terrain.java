@@ -286,6 +286,11 @@ public class Terrain
 	
 	public int GetMinHeight(int X0, int X1)
 	{
+		if (X0 < 0)
+			X0 =0;
+		else if (X1 >= width)
+			X1 = width-1;
+		
 		int min = Integer.MAX_VALUE;
 		for (int x=X0; x<=X1; x++)
 			min = (int)Math.min(min, GetHeight(x));
@@ -295,6 +300,11 @@ public class Terrain
 	
 	public int GetMaxHeight(int X0, int X1)
 	{
+		if (X0 < 0)
+			X0 =0;
+		else if (X1 >= width)
+			X1 = width-1;
+		
 		int max = 0;
 		for (int x=X0; x<X1; x++)
 			max = (int)Math.max(max, GetHeight(x));

@@ -87,6 +87,16 @@ public class PointSelect
 		}
 	}
 	
+	public int GetMaxX()
+	{
+		return maxx;
+	}
+	
+	public int GetMinX()
+	{
+		return minx;
+	}
+	
 	public void Update(Vector2 Campos)
 	{
 		// get the mouse pos and set the maximum
@@ -102,17 +112,25 @@ public class PointSelect
 			ldist = (startx-targetx);
 		
 		if (rdist < ldist) {
-			if (maxx < Game.WORLDW && targetx > maxx)
+			// right
+			if (maxx < Game.WORLDW && targetx > maxx) {
 				targetx = maxx;
-			else if (maxx > Game.WORLDW && targetx > (maxx-Game.WORLDW) &&
-					(Gdx.input.getX()+Campos.x) > Game.WORLDW)
-				targetx = (maxx-Game.WORLDW);
+			} else if (maxx >= Game.WORLDW) {
+				if (targetx > startx && targetx < Game.WORLDW) {
+					//
+				} else if (targetx > maxx - Game.WORLDW){
+					targetx = maxx - Game.WORLDW;
+				}
+			}
+			
 		} else {
-			if (minx > 0 && targetx < minx && targetx < (startx+startwidth))
+			// left
+			if (minx > 0 && targetx < minx && targetx < (startx+startwidth)) {
 				targetx = minx;
-			else if (minx < 0 && targetx < (minx+Game.WORLDW) &&
-					targetx > (startx+startwidth))
+			} else if (minx < 0 && targetx < (minx+Game.WORLDW) &&
+					targetx > (startx+startwidth)) {
 				targetx = (minx+Game.WORLDW);
+			}
 		}
 		
 		if (targetx == Game.WORLDW) targetx = 0;
