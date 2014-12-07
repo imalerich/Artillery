@@ -40,10 +40,12 @@ public class FoxHoleMenu
 	{
 		int d = GetMoveDirection(pos.x);
 		if (d == 1) {
-			Selected.SetTargetX((int)pos.x + FoxHole.FOXHOLE.getWidth());
+			Selected.SetTargetX((int)pos.x + FoxHole.FOXHOLE.getWidth() - FoxHole.MOUNDWIDTH);
 		} else {
-			Selected.SetTargetX((int)pos.x);
+			Selected.SetTargetX((int)pos.x + FoxHole.MOUNDWIDTH);
 		}
+		
+		Selected.AddFoxOnFinishMove(new Vector2(pos));
 	}
 	
 	public boolean IsPosValid()
@@ -53,7 +55,7 @@ public class FoxHoleMenu
 	
 	public Vector2 GetPos()
 	{
-		return pos;
+		return new Vector2(pos);
 	}
 	
 	public static void CutRoom(Terrain Ter, Vector2 Pos)

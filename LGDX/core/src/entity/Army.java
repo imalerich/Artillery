@@ -63,6 +63,8 @@ public abstract class Army
 	
 	public abstract void CatchMessage(Response r);
 	
+	public abstract void AddFox(Vector2 Pos);
+	
 	public void SetID(int ID)
 	{
 		id = ID;

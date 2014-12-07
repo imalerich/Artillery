@@ -182,9 +182,17 @@ public class GameWorld
 			break;
 		}
 		
+		UpdateObjects(Cam);
 		UpdateNullTanks(Cam);
 		CheckForDeaths(Cam);
 		CheckNextStage();
+	}
+	
+	public void UpdateObjects(Camera Cam)
+	{
+		Iterator<FoxHole> f = foxholes.iterator();
+		while (f.hasNext())
+			f.next().Update();
 	}
 	
 	public void UpdateNullTanks(Camera Cam)

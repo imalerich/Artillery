@@ -188,26 +188,24 @@ public class RemoteArmy extends Army
 	@Override
 	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
-		// TODO Auto-generated method stub
+		//
 	}
 
 	@Override
 	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam) 
 	{
-		// TODO Auto-generated method stub
+		//
 	}
 
 	@Override
 	public boolean IsMenuOpen() 
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean UpdateTargetOptions(int Size) 
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -229,5 +227,11 @@ public class RemoteArmy extends Army
 		squadid++;
 		
 		squads.add(Add);
+	}
+
+	@Override
+	public void AddFox(Vector2 Pos) 
+	{
+		//
 	}
 }

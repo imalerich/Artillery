@@ -61,6 +61,9 @@ public class Squad
 	private int addid = 0;
 	private boolean takesdirectdamage = true;
 	
+	private boolean addfox;
+	private Vector2 foxpos;
+	
 	private Army army;
 	
 	public static void Init()
@@ -145,6 +148,12 @@ public class Squad
 		{
 			u.next().SetMaxHealth();
 		}
+	}
+	
+	public void AddFoxOnFinishMove(Vector2 Pos)
+	{
+		addfox = true;
+		foxpos = Pos;
 	}
 	
 	public void TakesDirectDamage(boolean B)
@@ -552,6 +561,12 @@ public class Squad
 		if (updated == 0 && ismoving) {
 			CalcBoundingBox(Campos);
 			ismoving = false;
+			
+			// add a fox hole when done moving
+			if (addfox) {
+				GetArmy().AddFox(foxpos);
+				addfox = false;
+			}
 			
 			// send a message of units position to clients
 			i = units.iterator();

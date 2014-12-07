@@ -601,18 +601,7 @@ public class UserArmy extends Army
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			if (foxselect.IsPosValid()) {
-				world.AddFoxHole(foxselect.GetPos());
-				FoxHoleMenu.CutRoom(ter, foxselect.GetPos());
 				foxselect.SetSelectedTarget(selected);
-		
-				// inform all clients of the added fox hole
-				Response r = new Response();
-				r.source = GetConnection();
-				r.request = "ADDFOX";
-				r.f0 = foxselect.GetPos().x;
-				r.f1 = foxselect.GetPos().y;
-				
-				network.GetClient().sendTCP(r);
 			}
 			
 			foxactive = false;
@@ -620,6 +609,21 @@ public class UserArmy extends Army
 		}
 		
 		foxselect.Update(Cam);
+	}
+	
+	public void AddFox(Vector2 Pos)
+	{
+		FoxHoleMenu.CutRoom(ter, Pos);
+		world.AddFoxHole(Pos);
+		
+		// inform all clients of the added fox hole
+		Response r = new Response();
+		r.source = GetConnection();
+		r.request = "ADDFOX";
+		r.f0 = Pos.x;
+		r.f1 = Pos.y;
+
+		network.GetClient().sendTCP(r);
 	}
 	
 	private void UpdateOffenseButtons(Vector2 Campos)
