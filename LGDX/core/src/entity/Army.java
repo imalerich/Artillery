@@ -39,58 +39,63 @@ public abstract class Army
 	/**
 	 * Process methods from other threads.
 	 */
-	public abstract void UpdateThreads();
+	public abstract void updateThreads();
 	
-	public abstract boolean IsTargeting();
+	public abstract boolean isTargeting();
 	
-	public abstract boolean IsStageCompleted(int Stage);
+	public abstract boolean isStageCompleted(int Stage);
 	
-	public abstract SelectionStack GetTargetOptions();
+	public abstract SelectionStack getTargetOptions();
 	
-	public abstract void SetTargetSquad(Squad Target);
+	public abstract void setTargetSquad(Squad Target);
 	
-	public abstract void UpdateMoveSelect(Camera Cam);
+	public abstract void updateMoveSelect(Camera Cam);
 	
-	public abstract void UpdateAttackSelect(Camera Cam);
+	public abstract void updateAttackSelect(Camera Cam);
 	
-	public abstract void DrawTargetPos(SpriteBatch Batch, Camera Cam);
+	public abstract void drawTargetPos(SpriteBatch Batch, Camera Cam);
 	
-	public abstract void DrawTargetSquad(SpriteBatch Batch, Camera Cam);
+	public abstract void drawTargetSquad(SpriteBatch Batch, Camera Cam);
 	
-	public abstract boolean IsMenuOpen();
+	public abstract boolean isMenuOpen();
 	
-	public abstract boolean UpdateTargetOptions(int Size);
+	public abstract boolean updateTargetOptions(int Size);
 	
-	public abstract void CatchMessage(Response r);
+	public abstract void catchMessage(Response r);
 	
-	public abstract void AddFox(Vector2 Pos);
+	public abstract void addFox(Vector2 Pos);
 	
-	public void SetID(int ID)
+	public void setID(int ID)
 	{
 		id = ID;
 	}
 	
-	public int GetID()
+	public int getID()
 	{
 		return id;
 	}
 	
-	public NetworkManager GetNetwork()
+	public GameWorld getWorld()
+	{
+		return world;
+	}
+	
+	public NetworkManager getNetwork()
 	{
 		return network;
 	}
 	
-	public void SetStageCompleted(int Stage, boolean State)
+	public void setStageCompleted(int Stage, boolean State)
 	{
 		stagecompleted[Stage] = State;
 	}
 	
-	public void SetConnection(int ID)
+	public void setConnection(int ID)
 	{
 		connection = ID;
 	}
 	
-	public int GetConnection()
+	public int getConnection()
 	{
 		if (connection == -1) {
 			System.err.println("Error: Invalid connection - using connection 0 instead.");
@@ -100,43 +105,43 @@ public abstract class Army
 		return connection;
 	}
 	
-	public void ProcBlasts(Blast B)
+	public void procBlasts(Blast B)
 	{
 		// process all blasts on this army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			s.next().ProcBlasts(B);
+			s.next().procBlasts(B);
 		}
 	}
 	
-	public void InitStage(int NewStage)
+	public void initStage(int NewStage)
 	{
 		// set the each squad as not firing
 		if (NewStage == GameWorld.MOVESELECT) {
 			Iterator<Squad> s = squads.iterator();
 			while (s.hasNext()) {
 				Squad squad = s.next();
-				squad.SetFiring(false);
-				squad.SetTargetSquad(null);
+				squad.setFiring(false);
+				squad.setTargetSquad(null);
 			}
 		}
 	}
 	
-	public void CheckForDeaths(Camera Cam, Vector<NullTank> Deceased, Particles Part)
+	public void checkForDeaths(Camera Cam, Vector<NullTank> Deceased, Particles Part)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
-			squad.CheckAlive(Cam.GetPos(), Deceased, Part);
+			squad.checkAlive(Cam.getPos(), Deceased, Part);
 			
 			// check if the squad no longer has any surviving members
-			if (squad.GetUnitCount() == 0) {
+			if (squad.getUnitCount() == 0) {
 				s.remove();
 			}
 		}
 	}
 	
-	public int SpawnUnit(int UnitType)
+	public int spawnUnit(int UnitType)
 	{
 		int offset = 76;
 		if (UnitType == UnitDeployer.STEALTHOPS)
@@ -149,44 +154,44 @@ public abstract class Army
 		switch (UnitType)
 		{
 		case UnitDeployer.GUNMAN:
-			c = SquadConfigurations.GetConfiguration(SquadConfigurations.GUNMAN);
+			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
 			break;
 			
 		case UnitDeployer.STEALTHOPS:
-			c = SquadConfigurations.GetConfiguration(SquadConfigurations.STEALTHOPS);
+			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
 			break;
 			
 		case UnitDeployer.SPECOPS:
-			c = SquadConfigurations.GetConfiguration(SquadConfigurations.SPECOPS);
+			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
 			break;
 		}
 		
 		Squad s = new Squad(ter, c.maxmovedist, this);
-		s.SetTargetX((int)base.GetPos().x+offset);
+		s.setTargetX((int)base.getPos().x+offset);
 		
-		int spacing = s.GetSquadSpacing();
-		AddSquad(s);
+		int spacing = s.getSquadSpacing();
+		addSquad(s);
 		
 		// set the armor and armament for the squad
-		s.SetArmament(c.GetFirstArmament());
-		s.SetArmor(c.GetFirstArmor());
+		s.getArmament(c.getFirstArmament());
+		s.setArmor(c.getFirstArmor());
 		
 		for (int i=0; i<c.count; i++)
 		{
-			Vector2 pos = new Vector2(base.GetPos().x+offset + i*spacing, 0);
+			Vector2 pos = new Vector2(base.getPos().x+offset + i*spacing, 0);
 			
 			switch (UnitType)
 			{
 			case UnitDeployer.GUNMAN:	
-				s.AddUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
-				s.AddUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health));
 				break;
 				
 			case UnitDeployer.SPECOPS:
-				s.AddUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health));
 				break;
 				
 			default:
@@ -194,40 +199,40 @@ public abstract class Army
 			}
 		}
 		
-		return s.GetID();
+		return s.getID();
 	}
 	
-	public void AddCombatData(CombatResolver Resolver)
+	public void addCombatData(CombatResolver Resolver)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			
 			// add each squad and its target to the combat resolver
-			if (squad.GetTargetSquad() != null && 
-					squad.GetArmament().GetType() == Armament.UNITTARGET) {
-				Resolver.AddConflict(squad, squad.GetTargetSquad());
-			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(squad, 1f, squad.GetArmament().GetStrength());
+			if (squad.getTargetSquad() != null && 
+					squad.getArmament().getType() == Armament.UNITTARGET) {
+				Resolver.addConflict(squad, squad.getTargetSquad());
+			} else if (squad.isFiring() && squad.getArmament().getType() == Armament.POINTTARGET) {
+				Resolver.addProjectile(squad, 1f, squad.getArmament().getStrength());
 			}
 		}	
 	}
 	
-	public void AddSquad(Squad Add)
+	public void addSquad(Squad Add)
 	{
 		// set the id for this squad
-		Add.SetID(squadid);
+		Add.setID(squadid);
 		squadid++;
 		
 		squads.add(Add);
 	}
 	
-	public Squad GetSquad(int ID)
+	public Squad getSquad(int ID)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
-			if (squad.GetID() == ID) {
+			if (squad.getID() == ID) {
 				return squad;
 			}
 		}
@@ -236,62 +241,62 @@ public abstract class Army
 		return null;
 	}
 	
-	public void UpdateMove(Camera Cam)
+	public void updateMove(Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext())
-			s.next().Update(Cam.GetPos());
+			s.next().update(Cam.getPos());
 	}
 	
-	public int GetMouseOverCount(Camera Cam)
+	public int getMouseOverCount(Camera Cam)
 	{
 		int count = 0;
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			if (s.next().IsMouseOver(Cam.GetPos()))
+			if (s.next().isMouseOver(Cam.getPos()))
 				count++;
 		}
 		
 		return count;
 	}
 	
-	public void GetMouseOver(SelectionStack Stack, Camera Cam)
+	public void getMouseOver(SelectionStack Stack, Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			
-			if (squad.IsMouseOver(Cam.GetPos())) {
-				Stack.AddSquadOver(squad);
+			if (squad.isMouseOver(Cam.getPos())) {
+				Stack.addSquadOver(squad);
 			}
 		}
 	}
 	
-	public void DrawBase(SpriteBatch Batch, Camera Cam)
+	public void drawBase(SpriteBatch Batch, Camera Cam)
 	{
-		base.Draw(Batch, Cam);
+		base.draw(Batch, Cam);
 	}
 	
-	public void DrawBaseLogo(SpriteBatch Batch, Camera Cam)
+	public void drawBaseLogo(SpriteBatch Batch, Camera Cam)
 	{
-		base.DrawLogo(Batch, Cam);
+		base.drawLogo(Batch, Cam);
 	}
 	
-	public void DrawView(Camera Cam)
+	public void drawView(Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) 
-			s.next().DrawView(Cam);
+			s.next().drawView(Cam);
 		
-		base.DrawView(Cam);
+		base.drawView(Cam);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 
+	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
-			squad.Draw(Batch, Cam, false);
+			squad.draw(Batch, Cam, false);
 		}
 	}
 }

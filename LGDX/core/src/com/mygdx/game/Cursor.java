@@ -18,7 +18,7 @@ public class Cursor
 	private static final int RELEASED = 3;
 	private static int[] buttondown;
 	
-	public static void Init()
+	public static void init()
 	{
 		Gdx.input.setInputProcessor( new CursorInput() );
 		
@@ -27,7 +27,7 @@ public class Cursor
 			buttondown[i] = UP;
 	}
 	
-	private static void SetButton(int CButton, int GdxButton)
+	private static void setButton(int CButton, int GdxButton)
 	{
 		if (Gdx.input.isButtonPressed(GdxButton))
 		{
@@ -44,11 +44,11 @@ public class Cursor
 		}
 	}
 	
-	public static void Update()
+	public static void update()
 	{
-		SetButton(Buttons.LEFT, LEFT);
-		SetButton(Buttons.MIDDLE, MIDDLE);
-		SetButton(Buttons.RIGHT, RIGHT);
+		setButton(Buttons.LEFT, LEFT);
+		setButton(Buttons.MIDDLE, MIDDLE);
+		setButton(Buttons.RIGHT, RIGHT);
 	}
 	
 	public static boolean isButtonPressed(int Button)
@@ -68,10 +68,10 @@ public class Cursor
 	
 	public static int getScrollDirection()
 	{
-		return CursorInput.GetScrollDirection();
+		return CursorInput.getScrollDirection();
 	}
 	
-	public static int GetMouseX(Vector2 Campos)
+	public static int getMouseX(Vector2 Campos)
 	{
 		int xpos = (int)(Gdx.input.getX()*Game.SCREENRATIOX);
 		if (xpos + Campos.x > Game.WORLDW)
@@ -80,25 +80,25 @@ public class Cursor
 		return xpos;
 	}
 	
-	public static int GetMouseY()
+	public static int getMouseY()
 	{
 		int ypos = (int)(Gdx.input.getY()*Game.SCREENRATIOY);
 		return Game.SCREENH - ypos;
 	}
 	
-	public static boolean IsMouseOver(Rectangle R, Vector2 Campos)
+	public static boolean isMouseOver(Rectangle R, Vector2 Campos)
 	{
-		if (R.contains(Campos.x + GetMouseX(Campos), Campos.y + GetMouseY()))
+		if (R.contains(Campos.x + getMouseX(Campos), Campos.y + getMouseY()))
 			return true;
-		else if (R.contains(Campos.x + GetMouseX(Campos) + Game.WORLDW, Campos.y + GetMouseY()))
+		else if (R.contains(Campos.x + getMouseX(Campos) + Game.WORLDW, Campos.y + getMouseY()))
 			return true;
-		else if (R.contains(Campos.x + GetMouseX(Campos) - Game.WORLDW, Campos.y + GetMouseY()))
+		else if (R.contains(Campos.x + getMouseX(Campos) - Game.WORLDW, Campos.y + getMouseY()))
 			return true;
 		
 		return false;
 	}
 	
-	public static boolean IsMouseOverAbsolute(Rectangle R)
+	public static boolean isMouseOverAbsolute(Rectangle R)
 	{
 		int xpos = (int)(Gdx.input.getX()*Game.SCREENRATIOX);
 		int ypos = (int)(Gdx.input.getY()*Game.SCREENRATIOY);
@@ -111,17 +111,17 @@ public class Cursor
 		return false;
 	}
 	
-	public static boolean DidMouseMove()
+	public static boolean didMouseMove()
 	{
-		return (GetDeltaX() != 0 || GetDeltaY() != 0);
+		return (getDeltaX() != 0 || getDeltaY() != 0);
 	}
 	
-	public static int GetDeltaX()
+	public static int getDeltaX()
 	{
 		return Gdx.input.getDeltaX();
 	}
 	
-	public static int GetDeltaY()
+	public static int getDeltaY()
 	{
 		return Gdx.input.getDeltaY();
 	}

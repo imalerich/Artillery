@@ -49,7 +49,7 @@ public class Recipient
 		c.start();
 	}
 	
-	public void SetGameWorld(GameWorld World, Camera Cam)
+	public void setGameWorld(GameWorld World, Camera Cam)
 	{
 		// if we have not yet received the lobby size from the server, wait for it
 		try {
@@ -64,46 +64,46 @@ public class Recipient
 		game = World;
 		
 		// add the hosts base to the game world
-		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
+		ConfigSettings tankSettings = SquadConfigurations.getConfiguration(SquadConfigurations.TANK);
 		
 		int offset = (id-1) * Game.WORLDW/lobbysize;
-		MilitaryBase base = new MilitaryBase(offset, game.GetTerrain());
-		base.SetLogo(id-1);
-		owned = new UserArmy(game, base, game.GetTerrain(), parent, c.getID());
-		game.SetUserArmy(owned);
+		MilitaryBase base = new MilitaryBase(offset, game.getTerrain());
+		base.setLogo(id-1);
+		owned = new UserArmy(game, base, game.getTerrain(), parent, c.getID());
+		game.setUserArmy(owned);
 		
-		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist, owned);
-		squad.SetArmament(tankSettings.GetFirstArmament());
-		squad.SetArmor(tankSettings.GetFirstArmor());
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, owned);
+		squad.getArmament(tankSettings.getFirstArmament());
+		squad.setArmor(tankSettings.getFirstArmor());
 		
-		Tank tank = new Tank("img/tanks/Tank1.png", game.GetTerrain(), tankSettings.speed, tankSettings.health);
-		tank.SetPos( new Vector2(base.GetPos().x + 70, base.GetPos().y) );
-		tank.SetBarrelOffset( new Vector2(17, 64-35) );
-		squad.AddUnit(tank);
-		squad.SetBarrelSrc( new Vector2(17, 64-35) );
-		owned.AddSquad(squad);
+		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
+		tank.getPos( new Vector2(base.getPos().x + 70, base.getPos().y) );
+		tank.setBarrelOffset( new Vector2(17, 64-35) );
+		squad.addUnit(tank);
+		squad.setBarrelSrc( new Vector2(17, 64-35) );
+		owned.addSquad(squad);
 		
 		// set the camera to center the base
-		Vector2 campos = Cam.GetPos();
+		Vector2 campos = Cam.getPos();
 		campos.x = offset;
-		Cam.SetPos(campos);
+		Cam.setPos(campos);
 	}
 	
-	public void ReadRemoteArmies()
+	public void readRemoteArmies()
 	{
 		Iterator<ArmyConnection> i = remoteconnections.iterator();
 		while (i.hasNext()) {
 			ArmyConnection a = i.next();
-			AddNetworkedArmy(a.pos, a.tankoff, a.id);
+			addNetworkedArmy(a.pos, a.tankoff, a.id);
 		}
 	}
 	
-	public Kryo GetKryo()
+	public Kryo getKryo()
 	{
 		return c.getKryo();
 	}
 	
-	public void ConnectToServer()
+	public void connectToServer()
 	{
 		c.addListener( new Listener() {
 			
@@ -140,7 +140,7 @@ public class Recipient
 						
 					} else if (r.source != -1) {
 						// get the army it pertains to to process the message
-						game.GetRemoteArmy(r.source).CatchMessage(r);
+						game.getRemoteArmy(r.source).catchMessage(r);
 						
 					}
 				}
@@ -153,15 +153,15 @@ public class Recipient
 			
 		} );
 		
-		Start();
+		start();
 	}
 	
-	public boolean ArmiesRecieved()
+	public boolean armiesRecieved()
 	{
 		return remoteconnections.size() >= lobbysize-1;
 	}
 	
-	public void PollLobby()
+	public void pollLobby()
 	{
 		Request req = new Request();
 		req.req = "IsLobbyFull";
@@ -169,12 +169,12 @@ public class Recipient
 		c.sendTCP(req);
 	}
 	
-	public boolean IsLobbyFull()
+	public boolean isLobbyFull()
 	{
 		return islobbyfull;
 	}
 	
-	public void Ping()
+	public void ping()
 	{
 		pingtime = 0.0;
 		
@@ -183,17 +183,17 @@ public class Recipient
 		c.sendTCP(p);
 	}
 	
-	public void UpdatePing()
+	public void updatePing()
 	{
 		pingtime += Gdx.graphics.getDeltaTime();
 	}
 	
-	public double GetPing()
+	public double getPing()
 	{
 		return ping;
 	}
 	
-	private void Start()
+	private void start()
 	{
 		try {
 			InetAddress address = c.discoverHost(54777, 5000);
@@ -206,36 +206,36 @@ public class Recipient
 		}
 	}
 	
-	public TerrainSeed GetSeed()
+	public TerrainSeed getSeed()
 	{
 		return seed;
 	}
 	
-	public Client GetClient()
+	public Client getClient()
 	{
 		return c;
 	}
 	
-	public void AddNetworkedArmy(int Pos, int TankOffset, int ID)
+	public void addNetworkedArmy(int Pos, int TankOffset, int ID)
 	{
 		// add the hosts base to the game world
-		ConfigSettings tankSettings = SquadConfigurations.GetConfiguration(SquadConfigurations.TANK);
+		ConfigSettings tankSettings = SquadConfigurations.getConfiguration(SquadConfigurations.TANK);
 		
-		MilitaryBase base = new MilitaryBase(Pos, game.GetTerrain());
-		base.SetLogo(id-1);
-		RemoteArmy army = new RemoteArmy(game, base, game.GetTerrain(), parent, ID);
+		MilitaryBase base = new MilitaryBase(Pos, game.getTerrain());
+		base.setLogo(id-1);
+		RemoteArmy army = new RemoteArmy(game, base, game.getTerrain(), parent, ID);
 		
-		Squad squad = new Squad(game.GetTerrain(), tankSettings.maxmovedist, army);
-		squad.SetArmament(tankSettings.GetFirstArmament());
-		squad.SetArmor(tankSettings.GetFirstArmor());
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, army);
+		squad.getArmament(tankSettings.getFirstArmament());
+		squad.setArmor(tankSettings.getFirstArmor());
 		
-		Tank tank = new Tank("img/tanks/Tank1.png", game.GetTerrain(), tankSettings.speed, tankSettings.health);
-		tank.SetPos( new Vector2(base.GetPos().x + TankOffset, base.GetPos().y) );
-		tank.SetBarrelOffset( new Vector2(17, 64-35) );
-		squad.AddUnit(tank);
-		squad.SetBarrelSrc( new Vector2(17, 64-35) );
-		army.AddSquad(squad);
+		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
+		tank.getPos( new Vector2(base.getPos().x + TankOffset, base.getPos().y) );
+		tank.setBarrelOffset( new Vector2(17, 64-35) );
+		squad.addUnit(tank);
+		squad.setBarrelSrc( new Vector2(17, 64-35) );
+		army.addSquad(squad);
 		
-		game.AddEnemyArmy(army);
+		game.addEnemyArmy(army);
 	}
 }

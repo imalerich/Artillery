@@ -16,7 +16,7 @@ public class ParticleMask
 	
 	private static ShapeRenderer sr;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (tex == null) {
 			tex = new Texture( Gdx.files.internal("img/particles/particles.png") );
@@ -27,7 +27,7 @@ public class ParticleMask
 		sr = new ShapeRenderer();
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (tex != null)
 			tex.dispose();
@@ -35,7 +35,7 @@ public class ParticleMask
 		if (sr != null) sr.dispose();
 	}
 	
-	public static void Begin(SpriteBatch Batch)
+	public static void begin(SpriteBatch Batch)
 	{
 		// begin alpha mask rendering
 		Batch.flush();
@@ -48,25 +48,25 @@ public class ParticleMask
 		Gdx.gl.glClear(GL20.GL_STENCIL_BUFFER_BIT);
 		
 		Batch.end();
-		sr.setProjectionMatrix(Game.GetProj().combined);
+		sr.setProjectionMatrix(Game.getProj().combined);
 		sr.begin(ShapeType.Filled);
 	}
 	
-	public static void End(SpriteBatch Batch)
+	public static void end(SpriteBatch Batch)
 	{
 		sr.end();
 		Batch.begin();
 	}
 	
-	public static void AddVisibleRegion(float ScreenX, float ScreenY, int Radius)
+	public static void addVisibleRegion(float ScreenX, float ScreenY, int Radius)
 	{
 		sr.setColor(1, 1, 1, 1);
 		sr.circle(ScreenX, ScreenY, Radius);
 	}
 	
-	public static void Draw(SpriteBatch Batch)
+	public static void draw(SpriteBatch Batch)
 	{
-		MaskOn(Batch);
+		maskOn(Batch);
 		
 		for (int i=-2; i<Game.SCREENW/width + 2; i++) {
 			for (int j=-2; j<Game.SCREENH/height + 2; j++) {
@@ -75,10 +75,10 @@ public class ParticleMask
 			}
 		}
 	
-		MaskOff(Batch);
+		maskOff(Batch);
 	}
 	
-	private static void MaskOn(SpriteBatch Batch)
+	private static void maskOn(SpriteBatch Batch)
 	{
 		// turn the mask on
 		Gdx.gl.glColorMask(true, true, true, true);
@@ -86,7 +86,7 @@ public class ParticleMask
 		Gdx.gl.glStencilFunc(GL20.GL_EQUAL,  1, 0xFF);
 	}
 	
-	private static void MaskOff(SpriteBatch Batch)
+	private static void maskOff(SpriteBatch Batch)
 	{
 		// reset the blend function
 		Batch.flush();

@@ -19,7 +19,7 @@ public class AnimTex
 	private Animation[] animations;
 	private TextureRegion currentframe;
 	
-	public void Release()
+	public void release()
 	{
 		if (spritesheet != null)
 			spritesheet.dispose();
@@ -51,17 +51,17 @@ public class AnimTex
 		height = spritesheet.getHeight()/rows;
 	}
 	
-	public int GetFrameWidth()
+	public int getFrameWidth()
 	{
 		return width;
 	}
 	
-	public int GetFrameHeight()
+	public int getFrameHeight()
 	{
 		return height;
 	}
 	
-	public void NewAnimation(int Index, int FrameCount, int Start, int End, float TimeStep)
+	public void newAnimation(int Index, int FrameCount, int Start, int End, float TimeStep)
 	{
 		TextureRegion[] frames = new TextureRegion[FrameCount];
 		TextureRegion[][] tmp = TextureRegion.split(spritesheet, width, height);
@@ -77,46 +77,46 @@ public class AnimTex
 		time = (float)(Math.random()*TimeStep*FrameCount);
 	}
 	
-	public void SetTime(float Time)
+	public void setTime(float Time)
 	{
 		time = Time;
 	}
 	
-	public void UpdateClock()
+	public void updateClock()
 	{
 		time += Gdx.graphics.getDeltaTime();
 	}
 	
-	public boolean IsCompleted(int Index)
+	public boolean isCompleted(int Index)
 	{
 		return animations[Index].isAnimationFinished(time-animations[Index].getFrameDuration());
 	}
 	
-	public TextureRegion GetCurrent(int Index)
+	public TextureRegion getCurrent(int Index)
 	{
-		return GetCurrent(Index, true);
+		return getCurrent(Index, true);
 	}
 	
-	public TextureRegion GetCurrent(int Index, boolean Looping)
+	public TextureRegion getCurrent(int Index, boolean Looping)
 	{
 		currentframe = animations[Index].getKeyFrame(time, Looping);
 		return currentframe;
 	}
 	
-	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale)
+	public void render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale)
 	{
-		Render(Batch, Cam, Index, Pos, XScale, YScale, true);
+		render(Batch, Cam, Index, Pos, XScale, YScale, true);
 	}
 	
-	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, boolean Looping)
+	public void render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, boolean Looping)
 	{
 		currentframe = animations[Index].getKeyFrame(time, Looping);
 		
-		Batch.draw(currentframe, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
+		Batch.draw(currentframe, Cam.getRenderX(Pos.x), Cam.getRenderY(Pos.y), 
 				width/2.0f, height/2.0f, width, height, XScale, YScale, 0.0f);
 	}
 	
-	public void Render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, 
+	public void render(SpriteBatch Batch, Camera Cam, int Index, Vector2 Pos, float XScale, float YScale, 
 			boolean Looping, int SrcWidth, int SrcHeight)
 	{
 		currentframe = animations[Index].getKeyFrame(time, Looping);
@@ -125,7 +125,7 @@ public class AnimTex
 		tmp.setRegionHeight(SrcHeight);
 		tmp.setRegionWidth(SrcWidth);
 		
-		Batch.draw(tmp, Cam.GetRenderX(Pos.x), Cam.GetRenderY(Pos.y), 
+		Batch.draw(tmp, Cam.getRenderX(Pos.x), Cam.getRenderY(Pos.y), 
 				width/2.0f, height/2.0f, SrcWidth, SrcHeight, XScale, YScale, 0.0f);
 	}
 }

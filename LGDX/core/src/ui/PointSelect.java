@@ -37,13 +37,13 @@ public class PointSelect
 		minx = 0;
 	}
 	
-	public void SetPos(int StartX, int StartWidth)
+	public void setPos(int StartX, int StartWidth)
 	{
 		startx = StartX;
 		startwidth = StartWidth;
 	}
 	
-	public int GetTargetX()
+	public int getTargetX()
 	{
 		if (targetx >= startx && targetx <= startx+startwidth)
 			return -1;
@@ -54,16 +54,16 @@ public class PointSelect
 		return targetx;
 	}
 	
-	public void SetMaxDist(int Dist)
+	public void setMaxDist(int Dist)
 	{
 		int d = 0;
 		maxx = startx+startwidth;
-		int prevheight = ter.GetHeight(maxx);
+		int prevheight = ter.getHeight(maxx);
 		maxx++;
 		
 		while (d<Dist)
 		{
-			int height = ter.GetHeight(maxx);
+			int height = ter.getHeight(maxx);
 			
 			// add the distance traveled
 			d += Math.sqrt( Math.pow(height-prevheight, 2) + 1 );
@@ -73,12 +73,12 @@ public class PointSelect
 		
 		d = 0;
 		minx = startx;
-		prevheight = ter.GetHeight(minx);
+		prevheight = ter.getHeight(minx);
 		minx--;
 		
 		while (d<Dist)
 		{
-			int height = ter.GetHeight(minx);
+			int height = ter.getHeight(minx);
 			
 			// add the distance traveled
 			d += Math.sqrt( Math.pow(height-prevheight, 2) + 1 );
@@ -87,20 +87,20 @@ public class PointSelect
 		}
 	}
 	
-	public int GetMaxX()
+	public int getMaxX()
 	{
 		return maxx;
 	}
 	
-	public int GetMinX()
+	public int getMinX()
 	{
 		return minx;
 	}
 	
-	public void Update(Vector2 Campos)
+	public void update(Vector2 Campos)
 	{
 		// get the mouse pos and set the maximum
-		targetx = Cursor.GetMouseX(Campos) + (int)Campos.x;
+		targetx = Cursor.getMouseX(Campos) + (int)Campos.x;
 		
 		// check the distance to the target in each direction
 		int rdist = (Game.WORLDW-(startx+startwidth))+targetx;
@@ -136,13 +136,13 @@ public class PointSelect
 		if (targetx == Game.WORLDW) targetx = 0;
 	}
 	
-	private void DrawAt(SpriteBatch Batch, Camera Cam, int XPos)
+	private void drawAt(SpriteBatch Batch, Camera Cam, int XPos)
 	{
-		int ypos = ter.GetHeight(XPos + tex.getWidth()/2);
-		Batch.draw(tex, Cam.GetRenderX(XPos), Cam.GetRenderY(Game.WORLDH - ypos));
+		int ypos = ter.getHeight(XPos + tex.getWidth()/2);
+		Batch.draw(tex, Cam.getRenderX(XPos), Cam.getRenderY(Game.WORLDH - ypos));
 	}
 	
-	private void DrawLeft(SpriteBatch Batch, Camera Cam)
+	private void drawLeft(SpriteBatch Batch, Camera Cam)
 	{
 		// render the points
 		boolean next = true;
@@ -155,14 +155,14 @@ public class PointSelect
 			if (x < targetx && x+POINTGAP > targetx)
 				break;
 			
-			DrawAt(Batch, Cam, x);
+			drawAt(Batch, Cam, x);
 			
 			x -= POINTGAP;
 			if (x < 0) x += Game.WORLDW;
 		}
 	}
 	
-	private void DrawRight(SpriteBatch Batch, Camera Cam)
+	private void drawRight(SpriteBatch Batch, Camera Cam)
 	{
 		// render the points
 		boolean next = true;
@@ -176,14 +176,14 @@ public class PointSelect
 			if (x > targetx && x-POINTGAP < targetx)
 				break;
 			
-			DrawAt(Batch, Cam, x);
+			drawAt(Batch, Cam, x);
 			
 			x += POINTGAP;
 			if (x > Game.WORLDW) x -= Game.WORLDW;
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		if (targetx >= startx && targetx <= startx+startwidth)
 			return;
@@ -201,11 +201,11 @@ public class PointSelect
 			ldist = (startx-targetx);
 		
 		if (rdist < ldist)
-			DrawRight(Batch, Cam);
-		else DrawLeft(Batch, Cam);
+			drawRight(Batch, Cam);
+		else drawLeft(Batch, Cam);
 		
 		// draw an additional point at the cursors location
-		int height = Game.WORLDH - ter.GetHeight(tex.getWidth()/2 + targetx);
-		Batch.draw(tex, Cam.GetRenderX(targetx), Cam.GetRenderY(height));
+		int height = Game.WORLDH - ter.getHeight(tex.getWidth()/2 + targetx);
+		Batch.draw(tex, Cam.getRenderX(targetx), Cam.getRenderY(height));
 	}
 }

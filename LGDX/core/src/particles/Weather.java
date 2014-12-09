@@ -16,28 +16,28 @@ public class Weather {
 	private static float offsety = 0;
 	private static float offsetx = 0;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (tex == null) 
 			tex = new Texture( Gdx.files.internal("img/particles/snow.png") );
 		
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (tex != null)
 			tex.dispose();
 	}
 	
-	public static void Draw(SpriteBatch Batch, Camera cam)
+	public static void draw(SpriteBatch Batch, Camera cam)
 	{
 		Batch.setColor(COLOR);
 		
 	    offsety -= Gdx.graphics.getDeltaTime() * SPEEDY;
 	    offsetx -= Gdx.graphics.getDeltaTime() * SPEEDX;
-	    VerifyOffsets();
+	    verifyOffsets();
 	    
-	    float camoff =  cam.GetPos().x % tex.getWidth();
+	    float camoff =  cam.getPos().x % tex.getWidth();
 	    
     
 	    for (int i=0; i<Game.SCREENW/tex.getWidth() + 3; i++) {
@@ -50,7 +50,7 @@ public class Weather {
 	    Batch.setColor(Color.WHITE);
 	}
 	
-	private static void VerifyOffsets()
+	private static void verifyOffsets()
 	{
 	    if (offsety < -tex.getHeight())
 	    	offsety += tex.getHeight();

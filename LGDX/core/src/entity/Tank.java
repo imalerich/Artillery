@@ -33,14 +33,14 @@ public class Tank extends Unit
 	private int barrelwidth;
 	private int barrelheight;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (BARREL == null) {
 			BARREL = new Texture( Gdx.files.internal("img/tanks/Barrel.png") );
 		}
 	}
 	
-	public static int GetBarrelWidth()
+	public static int getBarrelWidth()
 	{
 		if (BARREL != null) {
 			return BARREL.getWidth();
@@ -50,7 +50,7 @@ public class Tank extends Unit
 	}
 	
 	@Override
-	public void Release()
+	public void release()
 	{
 		tex.dispose();
 		
@@ -71,7 +71,7 @@ public class Tank extends Unit
 		barrelheight = BARREL.getHeight();
 		
 		pos = new Vector2(64, 0);
-		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;
+		pos.y = Game.WORLDH - Ter.getHeight((int)pos.x+halfwidth) - 3;
 		
 		barrelOffset = new Vector2();		/*Batch.draw(tr, Cam.GetRenderX(pos.x + OffsetX),
 		Cam.GetRenderY(pos.y + OffsetY),
@@ -87,10 +87,10 @@ public class Tank extends Unit
 	}
 	
 	@Override
-	public Rectangle GetBBox()
+	public Rectangle getBBox()
 	{
 		// get the tanks angle
-		float theta = (float)Math.toRadians( GetAngle() );
+		float theta = (float)Math.toRadians( getAngle() );
 		
 		// get the points describing the boundaries
 		Vector2[] coords = new Vector2[4];
@@ -102,7 +102,7 @@ public class Tank extends Unit
 		
 		// rotate the coordinates we are using to describe the bounding box
 		for (int i=0; i<4; i++) {
-			coords[i] = RotateCoord(coords[i], theta);
+			coords[i] = rotateCoord(coords[i], theta);
 		}
 		
 		// get the min and maxes from these coordinates
@@ -133,22 +133,22 @@ public class Tank extends Unit
 		return r;
 	}
 	
-	public void SetAsDeceased(Vector<NullTank> Deceased, Particles Part)
+	public void setAsDeceased(Vector<NullTank> Deceased, Particles Part)
 	{
-		Deceased.add(CreateNullTank(Part));
+		Deceased.add(createNullTank(Part));
 	}
 	
-	public NullTank CreateNullTank(Particles Part)
+	public NullTank createNullTank(Particles Part)
 	{
 		return new NullTank(Part, ter, tex, barrelOffset, pos, barrelPhi, forward);
 	}
 	
-	public void SetBarrelOffset(Vector2 Offset)
+	public void setBarrelOffset(Vector2 Offset)
 	{
 		barrelOffset = Offset;
 	}
 	
-	private Vector2 RotateCoord(Vector2 Coord, float Theta)
+	private Vector2 rotateCoord(Vector2 Coord, float Theta)
 	{
 		float x = Coord.x;
 		float y = Coord.y;
@@ -163,7 +163,7 @@ public class Tank extends Unit
 	}
 	
 	@Override
-	public float GetAngle()
+	public float getAngle()
 	{
 		float theta = 0.0f;
 		int x0 = (int)pos.x + halfwidth/2;
@@ -175,30 +175,30 @@ public class Tank extends Unit
 		if (x1 >= Game.WORLDW) x1 -= Game.WORLDW;
 		if (x1 < 0) x1 += Game.WORLDW;
 		
-		float h0 = ter.GetHeight(x0);
-		float h1 = ter.GetHeight(x1);
+		float h0 = ter.getHeight(x0);
+		float h1 = ter.getHeight(x1);
 		
 		theta = -(float)Math.atan( (h1-h0)/(float)halfwidth );
 		return (float)Math.toDegrees(theta);
 	}
 	
 	@Override
-	public float GetBarrelAbsoluteAngle()
+	public float getBarrelAbsoluteAngle()
 	{
 		if (forward) {
-			return barrelPhi + GetAngle();
+			return barrelPhi + getAngle();
 		} else {
-			return barrelPhi - GetAngle();
+			return barrelPhi - getAngle();
 		}
 	}
 	
 	@Override
-	public void SetBarrelAngle(float Angle)
+	public void setBarrelAngle(float Angle)
 	{
 		if (forward) {
-			barrelPhi = Angle - GetAngle();
+			barrelPhi = Angle - getAngle();
 		} else {
-			barrelPhi = Angle + GetAngle();
+			barrelPhi = Angle + getAngle();
 		}
 		
 		// clamp the angle
@@ -206,67 +206,67 @@ public class Tank extends Unit
 		barrelPhi = Math.min(barrelPhi, MAXANGLE);
 	}
 	
-	private void DrawOutline(SpriteBatch Batch, Camera Cam)
+	private void drawOutline(SpriteBatch Batch, Camera Cam)
 	{
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
-				RenderBarrel(Batch, Cam, x, y);
-				Render(Batch, Cam, x, y, height);
+				renderBarrel(Batch, Cam, x, y);
+				render(Batch, Cam, x, y, height);
 			}
 		}
 	}
 	
 	private void DrawTarget(SpriteBatch Batch, Camera Cam)
 	{
-		Shaders.SetShader(Batch, Shaders.target);
-		DrawOutline(Batch, Cam);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.target);
+		drawOutline(Batch, Cam);
+		Shaders.revertShader(Batch);
 	}
 	
 	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
 	{
-		Shaders.SetShader(Batch, Shaders.hili);
-		DrawOutline(Batch, Cam);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.hili);
+		drawOutline(Batch, Cam);
+		Shaders.revertShader(Batch);
 	}
 	
 	@Override
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
-		SetHeight();
+		setHeight();
 		if (Highlight)
 			DrawHighlight(Batch, Cam);
 		else if (Target)
 			DrawTarget(Batch, Cam);
 		
-		RenderBarrel(Batch, Cam, 0, 0);
-		Render(Batch, Cam, 0, 0, height);
+		renderBarrel(Batch, Cam, 0, 0);
+		render(Batch, Cam, 0, 0, height);
 		
 		// draw the tanks health
-		if (Cursor.IsMouseOver(GetBBox(), Cam.GetPos())) {
-			Shaders.SetShader(Batch, Shaders.health);
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
 			
-			Render(Batch, Cam, 0, 0, h);
-			Shaders.RevertShader(Batch);
+			render(Batch, Cam, 0, 0, h);
+			Shaders.revertShader(Batch);
 		}
 	}
 	
-	private void Render(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY, int SrcHeight)
+	private void render(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY, int SrcHeight)
 	{
-		float theta = GetAngle();
+		float theta = getAngle();
 		
 		// draw the tank
 		tr.setRegion(0, height-SrcHeight, width, SrcHeight);
 		tr.flip(!forward, false);
 		
-		Batch.draw(tr, Cam.GetRenderX(pos.x + OffsetX), 
-				Cam.GetRenderY(pos.y + OffsetY), halfwidth, 0, width, SrcHeight, 1f, 1f, theta);
+		Batch.draw(tr, Cam.getRenderX(pos.x + OffsetX), 
+				Cam.getRenderY(pos.y + OffsetY), halfwidth, 0, width, SrcHeight, 1f, 1f, theta);
 	}
 	
-	private void RenderBarrel(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
+	private void renderBarrel(SpriteBatch Batch, Camera Cam, int OffsetX, int OffsetY)
 	{
-		float theta = GetAngle();
+		float theta = getAngle();
 		float phi = barrelPhi;
 		if (!forward)
 			phi = 180 - phi;
@@ -274,28 +274,28 @@ public class Tank extends Unit
 		// draw the tanks barrel
 		Vector2 offset = new Vector2(barrelOffset.x-halfwidth, barrelOffset.y);
 		if (!forward) offset.x = halfwidth - barrelOffset.x;
-		offset = RotateCoord( offset, (float)Math.toRadians(theta) );
+		offset = rotateCoord( offset, (float)Math.toRadians(theta) );
 		
 		// draw the tanks barrel
-		Batch.draw(BARREL, Cam.GetRenderX(pos.x + halfwidth + offset.x + OffsetX),
-				Cam.GetRenderY(pos.y + offset.y + OffsetY),
+		Batch.draw(BARREL, Cam.getRenderX(pos.x + halfwidth + offset.x + OffsetX),
+				Cam.getRenderY(pos.y + offset.y + OffsetY),
 				0, barrelheight/2f, barrelwidth, barrelheight, 1f, 1f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
 	}
 	
 	@Override
-	public void DrawTargetAngle(SpriteBatch Batch, Camera Cam)
+	public void drawTargetAngle(SpriteBatch Batch, Camera Cam)
 	{
-		float theta = GetAngle();
+		float theta = getAngle();
 		float phi = barrelPhi;
 		
-		float width = Squad.target.GetFrameWidth();
-		float height = Squad.target.GetFrameHeight();
+		float width = Squad.target.getFrameWidth();
+		float height = Squad.target.getFrameHeight();
 		Vector2 src = new Vector2(barrelOffset.x-halfwidth, 
 				barrelOffset.y);
 		if (!forward)
 			src.x = halfwidth - barrelOffset.x;
-		src = RotateCoord( src, (float)Math.toRadians(theta));
+		src = rotateCoord( src, (float)Math.toRadians(theta));
 		
 		Vector2 offset = new Vector2(barrelwidth*1.8f, 0f);
 		if (!forward) {
@@ -303,12 +303,12 @@ public class Tank extends Unit
 			phi = -phi;
 		}
 		
-		offset = RotateCoord( offset, (float)Math.toRadians(phi + theta) );
+		offset = rotateCoord( offset, (float)Math.toRadians(phi + theta) );
 		offset.x += src.x;
 		offset.y += src.y;
 		
-		Squad.target.UpdateClock();
-		Batch.draw(Squad.target.GetCurrent(0), Cam.GetRenderX(pos.x + halfwidth + offset.x - width/2f),
-				Cam.GetRenderY(pos.y + offset.y - height/2f));
+		Squad.target.updateClock();
+		Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + halfwidth + offset.x - width/2f),
+				Cam.getRenderY(pos.y + offset.y - height/2f));
 	}
 }

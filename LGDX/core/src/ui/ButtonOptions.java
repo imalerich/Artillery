@@ -32,7 +32,7 @@ public class ButtonOptions
 	private int[] buttonGlyphs;
 	private Rectangle[] bbox;
 	
-	public static void Release()
+	public static void release()
 	{
 		button.dispose();
 	}
@@ -56,30 +56,30 @@ public class ButtonOptions
 			buttonGlyphs[i] = 0;
 		
 		bbox = new Rectangle[count];
-		SetPos(XPos, YPos, new Vector2(0, 0));
+		setPos(XPos, YPos, new Vector2(0, 0));
 	}
 	
-	public void NoSkip()
+	public void noSkip()
 	{
 		skipid = -1;
 	}
 	
-	public void SetSkip(int ID)
+	public void setSkip(int ID)
 	{
 		skipid = ID;
 	}
 	
-	public void ResetClock()
+	public void resetClock()
 	{
 		clock = 0.0;
 	}
 	
-	public void SetGlyph(int ButtonIndex, int GlyphIndex)
+	public void setGlyph(int ButtonIndex, int GlyphIndex)
 	{
 		buttonGlyphs[ButtonIndex] = GlyphIndex;
 	}
 	
-	private void CalcBoundingBoxes()
+	private void calcBoundingBoxes()
 	{
 		for (int i=0; i<count; i++) 
 		{
@@ -91,15 +91,15 @@ public class ButtonOptions
 		}
 	}
 	
-	public void SetPos(int XPos, int YPos, Vector2 Campos)
+	public void setPos(int XPos, int YPos, Vector2 Campos)
 	{
 		xpos = XPos;
 		ypos = YPos;
 		
-		CalcBoundingBoxes();
+		calcBoundingBoxes();
 	}
 	
-	public int GetAction(int Button)
+	public int getAction(int Button)
 	{
 		if (Button == -1 || Button > count)
 			return -1;
@@ -107,7 +107,7 @@ public class ButtonOptions
 		return buttonGlyphs[Button];
 	}
 	
-	public int GetButtonDown(Vector2 Campos)
+	public int getButtonDown(Vector2 Campos)
 	{
 		int shift = 0;
 		if (skipid != -1)
@@ -124,14 +124,14 @@ public class ButtonOptions
 					return -1;
 			}
 			
-			if (Cursor.IsMouseOver(bbox[i], new Vector2(Campos.x-shift*button.getWidth()/2, Campos.y)))
+			if (Cursor.isMouseOver(bbox[i], new Vector2(Campos.x-shift*button.getWidth()/2, Campos.y)))
 				return i+mod;
 		}
 		
 		return -1;
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		// increment the clock
 		clock += Gdx.graphics.getDeltaTime();
@@ -140,7 +140,7 @@ public class ButtonOptions
 			scale = GROWSPEED*(float)(clock * clock);
 			
 		int width = button.getWidth()*count + BUTTONGAP*(count-1);
-		int selected = GetButtonDown(Cam.GetPos());
+		int selected = getButtonDown(Cam.getPos());
 		
 		for (int i=0; i<count; i++)
 		{
@@ -162,9 +162,9 @@ public class ButtonOptions
 			if (selected == i && Cursor.isButtonPressed(Cursor.LEFT))
 				yoff -= BUTTONDOWN;
 			
-			Batch.draw(button, Cam.GetRenderX(x+xoff), Cam.GetRenderY(ypos+yoff), 
+			Batch.draw(button, Cam.getRenderX(x+xoff), Cam.getRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
-			Batch.draw(glyphs[buttonGlyphs[i]], Cam.GetRenderX(x+xoff), Cam.GetRenderY(ypos+yoff), 
+			Batch.draw(glyphs[buttonGlyphs[i]], Cam.getRenderX(x+xoff), Cam.getRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
 		}
 	}

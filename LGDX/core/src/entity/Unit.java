@@ -34,104 +34,104 @@ public class Unit
 	
 	private Squad squad;
 	
-	public void SetUnitData(int Speed, float Health, int ViewRadius)
+	public void setUnitData(int Speed, float Health, int ViewRadius)
 	{
 		speed = Speed;
 		health = Health;
 		maxhealth = Health;
 	}
 	
-	public void SetSquad(Squad S)
+	public void setSquad(Squad S)
 	{
 		squad = S;
 	}
 	
-	public Squad GetSquad()
+	public Squad getSquad()
 	{
 		return squad;
 	}
 	
-	public void Release()
+	public void release()
 	{
 		// override in implementation classes
 	}
 	
-	public void SetID(int ID)
+	public void setID(int ID)
 	{
 		id = ID;
 	}
 	
-	public int GetID()
+	public int getID()
 	{
 		return id;
 	}
 	
-	public void SetDirectDamage(boolean B)
+	public void setDirectDamage(boolean B)
 	{
 		takedirectdamage = B;
 	}
 	
-	public boolean TakesDirectDamage()
+	public boolean takesDirectDamage()
 	{
 		return takedirectdamage;
 	}
 	
-	public void SetFiring(boolean IsFiring)
+	public void setFiring(boolean IsFiring)
 	{
 		isFiring = IsFiring;
 	}
 	
-	public Rectangle GetBBox()
+	public Rectangle getBBox()
 	{
 		return new Rectangle(pos.x, pos.y, width, height);
 	}
 	
-	public float GetAngle()
+	public float getAngle()
 	{
 		return 0.0f;
 	}
 	
-	public float GetBarrelAbsoluteAngle()
+	public float getBarrelAbsoluteAngle()
 	{
 		return 0.0f;
 	}
 	
-	public void SetBarrelAngle(float Angle)
+	public void setBarrelAngle(float Angle)
 	{
 		//
 	}
 	
-	public int GetMugShotIndex()
+	public int getMugShotIndex()
 	{
 		return mugshotIndex;
 	}
 	
-	public void SetMugShotIndex(int Index)
+	public void setMugShotIndex(int Index)
 	{
 		mugshotIndex = Index;
 	}
 	
-	public boolean IsAlive()
+	public boolean isAlive()
 	{
 		return health > 0;
 	}
 	
-	public float GetHealth()
+	public float getHealth()
 	{
 		return health;
 	}
 	
-	public void SetHealth(float Health)
+	public void setHealth(float Health)
 	{
 		health = Health;
 	}
 	
-	public void SetMaxHealth(float MaxHealth)
+	public void setMaxHealth(float MaxHealth)
 	{
 		maxhealth = MaxHealth;
 	}
 	
-	public void Damage(float Dmg)
+	public void damage(float Dmg)
 	{
 		if (!takedirectdamage) {
 			return;
@@ -141,22 +141,22 @@ public class Unit
 		
 		// inform remote squads of the damage
 		Response r = new Response();
-		r.source = GetSquad().GetArmy().GetConnection();
+		r.source = getSquad().getArmy().getConnection();
 		r.request = "UNITHEALTH";
-		r.i0 = GetSquad().GetID();
-		r.i1 = GetID();
+		r.i0 = getSquad().getID();
+		r.i1 = getID();
 		r.f0 = health;
 		r.f1 = maxhealth;
 		
-		GetSquad().GetArmy().GetNetwork().GetClient().sendTCP(r);
+		getSquad().getArmy().getNetwork().getClient().sendTCP(r);
 	}
 	
-	public void SetMaxHealth()
+	public void setMaxHealth()
 	{
 		health = maxhealth;
 	}
 	
-	public void Heal(float Amt)
+	public void heal(float Amt)
 	{
 		if (!takedirectdamage) {
 			return;
@@ -166,61 +166,61 @@ public class Unit
 		
 		// inform remote squads of the damage
 		Response r = new Response();
-		r.source = GetSquad().GetArmy().GetConnection();
+		r.source = getSquad().getArmy().getConnection();
 		r.request = "UNITHEALTH";
-		r.i0 = GetSquad().GetID();
-		r.i1 = GetID();
+		r.i0 = getSquad().getID();
+		r.i1 = getID();
 		r.f0 = health;
 		
-		GetSquad().GetArmy().GetNetwork().GetClient().sendTCP(r);
+		getSquad().getArmy().getNetwork().getClient().sendTCP(r);
 	}
 	
-	public Vector2 GetPos()
+	public Vector2 getPos()
 	{
 		return pos;
 	}
 	
-	public void SetPos(Vector2 Pos)
+	public void getPos(Vector2 Pos)
 	{
 		pos = Pos;
 	}
 	
-	public void SetForward(boolean IsForward)
+	public void setForward(boolean IsForward)
 	{
 		forward = IsForward;
 	}
 	
-	public boolean IsForward()
+	public boolean isForward()
 	{
 		return forward;
 	}
 	
-	public int GetWidth()
+	public int getWidth()
 	{
 		return width;
 	}
 	
-	public int GetHeight()
+	public int getHeight()
 	{
 		return height;
 	}
 	
-	public int GetSpeed()
+	public int getSpeed()
 	{
 		return speed;
 	}
 	
-	public Terrain GetTerrainReference()
+	public Terrain getTerrainReference()
 	{
 		return ter;
 	}
 	
-	public void SetTerrainReference(Terrain Ter)
+	public void setTerrainReference(Terrain Ter)
 	{
 		ter = Ter;
 	}
 	
-	public void MoveRight()
+	public void moveRight()
 	{
 		int midpoint = width/2;
 		int frontpoint = midpoint + width/4;
@@ -230,7 +230,7 @@ public class Unit
 		int nxtpos = (int)pos.x+frontpoint;
 		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
 		if (nxtpos < 0) nxtpos += Game.WORLDW;
-		int nxth = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
+		int nxth = Game.WORLDH - ter.getHeight(nxtpos) - 3;
 		
 		float theta = -(float)Math.atan( (nxth-pos.y)/(width/4.0f) );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
@@ -241,10 +241,10 @@ public class Unit
 		forward = true;
 		moving = true;
 		
-		SetHeight();
+		setHeight();
 	}
 	
-	public void MoveLeft()
+	public void moveLeft()
 	{
 		int midpoint = width/2;
 		int backpoint = midpoint - width/4;
@@ -254,7 +254,7 @@ public class Unit
 		int nxtpos = (int)pos.x+backpoint;
 		if (nxtpos < 0) nxtpos += Game.WORLDW;
 		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
-		int nxth = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
+		int nxth = Game.WORLDH - ter.getHeight(nxtpos) - 3;
 		
 		float theta = -(float)Math.atan( (pos.y-nxth)/(width/4.0f) );
 		float xspeed = (float)Math.cos(theta)*tanspeed;
@@ -265,30 +265,30 @@ public class Unit
 		forward = false;
 		moving = true;
 		
-		SetHeight();
+		setHeight();
 	}
 	
-	public void SetAsDeceased(Vector<NullTank> Deceased, Particles Part)
+	public void setAsDeceased(Vector<NullTank> Deceased, Particles Part)
 	{
-		ter.AddDeceasedTroop((int)pos.x, forward);
+		ter.addDeceasedTroop((int)pos.x, forward);
 	}
 	
-	public void SetHeight()
+	public void setHeight()
 	{
 		// set the new height
 		int nxtpos = (int)pos.x + width/2;
 		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
 		if (nxtpos < 0) nxtpos += Game.WORLDW;
 		
-		pos.y = Game.WORLDH - ter.GetHeight(nxtpos) - 3;
+		pos.y = Game.WORLDH - ter.getHeight(nxtpos) - 3;
 	}
 	
-	public void DrawTargetAngle(SpriteBatch Batch, Camera Cam)
+	public void drawTargetAngle(SpriteBatch Batch, Camera Cam)
 	{
 		// override in implementation classes
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		// override in implementation classes
 	}

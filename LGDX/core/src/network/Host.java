@@ -22,27 +22,27 @@ public class Host
 	public Host(int LobbySize)
 	{
 		lobbysize = LobbySize;
-		seed = SeedGenerator.GenerateSeed(Game.WORLDW, Game.WORLDH);		
+		seed = SeedGenerator.generateSeed(Game.WORLDW, Game.WORLDH);		
 		
 		int offset = Game.WORLDW/lobbysize;
 		for (int i=0; i<lobbysize; i++) {
-			seed.AddBase(offset*i, MilitaryBase.GetWidth());
+			seed.addBase(offset*i, MilitaryBase.getWidth());
 		}
 		
 		s = new Server();
 	}
 	
-	public Kryo GetKryo()
+	public Kryo getKryo()
 	{
 		return s.getKryo();
 	}
 	
-	public Server GetServer()
+	public Server getServer()
 	{
 		return s;
 	}
 	
-	public void StartServer()
+	public void startServer()
 	{
 		s.addListener(new Listener() {
 			public void connected(Connection connection) {
@@ -63,7 +63,7 @@ public class Host
 					if (r.req.equals("IsLobbyFull")) {
 						Response res = new Response();
 						res.request = r.req;
-						res.b0 = IsLobbyFull();
+						res.b0 = isLobbyFull();
 						connection.sendTCP(res);
 						
 					} else if (r.req.equals("LobbySize")) {
@@ -86,15 +86,15 @@ public class Host
 			}
 		} );
 		
-		Start();
+		start();
 	}
 	
-	public boolean IsLobbyFull()
+	public boolean isLobbyFull()
 	{
 		return s.getConnections().length >= lobbysize;
 	}
 	
-	public void DispatchRemoteArmies()
+	public void dispatchRemoteArmies()
 	{
 		// inform each client of all connected clients
 		for (Connection c : s.getConnections()) {
@@ -109,7 +109,7 @@ public class Host
 		}
 	}
 	
-	private void Start()
+	private void start()
 	{
 		try {
 			s.bind(54555, 54777);

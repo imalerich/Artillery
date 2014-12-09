@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import network.Response;
+import objects.FoxHole;
 import particles.Particles;
 import physics.Blast;
 import physics.GameWorld;
@@ -14,6 +15,7 @@ import arsenal.Armament;
 import arsenal.Armor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -35,7 +37,7 @@ public class Squad
 	private static final int SPACING = 2;
 	
 	private static int MAXHEIGHT = 12;
-	private int squadspacing = 32;
+	private int squadspacing = 24;
 	private int maxmovedist = 0;
 	private int id = -1;
 	
@@ -61,19 +63,20 @@ public class Squad
 	private int addid = 0;
 	private boolean takesdirectdamage = true;
 	
+	private FoxHole occupied;
 	private boolean addfox;
 	private Vector2 foxpos;
 	
 	private Army army;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (pointer == null)
 			pointer = new Texture( Gdx.files.internal("img/ui/indicators/pointer.png") );
 		
 		if (target == null) {
 			target = new AnimTex("img/ui/indicators/target.png", 1, 4, 1);
-			target.NewAnimation(0, 4, 0, 3, 0.12f);
+			target.newAnimation(0, 4, 0, 3, 0.12f);
 		}
 		
 		if (mugshots == null) {
@@ -82,13 +85,13 @@ public class Squad
 		}
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (pointer != null)
 			pointer.dispose();
 		
 		if (target != null)
-			target.Release();
+			target.release();
 	}
 	
 	public Squad(Terrain Ter, int MoveDist, Army A)
@@ -109,30 +112,37 @@ public class Squad
 		isTarget = false;
 		isforward = true;
 		
+		occupied = null;
+		
 		barrelsrc = new Vector2();
 	}
 	
-	public Army GetArmy()
+	public Army getArmy()
 	{
 		return army;
 	}
 	
-	public void SetID(int ID)
+	public void setID(int ID)
 	{
 		id = ID;
 	}
 	
-	public int GetID()
+	public int getID()
 	{
 		return id;
 	}
 	
-	public void SetBarrelSrc(Vector2 Pos)
+	public boolean isInFox()
+	{
+		return occupied != null;
+	}
+	
+	public void setBarrelSrc(Vector2 Pos)
 	{
 		barrelsrc = Pos;
 	}
 	
-	public Vector2 GetBarrelSrc()
+	public Vector2 getBarrelSrc()
 	{
 		if (isforward) {
 			return new Vector2(barrelsrc);
@@ -141,48 +151,48 @@ public class Squad
 		}
 	}
 	
-	public void SetMaxHealth()
+	public void setMaxHealth()
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
 		{
-			u.next().SetMaxHealth();
+			u.next().setMaxHealth();
 		}
 	}
 	
-	public void AddFoxOnFinishMove(Vector2 Pos)
+	public void addFoxOnFinishMove(Vector2 Pos)
 	{
 		addfox = true;
 		foxpos = Pos;
 	}
 	
-	public void TakesDirectDamage(boolean B)
+	public void takesDirectDamage(boolean B)
 	{
 		takesdirectdamage = B;
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
 		{
-			u.next().SetDirectDamage(takesdirectdamage);
+			u.next().setDirectDamage(takesdirectdamage);
 		}
 	}
 	
-	public void CheckAlive(Vector2 Campos, Vector<NullTank> Deceased, Particles Part)
+	public void checkAlive(Vector2 Campos, Vector<NullTank> Deceased, Particles Part)
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
 		{
 			// remove all dead units
 			Unit unit = u.next();
-			if (!unit.IsAlive()) {
-				unit.SetAsDeceased(Deceased, Part);
+			if (!unit.isAlive()) {
+				unit.setAsDeceased(Deceased, Part);
 				u.remove();
 			}
 		}
 		
-		CalcBoundingBox(Campos);
+		calcBoundingBox(Campos);
 	}
 	
-	public void ProcBlasts(Blast B)
+	public void procBlasts(Blast B)
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
@@ -190,135 +200,135 @@ public class Squad
 			// process damage to units done by any blasts
 			Unit unit = u.next();
 				
-			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.GetBBox())) {
-				float dmg = Math.max(B.strength - armor.GetStrength(), 0);
-				armor.Damage((int)B.strength);
+			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.getBBox())) {
+				float dmg = Math.max(B.strength - armor.getStrength(), 0);
+				armor.damage((int)B.strength);
 
-				unit.Damage(dmg);
+				unit.damage(dmg);
 			}
 		}
 	}
 	
-	public Iterator<Unit> GetUnitIterator()
+	public Iterator<Unit> getUnitIterator()
 	{
 		return units.iterator();
 	}
 	
-	public int GetMoveDist()
+	public int getMoveDist()
 	{
 		return maxmovedist;
 	}
 	
-	public boolean IsForward()
+	public boolean isForward()
 	{
 		return isforward;
 	}
 	
-	public void SetFiring(boolean IsFiring)
+	public void setFiring(boolean IsFiring)
 	{
 		isFiring = IsFiring;
 	}
 	
-	public boolean IsFiring()
+	public boolean isFiring()
 	{
 		return isFiring;
 	}
 	
-	public void SetAsTarget()
+	public void setAsTarget()
 	{
 		isTarget = true;
 	}
 	
-	public Vector<Unit> GetUnits()
+	public Vector<Unit> getUnits()
 	{
 		return units;
 	}
 	
-	public Rectangle GetBBox()
+	public Rectangle getBBox()
 	{
 		return bbox;
 	}
 	
-	public void SetArmament(Armament Arms)
+	public void getArmament(Armament Arms)
 	{
 		arms = new Armament(Arms);
 	}
 	
-	public Armament GetArmament()
+	public Armament getArmament()
 	{
 		return arms;
 	}
 	
-	public void SetArmor(Armor Set)
+	public void setArmor(Armor Set)
 	{
 		armor = new Armor(Set);
 	}
 	
-	public Armor GetArmor()
+	public Armor getArmor()
 	{
 		return armor;
 	}
 	
-	public int GetTargetX()
+	public int getTargetX()
 	{
 		return targetpos;
 	}
 	
-	public void SetTargetX(int Target)
+	public void setTargetX(int Target)
 	{
 		targetpos = Target;
-		ModTarget();
+		modTarget();
 	}
 	
-	public Squad GetTargetSquad()
+	public Squad getTargetSquad()
 	{
 		return targetsquad;
 	}
 	
-	public void SetTargetSquad(Squad Target)
+	public void setTargetSquad(Squad Target)
 	{
 		targetsquad = Target;
 		if (targetsquad == null)
 			return;
 		
 		// face the target squad
-		int direction = GameWorld.GetDirection(bbox.x, 1, 
-				targetsquad.GetBBox().x, 1);
+		int direction = GameWorld.getDirection(bbox.x, 1, 
+				targetsquad.getBBox().x, 1);
 		
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {
-			u.next().SetForward(direction == 1);
+			u.next().setForward(direction == 1);
 		}
 	}
 	
-	public Rectangle GetBoundingBox()
+	public Rectangle getBoundingBox()
 	{
 		return bbox;
 	}
 	
-	public int GetUnitCount()
+	public int getUnitCount()
 	{
 		return units.size();
 	}
 	
-	public float GetBarrelAngle()
+	public float getBarrelAngle()
 	{
-		return arms.GetAngle();
+		return arms.getAngle();
 	}
 	
-	public void SetBarrelAngle(float Angle)
+	public void setBarrelAngle(float Angle)
 	{
 		// all squad members must have the same angle
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			
-			unit.SetBarrelAngle(Angle);
-			arms.SetAngle( unit.GetBarrelAbsoluteAngle() );
+			unit.setBarrelAngle(Angle);
+			arms.setAngle( unit.getBarrelAbsoluteAngle() );
 		}
 	}
 	
-	private void CalcBoundingBox(Vector2 Campos)
+	private void calcBoundingBox(Vector2 Campos)
 	{
 		// do not calculate the bounding box if there are no units in this squad
 		if (units.size() == 0) {
@@ -332,20 +342,20 @@ public class Squad
 		maxx = Float.MIN_VALUE;
 		
 		// the first x position determines the orientation of the bounding box relative to the world map
-		float firstx = units.get(0).GetPos().x;
+		float firstx = units.get(0).getPos().x;
 		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext())
 		{
 			// convert he position to screen coordinates
 			Unit n = i.next();
-			Rectangle r = n.GetBBox();
+			Rectangle r = n.getBBox();
 			
 			// used for determing whether or not to draw the target position
-			if (n.GetPos().x < minx)
-				minx = n.GetPos().x;
-			if (n.GetPos().x + n.GetWidth() > maxx)
-				maxx = n.GetPos().x + n.GetWidth();
+			if (n.getPos().x < minx)
+				minx = n.getPos().x;
+			if (n.getPos().x + n.getWidth() > maxx)
+				maxx = n.getPos().x + n.getWidth();
 			
 			// used for mouse over operations
 			if (r.x >= firstx) {
@@ -375,14 +385,14 @@ public class Squad
 			bbox.x -= Game.WORLDW;
 	}
 	
-	public boolean IsIntersectingView(Rectangle R)
+	public boolean isIntersectingView(Rectangle R)
 	{
 		// find if any of the squads units view overlaps the target
-		Iterator<Unit> u = GetUnitIterator();
+		Iterator<Unit> u = getUnitIterator();
 		while (u.hasNext()) {
 			Unit unit = u.next();
-			Circle c = new Circle(unit.GetPos().x + unit.GetWidth()/2, 
-					unit.GetPos().y + unit.GetHealth()/2, arms.GetRange());
+			Circle c = new Circle(unit.getPos().x + unit.getWidth()/2, 
+					unit.getPos().y + unit.getHealth()/2, arms.getRange());
 
 			if (Intersector.overlaps(c, R)) {
 				return true;
@@ -392,55 +402,55 @@ public class Squad
 		return false;
 	}
 	
-	public void SetForward(boolean Forward)
+	public void setForward(boolean Forward)
 	{
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
-			i.next().SetForward(Forward);
+			i.next().setForward(Forward);
 		}
 	}
 	
-	public boolean IsMouseOver(Vector2 Campos)
+	public boolean isMouseOver(Vector2 Campos)
 	{
-		CalcBoundingBox(Campos);
-		return Cursor.IsMouseOver(bbox, Campos);
+		calcBoundingBox(Campos);
+		return Cursor.isMouseOver(bbox, Campos);
 	}
 	
-	public boolean IsMoving()
+	public boolean isMoving()
 	{
 		return ismoving;
 	}
 	
-	public void SetSquadSpacing(int SquadSpacing)
+	public void setSquadSpacing(int SquadSpacing)
 	{
 		squadspacing = SquadSpacing;
 	}
 	
-	public int GetSquadSpacing()
+	public int getSquadSpacing()
 	{
 		return squadspacing;
 	}
 	
-	public void AddUnit(Unit Add)
+	public void addUnit(Unit Add)
 	{
 		// get the position at which to add this unit
-		Vector2 addp =  new Vector2(Add.GetPos());
+		Vector2 addp =  new Vector2(Add.getPos());
 		
-		Add.SetPos(addp);
-		Add.SetHeight();
+		Add.getPos(addp);
+		Add.setHeight();
 		units.add(Add);
-		units.lastElement().SetID(addid);
-		units.lastElement().SetDirectDamage(takesdirectdamage);
-		units.lastElement().SetSquad(this);
+		units.lastElement().setID(addid);
+		units.lastElement().setDirectDamage(takesdirectdamage);
+		units.lastElement().setSquad(this);
 		addid++;
 	}
 	
-	public Unit GetUnit(int ID)
+	public Unit getUnit(int ID)
 	{
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {
 			Unit unit = u.next();
-			if (unit.GetID() == ID) {
+			if (unit.getID() == ID) {
 				return unit;
 			}
 		}
@@ -448,13 +458,13 @@ public class Squad
 		return null;
 	}
 	
-	public void Update(Vector2 Campos)
+	public void update(Vector2 Campos)
 	{
 		if (targetpos >= 0)
-			Move(Campos);
+			move(Campos);
 	}
 	
-	private void ModTarget()
+	private void modTarget()
 	{
 		// -1 means don't move at all
 		if (targetpos < 0) return;
@@ -477,7 +487,7 @@ public class Squad
 		else if (targetpos >= Game.WORLDW) targetpos -= Game.WORLDW;
 	}
 	
-	private int GetTargetDirection()
+	private int getTargetDirection()
 	{
 		float rdist = (Game.WORLDW-(bbox.x+bbox.width)) + targetpos;
 		if (targetpos > bbox.x)
@@ -495,10 +505,10 @@ public class Squad
 			return 0;
 	}
 	
-	private int GetMoveDirection(Unit U, int TargetPos)
+	private int getMoveDirection(Unit U, int TargetPos)
 	{
-		Vector2 pos = U.GetPos();
-		int width = U.GetWidth();
+		Vector2 pos = U.getPos();
+		int width = U.getWidth();
 
 
 		// check the distance to the target in each direction
@@ -518,10 +528,16 @@ public class Squad
 			return 0;
 	}
 	
-	public void Move(Vector2 Campos)
+	public void move(Vector2 Campos)
 	{
+		// set the occupied fox hole as not occupied
+		if (occupied != null) {
+			occupied.setOccupedi(false);
+			occupied = null;
+		}
+		
 		// calculate the bounding box
-		CalcBoundingBox(Campos);
+		calcBoundingBox(Campos);
 		
 		// for each unit in this squad
 		Iterator<Unit> i = units.iterator();
@@ -537,72 +553,91 @@ public class Squad
 			int target = targetpos + index*squadspacing;
 			if (target < 0) target += Game.WORLDW;
 			if (target >= Game.WORLDW) target -= Game.WORLDW;
-			int direction = GetMoveDirection(u, target);
+			int direction = getMoveDirection(u, target);
 			
 			// check if this unit has reached his position
-			if (target >= u.GetPos().x && target <= u.GetPos().x+u.GetWidth())
+			if (target >= u.getPos().x && target <= u.getPos().x+u.getWidth())
 				continue;
 		
 			// really not good code to fix a rare problem
-			if (direction == -1 && u.IsForward() && ismoving)
+			if (direction == -1 && u.isForward() && ismoving)
 				continue;
-			if (direction == 1 && !u.IsForward() && ismoving)
+			if (direction == 1 && !u.isForward() && ismoving)
 				continue;
 			
 			// move the unit
 			updated++;
 			if (direction == -1)
-				u.MoveLeft();
+				u.moveLeft();
 			else if (direction == 1)
-				u.MoveRight();
+				u.moveRight();
 		}
 		
 		// if they have all met their positional conditional, stop moving them
 		if (updated == 0 && ismoving) {
-			CalcBoundingBox(Campos);
+			calcBoundingBox(Campos);
 			ismoving = false;
-			
-			// add a fox hole when done moving
-			if (addfox) {
-				GetArmy().AddFox(foxpos);
-				addfox = false;
-			}
-			
-			// send a message of units position to clients
-			i = units.iterator();
-			while (i.hasNext()) {
-				Unit u = i.next();
-				
-				Response r = new Response();
-				r.source = GetArmy().GetConnection();
-				r.request = "UNITPOSITION";
-				r.i0 = GetID();
-				r.i1 = u.GetID();
-				r.f0 = u.GetPos().x;
-				r.f1 = u.GetPos().y;
-				GetArmy().GetNetwork().GetClient().sendTCP(r);
-			}
+			finishedMoving();
 			
 		} else if (updated > 0) {
 			ismoving = true;
+			
 		}
 	}
 	
-	public void DrawView(Camera Cam)
+	private void finishedMoving()
+	{
+		// add a fox hole when done moving
+		if (addfox) {
+			getArmy().addFox(foxpos);
+			addfox = false;
+		}
+		
+		// check if this squad now occupied a fox hole
+		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();
+		while (f.hasNext()) {
+			FoxHole h = f.next();
+			
+			// if this squad overlaps the fox hole, set this fox hole as the occupied
+			if (bbox.overlaps(h.getBBox())) {
+				h.setOccupedi(true);
+				occupied = h;
+			
+				break;
+			}
+		}
+
+		// send a message of units position to clients
+		Iterator<Unit> i = units.iterator();
+		while (i.hasNext()) {
+			Unit u = i.next();
+
+			Response r = new Response();
+			r.source = getArmy().getConnection();
+			r.request = "UNITPOSITION";
+			r.i0 = getID();
+			r.i1 = u.getID();
+			r.f0 = u.getPos().x;
+			r.f1 = u.getPos().y;
+			getArmy().getNetwork().getClient().sendTCP(r);
+		}
+	}
+	
+	public void drawView(Camera Cam)
 	{
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
 			Unit u = i.next();
-			Vector2 pos = new Vector2( u.GetPos() );
-			pos.x += u.GetWidth()/2;
-			pos.y += u.GetHeight()/2;
+			Vector2 pos = new Vector2( u.getPos() );
+			pos.x += u.getWidth()/2;
+			pos.y += u.getHeight()/2;
 			
-			FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
-					Cam.GetRenderY(pos.y), arms.GetRange());
+			FogOfWar.addVisibleRegion(Cam.getRenderX(pos.x), 
+					Cam.getRenderY(pos.y), arms.getRange());
 		}
 	}
 	
-	private void SetPointerHeight()
+	private void setPointerHeight()
 	{
 		// increment the pointer height
 		if (direction) {
@@ -621,12 +656,12 @@ public class Squad
 		}
 	}
 	
-	public void DrawMugshots(SpriteBatch Batch, int XPos, int YPos)
+	public void drawMugshots(SpriteBatch Batch, int XPos, int YPos)
 	{
 		int i = 0;
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {
-			int index = u.next().GetMugShotIndex();
+			int index = u.next().getMugShotIndex();
 			if (index < 0) index = 0;
 			else if (index >= MUGSHOTCOUNT)
 				index = MUGSHOTCOUNT-1;
@@ -637,12 +672,12 @@ public class Squad
 		}
 	}
 	
-	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
+	public void drawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
 		if (isFiring && units.size() > 0) {
 			Iterator<Unit> u = units.iterator();
 			while (u.hasNext()) {
-				u.next().DrawTargetAngle(Batch, Cam);
+				u.next().drawTargetAngle(Batch, Cam);
 			}
 			
 			return;
@@ -652,14 +687,14 @@ public class Squad
 		if (targetsquad == null)
 			return;
 		
-		float xpos = targetsquad.GetBBox().x + targetsquad.GetBBox().width/2f;
-		float ypos = ter.GetHeight((int)xpos) - targetsquad.GetBBox().height;
-		SetPointerHeight();
+		float xpos = targetsquad.getBBox().x + targetsquad.getBBox().width/2f;
+		float ypos = ter.getHeight((int)xpos) - targetsquad.getBBox().height;
+		setPointerHeight();
 		
-		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
+		Batch.draw(pointer, Cam.getRenderX(xpos), Cam.getRenderY(Game.WORLDH-ypos + (float)pointerheight));
 	}
 	
-	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
+	public void drawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		// do not draw the target pointer if the the target position is met
 		if (targetpos < 0)
@@ -668,9 +703,9 @@ public class Squad
 		int xpos = targetpos;
 		
 		// if moving right, modify the xpos
-		int direction = GetTargetDirection();
+		int direction = getTargetDirection();
 		if (direction == 1 && units.size() > 1)
-			xpos += bbox.width - units.get(0).GetWidth();
+			xpos += bbox.width - units.get(0).getWidth();
 		
 		// set to world bounds
 		if (xpos > Game.WORLDW)
@@ -682,13 +717,17 @@ public class Squad
 		if (xpos >= minx && xpos <= maxx)
 			return;
 		
-		SetPointerHeight();
-		int ypos = ter.GetHeight(xpos);
-		Batch.draw(pointer, Cam.GetRenderX(xpos), Cam.GetRenderY(Game.WORLDH-ypos + (float)pointerheight));
+		setPointerHeight();
+		int ypos = ter.getHeight(xpos);
+		Batch.draw(pointer, Cam.getRenderX(xpos), Cam.getRenderY(Game.WORLDH-ypos + (float)pointerheight));
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
+		if (occupied != null) {
+			Batch.setColor(1f, 1f, 1f, 0.6f);
+		}
+		
 		// draw and determine whether this squad is forward or not
 		int forwardc = 0;
 		isforward = false;
@@ -698,10 +737,10 @@ public class Squad
 			Unit u = i.next();
 			
 			// tell the unit whether or not it should be in firing position
-			u.SetFiring(isFiring || targetsquad != null);
-			u.Draw(Batch, Cam, Highlight, isTarget);
+			u.setFiring(isFiring || targetsquad != null);
+			u.draw(Batch, Cam, Highlight, isTarget);
 			
-			if (u.IsForward() && !isforward) {
+			if (u.isForward() && !isforward) {
 				forwardc++;
 				if (forwardc > units.size()/2) {
 					isforward = true;
@@ -711,5 +750,9 @@ public class Squad
 		
 		// must manually be set to true each frame by the squad who is targeting
 		isTarget = false;
+		
+		if (occupied != null) {
+			Batch.setColor(Color.WHITE);
+		}
 	}
 }

@@ -63,64 +63,64 @@ public class Game extends ApplicationAdapter
 	public Game(int WindowW, int WindowH, boolean IsHost)
 	{
 		ISHOST = IsHost;
-		ResizeScreen(WindowW, WindowH);
+		resizeScreen(WindowW, WindowH);
 	}
 	
 	public void resize(int width, int height)
 	{
-		ResizeScreen(width, height);
+		resizeScreen(width, height);
 		
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
 	}
 	
-	public void Init()
+	public void init()
 	{
-		Terrain.SetColor( new Color(54/255f, 47/255f, 43/255f, 1f));
+		Terrain.setColor( new Color(54/255f, 47/255f, 43/255f, 1f));
 		
-		Tank.Init();
-		Gunman.Init();
-		Squad.Init();
-		Shaders.Init();
-		Cursor.Init();
-		Background.Init();
-		FogOfWar.Init();
-		UnitDeployer.Init();
-		MenuBar.Init();
-		CombatPacket.Init();
-		Missile.Init();
-		Profile.Init();
-		PowerButtons.Init();
-		ParticleMask.Init();
-		Terrain.Init();
-		Weather.Init();
-		SquadConfigurations.Init();
-		FoxHole.Init();
+		Tank.init();
+		Gunman.init();
+		Squad.init();
+		Shaders.init();
+		Cursor.init();
+		Background.init();
+		FogOfWar.init();
+		UnitDeployer.init();
+		MenuBar.init();
+		CombatPacket.init();
+		Missile.init();
+		Profile.init();
+		PowerButtons.init();
+		ParticleMask.init();
+		Terrain.init();
+		Weather.init();
+		SquadConfigurations.init();
+		FoxHole.init();
 	}
 	
-	public void Release()
+	public void release()
 	{
-		Squad.Release();
-		Shaders.Release();
-		MilitaryBase.Release();
-		Background.Release();
-		MenuBar.Release();
-		CombatPacket.Release();
-		Missile.Release();
-		Profile.Release();
-		PowerButtons.Release();
-		ParticleMask.Release();
-		Weather.Release();
-		FoxHole.Release();
+		Squad.release();
+		Shaders.release();
+		MilitaryBase.release();
+		Background.release();
+		MenuBar.release();
+		CombatPacket.release();
+		Missile.release();
+		Profile.release();
+		PowerButtons.release();
+		ParticleMask.release();
+		Weather.release();
+		FoxHole.release();
 		
-		physics.Release();
+		physics.release();
 	}
 	
 	@Override
 	public void create() 
 	{
 		// init the game
-		Init();
+		init();
 		
 		// init the camera and the sprite batch
 		batch = new SpriteBatch();
@@ -130,46 +130,46 @@ public class Game extends ApplicationAdapter
 		// generate the terrain
 		network = new NetworkManager();
 		if (ISHOST)
-			network.InitHost();
-		network.InitClient();
+			network.initHost();
+		network.initClient();
 		
-		TerrainSeed seed = network.GetSeed();
+		TerrainSeed seed = network.getSeed();
 		while (seed == null)
-			seed = network.GetSeed();
+			seed = network.getSeed();
 		Terrain ter = new Terrain( seed );
 		
 		// create the camera
 		cam = new Camera();
-		cam.SetWorldMin( new Vector2(0.0f, 0.0f) );
-		cam.SetWorldMax( new Vector2(WORLDW, WORLDH) );
-		cam.SetPos( new Vector2(0, ter.GetHeight(0) - SCREENH/2) );
+		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
+		cam.setWorldMax( new Vector2(WORLDW, WORLDH) );
+		cam.setPos( new Vector2(0, ter.getHeight(0) - SCREENH/2) );
 		
 		// initialize the physics world
 		physics = new GameWorld(ter);
-		network.SetGameWorld(physics, cam);
+		network.setGameWorld(physics, cam);
 	
 		try {
 			// wait for the lobby to fill
-			while (!network.IsLobbyFull()) {
+			while (!network.isLobbyFull()) {
 				Thread.sleep(50);
 			}
 			
 			// if host, dispatch armies to clients
-			network.DispatchRemoteArmies();
+			network.dispatchRemoteArmies();
 			
 			
 			// wait for the client to recieve the armies
-			while (!network.RecievedAllArmies()) {
+			while (!network.recievedAllArmies()) {
 				Thread.sleep(50);
 			}
 			
-			network.ReadRemoteArmies();
+			network.readRemoteArmies();
 		} catch (InterruptedException e) {
 			System.err.println("Error: thread sleep interrupted.");
 		}
 	}
 	
-	public static OrthographicCamera GetProj()
+	public static OrthographicCamera getProj()
 	{
 		return proj;
 	}
@@ -177,9 +177,9 @@ public class Game extends ApplicationAdapter
 	@Override
 	public void render() 
 	{
-		FrameRate.Update();
-		Cursor.Update();
-		UpdateScene();
+		FrameRate.update();
+		Cursor.update();
+		updateScene();
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -189,57 +189,57 @@ public class Game extends ApplicationAdapter
 		batch.setProjectionMatrix(proj.combined);
 		batch.begin();
 		
-		DrawScene();
+		drawScene();
 		
 		batch.end();
 		
 		// exit on escape key
 		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-			Release(); // release data
+			release(); // release data
 			Gdx.app.exit();
 		}
 		
 		// clear input from CursorInput
-		CursorInput.ClearInput();
+		CursorInput.clearInput();
 	}
 	
-	private void DrawScene()
+	private void drawScene()
 	{
-		physics.Draw(batch, cam);
+		physics.draw(batch, cam);
 	}
 	
-	private void UpdatePos()
+	private void updatePos()
 	{
 		// move the camera with the mouse
 		if (Cursor.isButtonPressed(Cursor.MIDDLE))
 		{
-			cam.MoveHorizontal( 6 * -Cursor.GetDeltaX() );
-			cam.MoveVertical( 6 * Cursor.GetDeltaY() );
+			cam.moveHorizontal( 6 * -Cursor.getDeltaX() );
+			cam.moveVertical( 6 * Cursor.getDeltaY() );
 		}
 		
 		// move the camera with the keyboard
 		if (Gdx.input.isKeyPressed(Keys.D))
-			cam.MoveHorizontal( CAMSPEED * Gdx.graphics.getDeltaTime() );
+			cam.moveHorizontal( CAMSPEED * Gdx.graphics.getDeltaTime() );
 		else if (Gdx.input.isKeyPressed(Keys.A))
-			cam.MoveHorizontal( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+			cam.moveHorizontal( -CAMSPEED * Gdx.graphics.getDeltaTime() );
 		
 		if (Gdx.input.isKeyPressed(Keys.W))
-			cam.MoveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
+			cam.moveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
 		else if (Gdx.input.isKeyPressed(Keys.S))
-			cam.MoveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+			cam.moveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
 		
 		if (Gdx.input.isKeyJustPressed(Keys.PLUS)) {
-			ZoomScreen(-32);
+			zoomScreen(-32);
 		} else if (Gdx.input.isKeyJustPressed(Keys.MINUS)) {
-			ZoomScreen(32);
+			zoomScreen(32);
 		} else if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && Cursor.getScrollDirection() == -1) {
-			ZoomScreen(-32);
+			zoomScreen(-32);
 		} else if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && Cursor.getScrollDirection() == 1) {
-			ZoomScreen(32);
+			zoomScreen(32);
 		}
 	}
 	
-	private void ZoomScreen(int Zoom)
+	private void zoomScreen(int Zoom)
 	{
 		int prevh = SCREENH;
 		int prevw = SCREENW;
@@ -251,11 +251,11 @@ public class Game extends ApplicationAdapter
 		SCREENRATIOX = (float)SCREENW/WINDOWW;
 		proj.setToOrtho(false, SCREENW, SCREENH);
 	
-		cam.MoveVertical(-((SCREENH-prevh)/2) * SCREENRATIOY);
-		cam.MoveHorizontal(-((SCREENW-prevw)/2) * SCREENRATIOX);
+		cam.moveVertical(-((SCREENH-prevh)/2) * SCREENRATIOY);
+		cam.moveHorizontal(-((SCREENW-prevw)/2) * SCREENRATIOX);
 	}
 	
-	private void ResizeScreen(int Width, int Height)
+	private void resizeScreen(int Width, int Height)
 	{
 		WINDOWW = Width;
 		WINDOWH = Height;
@@ -272,11 +272,11 @@ public class Game extends ApplicationAdapter
 		SCREENRATIOX = (float)SCREENW/WINDOWW;
 	}
 	
-	private void UpdateScene()
+	private void updateScene()
 	{
 		// update the camera position
-		UpdatePos();
+		updatePos();
 		
-		physics.Update(cam);
+		physics.update(cam);
 	}
 }

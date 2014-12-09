@@ -32,12 +32,12 @@ public class LineData
 	 * @return
 	 * 	An Integer parsed from Opt, if that fails, then Default is returned.
 	 */
-	public static int GetInt(String Filename, int LineNumber, String Opt, int Default)
+	public static int getInt(String Filename, int LineNumber, String Opt, int Default)
 	{
 		try {
 			return Integer.parseInt(Opt);
 		} catch (NumberFormatException e) {
-			PrintErr(Filename, LineNumber, Opt);
+			printErr(Filename, LineNumber, Opt);
 			System.err.println("Defaulting to a value of " + Default + '\n');
 			return Default;
 		}
@@ -57,12 +57,12 @@ public class LineData
 	 * @return
 	 * 	An Float parsed from Opt, if that fails, then Default is returned.
 	 */
-	public static float GetFloat(String Filename, int LineNumber, String Opt, float Default)
+	public static float getFloat(String Filename, int LineNumber, String Opt, float Default)
 	{
 		try {
 			return Float.parseFloat(Opt);
 		} catch (NumberFormatException e) {
-			PrintErr(Filename, LineNumber, Opt);
+			printErr(Filename, LineNumber, Opt);
 			System.err.println("Defaulting to a value of " + Default + '\n');
 			return Default;
 		}
@@ -77,7 +77,7 @@ public class LineData
 	 * @param Opt
 	 * 	The option that caused the error.
 	 */
-	private static void PrintErr(String Filename, int LineNumber, String Opt)
+	private static void printErr(String Filename, int LineNumber, String Opt)
 	{
 		System.err.println("In file \'" + Filename + '\'');
 		System.err.println("Error: Invalid Option found at Line " + LineNumber);

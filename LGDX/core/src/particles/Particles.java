@@ -19,61 +19,61 @@ public class Particles
 		addindex =  0;
 	}
 	
-	public void AddParticle(float Radius, Vector2 Pos)
+	public void addParticle(float Radius, Vector2 Pos)
 	{
 		if (Radius <= 0f)
 			return;
 		
-		Expand();
+		expand();
 		particles[addindex] = new Particle(Radius, Pos, new Vector2(), 0f, DEFAULTDECAY);
 		addindex++;
 	}
 	
-	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel)
+	public void addParticle(float Radius, Vector2 Pos, Vector2 Vel)
 	{
 		if (Radius <= 0f)
 			return;
 		
-		Expand();
+		expand();
 		particles[addindex] = new Particle(Radius, Pos, Vel, 0f, DEFAULTDECAY);
 		addindex++;
 	}
 	
-	public void AddParticle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
+	public void addParticle(float Radius, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
 	{
 		if (Radius <= 0f)
 			return;
 		
-		Expand();
+		expand();
 		particles[addindex] = new Particle(Radius, Pos, Vel, SlowTime, Decay);
 		addindex++;
 	}
 	
-	public void Update()
+	public void update()
 	{
 		for (int i=0; i<addindex; i++)
 		{
-			particles[i].Update();
-			if (!particles[i].IsAlive())
-				Remove(i);
+			particles[i].update();
+			if (!particles[i].isAlive())
+				remove(i);
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
-		ParticleMask.Begin(Batch);
+		ParticleMask.begin(Batch);
 		for (int i=0; i<addindex; i++)
 		{
-			particles[i].Draw(Batch, Cam);
-			if (!particles[i].IsAlive())
-				Remove(i);
+			particles[i].draw(Batch, Cam);
+			if (!particles[i].isAlive())
+				remove(i);
 		}
 		
-		ParticleMask.End(Batch);
-		ParticleMask.Draw(Batch);
+		ParticleMask.end(Batch);
+		ParticleMask.draw(Batch);
 	}
 	
-	private void Expand()
+	private void expand()
 	{
 		if (addindex >= particles.length) {
 			// increase the size of the array
@@ -81,7 +81,7 @@ public class Particles
 		}
 	}
 	
-	private void Remove(int Index)
+	private void remove(int Index)
 	{
 		// replace this particle with the last particle added
 		particles[Index] = particles[addindex-1];

@@ -27,7 +27,7 @@ public class MenuBar
 	private static int req = 0;
 	private static int tmpreq = 0;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (bar == null)
 			bar = new Texture( Gdx.files.internal("img/ui/menubar/menubar.png") );
@@ -64,7 +64,7 @@ public class MenuBar
 				Game.SCREENH-endbutton.getHeight()+2, endbutton.getWidth(), endbutton.getHeight());
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (bar != null)
 			bar.dispose();
@@ -88,50 +88,50 @@ public class MenuBar
 			reqx.dispose();
 	}
 	
-	public static void SetPowerLevel(float Level, float Maximum)
+	public static void setPowerLevel(float Level, float Maximum)
 	{
 		powerlevel = Level/Maximum;
 	}
 	
-	public static float GetPowerLevel()
+	public static float getPowerLevel()
 	{
 		return powerlevel;
 	}
 	
-	public static void SetEndButttonPos()
+	public static void setEndButttonPos()
 	{
 		bbox.x = Game.SCREENW/2 - endbutton.getWidth()/2;
 		bbox.y = Game.SCREENH - endbutton.getHeight()+2;
 	}
 	
-	public static int GetMenuBarHeight()
+	public static int getMenuBarHeight()
 	{
 		return bar.getHeight();
 	}
 	
-	public static void SetRequisition(int Req)
+	public static void setRequisition(int Req)
 	{
 		req = Req;
 	}
 	
-	public static void SetTmpRequisition(int Req)
+	public static void setTmpRequisition(int Req)
 	{
 		tmpreq = Req;
 	}
 	
-	public static boolean IsEndTurn()
+	public static boolean isEndTurn()
 	{
-		return (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
+		return (Cursor.isMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
 	}
 	
-	public static void Draw(SpriteBatch Batch, Camera Cam, int CurrentStage, boolean Active)
+	public static void draw(SpriteBatch Batch, Camera Cam, int CurrentStage, boolean Active)
 	{
 		for (int x=0; x<Game.WORLDW; x += bar.getWidth())
 			Batch.draw(bar, x, Game.SCREENH-bar.getHeight());
 		
 		int offset = 0;
-		SetEndButttonPos();
-		if (Cursor.IsMouseOverAbsolute(bbox) && Cursor.isButtonPressed(Cursor.LEFT))
+		setEndButttonPos();
+		if (Cursor.isMouseOverAbsolute(bbox) && Cursor.isButtonPressed(Cursor.LEFT))
 			offset = 2;
 		
 		if (Active)
@@ -148,10 +148,10 @@ public class MenuBar
 		Batch.draw(currentstage[CurrentStage], Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 2,
 				Game.SCREENH-currentstage[CurrentStage].getRegionHeight()+3);
 		
-		DrawReq(Batch, Cam, Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 16);
+		drawReq(Batch, Cam, Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 16);
 	}
 	
-	public static void DrawReq(SpriteBatch Batch, Camera Cam, int XPos)
+	public static void drawReq(SpriteBatch Batch, Camera Cam, int XPos)
 	{
 		// set the color to red to indicate cost of a unit
 		if (req != tmpreq) {

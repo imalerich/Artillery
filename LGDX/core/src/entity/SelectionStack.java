@@ -17,28 +17,28 @@ public class SelectionStack
 		references = new Vector<SelectionElement>();
 	}
 	
-	public void Reset()
+	public void reset()
 	{
 		selection = 0;
 		references.clear();
 	}
 	
-	public int GetSize()
+	public int getSize()
 	{
 		return references.size();
 	}
 	
-	public void AddSquadOver(Squad Ref)
+	public void addSquadOver(Squad Ref)
 	{
 		references.add( new SelectionElement(OVERSQUAD, Ref) );
 	}
 	
-	public void AddBarracksOver()
+	public void addBarracksOver()
 	{
 		references.add( new SelectionElement(OVERADD, null) );
 	}
 	
-	public void IncSelection()
+	public void incSelection()
 	{
 		selection++;
 		
@@ -47,7 +47,7 @@ public class SelectionStack
 			selection = 0;
 	}
 	
-	public void DecSelection()
+	public void decSelection()
 	{
 		selection--;
 		
@@ -56,7 +56,7 @@ public class SelectionStack
 			selection = references.size()-1;
 	}
 	
-	public boolean IsSelectionValid()
+	public boolean isSelectionValid()
 	{
 		if (references.size() == 0)
 			return false;
@@ -68,31 +68,31 @@ public class SelectionStack
 		return true;
 	}
 	
-	public boolean IsOverSquad()
+	public boolean isOverSquad()
 	{
-		if (!IsSelectionValid())
+		if (!isSelectionValid())
 			return false;
 		
 		return (references.get(selection).action == OVERSQUAD);
 	}
 	
-	public boolean IsOverAdd()
+	public boolean isOverAdd()
 	{
-		if (!IsSelectionValid())
+		if (!isSelectionValid())
 			return false;
 		
 		return (references.get(selection).action == OVERADD);
 	}
 	
-	public Squad GetSquadOver()
+	public Squad getSquadOver()
 	{
-		if (!IsSelectionValid())
+		if (!isSelectionValid())
 			return null;
 		
 		return references.get(selection).ref;
 	}
 	
-	public Iterator<SelectionElement> GetIterator()
+	public Iterator<SelectionElement> getIterator()
 	{
 		return references.iterator();
 	}

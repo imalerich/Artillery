@@ -58,451 +58,455 @@ public class GameWorld
 		foxholes		= new Vector<FoxHole>();
 	}
 	
-	public void Release()
+	public void release()
 	{
-		ter.Release();
+		ter.release();
 	}
 	
-	public Terrain GetTerrain()
+	public Terrain getTerrain()
 	{
 		return ter;
 	}
 	
-	public Army GetArmy(int ID)
+	public Army getArmy(int ID)
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext()) {
 			Army a = f.next();
-			if (a.GetID() == ID) 
+			if (a.getID() == ID) 
 				return a;
 		}
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext()) {
 			Army a = e.next();
-			if (a.GetID() == ID) 
+			if (a.getID() == ID) 
 				return a;
 		}
 		
-		if (userArmy.GetID() == ID) {
+		if (userArmy.getID() == ID) {
 			return userArmy;
 		}
 		
 		return null;
 	}
 	
-	public Army GetRemoteArmy(int Connection)
+	public Army getRemoteArmy(int Connection)
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext()) {
 			Army a = f.next();
-			if (a.GetConnection() == Connection) 
+			if (a.getConnection() == Connection) 
 				return a;
 		}
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext()) {
 			Army a = e.next();
-			if (a.GetConnection() == Connection) 
+			if (a.getConnection() == Connection) 
 				return a;
 		}
 		
-		if (userArmy.GetConnection() == Connection) {
+		if (userArmy.getConnection() == Connection) {
 			return userArmy;
 		}
 		
 		return null;
 	}
 	
-	public void SetUserArmy(Army Add)
+	public void setUserArmy(Army Add)
 	{
 		userArmy = Add;
-		userArmy.SetID(armyid);
+		userArmy.setID(armyid);
 		armyid++;
 	}
 	
-	public void AddFriendlyArmy(Army Add)
+	public void addFriendlyArmy(Army Add)
 	{
 		friendlyArmy.add(Add);
-		friendlyArmy.lastElement().SetID(armyid);
+		friendlyArmy.lastElement().setID(armyid);
 		armyid++;
 	}
 	
-	public void AddEnemyArmy(Army Add)
+	public void addEnemyArmy(Army Add)
 	{
 		enemyArmy.add(Add);
-		enemyArmy.lastElement().SetID(armyid);
+		enemyArmy.lastElement().setID(armyid);
 		armyid++;
 	}
 	
-	public void AddFoxHole(Vector2 Pos)
+	public void addFoxHole(Vector2 Pos)
 	{
 		foxholes.add(new FoxHole(Pos));
 	}
 	
-	public void UpdateThreads()
+	public Iterator<FoxHole> getFoxHoles()
+	{
+		return foxholes.iterator();
+	}
+	
+	public void updateThreads()
 	{
 		// synchronize data between threads
-		userArmy.UpdateThreads();
+		userArmy.updateThreads();
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().UpdateThreads();
+			f.next().updateThreads();
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().UpdateThreads();
+			e.next().updateThreads();
 	}
 	
-	public void Update(Camera Cam)
+	public void update(Camera Cam)
 	{
-		UpdateThreads();
-		ter.Update();
-		particles.Update();
+		updateThreads();
+		ter.update();
+		particles.update();
 		
 		switch (currentstage)
 		{
 		case MOVESELECT:
-			UpdateMoveSelect(Cam);
+			updateMoveSelect(Cam);
 			break;
 			
 		case MOVEUPDATE:
-			UpdateMove(Cam);
+			updateMove(Cam);
 			break;
 			
 		case ATTACKSELECT:
-			UpdateAttackSelect(Cam);
+			updateAttackSelect(Cam);
 			break;
 			
 		case ATTACKUPDATE:
-			UpdateAttack(Cam);
+			updateAttack(Cam);
 			break;
 			
 		default:
 			break;
 		}
 		
-		UpdateObjects(Cam);
-		UpdateNullTanks(Cam);
-		CheckForDeaths(Cam);
-		CheckNextStage();
+		updateObjects(Cam);
+		updateNullTanks(Cam);
+		checkForDeaths(Cam);
+		checkNextStage();
 	}
 	
-	public void UpdateObjects(Camera Cam)
+	public void updateObjects(Camera Cam)
 	{
 		Iterator<FoxHole> f = foxholes.iterator();
 		while (f.hasNext())
-			f.next().Update();
+			f.next().update();
 	}
 	
-	public void UpdateNullTanks(Camera Cam)
+	public void updateNullTanks(Camera Cam)
 	{
 		Iterator<NullTank> t = nullTanks.iterator();
 		while (t.hasNext())
-			t.next().Update(Cam);
+			t.next().update(Cam);
 	}
 	
-	public void CheckForDeaths(Camera Cam)
+	public void checkForDeaths(Camera Cam)
 	{
-		userArmy.CheckForDeaths(Cam, nullTanks, particles);
+		userArmy.checkForDeaths(Cam, nullTanks, particles);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().CheckForDeaths(Cam, nullTanks, particles);
+			f.next().checkForDeaths(Cam, nullTanks, particles);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().CheckForDeaths(Cam, nullTanks, particles);
+			e.next().checkForDeaths(Cam, nullTanks, particles);
 	}
 	
-	public void UpdateMoveSelect(Camera Cam)
+	public void updateMoveSelect(Camera Cam)
 	{
-		userArmy.UpdateMoveSelect(Cam);
+		userArmy.updateMoveSelect(Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().UpdateMoveSelect(Cam);
+			f.next().updateMoveSelect(Cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().UpdateMoveSelect(Cam);
+			e.next().updateMoveSelect(Cam);
 	}
 	
-	public void UpdateMove(Camera Cam)
+	public void updateMove(Camera Cam)
 	{
-		userArmy.UpdateMove(Cam);
+		userArmy.updateMove(Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().UpdateMove(Cam);
+			f.next().updateMove(Cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().UpdateMove(Cam);
+			e.next().updateMove(Cam);
 	}
 	
-	public void UpdateAttackSelect(Camera Cam)
+	public void updateAttackSelect(Camera Cam)
 	{
-		userArmy.UpdateAttackSelect(Cam);
-		if (userArmy.IsTargeting()) {
-			BuildTargetStack(Cam);
+		userArmy.updateAttackSelect(Cam);
+		if (userArmy.isTargeting()) {
+			buildTargetStack(Cam);
 		}
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext()) 
-			f.next().UpdateAttackSelect(Cam);
+			f.next().updateAttackSelect(Cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().UpdateAttackSelect(Cam);
+			e.next().updateAttackSelect(Cam);
 	}
 	
-	private void UpdateAttack(Camera Cam)
+	private void updateAttack(Camera Cam)
 	{
 		// update the combat resolver
-		resolver.UpdateSimulation();
+		resolver.updateSimulation();
 	}
 	
-	public void ProcBlast(Blast B)
+	public void procBlast(Blast B)
 	{
 		// process any blasts on all armies
-		userArmy.ProcBlasts(B);
+		userArmy.procBlasts(B);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().ProcBlasts(B);
+			f.next().procBlasts(B);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().ProcBlasts(B);
+			e.next().procBlasts(B);
 	}
 	
-	private int GetTargetSize(Camera Cam)
+	private int getTargetSize(Camera Cam)
 	{
 		int count = 0;
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			count += e.next().GetMouseOverCount(Cam);
+			count += e.next().getMouseOverCount(Cam);
 		
 		return count;
 	}
 	
-	private void BuildTargetStack(Camera Cam)
+	private void buildTargetStack(Camera Cam)
 	{
 		// do not rebuilt the target stack when the stack size does not change
-		if (!userArmy.UpdateTargetOptions( GetTargetSize(Cam) ))
+		if (!userArmy.updateTargetOptions( getTargetSize(Cam) ))
 			return;
 		
 		// get all squad options from the mouse over
-		SelectionStack stack = userArmy.GetTargetOptions();
-		stack.Reset();
+		SelectionStack stack = userArmy.getTargetOptions();
+		stack.reset();
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext()) {
-			e.next().GetMouseOver(stack, Cam);
+			e.next().getMouseOver(stack, Cam);
 		}
 	}
 	
-	private void DrawTargets(SpriteBatch Batch, Camera Cam)
+	private void drawTargets(SpriteBatch Batch, Camera Cam)
 	{
 		if (currentstage != MOVESELECT && currentstage != ATTACKSELECT)
 			return;
 		
 		if (currentstage == MOVESELECT) {
-			userArmy.DrawTargetPos(Batch, Cam);
+			userArmy.drawTargetPos(Batch, Cam);
 		} else if (currentstage == ATTACKSELECT) {
-			userArmy.DrawTargetSquad(Batch, Cam);
+			userArmy.drawTargetSquad(Batch, Cam);
 		}
 	}
 	
-	private void DrawFogMask(SpriteBatch Batch, Camera Cam)
+	private void drawFogMask(SpriteBatch Batch, Camera Cam)
 	{
-		FogOfWar.Begin(Batch);
+		FogOfWar.begin(Batch);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().DrawView(Cam);
-		userArmy.DrawView(Cam);
+			f.next().drawView(Cam);
+		userArmy.drawView(Cam);
 		
-		FogOfWar.End(Batch);
+		FogOfWar.end(Batch);
 	}
 	
-	private boolean CheckTargets()
+	private boolean checkTargets()
 	{
 		if (currentstage != ATTACKSELECT)
 			return false;
 		
-		if (userArmy.IsTargeting())
+		if (userArmy.isTargeting())
 			return true;
 		
 		return false;
 	}
 	
-	private void DisableStencil(SpriteBatch Batch)
+	private void disableStencil(SpriteBatch Batch)
 	{
 		Batch.flush();
 		Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
 	}
 	
-	private void EnableStencil(SpriteBatch Batch)
+	private void enableStencil(SpriteBatch Batch)
 	{
 		Batch.flush();
 		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
 	}
 	
-	private void DrawNullTanks(SpriteBatch Batch, Camera Cam)
+	private void drawNullTanks(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<NullTank> t = nullTanks.iterator();
 		while (t.hasNext()) 
-			t.next().Draw(Batch, Cam);
+			t.next().draw(Batch, Cam);
 	}
 	
-	private void DrawHidden(SpriteBatch Batch, Camera Cam)
+	private void drawHidden(SpriteBatch Batch, Camera Cam)
 	{
 		// enable fog of war and draw the background
-		FogOfWar.MaskOn(Batch);
-		Background.DrawFG(Batch);
+		FogOfWar.maskOn(Batch);
+		Background.drawFG(Batch);
 		Batch.flush();
 		
-		DisableStencil(Batch);
+		disableStencil(Batch);
 		
 		// draw the weather and the bases
-		userArmy.DrawBase(Batch, Cam);
+		userArmy.drawBase(Batch, Cam);
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().DrawBase(Batch, Cam);
+			e.next().drawBase(Batch, Cam);
 		
-		EnableStencil(Batch);
+		enableStencil(Batch);
 		
 		// draw the base logo's with the stencil test enabled
-		userArmy.DrawBaseLogo(Batch, Cam);
+		userArmy.drawBaseLogo(Batch, Cam);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().DrawBaseLogo(Batch, Cam);
+			e.next().drawBaseLogo(Batch, Cam);
 		
-		DisableStencil(Batch);
+		disableStencil(Batch);
 		
 		/*
 		 * Draw the terrain, weather and world objects.
 		 */
 		
-		Weather.Draw(Batch, Cam);
-		ter.Draw(Batch, Cam.GetPos());
+		Weather.draw(Batch, Cam);
+		ter.draw(Batch, Cam.getPos());
 		
 		Iterator<FoxHole> holes = foxholes.iterator();
 		while (holes.hasNext())
-			holes.next().Render(Batch, Cam);
-		
+			holes.next().render(Batch, Cam);
 	
-		DrawNullTanks(Batch, Cam);
+		drawNullTanks(Batch, Cam);
 		/*
 		 * Draw the terrain, weather and world objects.
 		 */
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().DrawBase(Batch, Cam);
+			f.next().drawBase(Batch, Cam);
 		
-		EnableStencil(Batch);
+		enableStencil(Batch);
 		
 		// draw all enemy units above the terrain, but hidden by the fog 
-		Shaders.SetShader(Batch, Shaders.enemy);
+		Shaders.setShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().Draw(Batch, Cam, CheckTargets(), currentstage);
-		Shaders.RevertShader(Batch);
+			e.next().draw(Batch, Cam, checkTargets(), currentstage);
+		Shaders.revertShader(Batch);
 		
-		FogOfWar.MaskOff(Batch);
+		FogOfWar.maskOff(Batch);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
-		Background.DrawBG(Batch);
-		DrawFogMask(Batch, Cam);
-		DrawHidden(Batch, Cam);
+		Background.drawBG(Batch);
+		drawFogMask(Batch, Cam);
+		drawHidden(Batch, Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().Draw(Batch, Cam, false, currentstage);
+			f.next().draw(Batch, Cam, false, currentstage);
 		
-		userArmy.Draw(Batch, Cam, false, currentstage);
-		DrawTargets(Batch, Cam);
+		userArmy.draw(Batch, Cam, false, currentstage);
+		drawTargets(Batch, Cam);
 		
 		if (currentstage == ATTACKUPDATE) {
-			resolver.DrawSimulation(Batch, Cam);
+			resolver.drawSimulation(Batch, Cam);
 		}
 		
-		particles.Draw(Batch, Cam);
-		MenuBar.Draw(Batch, Cam, currentstage, 
-				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.IsMenuOpen() && !userArmy.IsStageCompleted(currentstage));
+		particles.draw(Batch, Cam);
+		MenuBar.draw(Batch, Cam, currentstage, 
+				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.isMenuOpen() && !userArmy.isStageCompleted(currentstage));
 	}
 	
-	private boolean IsArmiesStageCompleted()
+	private boolean isArmiesStageCompleted()
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 		
-		if (!userArmy.IsStageCompleted(currentstage))
+		if (!userArmy.isStageCompleted(currentstage))
 			return false;
 		
 		// loop through each army and check if any of them are not completed
 		while (f.hasNext()) {
-			if (!f.next().IsStageCompleted(currentstage))
+			if (!f.next().isStageCompleted(currentstage))
 				return false;
 		}
 
 		while (e.hasNext()) {
-			if (!e.next().IsStageCompleted(currentstage))
+			if (!e.next().isStageCompleted(currentstage))
 				return false;
 		}
 		
-		if (currentstage == ATTACKUPDATE && !resolver.IsSimulationCompleted()) {
+		if (currentstage == ATTACKUPDATE && !resolver.isSimulationCompleted()) {
 			return false;
 		}
 		
 		return true;
 	}
 	
-	private void InitResolver()
+	private void initResolver()
 	{
 		if (currentstage != ATTACKUPDATE) {
 			return;
 		}
 		
-		resolver.StartSimulation();
+		resolver.startSimulation();
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 		
-		userArmy.AddCombatData(resolver);
+		userArmy.addCombatData(resolver);
 		while (f.hasNext()) {
-			f.next().AddCombatData(resolver);
+			f.next().addCombatData(resolver);
 		}
 		
 		while (e.hasNext()) {
-			e.next().AddCombatData(resolver);
+			e.next().addCombatData(resolver);
 		}
 	}
 	
-	private void InitNewStage()
+	private void initNewStage()
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 
-		userArmy.InitStage(currentstage);
+		userArmy.initStage(currentstage);
 		
 		while (f.hasNext())
-			f.next().InitStage(currentstage);
+			f.next().initStage(currentstage);
 
 		while (e.hasNext())
-			e.next().InitStage(currentstage);
+			e.next().initStage(currentstage);
 		
-		InitResolver();
+		initResolver();
 	}
 	
-	public void CheckNextStage()
+	public void checkNextStage()
 	{
 		// if all the armies are ready to update update the current stage
-		if ( !IsArmiesStageCompleted() )
+		if ( !isArmiesStageCompleted() )
 			return;
 		
 		// set the new stage
@@ -510,10 +514,10 @@ public class GameWorld
 		if (currentstage == STAGECOUNT)
 			currentstage = 0;
 		
-		InitNewStage();
+		initNewStage();
 	}
 	
-	public static int GetDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)
+	public static int getDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)
 	{
 		// check the distance to the target in each direction
 		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;
@@ -532,7 +536,7 @@ public class GameWorld
 			return 0;
 	}
 	
-	public static float GetDistance(float StartX, float StartWidth, float TargetX, float TargetWidth)
+	public static float getDistance(float StartX, float StartWidth, float TargetX, float TargetWidth)
 	{
 		// check the distance to the target in each direction
 		float rdist = (Game.WORLDW-(StartX+StartWidth))+TargetX;

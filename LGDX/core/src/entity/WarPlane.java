@@ -22,7 +22,7 @@ public class WarPlane extends Unit
 	
 	private static final int TURNRATE = 90;
 	
-	public void Release()
+	public void release()
 	{
 		tex.dispose();
 	}
@@ -45,37 +45,37 @@ public class WarPlane extends Unit
 		theta = 0.0f;
 	}
 	
-	public void MoveRight()
+	public void moveRight()
 	{
-		super.MoveRight();
+		super.moveRight();
 		
 		// overwrite the height set by the super class MoveRight()
-		if ( minheight + Game.WORLDH - ter.GetHeight((int)pos.x + halfwidth) > flightheight )
-			pos.y = minheight + Game.WORLDH - ter.GetHeight((int)pos.x + halfwidth);
+		if ( minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth) > flightheight )
+			pos.y = minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth);
 		else pos.y = flightheight;
 	}
 	
-	public void MoveLeft()
+	public void moveLeft()
 	{
-		super.MoveLeft();
+		super.moveLeft();
 		
 		// overwrite the height set by the super class MoveLeft()
-		if ( minheight + Game.WORLDH - ter.GetHeight((int)pos.x + halfwidth) > flightheight )
-			pos.y = minheight + Game.WORLDH - ter.GetHeight((int)pos.x + halfwidth);
+		if ( minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth) > flightheight )
+			pos.y = minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth);
 		else pos.y = flightheight;
 	}
 	
-	public float GetAngle()
+	public float getAngle()
 	{
 		float phi = 0.0f;
-		float h0 = ter.GetHeight( (int)pos.x+(halfwidth/2) );
-		float h1 = ter.GetHeight( (int)pos.x+(halfwidth/2)+halfwidth );
+		float h0 = ter.getHeight( (int)pos.x+(halfwidth/2) );
+		float h1 = ter.getHeight( (int)pos.x+(halfwidth/2)+halfwidth );
 		
 		phi = -(float)Math.atan( (h1-h0)/(float)halfwidth );
 		return (float)Math.toDegrees(phi);
 	}
 	
-	private void DrawOutline(SpriteBatch Batch, Camera Cam)
+	private void drawOutline(SpriteBatch Batch, Camera Cam)
 	{
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
@@ -83,36 +83,36 @@ public class WarPlane extends Unit
 				Coords.x += x;
 				Coords.y += y;
 				
-				Batch.draw(tex, Cam.GetRenderX(Coords.x), Cam.GetRenderY(Coords.y),
+				Batch.draw(tex, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y),
 						halfwidth, 0, width, height, 1.0f, 1.0f, 
 						theta, 0, 0, width, height, !forward, false);
 			}
 		}
 	}
 	
-	private void DrawTarget(SpriteBatch Batch, Camera Cam)
+	private void drawTarget(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.target);
-		DrawOutline(Batch, Cam);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.target);
+		drawOutline(Batch, Cam);
+		Shaders.revertShader(Batch);
 	}
 	
-	private void DrawHighlight(SpriteBatch Batch, Camera Cam)
+	private void drawHighlight(SpriteBatch Batch, Camera Cam)
 	{
 		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.hili);
-		DrawOutline(Batch, Cam);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.hili);
+		drawOutline(Batch, Cam);
+		Shaders.revertShader(Batch);
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		
 		// get the target angle for theta
 		float phi = 0.0f;
-		if ( minheight + Game.WORLDH - ter.GetHeight((int)pos.x) > flightheight )
-			phi = GetAngle();
+		if ( minheight + Game.WORLDH - ter.getHeight((int)pos.x) > flightheight )
+			phi = getAngle();
 		
 		// move the plane towards phi
 		if (phi > theta)
@@ -121,11 +121,11 @@ public class WarPlane extends Unit
 		
 		// draw the plane 
 		if (Highlight)
-			DrawHighlight(Batch, Cam);
+			drawHighlight(Batch, Cam);
 		else if (Target)
-			DrawTarget(Batch, Cam);
+			drawTarget(Batch, Cam);
 		
-		Batch.draw(tex, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y),
+		Batch.draw(tex, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y),
 				halfwidth, 0, width, height, 1.0f, 1.0f, 
 				theta, 0, 0, width, height, !forward, false);
 	}

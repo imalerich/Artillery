@@ -35,68 +35,68 @@ public class TerrainSeed {
 		consistency = 0;
 	}
 	
-	public void SetDimmensions(int Width, int Height)
+	public void setDimmensions(int Width, int Height)
 	{
 		width = Width;
 		height = Height;
 	}
 	
-	public int GetWidth()
+	public int getWidth()
 	{
 		return width;
 	}
 	
-	public int GetHeight()
+	public int getHeight()
 	{
 		return height;
 	}
 	
-	public void SetSoftness(int Softness)
+	public void setSoftness(int Softness)
 	{
 		softness = Softness;
 	}
 	
-	public int GetSoftness()
+	public int getSoftness()
 	{
 		return softness;
 	}
 	
-	public void SetSeaLevel(int Level)
+	public void setSeaLevel(int Level)
 	{
 		sealevel = Level;
 	}
 	
-	public int GetSeaLevel()
+	public int getSeaLevel()
 	{
 		return sealevel;
 	}
 	
-	public void SetMinLevel(int Level)
+	public void setMinLevel(int Level)
 	{
 		minlevel = Level;
 	}
 	
-	public int GetMinLevel()
+	public int getMinLevel()
 	{
 		return minlevel;
 	}
 	
-	public void SetConsistencyLevel(int Level)
+	public void setConsistencyLevel(int Level)
 	{
 		consistency = Level;
 	}
 	
-	public int GetConsistencyLevel()
+	public int getConsistencyLevel()
 	{
 		return consistency;
 	}
 	
-	public void AddBase(int XPos, int Width)
+	public void addBase(int XPos, int Width)
 	{
 		baselocation.add( new Vector2(XPos, XPos+Width) );
 	}
 	
-	public void AddPeak(int XPos, int Sharpness, int ScaleX, int ScaleY)
+	public void addPeak(int XPos, int Sharpness, int ScaleX, int ScaleY)
 	{
 		// clamp the sharpness to the bounds
 		if (Sharpness < 0) Sharpness = 0;
@@ -108,32 +108,32 @@ public class TerrainSeed {
 		peakheight.add(ScaleY);
 	}
 	
-	public int GetPeakCount()
+	public int getPeakCount()
 	{
 		return peaks.size();
 	}
 	
-	public Vector<Vector2> GetBases()
+	public Vector<Vector2> getBases()
 	{
 		return baselocation;
 	}
 	
-	public Vector<Integer> GetPeaks()
+	public Vector<Integer> getPeaks()
 	{
 		return peaks;
 	}
 	
-	public Vector<Integer> GetSharpness()
+	public Vector<Integer> getSharpness()
 	{
 		return sharpness;
 	}
 	
-	public Vector<Integer> GetPeakHeight()
+	public Vector<Integer> getPeakHeight()
 	{
 		return peakheight;
 	}
 	
-	public Vector<Integer> GetPeakWidth()
+	public Vector<Integer> getPeakWidth()
 	{
 		return peakwidth;
 	}

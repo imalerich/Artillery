@@ -15,7 +15,7 @@ public class Shaders
 	private static ShaderProgram current;
 	private static ShaderProgram prev;
 	
-	public static void Release()
+	public static void release()
 	{
 		if (hili != null)
 			hili.dispose();
@@ -33,12 +33,12 @@ public class Shaders
 			nulltank.dispose();
 	}
 	
-	public static void Init()
+	public static void init()
 	{
 		current = null;
 		prev = null;
 		
-		Release();
+		release();
 		
 		String vshader = Gdx.files.internal("shaders/def.vs").readString();
 		String fshader = Gdx.files.internal("shaders/hili.fs").readString();
@@ -54,7 +54,7 @@ public class Shaders
 		nulltank = new ShaderProgram(vshader, nullshader);
 	}
 	
-	public static void SetShader(SpriteBatch Batch, ShaderProgram Prog)
+	public static void setShader(SpriteBatch Batch, ShaderProgram Prog)
 	{
 		prev = current;
 		current = Prog;
@@ -62,7 +62,7 @@ public class Shaders
 		Batch.setShader(current);
 	}
 	
-	public static void RevertShader(SpriteBatch Batch)
+	public static void revertShader(SpriteBatch Batch)
 	{
 		current = prev;
 		prev = null;

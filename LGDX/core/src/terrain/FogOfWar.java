@@ -11,17 +11,17 @@ public class FogOfWar
 {
 	private static ShapeRenderer sr;
 	
-	public static void Release()
+	public static void release()
 	{
 		if (sr != null) sr.dispose();
 	}
 	
-	public static void Init()
+	public static void init()
 	{
 		sr = new ShapeRenderer();
 	}
 	
-	public static void Begin(SpriteBatch Batch)
+	public static void begin(SpriteBatch Batch)
 	{
 		// begin alpha mask rendering
 		Batch.flush();
@@ -34,23 +34,23 @@ public class FogOfWar
 		Gdx.gl.glClear(GL20.GL_STENCIL_BUFFER_BIT);
 		Batch.end();
 		
-		sr.setProjectionMatrix(Game.GetProj().combined);
+		sr.setProjectionMatrix(Game.getProj().combined);
 		sr.begin(ShapeType.Filled);
 	}
 	
-	public static void AddVisibleRegion(float ScreenX, float ScreenY, int Radius)
+	public static void addVisibleRegion(float ScreenX, float ScreenY, int Radius)
 	{
 		sr.setColor(1, 1, 1, 1);
 		sr.circle(ScreenX, ScreenY, Radius);
 	}
 	
-	public static void End(SpriteBatch Batch)
+	public static void end(SpriteBatch Batch)
 	{
 		sr.end();
 		Batch.begin();
 	}
 	
-	public static void MaskOn(SpriteBatch Batch)
+	public static void maskOn(SpriteBatch Batch)
 	{
 		// turn the mask on
 		Gdx.gl.glColorMask(true, true, true, true);
@@ -58,7 +58,7 @@ public class FogOfWar
 		Gdx.gl.glStencilFunc(GL20.GL_EQUAL,  1, 0xFF);
 	}
 	
-	public static void MaskOff(SpriteBatch Batch)
+	public static void maskOff(SpriteBatch Batch)
 	{
 		// reset the blend function
 		Batch.flush();

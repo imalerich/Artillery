@@ -10,18 +10,18 @@ public class SquadConfigurations
 	
 	private static ConfigSettings[] settings;
 	
-	public static void Init()
+	public static void init()
 	{
 		settings = new ConfigSettings[CONFIGCOUNT];
-		settings[GUNMAN] = ConfigGenerator.LoadConfiguration("config/gunman.rc");
-		settings[SPECOPS] = ConfigGenerator.LoadConfiguration("config/specops.rc");
-		settings[STEALTHOPS] = ConfigGenerator.LoadConfiguration("config/stealthops.rc");
-		settings[TANK] = ConfigGenerator.LoadConfiguration("config/tank.rc");
+		settings[GUNMAN] = ConfigGenerator.loadConfiguration("config/gunman.rc");
+		settings[SPECOPS] = ConfigGenerator.loadConfiguration("config/specops.rc");
+		settings[STEALTHOPS] = ConfigGenerator.loadConfiguration("config/stealthops.rc");
+		settings[TANK] = ConfigGenerator.loadConfiguration("config/tank.rc");
 	}
 	
-	public static ConfigSettings GetConfiguration(int Index)
+	public static ConfigSettings getConfiguration(int Index)
 	{
-		if (!IsValidConfig(Index)) {
+		if (!isValidConfig(Index)) {
 			System.err.println("Invalid Configuration Specified at Index " + Index);
 			return null;
 		}
@@ -29,7 +29,7 @@ public class SquadConfigurations
 		return settings[Index];
 	}
 	
-	private static boolean IsValidConfig(int Index)
+	private static boolean isValidConfig(int Index)
 	{
 		return (Index >= 0) && (Index < CONFIGCOUNT);
 	}

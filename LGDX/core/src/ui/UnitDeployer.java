@@ -24,7 +24,7 @@ public class UnitDeployer
 	
 	private static double clock = 0.0;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (glyphs == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/indicators/units.png") );
@@ -36,12 +36,12 @@ public class UnitDeployer
 		}
 	}
 	
-	public static void ResetClock()
+	public static void resetClock()
 	{
 		clock = 0.0;
 	}
 	
-	public static void SetPos(Vector2 BasePos)
+	public static void setPos(Vector2 BasePos)
 	{
 		for (int i=0; i<UNITCOUNT; i++) 
 		{
@@ -54,12 +54,12 @@ public class UnitDeployer
 		}
 	}
 	
-	public static void SetBBox(Rectangle BBox, int Index)
+	public static void setBBox(Rectangle BBox, int Index)
 	{
 		bbox[Index] = BBox;
 	}
 	
-	public static boolean Contains(int Index)
+	public static boolean contains(int Index)
 	{
 		if (Index >= 0 && Index < UNITCOUNT)
 			return true;
@@ -67,18 +67,18 @@ public class UnitDeployer
 			return false;
 	}
 	
-	public static int GetSelected(Camera Cam)
+	public static int getSelected(Camera Cam)
 	{
 		for (int i=0; i<UNITCOUNT; i++)
 		{
-			if ( Cursor.IsMouseOver(bbox[i], Cam.GetPos()) )
+			if ( Cursor.isMouseOver(bbox[i], Cam.getPos()) )
 					return i;
 		}
 		
 		return -1;
 	}
 	
-	public static void Draw(SpriteBatch Batch, Camera Cam, int Index)
+	public static void draw(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		// increment the clock
 		clock += Gdx.graphics.getDeltaTime();
@@ -86,7 +86,7 @@ public class UnitDeployer
 		if (GROWSPEED*clock*clock < 1.0)
 			scale = GROWSPEED*(float)(clock * clock);
 			
-		int selected = GetSelected(Cam);
+		int selected = getSelected(Cam);
 
 		Vector2 pos = new Vector2(bbox[Index].x, bbox[Index].y);
 		pos.x += ( bbox[Index].width/2 - glyphs[Index].getRegionWidth()/2 );
@@ -98,8 +98,8 @@ public class UnitDeployer
 		if (selected == Index && Cursor.isButtonPressed(Cursor.LEFT))
 			yoff -= BUTTONDOWN;
 
-		pos.x = Cam.GetRenderX(pos.x + xoff);
-		pos.y = Cam.GetRenderY(pos.y + yoff);
+		pos.x = Cam.getRenderX(pos.x + xoff);
+		pos.y = Cam.getRenderY(pos.y + yoff);
 
 		Batch.draw(glyphs[Index], pos.x, pos.y, 
 				glyphs[Index].getRegionWidth()*scale, glyphs[Index].getRegionHeight()*scale);

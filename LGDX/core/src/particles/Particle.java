@@ -31,29 +31,29 @@ public class Particle
 		}
 	}
 	
-	public float GetSize()
+	public float getSize()
 	{
 		return radius;
 	}
 	
-	public Vector2 GetPos()
+	public Vector2 getPos()
 	{
 		return pos;
 	}
 	
-	public Vector2 GetVelocity()
+	public Vector2 getVelocity()
 	{
 		return vel;
 	}
 	
-	public boolean IsAlive()
+	public boolean isAlive()
 	{
 		return radius > 0f;
 	}
 	
-	public void Update()
+	public void update()
 	{
-		ModVel();
+		modVel();
 		pos.x += vel.x * Gdx.graphics.getDeltaTime();
 		pos.y += vel.y * Gdx.graphics.getDeltaTime();
 		pos.y += GRAVITY * Gdx.graphics.getDeltaTime();
@@ -66,12 +66,12 @@ public class Particle
 		radius -= Gdx.graphics.getDeltaTime() * DECAY;
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
-		ParticleMask.AddVisibleRegion(Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y), (int)radius);
+		ParticleMask.addVisibleRegion(Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), (int)radius);
 	}
 	
-	private void ModVel()
+	private void modVel()
 	{
 		float time = Gdx.graphics.getDeltaTime();
 		if (vel.x > 0) {

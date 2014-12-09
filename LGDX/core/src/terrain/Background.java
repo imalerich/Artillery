@@ -15,7 +15,7 @@ public class Background {
 	private static Texture bg;
 	private static Texture fg;
 	
-	public static void Release()
+	public static void release()
 	{
 		if (bg != null)
 			bg.dispose();
@@ -24,7 +24,7 @@ public class Background {
 			fg.dispose();
 	}
 	
-	public static void Init()
+	public static void init()
 	{
 		if (bg == null) {
 			Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
@@ -43,12 +43,12 @@ public class Background {
 		}
 	}
 	
-	public static void DrawBG(SpriteBatch Batch)
+	public static void drawBG(SpriteBatch Batch)
 	{
 		Batch.draw(bg, 0, 0, Game.SCREENW, Game.SCREENH);
 	}
 	
-	public static void DrawFG(SpriteBatch Batch)
+	public static void drawFG(SpriteBatch Batch)
 	{
 		Batch.draw(fg, 0, 0, Game.SCREENW, Game.SCREENH);
 	}

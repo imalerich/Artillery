@@ -25,7 +25,7 @@ public class Gunman extends Unit
 	private float lasthealth;
 	private double dmgclock;
 	
-	public static void Init()
+	public static void init()
 	{
 		GUNMAN = new Texture( Gdx.files.internal("img/units/gunman.png") );
 		STEALTHTROOPS = new Texture( Gdx.files.internal("img/units/stealthtroops.png") );
@@ -34,7 +34,7 @@ public class Gunman extends Unit
 	}
 	
 	@Override
-	public void Release()
+	public void release()
 	{
 		if (GUNMAN != null)
 			GUNMAN.dispose();
@@ -48,38 +48,38 @@ public class Gunman extends Unit
 		if (DEATHANIM != null)
 			DEATHANIM.dispose();
 		
-		anim.Release();
+		anim.release();
 	}
 	
 	@Override
-	public boolean IsAlive()
+	public boolean isAlive()
 	{
-		return !death.IsCompleted(0);
+		return !death.isCompleted(0);
 	}
 	
 	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed, int Health)
 	{
 		if (anim == null) {
 			anim = new AnimTex(Tex, 1, 4, 4);
-			anim.NewAnimation(0, 1, 0, 0, 0.0f);
-			anim.NewAnimation(1, 2, 0, 1, 0.2f);
-			anim.NewAnimation(2, 1, 2, 2, 0.0f);
-			anim.NewAnimation(3, 1, 3, 3, 0.0f);
+			anim.newAnimation(0, 1, 0, 0, 0.0f);
+			anim.newAnimation(1, 2, 0, 1, 0.2f);
+			anim.newAnimation(2, 1, 2, 2, 0.0f);
+			anim.newAnimation(3, 1, 3, 3, 0.0f);
 		}
 		
 		if (death == null) {
 			death = new AnimTex(DEATHANIM, 1, 3, 1);
-			death.NewAnimation(0, 3, 0, 2, 0.1f);
-			death.SetTime(0.0f);
+			death.newAnimation(0, 3, 0, 2, 0.1f);
+			death.setTime(0.0f);
 		}
 		
-		halfwidth = anim.GetFrameWidth();
+		halfwidth = anim.getFrameWidth();
 		
 		pos = Pos;
-		pos.y = Game.WORLDH - Ter.GetHeight((int)pos.x+halfwidth) - 3;
+		pos.y = Game.WORLDH - Ter.getHeight((int)pos.x+halfwidth) - 3;
 		
-		width = anim.GetFrameWidth();
-		height = anim.GetFrameHeight();
+		width = anim.getFrameWidth();
+		height = anim.getFrameHeight();
 		
 		forward = true;
 		ter = Ter;
@@ -91,7 +91,7 @@ public class Gunman extends Unit
 		dmgclock = 0f;
 	}
 	
-	private void DrawOutline(SpriteBatch Batch, Camera Cam, int Index)
+	private void drawOutline(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		for (int x=-1; x<2; x++) {
 			for (int y=-1; y<2; y++) {
@@ -100,46 +100,46 @@ public class Gunman extends Unit
 				Coords.y += y;
 				
 				if (forward)
-					anim.Render(Batch, Cam, Index, Coords, 1.0f, 1.0f);
-				else anim.Render(Batch, Cam, Index, Coords, -1.0f, 1.0f);
+					anim.render(Batch, Cam, Index, Coords, 1.0f, 1.0f);
+				else anim.render(Batch, Cam, Index, Coords, -1.0f, 1.0f);
 			}
 		}
 	}
 	
-	private void DrawHighlight(SpriteBatch Batch, Camera Cam, int Index)
+	private void drawHighlight(SpriteBatch Batch, Camera Cam, int Index)
 	{
 		// draw a highlighted version of the sprite
-		Shaders.SetShader(Batch, Shaders.hili);
-		DrawOutline(Batch, Cam, Index);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.hili);
+		drawOutline(Batch, Cam, Index);
+		Shaders.revertShader(Batch);
 	}
 	
-	private void DrawTarget(SpriteBatch Batch, Camera Cam, int Index)
+	private void drawTarget(SpriteBatch Batch, Camera Cam, int Index)
 	{
-		Shaders.SetShader(Batch, Shaders.target);
-		DrawOutline(Batch, Cam, Index);
-		Shaders.RevertShader(Batch);
+		Shaders.setShader(Batch, Shaders.target);
+		drawOutline(Batch, Cam, Index);
+		Shaders.revertShader(Batch);
 	}
 	
-	public void DrawDieing(SpriteBatch Batch, Camera Cam)
+	public void drawDieing(SpriteBatch Batch, Camera Cam)
 	{
-		death.UpdateClock();
+		death.updateClock();
 		
 		if (forward)
-			death.Render(Batch, Cam, 0, pos, 1.0f, 1.0f, false);
+			death.render(Batch, Cam, 0, pos, 1.0f, 1.0f, false);
 		else
-			death.Render(Batch, Cam, 0, pos, -1.0f, 1.0f, false);
+			death.render(Batch, Cam, 0, pos, -1.0f, 1.0f, false);
 	}
 	
 	@Override
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
 		if (health <= 0) {
-			DrawDieing(Batch, Cam);
+			drawDieing(Batch, Cam);
 			return;
 		}
 		
-		SetHeight();
+		setHeight();
 		Vector2 Coords = new Vector2(pos);
 		int index = 1;
 		if (isFiring) {
@@ -155,31 +155,31 @@ public class Gunman extends Unit
 		}
 		
 		if (moving)
-			anim.UpdateClock();
+			anim.updateClock();
 		
 		if (Highlight)
-			DrawHighlight(Batch, Cam, index);
+			drawHighlight(Batch, Cam, index);
 		else if (Target)
-			DrawTarget(Batch, Cam, index);
+			drawTarget(Batch, Cam, index);
 		
-		int width = anim.GetFrameWidth();
-		int height = anim.GetFrameHeight();
-		DrawAnim(Batch, Cam, index, Coords, width, height);
+		int width = anim.getFrameWidth();
+		int height = anim.getFrameHeight();
+		drawAnim(Batch, Cam, index, Coords, width, height);
 		
-		if (Cursor.IsMouseOver(GetBBox(), Cam.GetPos())) {
-			Shaders.SetShader(Batch, Shaders.health);
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
-			DrawAnim(Batch, Cam, index, Coords, width, h);
-			Shaders.RevertShader(Batch);
+			drawAnim(Batch, Cam, index, Coords, width, h);
+			Shaders.revertShader(Batch);
 		}
 		
 		moving = false;
 	}
 	
-	private void DrawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
+	private void drawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
 	{
 		if (forward)
-			anim.Render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
-		else anim.Render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
+			anim.render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
+		else anim.render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
 	}
 }

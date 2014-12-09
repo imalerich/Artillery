@@ -26,7 +26,7 @@ public class Armor
 		strength = Strength;
 	}
 	
-	public void Damage(int Ammount)
+	public void damage(int Ammount)
 	{
 		health = Math.max(health-Ammount, 0);
 		
@@ -34,12 +34,12 @@ public class Armor
 		strength = (int)(maxstrength * ((float)health/maxhealth));
 	}
 	
-	public int GetHealth()
+	public int getHealth()
 	{
 		return health;
 	}
 	
-	public int GetStrength()
+	public int getStrength()
 	{
 		return strength;
 	}

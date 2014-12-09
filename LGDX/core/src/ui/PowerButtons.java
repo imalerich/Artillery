@@ -28,7 +28,7 @@ public class PowerButtons
 	private int mouseover;
 	private float timer;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (tex0 == null) {
 			tex0 = new Texture( Gdx.files.internal("img/ui/indicators/modpowerup.png") );
@@ -43,7 +43,7 @@ public class PowerButtons
 		}
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (tex0 != null) {
 			tex0.dispose();
@@ -69,7 +69,7 @@ public class PowerButtons
 		timer = 0f;
 	}
 	
-	public void SetPos(Vector2 Pos)
+	public void setPos(Vector2 Pos)
 	{
 		r0 = new Rectangle(Pos.x - tex0.getWidth()/2f, Pos.y+tex1.getHeight()/2f, 
 				tex0.getWidth(), tex0.getHeight());
@@ -78,35 +78,35 @@ public class PowerButtons
 				tex2.getWidth(), tex2.getHeight());
 	}
 	
-	public void SetPos(float X, float Y)
+	public void setPos(float X, float Y)
 	{
-		SetPos(new Vector2(X, Y));
+		setPos(new Vector2(X, Y));
 	}
 	
-	public float GetPower()
+	public float getPower()
 	{
 		return power;
 	}
 	
-	public int GetMouseOver(Camera Cam)
+	public int getMouseOver(Camera Cam)
 	{
-		if (Cursor.IsMouseOver(r0, Cam.GetPos())) {
+		if (Cursor.isMouseOver(r0, Cam.getPos())) {
 			return 1;
-		} else if (Cursor.IsMouseOver(r2, Cam.GetPos())) {
+		} else if (Cursor.isMouseOver(r2, Cam.getPos())) {
 			return -1;
 		}
 		
 		return 0;
 	}
 	
-	public void Update(Camera Cam)
+	public void update(Camera Cam)
 	{
 		if (Cursor.isButtonPressed(Cursor.LEFT)) {
 			// if this is a fresh press
-			int over = GetMouseOver(Cam);
+			int over = getMouseOver(Cam);
 			if (over != mouseover) {
 				power += 2*over;
-				AssertPower();
+				assertPower();
 				mouseover = over;
 				timer = 0f;
 				return;
@@ -121,7 +121,7 @@ public class PowerButtons
 			
 			mouseover = over;
 			power += over * Gdx.graphics.getDeltaTime() * SPEED;
-			AssertPower();
+			assertPower();
 		} else {
 			mouseover = 0;
 			timer = 0f;
@@ -130,16 +130,16 @@ public class PowerButtons
 		power -= Gdx.graphics.getDeltaTime() * SPEED * Cursor.getScrollDirection() * 2;
 	}
 	
-	public boolean DoFire(Camera Cam)
+	public boolean doFire(Camera Cam)
 	{
-		if (Cursor.IsMouseOver(r1, Cam.GetPos()) && Cursor.isButtonJustReleased(Cursor.LEFT)) {
+		if (Cursor.isMouseOver(r1, Cam.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		int offset0 = 0;
 		int offset1 = 0;
@@ -147,22 +147,22 @@ public class PowerButtons
 		
 		if (Cursor.isButtonPressed(Cursor.LEFT))
 		{
-			if (Cursor.IsMouseOver(r0, Cam.GetPos())) {
+			if (Cursor.isMouseOver(r0, Cam.getPos())) {
 				offset0 = -4;
-			} else if (Cursor.IsMouseOver(r1, Cam.GetPos())) {
+			} else if (Cursor.isMouseOver(r1, Cam.getPos())) {
 				offset1 = -4;
-			} else if (Cursor.IsMouseOver(r2, Cam.GetPos())) {
+			} else if (Cursor.isMouseOver(r2, Cam.getPos())) {
 				offset2 = -4;
 			}
 		}
 		
 		// draw the pointer textures
-		Batch.draw(tex0, Cam.GetRenderX(r0.x), Cam.GetRenderY(r0.y + offset0));
-		Batch.draw(tex1, Cam.GetRenderX(r1.x), Cam.GetRenderY(r1.y + offset1));
-		Batch.draw(tex2, Cam.GetRenderX(r2.x), Cam.GetRenderY(r2.y + offset2));
+		Batch.draw(tex0, Cam.getRenderX(r0.x), Cam.getRenderY(r0.y + offset0));
+		Batch.draw(tex1, Cam.getRenderX(r1.x), Cam.getRenderY(r1.y + offset1));
+		Batch.draw(tex2, Cam.getRenderX(r2.x), Cam.getRenderY(r2.y + offset2));
 	}
 	
-	private void AssertPower()
+	private void assertPower()
 	{
 		if (power > MAXPOWER) {
 			power = MAXPOWER;

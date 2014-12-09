@@ -1,5 +1,6 @@
 package ui;
 
+import network.Response;
 import objects.FoxHole;
 import terrain.Terrain;
 
@@ -29,45 +30,55 @@ public class FoxHoleMenu
 		move = new PointSelect(Ter);
 	}
 	
-	public void SetSelected(Squad Selected)
+	public void setSelected(Squad Selected)
 	{
-		move.SetPos((int)Selected.GetBoundingBox().x, (int)Selected.GetBoundingBox().width);
-		move.SetMaxDist(Selected.GetMoveDist());
-		startx = Selected.GetBoundingBox().x + Selected.GetBoundingBox().width/2f;
+		move.setPos((int)Selected.getBoundingBox().x, (int)Selected.getBoundingBox().width);
+		move.setMaxDist(Selected.getMoveDist());
+		startx = Selected.getBoundingBox().x + Selected.getBoundingBox().width/2f;
 	}
 	
-	public void SetSelectedTarget(Squad Selected)
+	public void setSelectedTarget(Squad Selected)
 	{
-		int d = GetMoveDirection(pos.x);
+		int d = getMoveDirection(pos.x);
+		int xpos = 0;
 		if (d == 1) {
-			Selected.SetTargetX((int)pos.x + FoxHole.FOXHOLE.getWidth() - FoxHole.MOUNDWIDTH);
+			xpos = (int)pos.x + FoxHole.FOXHOLE.getWidth() - FoxHole.MOUNDWIDTH;
 		} else {
-			Selected.SetTargetX((int)pos.x + FoxHole.MOUNDWIDTH);
+			xpos = (int)pos.x + FoxHole.MOUNDWIDTH;
 		}
 		
-		Selected.AddFoxOnFinishMove(new Vector2(pos));
+		// tell all clients which squad is moving
+		Response r = new Response();
+		r.request = "SQUADMOVE";
+		r.i0 = Selected.getID();
+		r.i1 = xpos;
+		r.source = Selected.getArmy().getConnection();
+		
+		Selected.getArmy().getNetwork().getClient().sendTCP(r);
+		Selected.setTargetX(xpos);
+		Selected.addFoxOnFinishMove(new Vector2(pos));
 	}
 	
-	public boolean IsPosValid()
+	public boolean isPosValid()
 	{
 		return isvalid;
 	}
 	
-	public Vector2 GetPos()
+	public Vector2 getPos()
 	{
 		return new Vector2(pos);
 	}
 	
-	public static void CutRoom(Terrain Ter, Vector2 Pos)
+	public static void cutRoom(Terrain Ter, Vector2 Pos)
 	{
 		int ypos = Game.WORLDH - (int)Pos.y;
-		Ter.CutRegion((int)Pos.x+FoxHole.MOUNDWIDTH, 0, FoxHole.FOXHOLE.getWidth()-(FoxHole.MOUNDWIDTH*2), ypos);
+		Ter.cutRegion((int)Pos.x+FoxHole.MOUNDWIDTH, 0, FoxHole.FOXHOLE.getWidth()-(FoxHole.MOUNDWIDTH*2), ypos);
 	}
 	
-	public void Update(Camera Cam)
+	public void update(Camera Cam)
 	{
-		float xpos = Cursor.GetMouseX(Cam.GetPos()) + Cam.GetPos().x - FoxHole.FOXHOLE.getWidth()/2;
-		xpos = ValidatePos(Cam.GetPos(), xpos);
+		float xpos = Cursor.getMouseX(Cam.getPos()) + Cam.getPos().x - FoxHole.FOXHOLE.getWidth()/2;
+		xpos = validatePos(Cam.getPos(), xpos);
 	
 		// a change in position occurred
 		if (pos.x != xpos) {
@@ -75,8 +86,8 @@ public class FoxHoleMenu
 			pos.x = xpos;
 			
 			// calculate the variation
-			int miny = ter.GetMinHeight( (int)pos.x, (int)(pos.x + FoxHole.FOXHOLE.getWidth()) );
-			int maxy = ter.GetMaxHeight( (int)pos.x, (int)(pos.x + FoxHole.FOXHOLE.getWidth()) );
+			int miny = ter.getMinHeight( (int)pos.x, (int)(pos.x + FoxHole.FOXHOLE.getWidth()) );
+			int maxy = ter.getMaxHeight( (int)pos.x, (int)(pos.x + FoxHole.FOXHOLE.getWidth()) );
 			int variation = maxy -miny;
 			
 			pos.y = Game.WORLDH - maxy - 1;
@@ -89,12 +100,12 @@ public class FoxHoleMenu
 		}
 	}
 	
-	public float ValidatePos(Vector2 Campos, float Pos)
+	public float validatePos(Vector2 Campos, float Pos)
 	{
-		float minx = move.GetMinX();
-		float maxx = move.GetMaxX();
+		float minx = move.getMinX();
+		float maxx = move.getMaxX();
 		
-		int d = GetMoveDirection(Pos);
+		int d = getMoveDirection(Pos);
 		
 		if (d == 1) {
 			// right
@@ -123,7 +134,7 @@ public class FoxHoleMenu
 		return Pos;
 	}
 	
-	private int GetMoveDirection(float Pos)
+	private int getMoveDirection(float Pos)
 	{
 		float width = FoxHole.FOXHOLE.getWidth()/2f;
 
@@ -145,7 +156,7 @@ public class FoxHoleMenu
 		}
 	}
 	
-	public void Render(SpriteBatch Batch, Camera Cam)
+	public void render(SpriteBatch Batch, Camera Cam)
 	{
 		// set the indication color on whether or not the position is valid
 		if (!isvalid) 
@@ -153,7 +164,7 @@ public class FoxHoleMenu
 		else 
 			Batch.setColor(0f, 1f, 0f, 0.6f);
 		
-		Batch.draw(FoxHole.FOXHOLE, Cam.GetRenderX(pos.x), Cam.GetRenderY(pos.y));
+		Batch.draw(FoxHole.FOXHOLE, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y));
 		Batch.setColor(Color.WHITE);
 	}
 }

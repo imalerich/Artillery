@@ -3,6 +3,7 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import objects.FoxHole;
 import network.NetworkManager;
 import network.Response;
 import physics.CombatResolver;
@@ -62,10 +63,10 @@ public class UserArmy extends Army
 		base = Base;
 		network = Network;
 		squads = new Vector<Squad>();
-		SetConnection(Connection);
+		setConnection(Connection);
 		
-		UnitDeployer.SetPos(base.GetPos());
-		SetDeployBBox();
+		UnitDeployer.setPos(base.getPos());
+		setDeployBBox();
 		
 		optionstack = new SelectionStack();
 		targetstack = new SelectionStack();
@@ -77,14 +78,14 @@ public class UserArmy extends Army
 		foxactive = false;
 		
 		menu = new ButtonOptions(0, 0, 4);
-		menu.SetGlyph(0, ButtonOptions.MOVE);
-		menu.SetGlyph(1, ButtonOptions.MOVEFOXHOLE);
-		menu.SetGlyph(2, ButtonOptions.UPGRADE);
-		menu.SetGlyph(3, ButtonOptions.STOP);
+		menu.setGlyph(0, ButtonOptions.MOVE);
+		menu.setGlyph(1, ButtonOptions.MOVEFOXHOLE);
+		menu.setGlyph(2, ButtonOptions.UPGRADE);
+		menu.setGlyph(3, ButtonOptions.STOP);
 		
 		offensemenu = new ButtonOptions(0, 0, 2);
-		offensemenu.SetGlyph(0, ButtonOptions.ATTACK);
-		offensemenu.SetGlyph(1, ButtonOptions.STOP);
+		offensemenu.setGlyph(0, ButtonOptions.ATTACK);
+		offensemenu.setGlyph(1, ButtonOptions.STOP);
 		
 		foxselect = new FoxHoleMenu(Ter);
 		
@@ -106,24 +107,24 @@ public class UserArmy extends Army
 	}
 
 	@Override
-	public void CatchMessage(Response r) 
+	public void catchMessage(Response r) 
 	{
 		//
 	}
 	
-	private void SetDeployBBox()
+	private void setDeployBBox()
 	{
-		Rectangle r0 = new Rectangle(base.GetPos().x+76, base.GetPos().y, 110, 79);
-		Rectangle r1 = new Rectangle(base.GetPos().x+192, base.GetPos().y, 110, 79);
-		Rectangle r2 = new Rectangle(base.GetPos().x+306, base.GetPos().y, 110, 79);
+		Rectangle r0 = new Rectangle(base.getPos().x+76, base.getPos().y, 110, 79);
+		Rectangle r1 = new Rectangle(base.getPos().x+192, base.getPos().y, 110, 79);
+		Rectangle r2 = new Rectangle(base.getPos().x+306, base.getPos().y, 110, 79);
 		
-		UnitDeployer.SetBBox(r0, 0);
-		UnitDeployer.SetBBox(r1, 1);
-		UnitDeployer.SetBBox(r2, 2);
+		UnitDeployer.setBBox(r0, 0);
+		UnitDeployer.setBBox(r1, 1);
+		UnitDeployer.setBBox(r2, 2);
 	}
 	
 	@Override
-	public boolean IsStageCompleted(int Stage)
+	public boolean isStageCompleted(int Stage)
 	{
 		Response r = new Response();
 				
@@ -131,21 +132,21 @@ public class UserArmy extends Army
 		{
 		case GameWorld.MOVESELECT:
 			// do not leave the stage while a menu is open
-			if (IsMenuOpen())
+			if (isMenuOpen())
 				return false;
 			
 			// check the end turn conditions
 			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
 				stagecompleted[Stage] = true;
-			else if (MenuBar.IsEndTurn())
+			else if (MenuBar.isEndTurn())
 				stagecompleted[Stage] = true;
 			
 			if (stagecompleted[Stage]) {
-				r.source = GetConnection();
+				r.source = getConnection();
 				r.request = "MOVESELECT";
 				r.b0 = true;
 				
-				network.GetClient().sendTCP(r);
+				network.getClient().sendTCP(r);
 			}
 			
 			return stagecompleted[Stage];
@@ -153,35 +154,35 @@ public class UserArmy extends Army
 		case GameWorld.MOVEUPDATE:
 			Iterator<Squad> s = squads.iterator();
 			while (s.hasNext()) {
-				if (s.next().IsMoving())
+				if (s.next().isMoving())
 					return false;
 			}
 			
-			r.source = GetConnection();
+			r.source = getConnection();
 			r.request = "MOVEUPDATE";
 			r.b0 = true;
 
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 				
 			return true;
 			
 		case GameWorld.ATTACKSELECT:
 			// do not leave the stage while a menu is open
-			if (IsMenuOpen())
+			if (isMenuOpen())
 				return false;
 			
 			// check the end turn conditions
 			if (Gdx.input.isKeyJustPressed(Keys.ENTER))
 				stagecompleted[Stage] = true;
-			else if (MenuBar.IsEndTurn())
+			else if (MenuBar.isEndTurn())
 				stagecompleted[Stage] = true;
 			
 			if (stagecompleted[Stage]) {
-				r.source = GetConnection();
+				r.source = getConnection();
 				r.request = "ATTACKSELECT";
 				r.b0 = true;
 				
-				network.GetClient().sendTCP(r);
+				network.getClient().sendTCP(r);
 			}
 			
 			return stagecompleted[Stage];
@@ -195,7 +196,7 @@ public class UserArmy extends Army
 	}
 	
 	@Override
-	public void AddCombatData(CombatResolver Resolver)
+	public void addCombatData(CombatResolver Resolver)
 	{
 		// uses the power modifier for projectiles
 		Iterator<Squad> s = squads.iterator();
@@ -203,18 +204,18 @@ public class UserArmy extends Army
 			Squad squad = s.next();
 			
 			// add each squad and its target to the combat resolver
-			if (squad.GetTargetSquad() != null && 
-					squad.GetArmament().GetType() == Armament.UNITTARGET) {
-				Resolver.AddConflict(squad, squad.GetTargetSquad());
-			} else if (squad.IsFiring() && squad.GetArmament().GetType() == Armament.POINTTARGET) {
-				Resolver.AddProjectile(squad, powerselect.GetPower()/PowerButtons.MAXPOWER,
-						squad.GetArmament().GetStrength());
+			if (squad.getTargetSquad() != null && 
+					squad.getArmament().getType() == Armament.UNITTARGET) {
+				Resolver.addConflict(squad, squad.getTargetSquad());
+			} else if (squad.isFiring() && squad.getArmament().getType() == Armament.POINTTARGET) {
+				Resolver.addProjectile(squad, powerselect.getPower()/PowerButtons.MAXPOWER,
+						squad.getArmament().getStrength());
 			}
 		}
 	}
 	
 	@Override
-	public boolean UpdateTargetOptions(int Size)
+	public boolean updateTargetOptions(int Size)
 	{
 		if (Size != prevTargetStackSize) {
 			prevTargetStackSize = Size;
@@ -225,44 +226,44 @@ public class UserArmy extends Army
 	}
 	
 	@Override
-	public void UpdateThreads() 
+	public void updateThreads() 
 	{
 		//
 	}
 	
 	@Override
-	public SelectionStack GetTargetOptions()
+	public SelectionStack getTargetOptions()
 	{
 		return targetstack;
 	}
 	
 	@Override
-	public void SetTargetSquad(Squad Target)
+	public void setTargetSquad(Squad Target)
 	{
 		if (selected != null && targetenemies) {
-			selected.SetTargetSquad(Target);
+			selected.setTargetSquad(Target);
 		}
 	}
 	
 	@Override
-	public boolean IsTargeting()
+	public boolean isTargeting()
 	{
 		return targetenemies;
 	}
 	
 	@Override
-	public void InitStage(int NewStage)
+	public void initStage(int NewStage)
 	{
-		super.InitStage(NewStage);
+		super.initStage(NewStage);
 		
 		if (NewStage == GameWorld.ATTACKSELECT) {
-			targetstack.Reset();
+			targetstack.reset();
 			
 			Iterator<Squad> s = squads.iterator();
 			while (s.hasNext()) {
 				Squad squad = s.next();
-				squad.SetTargetSquad(null);
-				squad.SetFiring(false);
+				squad.setTargetSquad(null);
+				squad.setFiring(false);
 			}
 		} else if (NewStage == GameWorld.MOVESELECT) {
 			requisition += REQBONUS;
@@ -273,49 +274,49 @@ public class UserArmy extends Army
 	}
 	
 	@Override
-	public void UpdateMove(Camera Cam)
+	public void updateMove(Camera Cam)
 	{
-		super.UpdateMove(Cam);
+		super.updateMove(Cam);
 	}
 	
 	@Override
-	public void UpdateMoveSelect(Camera Cam)
+	public void updateMoveSelect(Camera Cam)
 	{
 		// do not update while waiting for others to complete
 		if (stagecompleted[GameWorld.MOVESELECT])
 			return;
 		
-		BuildOptionStack(Cam, true);
-		SetSelected();
-		UpdateDeployer(Cam);
+		buildOptionStack(Cam, true);
+		setSelected();
+		updateDeployer(Cam);
 		
-		UpdateMenu(Cam);
+		updateMenu(Cam);
 	}
 	
 	@Override
-	public void UpdateAttackSelect(Camera Cam)
+	public void updateAttackSelect(Camera Cam)
 	{
 		// do not update while waiting for others to complete
 		if (stagecompleted[GameWorld.ATTACKSELECT])
 			return;
 		
-		BuildOptionStack(Cam, false);
-		SetSelected();
+		buildOptionStack(Cam, false);
+		setSelected();
 		
-		UpdateOffenseMenu(Cam);
+		updateOffenseMenu(Cam);
 	}
 	
-	private void BuildOptionStack(Camera Cam, boolean IncludeDeployer)
+	private void buildOptionStack(Camera Cam, boolean IncludeDeployer)
 	{
 		// do not process new information while a menu is open
-		if (IsMenuOpen()) {
-			optionstack.Reset();
+		if (isMenuOpen()) {
+			optionstack.reset();
 			return;
 		}
 		
 		// process input
-		ProcStackChange();
-		int stacksize = CalcOptionStackSize(Cam);
+		procStackChange();
+		int stacksize = calcOptionStackSize(Cam);
 
 		/*
 		 *  no change occurred leave the method and do not recalculate the option stack
@@ -328,24 +329,24 @@ public class UserArmy extends Army
 		prevOptionStackSize = stacksize;
 		
 		// reset the option stack and recalculate its contents
-		optionstack.Reset();
-		GetMouseOver(optionstack, Cam);
+		optionstack.reset();
+		getMouseOver(optionstack, Cam);
 		
 		if (!IncludeDeployer)
 			return;
 		
-		int selected = UnitDeployer.GetSelected(Cam);
-		if (UnitDeployer.Contains(selected))
-			optionstack.AddBarracksOver();
+		int selected = UnitDeployer.getSelected(Cam);
+		if (UnitDeployer.contains(selected))
+			optionstack.addBarracksOver();
 	}
 	
-	private void ProcStackChange()
+	private void procStackChange()
 	{
 		// remove all invalid references from the target stack
-		if (selected != null && targetstack.GetSize() != 0) {
-			Iterator<SelectionElement> i = targetstack.GetIterator();
+		if (selected != null && targetstack.getSize() != 0) {
+			Iterator<SelectionElement> i = targetstack.getIterator();
 			while (i.hasNext()) {
-				if (!selected.IsIntersectingView(i.next().ref.GetBBox())) {
+				if (!selected.isIntersectingView(i.next().ref.getBBox())) {
 					i.remove();
 				}
 			}
@@ -353,59 +354,59 @@ public class UserArmy extends Army
 		
 		// cycle though current option stack
 		if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
-			optionstack.IncSelection();
-			targetstack.IncSelection();
+			optionstack.incSelection();
+			targetstack.incSelection();
 		}
 		
 		if (Cursor.getScrollDirection() > 0) {
-			optionstack.DecSelection();
-			targetstack.DecSelection();
+			optionstack.decSelection();
+			targetstack.decSelection();
 		} else if (Cursor.getScrollDirection() < 0) {
-			optionstack.IncSelection();
-			targetstack.IncSelection();
+			optionstack.incSelection();
+			targetstack.incSelection();
 		}
 	}
 	
-	private int CalcOptionStackSize(Camera Cam)
+	private int calcOptionStackSize(Camera Cam)
 	{
 		int size = 0;
-		size += GetMouseOverCount(Cam);
+		size += getMouseOverCount(Cam);
 		
 		// size increased if a the mouse is over a deployer
-		int selected = UnitDeployer.GetSelected(Cam);
-		if (UnitDeployer.Contains(selected))
+		int selected = UnitDeployer.getSelected(Cam);
+		if (UnitDeployer.contains(selected))
 			size++;
 		
 		// return the anticipated size of the optionstack
 		return size;
 	}
 	
-	private void SetSelected()
+	private void setSelected()
 	{
 		// do not select a squad while a menu is open
-		if (IsMenuOpen())
+		if (isMenuOpen())
 			return;
 		
-		if (optionstack.IsOverSquad()) {
-			selected = optionstack.GetSquadOver();
+		if (optionstack.isOverSquad()) {
+			selected = optionstack.getSquadOver();
 		} else {
 			selected = null;
 		}
 	}
 	
-	private void UpdateDeployer(Camera Cam)
+	private void updateDeployer(Camera Cam)
 	{
 		// do not update the deployer while a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd())
+		if (isMenuOpen() || !optionstack.isOverAdd())
 			return;
 		
-		int selected = UnitDeployer.GetSelected(Cam);
+		int selected = UnitDeployer.getSelected(Cam);
 		
-		if (UnitDeployer.Contains(selected) &&
+		if (UnitDeployer.contains(selected) &&
 			Cursor.isButtonJustReleased(Cursor.LEFT))
 		{
 			// get the requisition post spawning the unit
-			int postcost = ReqPostDeploy(selected);
+			int postcost = reqPostDeploy(selected);
 			if (postcost < 0) {
 				// user cannot afford to spawn the unit
 				return;
@@ -413,101 +414,101 @@ public class UserArmy extends Army
 			
 			// go ahead and spawn the unit
 			requisition = postcost;
-			int id = SpawnUnit(selected);
+			int id = spawnUnit(selected);
 			
 			// tell all clients of the newly spawned squad
 			Response r = new Response();
-			r.source = GetConnection();
+			r.source = getConnection();
 			r.request = "SQUADSPAWNED";
 			r.i0 = selected;
 			r.i1 = id;
 			
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 		}
 	}
 	
-	private int ReqPostDeploy(int Selected)
+	private int reqPostDeploy(int Selected)
 	{
 		// get the cost of the selected unit
 		switch (Selected) {
 		case UnitDeployer.GUNMAN:
-			int r = requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.GUNMAN).reqcost;
+			int r = requisition - SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN).reqcost;
 			return r;
 			
 		case UnitDeployer.SPECOPS:
-			return requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.SPECOPS).reqcost;
+			return requisition - SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS).reqcost;
 			
 		case UnitDeployer.STEALTHOPS:
-			return requisition - SquadConfigurations.GetConfiguration(SquadConfigurations.STEALTHOPS).reqcost;
+			return requisition - SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS).reqcost;
 			
 		default:
 			return requisition;
 		}
 	}
 	
-	private void UpdateMenu(Camera Cam)
+	private void updateMenu(Camera Cam)
 	{
 		if (selected == null)
 			return;
 		
-		if (!selected.IsMoving()
-				&& selected.IsMouseOver(Cam.GetPos()) && Cursor.isButtonJustPressed(Cursor.LEFT))
+		if (!selected.isMoving()
+				&& selected.isMouseOver(Cam.getPos()) && Cursor.isButtonJustPressed(Cursor.LEFT))
 		{
 			if (menurelease) {
 				menuactive = false;
 				menurelease = false;
-				menu.ResetClock();
-			} else if (!IsMenuOpen()) {
+				menu.resetClock();
+			} else if (!isMenuOpen()) {
 				menurelease = false;
 				menuactive = true;
 			}
 		}
 		
 		if (menuactive) 
-			UpdateButtons(Cam.GetPos());
+			updateButtons(Cam.getPos());
 		
 		if (moveactive)
-			UpdateMove(Cam.GetPos());
+			updateMove(Cam.getPos());
 		
 		if (profileactive)
-			UpdateProfile();
+			updateProfile();
 		
 		if (foxactive)
-			UpdateFox(Cam);
+			updateFox(Cam);
 	}
 	
-	private void UpdateOffenseMenu(Camera Cam)
+	private void updateOffenseMenu(Camera Cam)
 	{
 		if (selected == null)
 			return;
 		
-		if (!selected.IsMoving()
-				&& selected.IsMouseOver(Cam.GetPos()) && Cursor.isButtonJustPressed(Cursor.LEFT))
+		if (!selected.isMoving()
+				&& selected.isMouseOver(Cam.getPos()) && Cursor.isButtonJustPressed(Cursor.LEFT))
 		{
 			if (menurelease) {
 				menuactive = false;
 				menurelease = false;
-				offensemenu.ResetClock();
-			} else if (!IsMenuOpen()) {
+				offensemenu.resetClock();
+			} else if (!isMenuOpen()) {
 				menurelease = false;
 				menuactive = true;
 			}
 		}
 		
 		if (menuactive)
-			UpdateOffenseButtons(Cam.GetPos());
+			updateOffenseButtons(Cam.getPos());
 		
 		else if (targetenemies)
-			UpdateTargetSquads();
+			updateTargetSquads();
 		
 		else if (targetpoint)
-			UpdateTargetPoint(Cam);
+			updateTargetPoint(Cam);
 		
 		else if (targetpower)
-			UpdateTargetPower(Cam);
+			updateTargetPower(Cam);
 	}
 	
-	private void UpdateButtons(Vector2 Campos)
+	private void updateButtons(Vector2 Campos)
 	{
 		// DO NOT UPDATE THE MENU IF NO SQUAD IS SELECTED
 		if (selected == null) {
@@ -515,16 +516,16 @@ public class UserArmy extends Army
 			return;
 		}
 		
-		if (selected.GetArmament().GetType() == Armament.POINTTARGET) {
-			menu.SetSkip(1);
+		if (selected.getArmament().getType() == Armament.POINTTARGET) {
+			menu.setSkip(1);
 		} else {
-			menu.NoSkip();
+			menu.noSkip();
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			menuactive = false;
 			menurelease  = false;
-			menu.ResetClock();
+			menu.resetClock();
 		}
 		
 		if (!Cursor.isButtonPressed(Cursor.LEFT))
@@ -532,48 +533,50 @@ public class UserArmy extends Army
 		
 		int event = -1;
 		if (Cursor.isButtonJustReleased(Cursor.LEFT))
-			event = menu.GetAction( menu.GetButtonDown(Campos) );
+			event = menu.getAction( menu.getButtonDown(Campos) );
 		
 		switch (event)
 		{
 		case ButtonOptions.STOP:
 			// leave the menu
-			selected.SetTargetX(-1);
+			selected.setTargetX(-1);
 			
 			// tell all clients which squad is moving
 			Response r = new Response();
 			r.request = "SQUADMOVE";
-			r.i0 = selected.GetID();
-			r.i1 = selected.GetTargetX();
-			r.source = GetConnection();
+			r.i0 = selected.getID();
+			r.i1 = selected.getTargetX();
+			r.source = getConnection();
 			
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
-			menu.ResetClock();
+			menu.resetClock();
 			break;
 
 		case ButtonOptions.MOVE:
 			// set the movement
 			moveactive = true;
-			moveselect.SetPos((int)selected.GetBoundingBox().x, (int)selected.GetBoundingBox().width);
-			moveselect.SetMaxDist(selected.GetMoveDist());
+			moveselect.setPos((int)selected.getBoundingBox().x, (int)selected.getBoundingBox().width);
+			moveselect.setMaxDist(selected.getMoveDist());
 
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
-			menu.ResetClock();
+			menu.resetClock();
 			break;
 			
 		case ButtonOptions.MOVEFOXHOLE:
-			foxselect.SetSelected(selected);
-			foxactive = true;
+			if (requisition - 100 >= 0) {
+				foxselect.setSelected(selected);
+				foxactive = true;
+			}
 			
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
-			menu.ResetClock();
+			menu.resetClock();
 			break;
 			
 		case ButtonOptions.UPGRADE:
@@ -583,8 +586,8 @@ public class UserArmy extends Army
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
-			menu.ResetClock();
-			Profile.ResetPos();
+			menu.resetClock();
+			Profile.resetPos();
 			break;
 
 		default:
@@ -592,7 +595,7 @@ public class UserArmy extends Army
 		}
 	}
 	
-	private void UpdateFox(Camera Cam)
+	private void updateFox(Camera Cam)
 	{
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			foxactive = false;
@@ -600,33 +603,35 @@ public class UserArmy extends Army
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			if (foxselect.IsPosValid()) {
-				foxselect.SetSelectedTarget(selected);
+			if (foxselect.isPosValid()) {
+				foxselect.setSelectedTarget(selected);
 			}
 			
 			foxactive = false;
 			return;
 		}
 		
-		foxselect.Update(Cam);
+		foxselect.update(Cam);
 	}
 	
-	public void AddFox(Vector2 Pos)
+	public void addFox(Vector2 Pos)
 	{
-		FoxHoleMenu.CutRoom(ter, Pos);
-		world.AddFoxHole(Pos);
+		FoxHoleMenu.cutRoom(ter, Pos);
+		world.addFoxHole(Pos);
+		System.out.println("Pos.y: " + Pos.y);
 		
 		// inform all clients of the added fox hole
 		Response r = new Response();
-		r.source = GetConnection();
+		r.source = getConnection();
 		r.request = "ADDFOX";
 		r.f0 = Pos.x;
 		r.f1 = Pos.y;
+		System.out.println("r.f1: " + r.f1);
 
-		network.GetClient().sendTCP(r);
+		network.getClient().sendTCP(r);
 	}
 	
-	private void UpdateOffenseButtons(Vector2 Campos)
+	private void updateOffenseButtons(Vector2 Campos)
 	{
 		// DO NOT UPDATE THE MENU IF NO SQUAD IS SELECTED
 		if (selected == null) {
@@ -637,7 +642,7 @@ public class UserArmy extends Army
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			menuactive = false;
 			menurelease  = false;
-			offensemenu.ResetClock();
+			offensemenu.resetClock();
 		}
 		
 		if (!Cursor.isButtonPressed(Cursor.LEFT))
@@ -645,29 +650,29 @@ public class UserArmy extends Army
 		
 		int event = -1;
 		if (Cursor.isButtonJustReleased(Cursor.LEFT))
-			event = offensemenu.GetAction( offensemenu.GetButtonDown(Campos) );
+			event = offensemenu.getAction( offensemenu.getButtonDown(Campos) );
 		
 		switch (event)
 		{
 		case ButtonOptions.STOP:
 			// leave the menu and do not select a squad
-			selected.SetTargetSquad(null);
-			selected.SetFiring(false);
+			selected.setTargetSquad(null);
+			selected.setFiring(false);
 			
 			menuactive = false;
 			menurelease = false;
-			offensemenu.ResetClock();
+			offensemenu.resetClock();
 			break;
 			
 		case ButtonOptions.ATTACK:
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
-			offensemenu.ResetClock();
+			offensemenu.resetClock();
 			
-			if (selected.GetArmament().GetType() == Armament.UNITTARGET) {
+			if (selected.getArmament().getType() == Armament.UNITTARGET) {
 				targetenemies = true;
-			} else if (selected.GetArmament().GetType() == Armament.POINTTARGET) {
+			} else if (selected.getArmament().getType() == Armament.POINTTARGET) {
 				targetpoint = true;
 			}
 			
@@ -678,34 +683,34 @@ public class UserArmy extends Army
 		}
 	}
 	
-	private void UpdateMove(Vector2 Campos)
+	private void updateMove(Vector2 Campos)
 	{
 		if (selected == null) {
 			moveactive = false;
 			return;
 		}
 		
-		moveselect.Update(Campos);
+		moveselect.update(Campos);
 
 		// set the target position on left release, or cancel on right click
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			selected.SetTargetX(moveselect.GetTargetX());
+			selected.setTargetX(moveselect.getTargetX());
 			moveactive = false;
 			
 			// tell all clients which squad is moving
 			Response r = new Response();
 			r.request = "SQUADMOVE";
-			r.i0 = selected.GetID();
-			r.i1 = moveselect.GetTargetX();
-			r.source = GetConnection();
+			r.i0 = selected.getID();
+			r.i1 = moveselect.getTargetX();
+			r.source = getConnection();
 			
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 			
 		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
 			moveactive = false;
 	}
 	
-	private void UpdateTargetSquads()
+	private void updateTargetSquads()
 	{
 		// INVALID - do not select a unit
 		if (selected == null) {
@@ -715,7 +720,7 @@ public class UserArmy extends Army
 		
 		// leave targeting, do not select a unit
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
-			selected.SetTargetSquad(null);
+			selected.setTargetSquad(null);
 			targetenemies = false;
 			return;
 		}
@@ -727,30 +732,30 @@ public class UserArmy extends Army
 		}
 		
 		// check stack changes
-		Squad prev = selected.GetTargetSquad();
-		ProcStackChange();
-		Squad t = targetstack.GetSquadOver();
-		selected.SetTargetSquad(t);
+		Squad prev = selected.getTargetSquad();
+		procStackChange();
+		Squad t = targetstack.getSquadOver();
+		selected.setTargetSquad(t);
 		if (t != null) {
-			t.SetAsTarget();
+			t.setAsTarget();
 		}
 	
 		// make sure a change was made to the selected target
-		if (prev != selected.GetTargetSquad() && t != null) {
+		if (prev != selected.getTargetSquad() && t != null) {
 			
 			// send the information to all clients
 			Response r = new Response();
 			r.request = "UNITTARGET";
-			r.source = GetConnection();
-			r.i0 = selected.GetID(); // unit that will be shooting
-			r.i1 = t.GetArmy().GetConnection(); // army that is being shot at
-			r.i2 = t.GetID(); // squad that is being shot at
+			r.source = getConnection();
+			r.i0 = selected.getID(); // unit that will be shooting
+			r.i1 = t.getArmy().getConnection(); // army that is being shot at
+			r.i2 = t.getID(); // squad that is being shot at
 			
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 		}
 	}
 	
-	private void UpdateTargetPoint(Camera Cam)
+	private void updateTargetPoint(Camera Cam)
 	{
 		// INVALID - do not select a point
 		if (selected == null) {
@@ -766,42 +771,42 @@ public class UserArmy extends Army
 		
 		// leave the current unit selected and leave targeting for this squad
 		if (Cursor.isButtonJustReleased(Cursor.LEFT)) {
-			selected.SetFiring(true);
+			selected.setFiring(true);
 			targetpoint = false;
 			targetpower = true;
-			powerselect.SetPos(Cursor.GetMouseX(Cam.GetPos())+Cam.GetPos().x, Cursor.GetMouseY()+Cam.GetPos().y);
+			powerselect.setPos(Cursor.getMouseX(Cam.getPos())+Cam.getPos().x, Cursor.getMouseY()+Cam.getPos().y);
 			
 			return;
 		}
 		
 		// set the angle for the barrel
-		float xpos = selected.GetBBox().x + selected.GetBBox().width/2f;
-		float ypos = selected.GetBBox().y + selected.GetBBox().height/2f;
+		float xpos = selected.getBBox().x + selected.getBBox().width/2f;
+		float ypos = selected.getBBox().y + selected.getBBox().height/2f;
 		Vector2 sourcepos = new Vector2(xpos, ypos);
 		
-		xpos = Cursor.GetMouseX(Cam.GetPos()) + Cam.GetPos().x;
-		ypos = Cursor.GetMouseY() + Cam.GetPos().y;
+		xpos = Cursor.getMouseX(Cam.getPos()) + Cam.getPos().x;
+		ypos = Cursor.getMouseY() + Cam.getPos().y;
 		Vector2 destpos = new Vector2(xpos, ypos);
 		
 		// do not set the angle when the mouse is on the incorrect side of the selected unit
-		float startx = selected.GetBBox().x + selected.GetBBox().width/2f;
-		int direction = GameWorld.GetDirection(startx, 0f, 
+		float startx = selected.getBBox().x + selected.getBBox().width/2f;
+		int direction = GameWorld.getDirection(startx, 0f, 
 				xpos, 0f);
-		if (direction != 1 && selected.IsForward()) {
-			selected.SetForward(false);
-		} else if (direction != -1 && !selected.IsForward()) {
-			selected.SetForward(true);
+		if (direction != 1 && selected.isForward()) {
+			selected.setForward(false);
+		} else if (direction != -1 && !selected.isForward()) {
+			selected.setForward(true);
 		}
 		
-		float xdist = GameWorld.GetDistance(startx, 0f, xpos, 0f);
+		float xdist = GameWorld.getDistance(startx, 0f, xpos, 0f);
 		float ydist = destpos.y - sourcepos.y;
 		float theta = (float)( Math.toDegrees(Math.atan(ydist/xdist)) );
 		
-		selected.SetFiring(false);
-		selected.SetBarrelAngle(theta);
+		selected.setFiring(false);
+		selected.setBarrelAngle(theta);
 	}
 	
-	private void UpdateTargetPower(Camera Cam)
+	private void updateTargetPower(Camera Cam)
 	{
 		// INVALID - do not select a point
 		if (selected == null) {
@@ -811,100 +816,97 @@ public class UserArmy extends Army
 		
 		// leave targeting, do not select a point
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
-			selected.SetFiring(false);
+			selected.setFiring(false);
 			targetpower = false;
 			
 			return;
 		}
 		
 		// leave the current unit selected and leave targeting for this squad
-		if (powerselect.DoFire(Cam)) {
-			selected.SetFiring(true);
+		if (powerselect.doFire(Cam)) {
+			selected.setFiring(true);
 			targetpower = false;
 			
 			// send a message to all clients informing them who is firing and where
 			Response r = new Response();
-			r.source = GetConnection();
+			r.source = getConnection();
 			r.request = "TANKFIRING";
-			r.i0 = selected.GetID();
-			r.b0 = selected.IsFiring();
-			r.b1 = selected.IsForward();
-			r.f0 = selected.GetBarrelAngle();
-			r.f1 = powerselect.GetPower()/PowerButtons.MAXPOWER;
+			r.i0 = selected.getID();
+			r.b0 = selected.isFiring();
+			r.b1 = selected.isForward();
+			r.f0 = selected.getBarrelAngle();
+			r.f1 = powerselect.getPower()/PowerButtons.MAXPOWER;
 			
-			network.GetClient().sendTCP(r);
+			network.getClient().sendTCP(r);
 			
 			return;
 		}
 		
-		powerselect.Update(Cam);
-		MenuBar.SetPowerLevel(powerselect.GetPower(), PowerButtons.MAXPOWER);
+		powerselect.update(Cam);
+		MenuBar.setPowerLevel(powerselect.getPower(), PowerButtons.MAXPOWER);
 	}
 	
-	private void UpdateProfile()
+	private void updateProfile()
 	{
 		if (selected == null) {
 			profileactive = false;
 			return;
 		}
 			
-		if (Profile.IsMouseOverClose() && Cursor.isButtonJustReleased(Cursor.LEFT))
+		if (Profile.isMouseOverClose() && Cursor.isButtonJustReleased(Cursor.LEFT))
 			profileactive = false;
 	}
 	
 	@Override
-	public boolean IsMenuOpen()
+	public boolean isMenuOpen()
 	{
 		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive);
 	}
 	
-	private void DrawDeployer(SpriteBatch Batch, Camera Cam)
+	private void drawDeployer(SpriteBatch Batch, Camera Cam)
 	{
-		MenuBar.SetRequisition(requisition);
-		MenuBar.SetTmpRequisition(requisition);
-		
 		// do not draw the deployer when a menu is open
-		if (IsMenuOpen() || !optionstack.IsOverAdd())
+		if (isMenuOpen() || !optionstack.isOverAdd())
 			return;
 		
-		int i = UnitDeployer.GetSelected(Cam);
+		int i = UnitDeployer.getSelected(Cam);
 		
 		if (i != prevdeployi)
-			UnitDeployer.ResetClock();
+			UnitDeployer.resetClock();
 		prevdeployi = i;
 			
-		if (UnitDeployer.Contains(i))
-			UnitDeployer.Draw(Batch, Cam, i);
+		if (UnitDeployer.contains(i))
+			UnitDeployer.draw(Batch, Cam, i);
 		
-		int postcost = ReqPostDeploy(i);
-		MenuBar.SetTmpRequisition(postcost);
+		int postcost = reqPostDeploy(i);
+		MenuBar.setTmpRequisition(postcost);
 	}
 	
-	private boolean HighlightSquad(Squad S, Camera Cam)
+	private boolean highlightSquad(Squad S, Camera Cam)
 	{
 		if (selected != S)
 			return false;
 		
-		if (IsMenuOpen())
+		if (isMenuOpen())
 			return true;
 		
-		if (selected.IsMouseOver(Cam.GetPos()) && !selected.IsMoving())
+		if (selected.isMouseOver(Cam.getPos()) && !selected.isMoving())
 			return true;
 		
 		return false;
 	}
 	
 	@Override
-	public void DrawTargetPos(SpriteBatch Batch, Camera Cam)
+	public void drawTargetPos(SpriteBatch Batch, Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			s.next().DrawTargetPos(Batch, Cam);
+			s.next().drawTargetPos(Batch, Cam);
 		}
 	}
 	
 	@Override
-	public void DrawTargetSquad(SpriteBatch Batch, Camera Cam)
+	public void drawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
 		// do not draw while in the power selection menu
 		if (targetpower)
@@ -912,49 +914,67 @@ public class UserArmy extends Army
 		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			s.next().DrawTargetSquad(Batch, Cam);
+			s.next().drawTargetSquad(Batch, Cam);
+		}
+	}
+	
+	private void checkReqCosts(Camera Cam)
+	{
+		//
+		MenuBar.setRequisition(requisition);
+		MenuBar.setTmpRequisition(requisition);
+		
+		// check for actions that cost requisition
+		if (menuactive) {
+			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVEFOXHOLE) {
+				MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+			} else {
+				MenuBar.setTmpRequisition(requisition);
+			}
 		}
 	}
 	
 	@Override
-	public void Draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage)
 	{
+		checkReqCosts(Cam);
+		
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();
 			
-			boolean highlight = HighlightSquad(c, Cam);
-			c.Draw(Batch, Cam, highlight);
+			boolean highlight = highlightSquad(c, Cam);
+			c.draw(Batch, Cam, highlight);
 		}
 		
-		DrawDeployer(Batch, Cam);
+		drawDeployer(Batch, Cam);
 		
 		if (menuactive && selected != null) {
-			Rectangle bbox = selected.GetBoundingBox();
+			Rectangle bbox = selected.getBoundingBox();
 			
 			if (CurrentStage == GameWorld.MOVESELECT) {
-				menu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
-				menu.Draw(Batch, Cam);
+				menu.setPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.getPos());
+				menu.draw(Batch, Cam);
 			} else if (CurrentStage == GameWorld.ATTACKSELECT) {
-				offensemenu.SetPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.GetPos());
-				offensemenu.Draw(Batch, Cam);
+				offensemenu.setPos( (int)(bbox.x + bbox.width/2), (int)(bbox.y - 48), Cam.getPos());
+				offensemenu.draw(Batch, Cam);
 			}
 		}
 		
 		if (moveactive && selected != null) {
-			moveselect.Draw(Batch, Cam);
+			moveselect.draw(Batch, Cam);
 		}
 		
 		if (targetpower && selected != null) {
-			powerselect.Draw(Batch, Cam);
+			powerselect.draw(Batch, Cam);
 		}
 		
 		if (profileactive && selected != null) {
-			Profile.Draw(Batch, selected, base.GetLogo());
+			Profile.draw(Batch, selected, base.getLogo());
 		}
 		
 		if (foxactive && selected != null) {
-			foxselect.Render(Batch, Cam);
+			foxselect.render(Batch, Cam);
 		}
 	}
 }

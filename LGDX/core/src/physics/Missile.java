@@ -43,7 +43,7 @@ public class Missile
 	
 	private boolean hasfired;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (tex == null) {
 			tex = new Texture(Gdx.files.internal("img/weaponry/missile.png"));
@@ -54,7 +54,7 @@ public class Missile
 		}
 	}
 	
-	public static void Release()
+	public static void release()
 	{
 		if (tex != null) {
 			tex.dispose();
@@ -80,8 +80,8 @@ public class Missile
 		Vector2 tmp = new Vector2(vel);
 		tmp.nor();
 		
-		pos.x += tmp.x*Tank.GetBarrelWidth();
-		pos.y += tmp.y*Tank.GetBarrelWidth();
+		pos.x += tmp.x*Tank.getBarrelWidth();
+		pos.y += tmp.y*Tank.getBarrelWidth();
 		
 		// the amount of particles to add at the tanks barrel on launch relative to PPS
 		time = 0.0;
@@ -92,10 +92,10 @@ public class Missile
 		hasfired = false;
 	}
 	
-	public void Update()
+	public void update()
 	{
 		if (hashit) {
-			AddTerrainParticles();
+			addTerrainParticles();
 			
 			return;
 		}
@@ -105,13 +105,13 @@ public class Missile
 			hasfired = true;
 			
 			time = 0.1f;
-			AddParticle();
+			addParticle();
 		}
 		
 		// apply gravity to the velocity
 		vel.y -= GRAVITY * Gdx.graphics.getDeltaTime();
 		
-		AddParticle();
+		addParticle();
 		
 		// update the position
 		pos.x += vel.x * Gdx.graphics.getDeltaTime();
@@ -124,40 +124,39 @@ public class Missile
 			pos.x += Game.WORLDW;
 		}
 		
-		if (ter.Contains(pos.x, pos.y) && !hashit) {
-			ter.CutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
+		if (ter.contains(pos.x, pos.y) && !hashit) {
+			ter.cutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
 			hashit = true;
 			
 			// process the blast
-			gw.ProcBlast( new Blast(pos, 64, strength));
+			gw.procBlast( new Blast(pos, 64, strength));
 		}
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		if (hashit) {
 			return;
 		}
 		
-		float theta = GetTheta();
-		Batch.draw(tex, Cam.GetRenderX(pos.x + tex.getWidth()/2f), Cam.GetRenderY(pos.y + tex.getHeight()/2f), 
+		float theta = getTheta();
+		Batch.draw(tex, Cam.getRenderX(pos.x + tex.getWidth()/2f), Cam.getRenderY(pos.y + tex.getHeight()/2f), 
 				0, 0, tex.getWidth(), tex.getHeight(),
 				1f, 1f, theta, 0, 0, tex.getWidth(), tex.getHeight(), false, false);
 	}
 	
-	public boolean IsCompleted()
+	public boolean isCompleted()
 	{
 		return hashit && (posttotaltime > DUSTTIME);
 	}
 	
-	public boolean HasHit()
+	public boolean hasHit()
 	{
 		return hashit;
 	}
 	
-	private float GetTheta()
+	private float getTheta()
 	{
-		
 		// the angle to draw the missile at
 		float theta = (float)Math.toDegrees( Math.atan( vel.y/vel.x ) );
 		if (vel.x < 0) {
@@ -167,7 +166,7 @@ public class Missile
 		return theta;
 	}
 	
-	private void AddParticle()
+	private void addParticle()
 	{
 		totaltime += Gdx.graphics.getDeltaTime();
 		time += Gdx.graphics.getDeltaTime();
@@ -179,31 +178,31 @@ public class Missile
 		
 		for (int i=0; i<addcount; i++) {
 			float radius = (float)Math.random()*24 + 12;
-			radius *= GetRadiusMod();
+			radius *= getRadiusMod();
 			Vector2 v = new Vector2((float)Math.random()*16, (float)Math.random()*16);
 			
 			float xpos = pos.x + vel.x * (i/(float)addcount) * (float)time;
 			float ypos = pos.y + vel.y * (i/(float)addcount) * (float)time;
 			
-			particle.AddParticle(radius, new Vector2(xpos, ypos), v);
+			particle.addParticle(radius, new Vector2(xpos, ypos), v);
 		}
 		
 		time = 0.0;
 	}
 	
-	private Vector2 GetParticleVelocity(Vector2 V0, double Theta)
+	private Vector2 getParticleVelocity(Vector2 V0, double Theta)
 	{
 		Vector2 v = new Vector2(V0);
 		v = v.nor();
 
-		v.x *= (DUSTSPEED * GetPostRadiusMod(time));
-		v.y *= (DUSTSPEED * GetPostRadiusMod(time));
+		v.x *= (DUSTSPEED * getPostRadiusMod(time));
+		v.y *= (DUSTSPEED * getPostRadiusMod(time));
 		v.rotate((int)(Theta));
 
 		return v;
 	}
 	
-	private void AddTerrainParticles()
+	private void addTerrainParticles()
 	{
 		double prevtot = posttotaltime;
 		posttotaltime += Gdx.graphics.getDeltaTime();
@@ -218,8 +217,8 @@ public class Missile
 			return;
 		}
 		
-		float x0 = Game.WORLDH - ter.GetHeight((int)pos.x - 8);
-		float x1 = Game.WORLDH - ter.GetHeight((int)pos.x + 8);
+		float x0 = Game.WORLDH - ter.getHeight((int)pos.x - 8);
+		float x1 = Game.WORLDH - ter.getHeight((int)pos.x + 8);
 		
 		Vector2 v0 = new Vector2(-8, x0-pos.y);
 		Vector2 v1 = new Vector2(8, x1-pos.y);
@@ -235,21 +234,21 @@ public class Missile
 		for (int i=0; i<addcount; i++) {
 			double time = prevtot + (float)(posttime) * (i/(float)addcount);
 			float radius = (float)Math.random()*32 + 32;
-			radius *= GetPostRadiusMod(time);
+			radius *= getPostRadiusMod(time);
 			
-			Vector2 v = GetParticleVelocity(v0, Math.random()*theta);
+			Vector2 v = getParticleVelocity(v0, Math.random()*theta);
 		
 			Vector2 p = new Vector2(pos);
 			p.x += v.x * (float)(posttime) * (i/(float)addcount);
 			p.y += v.y * (float)(posttime) * (i/(float)addcount);
 			
-			particle.AddParticle(radius, p, v, DUSTDECAY, 20f);
+			particle.addParticle(radius, p, v, DUSTDECAY, 20f);
 		}
 		
 		posttime = 0.0;
 	}
 	
-	private float GetRadiusMod()
+	private float getRadiusMod()
 	{
 		if (totaltime > DECAY) {
 			return 0f;
@@ -258,7 +257,7 @@ public class Missile
 		}
 	}
 	
-	private float GetPostRadiusMod(double TotalTime)
+	private float getPostRadiusMod(double TotalTime)
 	{
 		if (TotalTime > DUSTTIME) {
 			return 0f;

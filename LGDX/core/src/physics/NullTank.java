@@ -58,9 +58,9 @@ public class NullTank
 		time = 0f;
 	}
 	
-	public void Update(Camera Cam)
+	public void update(Camera Cam)
 	{
-		pos.y = Game.WORLDH - ter.GetHeight((int)pos.x) - 3;
+		pos.y = Game.WORLDH - ter.getHeight((int)pos.x) - 3;
 		time += Gdx.graphics.getDeltaTime();
 		
 		int addcount = (int)(PPS*time*2);
@@ -72,37 +72,37 @@ public class NullTank
 			float Radius = (float)(Math.random()*width/2);
 			
 			float yoff = Particle.GRAVITY * (1/(float)addcount) * (float)time;
-			particles.AddParticle(Radius, new Vector2(pos.x + width/2, pos.y+yoff+height/2));
+			particles.addParticle(Radius, new Vector2(pos.x + width/2, pos.y+yoff+height/2));
 		}
 		
 		time = 0f;
 	}
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
-		Shaders.SetShader(Batch, Shaders.nulltank);
+		Shaders.setShader(Batch, Shaders.nulltank);
 		
-		RenderBarrel(Batch, Cam);
-		Render(Batch, Cam);
+		renderBarrel(Batch, Cam);
+		render(Batch, Cam);
 		
-		Shaders.RevertShader(Batch);
+		Shaders.revertShader(Batch);
 	}
 	
-	private void Render(SpriteBatch Batch, Camera Cam)
+	private void render(SpriteBatch Batch, Camera Cam)
 	{
-		float theta = GetAngle();
+		float theta = getAngle();
 		
 		// draw the tank
 		tr.setRegion(0, 0, width, height);
 		tr.flip(!forward, false);
 		
-		Batch.draw(tr, Cam.GetRenderX(pos.x), 
-				Cam.GetRenderY(pos.y), halfwidth, 0, width, height, 1f, 1f, theta);
+		Batch.draw(tr, Cam.getRenderX(pos.x), 
+				Cam.getRenderY(pos.y), halfwidth, 0, width, height, 1f, 1f, theta);
 	}
 	
-	private void RenderBarrel(SpriteBatch Batch, Camera Cam)
+	private void renderBarrel(SpriteBatch Batch, Camera Cam)
 	{
-		float theta = GetAngle();
+		float theta = getAngle();
 		float phi = barrelPhi;
 		if (!forward)
 			phi = 180 - phi;
@@ -113,13 +113,13 @@ public class NullTank
 		offset.rotate((float)Math.toRadians(theta));
 		
 		// draw the tanks barrel
-		Batch.draw(Tank.BARREL, Cam.GetRenderX(pos.x + halfwidth + offset.x),
-				Cam.GetRenderY(pos.y + offset.y),
+		Batch.draw(Tank.BARREL, Cam.getRenderX(pos.x + halfwidth + offset.x),
+				Cam.getRenderY(pos.y + offset.y),
 				0, barrelheight/2f, barrelwidth, barrelheight, 1f, 1f, 
 				phi + theta, 0, 0, barrelwidth, barrelheight, false, false);
 	}
 	
-	private float GetAngle()
+	private float getAngle()
 	{
 		float theta = 0.0f;
 		int x0 = (int)pos.x + halfwidth/2;
@@ -131,8 +131,8 @@ public class NullTank
 		if (x1 >= Game.WORLDW) x1 -= Game.WORLDW;
 		if (x1 < 0) x1 += Game.WORLDW;
 		
-		float h0 = ter.GetHeight(x0);
-		float h1 = ter.GetHeight(x1);
+		float h0 = ter.getHeight(x0);
+		float h1 = ter.getHeight(x1);
 		
 		theta = -(float)Math.atan( (h1-h0)/(float)halfwidth );
 		return (float)Math.toDegrees(theta);

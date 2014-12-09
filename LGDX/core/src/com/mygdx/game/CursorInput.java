@@ -6,12 +6,12 @@ public class CursorInput implements InputProcessor
 {
 	private static int scrollDirection = 0;
 	
-	public static int GetScrollDirection()
+	public static int getScrollDirection()
 	{
 		return scrollDirection;
 	}
 	
-	public static void ClearInput()
+	public static void clearInput()
 	{
 		scrollDirection = 0;
 	}

@@ -29,35 +29,35 @@ public class MilitaryBase
 	private int xpos;
 	private int ypos;
 	
-	public static void Release()
+	public static void release()
 	{
 		if (tex != null)
 			tex.dispose();
 		
 		if (flag != null)
-			flag.Release();
+			flag.release();
 	}
 	
-	public static int GetWidth()
+	public static int getWidth()
 	{
-		LoadTex();
+		loadTex();
 		return tex.getWidth();
 	}
 	
-	public static int GetHeight()
+	public static int getHeight()
 	{
-		LoadTex();
+		loadTex();
 		return tex.getHeight();
 	}
 	
-	private static void LoadTex()
+	private static void loadTex()
 	{
 		if (tex == null)
 			tex = new Texture( Gdx.files.internal("img/army/base.png") );
 		
 		if (flag == null) {
 			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
-			flag.NewAnimation(0, 3, 0, 2, 0.333f);
+			flag.newAnimation(0, 3, 0, 2, 0.333f);
 		}
 		
 		if (logos == null) {
@@ -66,7 +66,7 @@ public class MilitaryBase
 		}
 	}
 	
-	public static TextureRegion GetLogo(int Index)
+	public static TextureRegion getLogo(int Index)
 	{
 		if (logos == null)
 			return null;
@@ -76,29 +76,29 @@ public class MilitaryBase
 	
 	public MilitaryBase(int XPos, Terrain Ter)
 	{
-		LoadTex();
+		loadTex();
 		logo = 0;
 		xpos = XPos;
 		
 		// generate the base data
-		ypos = Ter.GetMinHeight(xpos, xpos+tex.getWidth());
-		int max = Ter.GetMaxHeight(xpos, xpos+tex.getWidth());
-		Ter.CutRegion(xpos, ypos, tex.getWidth(), max-ypos);
-		ypos = Game.WORLDH - Ter.GetHeight(0) - 3;
+		ypos = Ter.getMinHeight(xpos, xpos+tex.getWidth());
+		int max = Ter.getMaxHeight(xpos, xpos+tex.getWidth());
+		Ter.cutRegion(xpos, ypos, tex.getWidth(), max-ypos);
+		ypos = Game.WORLDH - Ter.getHeight(0) - 3;
 	}
 	
-	public boolean IsMouseOver(Vector2 Campos)
+	public boolean isMouseOver(Vector2 Campos)
 	{
-		Rectangle r = new Rectangle(xpos, ypos-MOUSEYTOLERANCE, GetWidth(), GetHeight()+MOUSEYTOLERANCE);
-		return Cursor.IsMouseOver(r, Campos);
+		Rectangle r = new Rectangle(xpos, ypos-MOUSEYTOLERANCE, getWidth(), getHeight()+MOUSEYTOLERANCE);
+		return Cursor.isMouseOver(r, Campos);
 	}
 	
-	public Vector2 GetPos()
+	public Vector2 getPos()
 	{
 		return new Vector2(xpos, ypos);
 	}
 	
-	public void SetLogo(int Logo)
+	public void setLogo(int Logo)
 	{
 		logo = Logo;
 		
@@ -106,43 +106,43 @@ public class MilitaryBase
 		if (logo >= LOGOCOUNT) logo = LOGOCOUNT-1;
 	}
 	
-	public int GetLogo()
+	public int getLogo()
 	{
 		return logo;
 	}
 	
-	public void DrawView(Camera Cam)
+	public void drawView(Camera Cam)
 	{
 		Vector2 pos = new Vector2(xpos, ypos);
 		pos.x += tex.getWidth()/2;
 		pos.y += tex.getHeight()/2;
 		
-		FogOfWar.AddVisibleRegion(Cam.GetRenderX(pos.x), 
-				Cam.GetRenderY(pos.y), 600);
+		FogOfWar.addVisibleRegion(Cam.getRenderX(pos.x), 
+				Cam.getRenderY(pos.y), 600);
 	}
 	
 	
-	public void Draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the base
 		Batch.setColor( BGCOLOR );
-		Batch.draw(tex, Cam.GetRenderX(xpos), Cam.GetRenderY(ypos));
+		Batch.draw(tex, Cam.getRenderX(xpos), Cam.getRenderY(ypos));
 		
 		// draw the flag 
 		Batch.setColor( BGCOLOR );
-		flag.UpdateClock();
-		flag.Render(Batch, Cam, 0, new Vector2(xpos+GetWidth()-2, ypos), 1f, 1f);
-		flag.Render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
+		flag.updateClock();
+		flag.render(Batch, Cam, 0, new Vector2(xpos+getWidth()-2, ypos), 1f, 1f);
+		flag.render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
 	}
 	
-	public void DrawLogo(SpriteBatch Batch, Camera Cam)
+	public void drawLogo(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the flags logo
 		Batch.setColor(Background.FGCOLOR);
-		Batch.draw(logos[logo], Cam.GetRenderX(xpos+GetWidth()-2+LOGOOFFSETX),
-				Cam.GetRenderY(ypos+LOGOOFFSETY));
-		Batch.draw(logos[logo], Cam.GetRenderX(xpos+LOGOOFFSETX),
-				Cam.GetRenderY(ypos+LOGOOFFSETY));
+		Batch.draw(logos[logo], Cam.getRenderX(xpos+getWidth()-2+LOGOOFFSETX),
+				Cam.getRenderY(ypos+LOGOOFFSETY));
+		Batch.draw(logos[logo], Cam.getRenderX(xpos+LOGOOFFSETX),
+				Cam.getRenderY(ypos+LOGOOFFSETY));
 		Batch.setColor(Color.WHITE);
 	}
 }

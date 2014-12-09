@@ -16,7 +16,7 @@ public class Armament
 	private float accuracy;
 	private float angle;
 	
-	public void Init(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
+	public void init(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
 		if (type != UNITTARGET && type != POINTTARGET)
@@ -36,51 +36,51 @@ public class Armament
 	
 	public Armament(Armament A)
 	{
-		Init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy);
+		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy);
 	}
 	
 	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
 	{
-		Init(Type, Range, FireRate, Strength, Speed, Accuracy);
+		init(Type, Range, FireRate, Strength, Speed, Accuracy);
 	}
 	
 	// getter methods for the properties of this armament
-	public int GetType()
+	public int getType()
 	{
 		return type;
 	}
 	
-	public int GetRange()
+	public int getRange()
 	{
 		return range;
 	}
 	
-	public int GetFireRate()
+	public int getFireRate()
 	{
 		return firerate;
 	}
 	
-	public int GetStrength()
+	public int getStrength()
 	{
 		return strength;
 	}
 	
-	public float GetAccuracy()
+	public float getAccuracy()
 	{
 		return accuracy;
 	}
 	
-	public int GetSpeed()
+	public int getSpeed()
 	{
 		return speed;
 	}
 	
-	public float GetAngle()
+	public float getAngle()
 	{
 		return angle;
 	}
 	
-	public void SetAngle(float Angle)
+	public void setAngle(float Angle)
 	{
 		angle = Angle;
 	}

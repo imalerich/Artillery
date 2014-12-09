@@ -88,15 +88,15 @@ public class ConfigGenerator
 	 * @return
 	 * 	Configuration Settings described the file.
 	 */
-	public static ConfigSettings LoadConfiguration(String Filename)
+	public static ConfigSettings loadConfiguration(String Filename)
 	{
 		// load the files data into a string to be parsed
 		String data = Gdx.files.internal(Filename).readString();
 		
-		ValidateFile(Filename, data);
-		ConfigSettings c = InitConfiguration(Filename, data);
-		BuildArmorStack(Filename, c, data);
-		BuildArmamentStack(Filename, c, data);
+		validateFile(Filename, data);
+		ConfigSettings c = initConfiguration(Filename, data);
+		buildArmorStack(Filename, c, data);
+		buildArmamentStack(Filename, c, data);
 		
 		return c;
 	}
@@ -109,7 +109,7 @@ public class ConfigGenerator
 	 * 	ConfigurationSettings with default data filled in, with no armor or
 	 * 	armament added.
 	 */
-	private static ConfigSettings InitConfiguration(String Filename, String Data)
+	private static ConfigSettings initConfiguration(String Filename, String Data)
 	{
 		int count = DEFAULT_COUNT;
 		int speed = DEFAULT_SPEED;
@@ -123,9 +123,9 @@ public class ConfigGenerator
 		Scanner s = new Scanner(Data);
 		while (s.hasNext()) {
 			linenumber++;
-			LineData d = ParseLine(s.nextLine());
+			LineData d = parseLine(s.nextLine());
 			
-			if (!IsValidLine(d)) {
+			if (!isValidLine(d)) {
 				continue;
 			}
 			
@@ -139,19 +139,19 @@ public class ConfigGenerator
 			
 			// process parameter information
 			if (d.param.equals("count:")) {
-				count = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_COUNT);
+				count = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_COUNT);
 				continue;
 			} else if (d.param.equals("speed:")) {
-				speed = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_SPEED);
+				speed = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_SPEED);
 				continue;
 			} else if (d.param.equals("health:")) {
-				health = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_HEALTH);
+				health = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_HEALTH);
 				continue;
 			} else if (d.param.equals("movedist:")) {
-				movedist = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_MOVEDIST);
+				movedist = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_MOVEDIST);
 				continue;
 			} else if (d.param.equals("reqcost:")) {
-				reqcost = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_REQUISITION_COST);
+				reqcost = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_REQUISITION_COST);
 				continue;
 			}
 		}
@@ -167,7 +167,7 @@ public class ConfigGenerator
 	 * @param Data
 	 * 	Data to be parsed.
 	 */
-	private static void BuildArmorStack(String Filename, ConfigSettings Confg, String Data)
+	private static void buildArmorStack(String Filename, ConfigSettings Confg, String Data)
 	{
 		int health = DEFAULT_ARMOR_HEALTH;
 		int strength = DEFAULT_ARMOR_STRENGTH;
@@ -178,9 +178,9 @@ public class ConfigGenerator
 		Scanner s = new Scanner(Data);
 		while (s.hasNext()) {
 			linenumber++;
-			LineData d = ParseLine(s.nextLine());
+			LineData d = parseLine(s.nextLine());
 			
-			if (!IsValidLine(d)) {
+			if (!isValidLine(d)) {
 				continue;
 			}
 			
@@ -190,7 +190,7 @@ public class ConfigGenerator
 			} else if (d.param.equals("END") && insegment) { 
 				// end of ARMOR section - add the armor found and reset defaults
 				insegment = false;
-				Confg.AddArmor( new Armor(health, strength) ); 
+				Confg.addArmor( new Armor(health, strength) ); 
 				
 				health = DEFAULT_ARMOR_HEALTH;
 				strength = DEFAULT_ARMOR_STRENGTH;
@@ -199,16 +199,16 @@ public class ConfigGenerator
 			
 			// process parameter information
 			if (d.param.equals("health:")) {
-				health = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMOR_STRENGTH);
+				health = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMOR_STRENGTH);
 				continue;
 			} else if (d.param.equals("strength:")) {
-				strength = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMOR_STRENGTH);
+				strength = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMOR_STRENGTH);
 				continue;
 			}
 		}
 	}
 	
-	private static void BuildArmamentStack(String Filename, ConfigSettings Confg, String Data)
+	private static void buildArmamentStack(String Filename, ConfigSettings Confg, String Data)
 	{
 		int type = DEFAULT_ARMAMENT_TYPE;
 		int range = DEFAULT_ARMAMENT_RANGE;
@@ -223,9 +223,9 @@ public class ConfigGenerator
 		Scanner s = new Scanner(Data);
 		while (s.hasNext()) {
 			linenumber++;
-			LineData d = ParseLine(s.nextLine());
+			LineData d = parseLine(s.nextLine());
 			
-			if (!IsValidLine(d)) {
+			if (!isValidLine(d)) {
 				continue;
 			}
 			
@@ -235,7 +235,7 @@ public class ConfigGenerator
 			} else if (d.param.equals("END") && insegment) { 
 				// end of ARMOR section - add the armor found and reset defaults
 				insegment = false;
-				Confg.AddArmament( new Armament(type, range, firerate, strength, speed, accuracy));
+				Confg.addArmament( new Armament(type, range, firerate, strength, speed, accuracy));
 				
 				type = DEFAULT_ARMAMENT_TYPE;
 				range = DEFAULT_ARMAMENT_RANGE;
@@ -256,19 +256,19 @@ public class ConfigGenerator
 				
 				continue;
 			} else if (d.param.equals("range:")) {
-				range = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_RANGE);
+				range = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_RANGE);
 				continue;
 			} else if (d.param.equals("firerate:")) {
-				firerate = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_FIRERATE);
+				firerate = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_FIRERATE);
 				continue;
 			} else if (d.param.equals("strength:")) {
-				strength = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_STRENGTH);
+				strength = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_STRENGTH);
 				continue;
 			} else if (d.param.equals("speed:")) {
-				speed = LineData.GetInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_SPEED);
+				speed = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_SPEED);
 				continue;
 			} else if (d.param.equals("accuracy:")) {
-				accuracy = LineData.GetFloat(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_ACCURACY);
+				accuracy = LineData.getFloat(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_ACCURACY);
 				continue;
 			}
 		}
@@ -281,7 +281,7 @@ public class ConfigGenerator
 	 * @return
 	 * 	Whether or not the object should be parsed.
 	 */
-	private static boolean IsValidLine(LineData D)
+	private static boolean isValidLine(LineData D)
 	{
 		// check if the line is a comment or a blank line
 		if (D == null) {
@@ -302,18 +302,18 @@ public class ConfigGenerator
 	 * @param Data
 	 * 	Input data.
 	 */
-	private static void ValidateFile(String Filename, String Data)
+	private static void validateFile(String Filename, String Data)
 	{
 		int linenumber = 0;
 		Scanner s = new Scanner(Data);
 		while (s.hasNextLine()) {
 			linenumber++;
-			LineData d = ParseLine(s.nextLine());
-			if (!IsValidLine(d)) {
+			LineData d = parseLine(s.nextLine());
+			if (!isValidLine(d)) {
 				continue;
 			}
 			
-			CheckParam(Filename, d.param, linenumber);
+			checkParam(Filename, d.param, linenumber);
 		}
 	}
 	
@@ -324,7 +324,7 @@ public class ConfigGenerator
 	 * @return
 	 *  Whether or not the given token is valid.
 	 */
-	private static void CheckParam(String Filename, String T, int LineNumber)
+	private static void checkParam(String Filename, String T, int LineNumber)
 	{
 		Arrays.sort(TOKENS);
 		if (Arrays.binarySearch(TOKENS, T) < 0) {
@@ -342,7 +342,7 @@ public class ConfigGenerator
 	 * @return
 	 * 	LineData to contained by the line of text.
 	 */
-	private static LineData ParseLine(String Line)
+	private static LineData parseLine(String Line)
 	{
 		Scanner s = new Scanner(Line);
 		

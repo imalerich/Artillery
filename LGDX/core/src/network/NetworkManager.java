@@ -20,17 +20,17 @@ public class NetworkManager
 	private Host h;
 	private Recipient c;
 	
-	public void SetGameWorld(GameWorld Game, Camera Cam)
+	public void setGameWorld(GameWorld Game, Camera Cam)
 	{
-		c.SetGameWorld(Game, Cam);
+		c.setGameWorld(Game, Cam);
 	}
 
-	public void InitHost()
+	public void initHost()
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		h = new Host(2);
 		
-		Kryo k = h.GetKryo();
+		Kryo k = h.getKryo();
 		k.register(ArmyConnection.class);
 		k.register(Connection.class);
 		k.register(Connection[].class);
@@ -44,17 +44,17 @@ public class NetworkManager
 		k.register(Vector2.class);
 		k.register(TerrainSeed.class);
 		
-		h.StartServer();
+		h.startServer();
 		
 		System.out.println("Host Started.\n");
 	}
 	
-	public void InitClient()
+	public void initClient()
 	{
 		Log.set(Log.LEVEL_DEBUG);
 		c = new Recipient(this);
 		
-		Kryo k = c.GetKryo();
+		Kryo k = c.getKryo();
 		k.register(ArmyConnection.class);
 		k.register(Connection.class);
 		k.register(Connection[].class);
@@ -68,68 +68,68 @@ public class NetworkManager
 		k.register(Vector2.class);
 		k.register(TerrainSeed.class);
 		
-		c.ConnectToServer();
+		c.connectToServer();
 	}
 	
-	public TerrainSeed GetSeed()
+	public TerrainSeed getSeed()
 	{
 		if (c != null)
-			return c.GetSeed();
-		else if (HasServer())
+			return c.getSeed();
+		else if (hasServer())
 			return h.seed;
 		else
 			return null;
 	}
 	
-	public boolean IsLobbyFull()
+	public boolean isLobbyFull()
 	{
-		c.PollLobby();
-		return c.IsLobbyFull();
+		c.pollLobby();
+		return c.isLobbyFull();
 	}
 	
-	public boolean RecievedAllArmies()
+	public boolean recievedAllArmies()
 	{
-		return c.ArmiesRecieved();
+		return c.armiesRecieved();
 	}
 	
-	public void DispatchRemoteArmies()
+	public void dispatchRemoteArmies()
 	{
-		if (HasServer())
-			h.DispatchRemoteArmies();
+		if (hasServer())
+			h.dispatchRemoteArmies();
 	}
 	
-	public void ReadRemoteArmies()
+	public void readRemoteArmies()
 	{
-		c.ReadRemoteArmies();
+		c.readRemoteArmies();
 	}
 	
-	public void Ping()
+	public void ping()
 	{
-		c.Ping();
+		c.ping();
 	}
 	
-	public void UpdatePing()
+	public void updatePing()
 	{
-		c.UpdatePing();
+		c.updatePing();
 	}
 	
-	public double GetPing()
+	public double getPing()
 	{
-		return c.GetPing();
+		return c.getPing();
 	}
 	
-	public boolean HasServer()
+	public boolean hasServer()
 	{
 		return h != null;
 	}
 	
-	public Server GetServer()
+	public Server getServer()
 	{
-		return h.GetServer();
+		return h.getServer();
 	}
 	
-	public Client GetClient()
+	public Client getClient()
 	{
-		return c.GetClient();
+		return c.getClient();
 	}
 }

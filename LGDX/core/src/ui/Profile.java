@@ -19,7 +19,7 @@ public class Profile
 	private static final int STAMPY = 30;
 	private static int xpos = 0;
 	
-	public static void Release()
+	public static void release()
 	{
 		if (bg != null)
 			bg.dispose();
@@ -28,22 +28,22 @@ public class Profile
 			close.dispose();
 	}
 	
-	public static void Init()
+	public static void init()
 	{
 		if (bg == null)
 			bg = new Texture( Gdx.files.internal("img/ui/profile/profile.png"));
 		if (close == null)
 			close = new Texture( Gdx.files.internal("img/ui/profile/closeprofile.png"));
 		
-		ResetPos();
+		resetPos();
 	}
 	
-	private static void CalcCloseRect()
+	private static void calcCloseRect()
 	{
 		closerect.x = xpos+bg.getWidth()+4;
 	}
 	
-	public static void ResetPos()
+	public static void resetPos()
 	{
 		xpos = -bg.getWidth()-(close.getWidth()-4);
 		
@@ -51,13 +51,13 @@ public class Profile
 				close.getWidth(), close.getWidth());
 	}
 	
-	public static boolean IsMouseOverClose()
+	public static boolean isMouseOverClose()
 	{
-		CalcCloseRect();
-		return Cursor.IsMouseOverAbsolute(closerect);
+		calcCloseRect();
+		return Cursor.isMouseOverAbsolute(closerect);
 	}
 	
-	public static void Draw(SpriteBatch Batch, Squad S, int ArmyIndex)
+	public static void draw(SpriteBatch Batch, Squad S, int ArmyIndex)
 	{
 		if (xpos < 4)
 			xpos += 4*Gdx.graphics.getDeltaTime()*(bg.getWidth()+4);
@@ -65,13 +65,13 @@ public class Profile
 			xpos = 4;
 		
 		int offsety = 0;
-		if (IsMouseOverClose() && Cursor.isButtonPressed(Cursor.LEFT))
+		if (isMouseOverClose() && Cursor.isButtonPressed(Cursor.LEFT))
 			offsety = 2;
 		
 		Batch.draw(bg, xpos, 4);
-		Batch.draw(MilitaryBase.GetLogo(ArmyIndex), xpos+STAMPX, 4+(bg.getHeight()-STAMPY));
+		Batch.draw(MilitaryBase.getLogo(ArmyIndex), xpos+STAMPX, 4+(bg.getHeight()-STAMPY));
 		Batch.draw(close, closerect.x, closerect.y-offsety);
 		
-		S.DrawMugshots(Batch, 6+xpos, 4+(bg.getHeight()-36));
+		S.drawMugshots(Batch, 6+xpos, 4+(bg.getHeight()-36));
 	}
 }

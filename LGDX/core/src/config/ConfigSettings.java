@@ -63,7 +63,7 @@ public class ConfigSettings
 	 * @param A
 	 * 	Armor to be added.
 	 */
-	public void AddArmor(Armor A)
+	public void addArmor(Armor A)
 	{
 		armor.add(A);
 	}
@@ -73,7 +73,7 @@ public class ConfigSettings
 	 * @param A
 	 * 	Armament to be added.
 	 */
-	public void AddArmament(Armament A)
+	public void addArmament(Armament A)
 	{
 		arms.add(A);
 	}
@@ -83,7 +83,7 @@ public class ConfigSettings
 	 * @return
 	 * Iterator of the confgiurations armors.
 	 */
-	public Iterator<Armor> GetArmor()
+	public Iterator<Armor> getArmor()
 	{
 		return armor.iterator();
 	}
@@ -93,7 +93,7 @@ public class ConfigSettings
 	 * @return
 	 * Iterator of the configurations weapons.
 	 */
-	public Iterator<Armament> GetArmament()
+	public Iterator<Armament> getArmament()
 	{
 		return arms.iterator();
 	}
@@ -103,7 +103,7 @@ public class ConfigSettings
 	 * @return
 	 * 	The first set of armor.
 	 */
-	public Armor GetFirstArmor()
+	public Armor getFirstArmor()
 	{
 		return armor.firstElement();
 	}
@@ -113,7 +113,7 @@ public class ConfigSettings
 	 * @return
 	 * 	The first armament.
 	 */
-	public Armament GetFirstArmament()
+	public Armament getFirstArmament()
 	{
 		return arms.firstElement();
 	}
@@ -123,7 +123,7 @@ public class ConfigSettings
 	 * @return
 	 * 	Number of armor elements available.
 	 */
-	public int ArmorCount()
+	public int armorCount()
 	{
 		return armor.size();
 	}
@@ -133,7 +133,7 @@ public class ConfigSettings
 	 * @return
 	 * 	Number of armament elements available.
 	 */
-	public int ArmamentCount()
+	public int armamentCount()
 	{
 		return arms.size();
 	}

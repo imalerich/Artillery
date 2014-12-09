@@ -49,7 +49,7 @@ public class Terrain
 	private static final int SEGMENTWIDTH = 64;
 	private static final int ALPHAMASK = 255;
 	
-	public static void Init()
+	public static void init()
 	{
 		if (DEADTROOPR == null) {
 			DEADTROOPR = new Pixmap( Gdx.files.internal("img/units/deadtroopR.png") );
@@ -60,17 +60,17 @@ public class Terrain
 		}
 	}
 	
-	public static void SetColor(Color Col)
+	public static void setColor(Color Col)
 	{
 		col = Col;
 	}
 	
-	public static Color GetColor()
+	public static Color getColor()
 	{
 		return col;
 	}
 	
-	public void Release()
+	public void release()
 	{
 		if (DEADTROOPR != null) {
 			DEADTROOPR.dispose();
@@ -92,18 +92,18 @@ public class Terrain
 	public Terrain(TerrainSeed Seed)
 	{
 		// init colors and dimensions
-		baseregions = new Rectangle[Seed.GetBases().size()];
-		width = Seed.GetWidth();
-		height = Seed.GetHeight();
-		minlevel = Seed.GetMinLevel();
+		baseregions = new Rectangle[Seed.getBases().size()];
+		width = Seed.getWidth();
+		height = Seed.getHeight();
+		minlevel = Seed.getMinLevel();
 		dropclock = 0.0;
 		
 		// generate the texture representing the terrain
-		InitSegments();
+		initSegments();
 		Pixmap.setBlending(Blending.None);
 		
 		// generate the terrain
-		GenerateFromSeed(Seed);
+		generateFromSeed(Seed);
 		
 		// generate the texture
 		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
@@ -120,10 +120,10 @@ public class Terrain
 		tmp.dispose();
 		
 		for (int i=0; i<segmentcount; i++)
-			InvalidateSegment(i);
+			invalidateSegment(i);
 	}
 	
-	private void InitSegments()
+	private void initSegments()
 	{
 		// generate the validation segments
 		segmentcount = (int)(Math.ceil( (float)width/SEGMENTWIDTH) );
@@ -147,22 +147,22 @@ public class Terrain
 		}
 	}
 	
-	private void GenerateFromSeed(TerrainSeed Seed)
+	private void generateFromSeed(TerrainSeed Seed)
 	{
 		// temporarily store the data that will be used to create the PixMap 
 		int[] heights = new int[width];
 		for (int i=0; i<width; i++)
-			heights[i] = Seed.GetSeaLevel();
+			heights[i] = Seed.getSeaLevel();
 		
 		// get peak data
-		Iterator<Integer> peaks 		= Seed.GetPeaks().iterator();
-		Iterator<Integer> sharpness		= Seed.GetSharpness().iterator();
-		Iterator<Integer> peakwidth		= Seed.GetPeakWidth().iterator();
-		Iterator<Integer> peakheight	= Seed.GetPeakHeight().iterator();
-		Iterator<Vector2> baselocations = Seed.GetBases().iterator();
+		Iterator<Integer> peaks 		= Seed.getPeaks().iterator();
+		Iterator<Integer> sharpness		= Seed.getSharpness().iterator();
+		Iterator<Integer> peakwidth		= Seed.getPeakWidth().iterator();
+		Iterator<Integer> peakheight	= Seed.getPeakHeight().iterator();
+		Iterator<Vector2> baselocations = Seed.getBases().iterator();
 		
 		// for each peak in the seed
-		for (int i=0; i<Seed.GetPeakCount(); i++)
+		for (int i=0; i<Seed.getPeakCount(); i++)
 		{
 			int p = peaks.next();
 			int s = sharpness.next();
@@ -184,7 +184,7 @@ public class Terrain
 					skip = true;
 			}
 			
-			baselocations = Seed.GetBases().iterator();
+			baselocations = Seed.getBases().iterator();
 			if (skip) continue;
 				
 			// add the peak
@@ -199,7 +199,7 @@ public class Terrain
 				else if (x >= width) addx -= width;
 			
 				// reset the iterator and check whether or not we should continue
-				baselocations = Seed.GetBases().iterator();
+				baselocations = Seed.getBases().iterator();
 				if (skip) continue;
 				
 				float add = h*(1 - (float)Math.pow( (p-x)/(float)w, 2*s ));
@@ -208,8 +208,8 @@ public class Terrain
 		}
 		
 		// process the roughness/softness of the terrain
-		int softness = Seed.GetSoftness();
-		int consistency = Seed.GetConsistencyLevel();
+		int softness = Seed.getSoftness();
+		int consistency = Seed.getConsistencyLevel();
 		
 		for (int x=0; x<width; x++)
 		{
@@ -239,40 +239,40 @@ public class Terrain
 		
 		// construct the base positions
 		for (int i=0; i<baseregions.length; i++) {
-			Vector2 base = Seed.GetBases().get(i);
-			baseregions[i] = new Rectangle(base.x, 0, base.y-base.x, GetHeight((int)base.x));
+			Vector2 base = Seed.getBases().get(i);
+			baseregions[i] = new Rectangle(base.x, 0, base.y-base.x, getHeight((int)base.x));
 		}
 	}
 	
-	private int GetSegment(int X)
+	private int getSegment(int X)
 	{
 		return X/SEGMENTWIDTH;
 	}
 	
-	public void SetBedrock(int Segment)
+	public void setBedrock(int Segment)
 	{
 		// set the bottom layer to bedrock so it cannot be destroyed
 		data[Segment].setColor(Color.WHITE);
 		data[Segment].fillRectangle(0, height-minlevel, SEGMENTWIDTH, minlevel);
 		
 		for (Rectangle r : baseregions) {
-			AddRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height, Segment);
+			addRegion((int)r.x, (int)r.height, (int)r.width, height-(int)r.height, Segment);
 			
 			double theta = (float)Math.PI/2f;
 			int width = (int)((r.height/Math.sin(Math.PI-theta))*Math.sin(theta));
-			AddTriangleRegion((int)r.x-width, width, height, (int)r.x, (int)(height-r.height), Segment);
-			AddTriangleRegion((int)(r.x+r.width), width, height, (int)(r.x+r.width), (int)(height-r.height), Segment);
+			addTriangleRegion((int)r.x-width, width, height, (int)r.x, (int)(height-r.height), Segment);
+			addTriangleRegion((int)(r.x+r.width), width, height, (int)(r.x+r.width), (int)(height-r.height), Segment);
 		}
 	}
 	
-	public int GetHeight(int X)
+	public int getHeight(int X)
 	{
 		// do not allow tests beyond the scope of the terrain
 		if (X < 0) X += Game.WORLDW;
 		if (X >= width) X -= Game.WORLDW;
 		
 		// determine the segment of this position
-		int s = GetSegment(X);
+		int s = getSegment(X);
 		int localx = X - s*SEGMENTWIDTH;
 		
 		// find the height
@@ -284,7 +284,7 @@ public class Terrain
 		return rety;
 	}
 	
-	public int GetMinHeight(int X0, int X1)
+	public int getMinHeight(int X0, int X1)
 	{
 		if (X0 < 0)
 			X0 =0;
@@ -293,12 +293,12 @@ public class Terrain
 		
 		int min = Integer.MAX_VALUE;
 		for (int x=X0; x<=X1; x++)
-			min = (int)Math.min(min, GetHeight(x));
+			min = (int)Math.min(min, getHeight(x));
 		
 		return min;
 	}
 	
-	public int GetMaxHeight(int X0, int X1)
+	public int getMaxHeight(int X0, int X1)
 	{
 		if (X0 < 0)
 			X0 =0;
@@ -307,15 +307,15 @@ public class Terrain
 		
 		int max = 0;
 		for (int x=X0; x<X1; x++)
-			max = (int)Math.max(max, GetHeight(x));
+			max = (int)Math.max(max, getHeight(x));
 		
 		return max;
 	}
 	
-	private void SetPixel(int X, int Y, boolean State)
+	private void setPixel(int X, int Y, boolean State)
 	{
 		// determine the segment for this pixel
-		int s = GetSegment(X);
+		int s = getSegment(X);
 		int localx = X - s*SEGMENTWIDTH;
 		
 		if (State)
@@ -325,7 +325,7 @@ public class Terrain
 		data[s].drawPixel(localx, Y);
 	}
 	
-	private void UpdateDropping(int Count)
+	private void updateDropping(int Count)
 	{
 		if (Count == -1) {
 			return;
@@ -362,8 +362,8 @@ public class Terrain
 					if (!laststate && currentstate && y != height-1)
 						sety = y+1;
 					else if (laststate && !currentstate && sety != height) {
-						SetPixel(x + i*SEGMENTWIDTH, sety, true);
-						SetPixel(x + i*SEGMENTWIDTH, y+1, false);
+						setPixel(x + i*SEGMENTWIDTH, sety, true);
+						setPixel(x + i*SEGMENTWIDTH, y+1, false);
 						
 						// set this region as invalid, continue processing
 						isSegmentValid[i] = false;
@@ -376,12 +376,12 @@ public class Terrain
 			
 			// if this is the final iteration and the segment is invalid, invalidate it 
 			if (!isSegmentValid[i] && Count == 0) {
-				InvalidateSegment(i);
+				invalidateSegment(i);
 			}
 			
 			// if the previous stage was invalid but it is now valid, invalidate the texture
 			else if (isSegmentValid[i] && !tmpValid[i]) {
-				InvalidateSegment(i);
+				invalidateSegment(i);
 			}
 			
 			// copy to the tmp array
@@ -389,22 +389,22 @@ public class Terrain
 		}
 		
 		// recurse down updating the terrain
-		UpdateDropping(Count - 1);
+		updateDropping(Count - 1);
 	}
 	
-	public void ClearTmp()
+	public void clearTmp()
 	{
 		for (int i=0; i<segmentcount; i++) {
 			tmpValid[i] = true;
 		}
 	}
 	
-	public void Update()
+	public void update()
 	{
 		dropclock += Gdx.graphics.getDeltaTime();
 		if (dropclock < 0.01) return;
 		
-		if (IsValid()) {
+		if (isValid()) {
 			speed = BASESPEED;
 			return;
 		} else {
@@ -415,11 +415,11 @@ public class Terrain
 		}
 		
 		dropclock = 0.0;
-		ClearTmp();
-		UpdateDropping((int)speed);
+		clearTmp();
+		updateDropping((int)speed);
 	}
 	
-	public void CutHole(int X, int Y, int Radius)
+	public void cutHole(int X, int Y, int Radius)
 	{
 		// determine which segments this hole belongs to
 		int x0 = X - Radius;
@@ -438,11 +438,11 @@ public class Terrain
 			
 			data[i].setColor(Color.CLEAR);
 			data[i].fillCircle(localx, Y, Radius);
-			InvalidateSegment(i);
+			invalidateSegment(i);
 		}
 	}
 	
-	public void CutRegion(int X, int Y, int Width, int Height)
+	public void cutRegion(int X, int Y, int Width, int Height)
 	{
 		// determine the segments this hole belongs to
 		int x0 = X;
@@ -461,11 +461,11 @@ public class Terrain
 			
 			data[i].setColor(Color.CLEAR);
 			data[i].fillRectangle(localx, Y, Width, Height);
-			InvalidateSegment(i);
+			invalidateSegment(i);
 		}
 	}
 	
-	private void AddTriangleRegion(int X0, int Width, int Y0, int X1, int Y1, int Segment)
+	private void addTriangleRegion(int X0, int Width, int Y0, int X1, int Y1, int Segment)
 	{
 		if (X0 < 0) {
 			X0 += Game.WORLDW;
@@ -480,7 +480,7 @@ public class Terrain
 		data[Segment].fillTriangle(localx0, Y0, localx0+Width, Y0, localx1, Y1);
 	}
 	
-	private void AddRegion(int X, int Y, int Width, int Height, int Segment)
+	private void addRegion(int X, int Y, int Width, int Height, int Segment)
 	{
 		int localx = X - Segment*SEGMENTWIDTH;
 
@@ -488,7 +488,7 @@ public class Terrain
 		data[Segment].fillRectangle(localx, Y, Width, Height);
 	}
 	
-	public void AddDeceasedTroop(int X, boolean Forward)
+	public void addDeceasedTroop(int X, boolean Forward)
 	{
 		Pixmap.setBlending(Blending.SourceOver);
 		
@@ -497,7 +497,7 @@ public class Terrain
 		
 		int x0 = X;
 		int x1 = X+width;
-		int y = GetHeight(X + width/2)-height;
+		int y = getHeight(X + width/2)-height;
 		
 		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
 		region0 = Math.max(region0, 0);
@@ -517,13 +517,13 @@ public class Terrain
 				data[i].drawPixmap(DEADTROOPR, localx, y);
 			else
 				data[i].drawPixmap(DEADTROOPL, localx, y);
-			InvalidateSegment(i);
+			invalidateSegment(i);
 		}
 		
 		Pixmap.setBlending(Blending.None);
 	}
 	
-	public boolean IsValid()
+	public boolean isValid()
 	{
 		for (boolean b : isSegmentValid) {
 			// if a segment is not valid, return false
@@ -534,21 +534,21 @@ public class Terrain
 		return true;
 	}
 	
-	public void InvalidateSegment(int Segment)
+	public void invalidateSegment(int Segment)
 	{
 		if (mask[Segment] != null)
 			mask[Segment].dispose();
 		
-		SetBedrock(Segment);
+		setBedrock(Segment);
 		mask[Segment] = new Texture( data[Segment] );
 	}
 	
-	public boolean Contains(float X, float Y)
+	public boolean contains(float X, float Y)
 	{
-		return Y < (Game.WORLDH - GetHeight((int)X));
+		return Y < (Game.WORLDH - getHeight((int)X));
 	}
 	
-	public void Draw(SpriteBatch Batch, Vector2 Campos)
+	public void draw(SpriteBatch Batch, Vector2 Campos)
 	{
 		Batch.flush();
 		
@@ -557,12 +557,12 @@ public class Terrain
 		Batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
 		
 		// draw each segment
-		int s0 = GetSegment((int)Campos.x) - 1;
+		int s0 = getSegment((int)Campos.x) - 1;
 		s0 = (int)Math.max(s0, 0);
 		int s1 = s0 + (Game.SCREENW/SEGMENTWIDTH) + 5;
 		
 		// render the extension
-		int e0 = GetSegment((int)Campos.x) - segmentcount;
+		int e0 = getSegment((int)Campos.x) - segmentcount;
 		e0 = (int)Math.max(e0, 0);
 		int e1 = e0 + (Game.SCREENW/SEGMENTWIDTH) + 5;
 		e1 = Math.min(e1, mask.length-1);
