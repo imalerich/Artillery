@@ -42,7 +42,8 @@ public class Squad
 	private int id = -1;
 	
 	// the armor and armament that is used by this squadbn
-	private Armament arms;
+	private Armament primary;
+	private Armament secondary;
 	private Armor armor;
 	
 	private Vector<Unit> units;
@@ -55,17 +56,20 @@ public class Squad
 	private boolean ismoving;
 	private boolean isforward;
 	
+	private float powerratio = 0f;
 	private boolean isFiring;
 	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
-	private Vector2 barrelsrc;
 	private int addid = 0;
 	private boolean takesdirectdamage = true;
 	
 	private FoxHole occupied;
 	private boolean addfox;
 	private Vector2 foxpos;
+	
+	// state to use when adding a unit
+	private Vector2 barrelSrc = new Vector2();
 	
 	private Army army;
 	
@@ -113,8 +117,6 @@ public class Squad
 		isforward = true;
 		
 		occupied = null;
-		
-		barrelsrc = new Vector2();
 	}
 	
 	public Army getArmy()
@@ -137,18 +139,22 @@ public class Squad
 		return occupied != null;
 	}
 	
-	public void setBarrelSrc(Vector2 Pos)
+	public void setBarrelSrc(Vector2 Src)
 	{
-		barrelsrc = Pos;
+		barrelSrc = Src;
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+			u.next().setBarrelSrc(Src);
 	}
 	
-	public Vector2 getBarrelSrc()
+	public void setPowerRatio(float Ratio)
 	{
-		if (isforward) {
-			return new Vector2(barrelsrc);
-		} else {
-			return new Vector2(bbox.width - barrelsrc.x, barrelsrc.y);
-		}
+		powerratio = Ratio;
+	}
+	
+	public float getPowerRatio()
+	{
+		return powerratio;
 	}
 	
 	public void setMaxHealth()
@@ -200,7 +206,8 @@ public class Squad
 			// process damage to units done by any blasts
 			Unit unit = u.next();
 				
-			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.getBBox())) {
+			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.getBBox()) ||
+					unit.getBBox().contains(B.pos)) {
 				float dmg = Math.max(B.strength - armor.getStrength(), 0);
 				armor.damage((int)B.strength);
 
@@ -249,14 +256,24 @@ public class Squad
 		return bbox;
 	}
 	
-	public void getArmament(Armament Arms)
+	public void setPrimary(Armament Arms)
 	{
-		arms = new Armament(Arms);
+		primary = new Armament(Arms);
 	}
 	
-	public Armament getArmament()
+	public void setSecondary(Armament Arms)
 	{
-		return arms;
+		secondary = new Armament(Arms);
+	}
+	
+	public Armament getPrimary()
+	{
+		return primary;
+	}
+	
+	public Armament getSecondary()
+	{
+		return secondary;
 	}
 	
 	public void setArmor(Armor Set)
@@ -309,23 +326,6 @@ public class Squad
 	public int getUnitCount()
 	{
 		return units.size();
-	}
-	
-	public float getBarrelAngle()
-	{
-		return arms.getAngle();
-	}
-	
-	public void setBarrelAngle(float Angle)
-	{
-		// all squad members must have the same angle
-		Iterator<Unit> u = units.iterator();
-		while (u.hasNext()) {
-			Unit unit = u.next();
-			
-			unit.setBarrelAngle(Angle);
-			arms.setAngle( unit.getBarrelAbsoluteAngle() );
-		}
 	}
 	
 	private void calcBoundingBox(Vector2 Campos)
@@ -392,7 +392,7 @@ public class Squad
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Circle c = new Circle(unit.getPos().x + unit.getWidth()/2, 
-					unit.getPos().y + unit.getHealth()/2, arms.getRange());
+					unit.getPos().y + unit.getHealth()/2, primary.getRange());
 
 			if (Intersector.overlaps(c, R)) {
 				return true;
@@ -431,8 +431,29 @@ public class Squad
 		return squadspacing;
 	}
 	
+	public void setBarrelAngle(float Angle)
+	{
+		// all squad members must have the same angle
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			
+			unit.setBarrelAngle(Angle);
+			if (primary != null)
+				primary.setAngle(unit.getBarrelAbsoluteAngle());
+			
+			if (secondary != null)
+				secondary.setAngle(unit.getBarrelAbsoluteAngle());
+		}
+	}
+	
 	public void addUnit(Unit Add)
 	{
+		// set the default barrel src to the middle of the unit
+		if (units.size() == 0 && barrelSrc.x == 0f && barrelSrc.y == 0f) {
+			barrelSrc = new Vector2(Add.getWidth()/2f, Add.getHeight()/2f);
+		}
+		
 		// get the position at which to add this unit
 		Vector2 addp =  new Vector2(Add.getPos());
 		
@@ -441,6 +462,7 @@ public class Squad
 		units.add(Add);
 		units.lastElement().setID(addid);
 		units.lastElement().setDirectDamage(takesdirectdamage);
+		units.lastElement().setBarrelSrc(barrelSrc);
 		units.lastElement().setSquad(this);
 		addid++;
 	}
@@ -570,7 +592,7 @@ public class Squad
 		if (updated > 0) {
 			// set the occupied fox hole as not occupied
 			if (occupied != null) {
-				occupied.setOccupedi(false);
+				occupied.setOccupied(null);
 				occupied = null;
 			}
 		}
@@ -585,6 +607,11 @@ public class Squad
 			ismoving = true;
 			
 		}
+	}
+	
+	public void setUnoccupiedFox()
+	{
+		occupied = null;
 	}
 	
 	private void finishedMoving(Vector2 Campos)
@@ -624,7 +651,7 @@ public class Squad
 			
 			// if this squad overlaps the fox hole, set this fox hole as the occupied
 			if ( bbox.overlaps(h.getBBox()) || bbox.contains(h.getBBox()) ) {
-				h.setOccupedi(true);
+				h.setOccupied(this);
 				occupied = h;
 			
 				break;
@@ -642,7 +669,7 @@ public class Squad
 			pos.y += u.getHeight()/2;
 			
 			FogOfWar.addVisibleRegion(Cam.getRenderX(pos.x), 
-					Cam.getRenderY(pos.y), arms.getRange());
+					Cam.getRenderY(pos.y), primary.getRange());
 		}
 	}
 	

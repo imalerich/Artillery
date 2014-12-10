@@ -19,7 +19,6 @@ import com.mygdx.game.MilitaryBase;
 public class RemoteArmy extends Army
 {
 	private Vector<Response> response;
-	private float powerlevel;
 	
 	public RemoteArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int ID)
 	{
@@ -113,7 +112,7 @@ public class RemoteArmy extends Army
 			s.setForward(r.b1);
 			s.setFiring(r.b0);
 			s.setBarrelAngle(r.f0);
-			powerlevel = r.f1;
+			s.setPowerRatio(r.f1);
 			return;
 			
 		} else if (r.request.equals("UNITTARGET")) {
@@ -125,6 +124,13 @@ public class RemoteArmy extends Army
 				t.setAsTarget();
 			}
 			
+			return;
+		} else if (r.request.equals("UNITGRENADE")) {
+			Squad s = getSquad(r.i0);
+			s.setForward(r.b1);
+			s.setFiring(r.b0);
+			s.getSecondary().setAngle(r.f0);
+			s.setPowerRatio(r.f1);
 			return;
 		}
 		
@@ -163,13 +169,21 @@ public class RemoteArmy extends Army
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			
-			// add each squad and its target to the combat resolver
-			if (squad.getTargetSquad() != null && 
-					squad.getArmament().getType() == Armament.UNITTARGET) {
+			// add primary weapons to the combat resolver
+			if (squad.getTargetSquad() != null && squad.getPrimary().getType() == Armament.UNITTARGET) {
 				Resolver.addConflict(squad, squad.getTargetSquad());
-			} else if (squad.isFiring() && squad.getArmament().getType() == Armament.POINTTARGET) {
-				Resolver.addProjectile(squad, powerlevel,
-						squad.getArmament().getStrength());
+				continue;
+				
+			} else if (squad.isFiring() && squad.getPrimary().getType() == Armament.POINTTARGET) {
+				Resolver.addMissile(squad);
+				continue;
+				
+			}
+			
+			// add secondary weapons to the combat resolver
+			if (squad.getSecondary() != null && squad.isFiring()) {
+				Resolver.addGrenade(squad,  squad.getSecondary());
+				continue;
 			}
 		}
 	}

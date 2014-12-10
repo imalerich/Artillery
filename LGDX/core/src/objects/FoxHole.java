@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
+import entity.Squad;
+
 public class FoxHole 
 {
 	public static final int REQCOST = 100;
@@ -20,7 +22,7 @@ public class FoxHole
 	
 	private final Vector2 pos;
 	private float targety;
-	private boolean isoccupied;
+	private Squad isoccupied;
 	private Rectangle bbox;
 	
 	public static void init()
@@ -37,12 +39,17 @@ public class FoxHole
 	public FoxHole(Vector2 Pos)
 	{
 		pos = new Vector2(Pos);
-		isoccupied = false;
+		isoccupied = null;
 		
 		// set the mound lower and have it rise out of the ground
 		targety = pos.y;
 		pos.y -= FOXHOLE.getHeight();
-		bbox = new Rectangle(pos.x, 0, MOUNDWIDTH, Game.WORLDH);
+		bbox = new Rectangle(pos.x, 0, FOXHOLE.getWidth(), Game.WORLDH);
+	}
+	
+	public Vector2 getPos()
+	{
+		return pos;
 	}
 	
 	public Rectangle getBBox()
@@ -50,12 +57,17 @@ public class FoxHole
 		return bbox;
 	}
 	
-	public boolean isOccupied()
+	public Squad getOccupied()
 	{
 		return isoccupied;
 	}
 	
-	public void setOccupedi(boolean Occupied)
+	public boolean isOccupied()
+	{
+		return isoccupied != null;
+	}
+	
+	public void setOccupied(Squad Occupied)
 	{
 		isoccupied = Occupied;
 	}

@@ -53,6 +53,7 @@ public class UserArmy extends Army
 	private boolean targetenemies;
 	private boolean targetpoint;
 	private boolean targetpower;
+	private boolean grenade;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -76,16 +77,20 @@ public class UserArmy extends Army
 		menuactive = false;
 		menurelease = false;
 		foxactive = false;
+		grenade = false;
 		
-		menu = new ButtonOptions(0, 0, 4);
-		menu.setGlyph(0, ButtonOptions.MOVE);
-		menu.setGlyph(1, ButtonOptions.MOVEFOXHOLE);
-		menu.setGlyph(2, ButtonOptions.UPGRADE);
-		menu.setGlyph(3, ButtonOptions.STOP);
+		menu = new ButtonOptions(0, 04);
+		menu.addGlyph(ButtonOptions.MOVE);
+		menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
+		menu.addGlyph(ButtonOptions.MOVETANKTRAP);
+		menu.addGlyph(ButtonOptions.UPGRADE);
+		menu.addGlyph(ButtonOptions.STOP);
 		
-		offensemenu = new ButtonOptions(0, 0, 2);
-		offensemenu.setGlyph(0, ButtonOptions.ATTACK);
-		offensemenu.setGlyph(1, ButtonOptions.STOP);
+		offensemenu = new ButtonOptions(0, 0);
+		offensemenu.addGlyph(ButtonOptions.GRENADEL);
+		offensemenu.addGlyph(ButtonOptions.GRENADER);
+		offensemenu.addGlyph(ButtonOptions.ATTACK);
+		offensemenu.addGlyph(ButtonOptions.STOP);
 		
 		foxselect = new FoxHoleMenu(Ter);
 		
@@ -204,12 +209,20 @@ public class UserArmy extends Army
 			Squad squad = s.next();
 			
 			// add each squad and its target to the combat resolver
-			if (squad.getTargetSquad() != null && 
-					squad.getArmament().getType() == Armament.UNITTARGET) {
+			if (squad.getTargetSquad() != null && squad.getPrimary().getType() == Armament.UNITTARGET) {
 				Resolver.addConflict(squad, squad.getTargetSquad());
-			} else if (squad.isFiring() && squad.getArmament().getType() == Armament.POINTTARGET) {
-				Resolver.addProjectile(squad, powerselect.getPower()/PowerButtons.MAXPOWER,
-						squad.getArmament().getStrength());
+				return;
+				
+			} else if (squad.isFiring() && squad.getPrimary().getType() == Armament.POINTTARGET) {
+				Resolver.addMissile(squad);
+				return;
+				
+			}
+			
+			// add secondary weapons to the combat resolver
+			if (squad.getSecondary() != null && squad.isFiring()) {
+				Resolver.addGrenade(squad, squad.getSecondary());
+				continue;
 			}
 		}
 	}
@@ -508,6 +521,9 @@ public class UserArmy extends Army
 		
 		else if (targetpower)
 			updateTargetPower(Cam);
+		
+		else if (grenade)
+			updateTargetGrenades(Cam);
 	}
 	
 	private void updateButtons(Vector2 Campos)
@@ -518,10 +534,12 @@ public class UserArmy extends Army
 			return;
 		}
 		
-		if (selected.getArmament().getType() == Armament.POINTTARGET) {
-			menu.setSkip(1);
+		if (selected.getPrimary().getType() == Armament.POINTTARGET) {
+			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
+			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
 		} else {
-			menu.noSkip();
+			menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
+			menu.addGlyph(ButtonOptions.MOVETANKTRAP);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -620,7 +638,6 @@ public class UserArmy extends Army
 	{
 		FoxHoleMenu.cutRoom(ter, Pos);
 		world.addFoxHole(Pos);
-		System.out.println("Pos.y: " + Pos.y);
 		
 		// inform all clients of the added fox hole
 		Response r = new Response();
@@ -628,7 +645,6 @@ public class UserArmy extends Army
 		r.request = "ADDFOX";
 		r.f0 = Pos.x;
 		r.f1 = Pos.y;
-		System.out.println("r.f1: " + r.f1);
 
 		network.getClient().sendTCP(r);
 	}
@@ -639,6 +655,14 @@ public class UserArmy extends Army
 		if (selected == null) {
 			menuactive = false;
 			return;
+		}
+		
+		if (selected.getPrimary().getType() == Armament.POINTTARGET) {
+			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
+			offensemenu.removeGlyph(ButtonOptions.GRENADER);
+		} else {
+			offensemenu.addGlyph(ButtonOptions.GRENADEL);
+			offensemenu.addGlyph(ButtonOptions.GRENADER);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -672,19 +696,55 @@ public class UserArmy extends Army
 			menurelease = false;
 			offensemenu.resetClock();
 			
-			if (selected.getArmament().getType() == Armament.UNITTARGET) {
+			selected.setTargetSquad(null);
+			selected.setFiring(false);
+			
+			if (selected.getPrimary().getType() == Armament.UNITTARGET) {
 				targetenemies = true;
-			} else if (selected.getArmament().getType() == Armament.POINTTARGET) {
+			} else if (selected.getPrimary().getType() == Armament.POINTTARGET) {
 				targetpoint = true;
 			}
 			
+			break;
+			
+		case ButtonOptions.GRENADEL:
+			// leave the menu
+			selected.setTargetSquad(null);
+			menuactive = false;
+			menurelease = false;
+			offensemenu.resetClock();
+			
+			selected.setTargetSquad(null);
+			selected.setFiring(false);
+			selected.setForward(false);
+			selected.getSecondary().setAngle(45);
+			
+			Vector2 pos = new Vector2(selected.getBBox().x-64, selected.getBBox().y + selected.getBBox().height/2);
+			powerselect.setPos(pos);
+			grenade = true;
+			break;
+			
+		case ButtonOptions.GRENADER:
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			offensemenu.resetClock();
+			
+			selected.setTargetSquad(null);
+			selected.setFiring(false);
+			selected.setForward(true);
+			selected.getSecondary().setAngle(45);
+			
+			pos = new Vector2(selected.getBBox().x+selected.getBBox().width+64, selected.getBBox().y + selected.getBBox().height/2);
+			powerselect.setPos(pos);
+			grenade = true;
 			break;
 			
 		default:
 			break;
 		}
 	}
-	
+
 	private void updateMove(Vector2 Campos)
 	{
 		if (selected == null) {
@@ -826,6 +886,7 @@ public class UserArmy extends Army
 		
 		// leave the current unit selected and leave targeting for this squad
 		if (powerselect.doFire(Cam)) {
+			selected.setPowerRatio(powerselect.getPower()/PowerButtons.MAXPOWER);
 			selected.setFiring(true);
 			targetpower = false;
 			
@@ -836,8 +897,48 @@ public class UserArmy extends Army
 			r.i0 = selected.getID();
 			r.b0 = selected.isFiring();
 			r.b1 = selected.isForward();
-			r.f0 = selected.getBarrelAngle();
-			r.f1 = powerselect.getPower()/PowerButtons.MAXPOWER;
+			r.f0 = selected.getPrimary().getAngle();
+			r.f1 = selected.getPowerRatio();
+			
+			network.getClient().sendTCP(r);
+			
+			return;
+		}
+		
+		powerselect.update(Cam);
+		MenuBar.setPowerLevel(powerselect.getPower(), PowerButtons.MAXPOWER);
+	}
+	
+	private void updateTargetGrenades(Camera Cam)
+	{
+		// INVALID - do not select a point
+		if (selected == null) {
+			targetpower = false;
+			return;
+		}
+		
+		// leave targeting, do not select a point
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			selected.setFiring(false);
+			targetpower = false;
+			
+			return;
+		}
+		
+		if (powerselect.doFire(Cam)) {
+			selected.setPowerRatio(powerselect.getPower()/PowerButtons.MAXPOWER);
+			selected.setFiring(true);
+			grenade = false;
+			
+			// send a message to all clients informing them who is firing and where
+			Response r = new Response();
+			r.source = getConnection();
+			r.request = "UNITGRENADE";
+			r.i0 = selected.getID();
+			r.b0 = selected.isFiring();
+			r.b1 = selected.isForward();
+			r.f0 = selected.getSecondary().getAngle();
+			r.f1 = selected.getPowerRatio();
 			
 			network.getClient().sendTCP(r);
 			
@@ -862,7 +963,7 @@ public class UserArmy extends Army
 	@Override
 	public boolean isMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive || grenade);
 	}
 	
 	private void drawDeployer(SpriteBatch Batch, Camera Cam)
@@ -967,7 +1068,7 @@ public class UserArmy extends Army
 			moveselect.draw(Batch, Cam);
 		}
 		
-		if (targetpower && selected != null) {
+		if ((grenade || targetpower) && selected != null) {
 			powerselect.draw(Batch, Cam);
 		}
 		

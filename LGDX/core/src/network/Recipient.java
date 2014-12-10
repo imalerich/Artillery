@@ -73,7 +73,7 @@ public class Recipient
 		game.setUserArmy(owned);
 		
 		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, owned);
-		squad.getArmament(tankSettings.getFirstArmament());
+		squad.setPrimary(tankSettings.getFirstPrimary());
 		squad.setArmor(tankSettings.getFirstArmor());
 		
 		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
@@ -226,7 +226,7 @@ public class Recipient
 		RemoteArmy army = new RemoteArmy(game, base, game.getTerrain(), parent, ID);
 		
 		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, army);
-		squad.getArmament(tankSettings.getFirstArmament());
+		squad.setPrimary(tankSettings.getFirstPrimary());
 		squad.setArmor(tankSettings.getFirstArmor());
 		
 		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);

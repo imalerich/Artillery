@@ -17,7 +17,7 @@ ARMOR
 
 END
 
-ARMAMENT
+PRIMARY
 
 	type: UNIT 
 	range: 512
@@ -28,7 +28,7 @@ ARMAMENT
 
 END
 
-ARMAMENT
+PRIMARY
 
 	type: UNIT 
 	range: 768
@@ -36,5 +36,14 @@ ARMAMENT
 	strength: 8
 	speed: 800
 	accuracy: 0.8
+
+END
+
+SECONDARY
+
+	type: POINT
+	firerate: 1
+	strength: 8
+	speed: 800
 
 END

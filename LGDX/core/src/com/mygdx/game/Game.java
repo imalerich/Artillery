@@ -1,11 +1,12 @@
 package com.mygdx.game;
 
-import objects.FoxHole;
 import network.NetworkManager;
+import objects.FoxHole;
 import particles.ParticleMask;
 import particles.Weather;
 import physics.CombatPacket;
 import physics.GameWorld;
+import physics.Grenade;
 import physics.Missile;
 import terrain.Background;
 import terrain.FogOfWar;
@@ -89,6 +90,7 @@ public class Game extends ApplicationAdapter
 		MenuBar.init();
 		CombatPacket.init();
 		Missile.init();
+		Grenade.init();
 		Profile.init();
 		PowerButtons.init();
 		ParticleMask.init();
@@ -107,6 +109,7 @@ public class Game extends ApplicationAdapter
 		MenuBar.release();
 		CombatPacket.release();
 		Missile.release();
+		Grenade.release();
 		Profile.release();
 		PowerButtons.release();
 		ParticleMask.release();

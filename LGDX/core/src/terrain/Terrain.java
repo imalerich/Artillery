@@ -17,6 +17,7 @@ public class Terrain
 {
 	private static Pixmap DEADTROOPR;
 	private static Pixmap DEADTROOPL;
+	private static Pixmap FOXHOLE;
 	
 	private static final int ACCELERATION = 16;
 	private static final int BASESPEED = 0;
@@ -58,6 +59,10 @@ public class Terrain
 		if (DEADTROOPL == null) {
 			DEADTROOPL = new Pixmap( Gdx.files.internal("img/units/deadtroopL.png") );
 		}
+		
+		if (FOXHOLE == null) {
+			FOXHOLE = new Pixmap( Gdx.files.internal("img/objects/foxhole.png") );
+		}
 	}
 	
 	public static void setColor(Color Col)
@@ -78,6 +83,10 @@ public class Terrain
 		
 		if (DEADTROOPL != null) {
 			DEADTROOPL.dispose();
+		}
+		
+		if (FOXHOLE != null) {
+			FOXHOLE.dispose();
 		}
 		
 		for (int i=0; i<segmentcount; i++) {
@@ -517,6 +526,38 @@ public class Terrain
 				data[i].drawPixmap(DEADTROOPR, localx, y);
 			else
 				data[i].drawPixmap(DEADTROOPL, localx, y);
+			invalidateSegment(i);
+		}
+		
+		Pixmap.setBlending(Blending.None);
+	}
+	
+	public void addFoxHole(int X)
+	{
+		Pixmap.setBlending(Blending.SourceOver);
+		
+		int width = FOXHOLE.getWidth();
+		int height = FOXHOLE.getHeight();
+		
+		int x0 = X;
+		int x1 = X+width;
+		int y = getHeight(X + width/2)-height;
+		
+		int region0 = (int)(Math.floor( (float)x0/SEGMENTWIDTH) );
+		region0 = Math.max(region0, 0);
+		int region1 = (int)(Math.floor( (float)x1/SEGMENTWIDTH) );
+		region1 = Math.min(region1, segmentcount-1);
+		
+		for (int i=region0; i<=region1; i++)
+		{
+			int localx = X - i*SEGMENTWIDTH;
+			if (localx+width < 0 || localx > SEGMENTWIDTH) {
+				continue;
+			}
+			
+			isSegmentValid[i] = false;
+			
+			data[i].drawPixmap(FOXHOLE, localx, y);
 			invalidateSegment(i);
 		}
 		

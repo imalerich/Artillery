@@ -127,7 +127,7 @@ public class PowerButtons
 			timer = 0f;
 		}
 		
-		power -= Gdx.graphics.getDeltaTime() * SPEED * Cursor.getScrollDirection() * 2;
+		power -= Gdx.graphics.getDeltaTime() * SPEED * Cursor.getScrollDirection() * 4;
 	}
 	
 	public boolean doFire(Camera Cam)

@@ -15,33 +15,34 @@ import entity.Tank;
 
 public class Missile 
 {
-	private static final int GRAVITY = 144*8; // px's per second
-	private static final int PPS = 600; // particles per second
-	private static final float DECAY = 0.6f;
+	protected static final int PPS = 600; // particles per second
+	protected final float DECAY = 0.6f;
 	
-	private static final float DUSTTIME = 0.3f;
-	private static final float DUSTDECAY = 1f;
-	private static final double DUSTSPEED = 512.0;
+	protected int gravity = 144*8; // px's per second
+	protected float dusttime = 0.3f;
+	protected float dustdecay = 1f;
+	protected float postdustr = 32;
+	protected double dustspeed = 512.0;
 	
-	private static Sound sfx;
-	private static Texture tex;
+	protected static Sound sfx;
+	protected static Texture tex;
 	
-	private Terrain ter;
-	private Particles particle;
-	private GameWorld gw;
+	protected Terrain ter;
+	protected Particles particle;
+	protected GameWorld gw;
 	
-	private Vector2 pos;
-	private Vector2 vel;
-	private float strength;
+	protected Vector2 pos;
+	protected Vector2 vel;
+	protected float strength;
 	
-	private boolean hashit;
-	private double time;
-	private double totaltime;
+	protected boolean hashit;
+	protected double time;
+	protected double totaltime;
 	
-	private double posttime;
-	private double posttotaltime;
+	protected double posttime;
+	protected double posttotaltime;
 	
-	private boolean hasfired;
+	protected boolean hasfired;
 	
 	public static void init()
 	{
@@ -101,7 +102,7 @@ public class Missile
 		}
 		
 		if (!hasfired) {
-			sfx.play();
+			playSound();
 			hasfired = true;
 			
 			time = 0.1f;
@@ -109,7 +110,7 @@ public class Missile
 		}
 		
 		// apply gravity to the velocity
-		vel.y -= GRAVITY * Gdx.graphics.getDeltaTime();
+		vel.y -= gravity * Gdx.graphics.getDeltaTime();
 		
 		addParticle();
 		
@@ -125,12 +126,21 @@ public class Missile
 		}
 		
 		if (ter.contains(pos.x, pos.y) && !hashit) {
-			ter.cutHole((int)pos.x, Game.WORLDH - (int)pos.y, 64);
 			hashit = true;
 			
 			// process the blast
-			gw.procBlast( new Blast(pos, 64, strength));
+			procBlast();
 		}
+	}
+	
+	protected void procBlast()
+	{
+		gw.procBlast( new Blast(pos, 64, strength));
+	}
+	
+	protected void playSound()
+	{
+		sfx.play();
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam)
@@ -147,7 +157,7 @@ public class Missile
 	
 	public boolean isCompleted()
 	{
-		return hashit && (posttotaltime > DUSTTIME);
+		return hashit && (posttotaltime > dusttime);
 	}
 	
 	public boolean hasHit()
@@ -155,7 +165,7 @@ public class Missile
 		return hashit;
 	}
 	
-	private float getTheta()
+	protected float getTheta()
 	{
 		// the angle to draw the missile at
 		float theta = (float)Math.toDegrees( Math.atan( vel.y/vel.x ) );
@@ -166,7 +176,7 @@ public class Missile
 		return theta;
 	}
 	
-	private void addParticle()
+	protected void addParticle()
 	{
 		totaltime += Gdx.graphics.getDeltaTime();
 		time += Gdx.graphics.getDeltaTime();
@@ -190,25 +200,25 @@ public class Missile
 		time = 0.0;
 	}
 	
-	private Vector2 getParticleVelocity(Vector2 V0, double Theta)
+	protected Vector2 getParticleVelocity(Vector2 V0, double Theta)
 	{
 		Vector2 v = new Vector2(V0);
 		v = v.nor();
 
-		v.x *= (DUSTSPEED * getPostRadiusMod(time));
-		v.y *= (DUSTSPEED * getPostRadiusMod(time));
+		v.x *= (dustspeed * getPostRadiusMod(time));
+		v.y *= (dustspeed * getPostRadiusMod(time));
 		v.rotate((int)(Theta));
 
 		return v;
 	}
 	
-	private void addTerrainParticles()
+	protected void addTerrainParticles()
 	{
 		double prevtot = posttotaltime;
 		posttotaltime += Gdx.graphics.getDeltaTime();
 		posttime += Gdx.graphics.getDeltaTime();
 		
-		if (posttotaltime > DUSTTIME) {
+		if (posttotaltime > dusttime) {
 			return;
 		}
 		
@@ -233,7 +243,7 @@ public class Missile
 		
 		for (int i=0; i<addcount; i++) {
 			double time = prevtot + (float)(posttime) * (i/(float)addcount);
-			float radius = (float)Math.random()*32 + 32;
+			float radius = (float)Math.random()*postdustr + postdustr;
 			radius *= getPostRadiusMod(time);
 			
 			Vector2 v = getParticleVelocity(v0, Math.random()*theta);
@@ -242,13 +252,13 @@ public class Missile
 			p.x += v.x * (float)(posttime) * (i/(float)addcount);
 			p.y += v.y * (float)(posttime) * (i/(float)addcount);
 			
-			particle.addParticle(radius, p, v, DUSTDECAY, 20f);
+			particle.addParticle(radius, p, v, dustdecay, 20f);
 		}
 		
 		posttime = 0.0;
 	}
 	
-	private float getRadiusMod()
+	protected float getRadiusMod()
 	{
 		if (totaltime > DECAY) {
 			return 0f;
@@ -257,12 +267,12 @@ public class Missile
 		}
 	}
 	
-	private float getPostRadiusMod(double TotalTime)
+	protected float getPostRadiusMod(double TotalTime)
 	{
-		if (TotalTime > DUSTTIME) {
+		if (TotalTime > dusttime) {
 			return 0f;
 		} else {
-			return  (DUSTTIME-(float)TotalTime)/DUSTTIME;
+			return  (dusttime-(float)TotalTime)/dusttime;
 		}
 	}
 }

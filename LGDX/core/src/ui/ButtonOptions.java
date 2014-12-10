@@ -1,5 +1,8 @@
 package ui;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,14 +14,14 @@ import com.mygdx.game.Cursor;
 
 public class ButtonOptions 
 {
-	public static final int MOVE = 0;
-	public static final int ATTACK = 1;
-	public static final int STOP = 2;
-	public static final int UPGRADE = 3;
-	public static final int MOVEFOXHOLE = 4;
-	public static final int MOVETANKTRAP = 5;
-	public static final int GRENADEL = 6;
-	public static final int GRENADER = 7;
+	public static final int MOVE			= 0;
+	public static final int MOVEFOXHOLE		= 1;
+	public static final int MOVETANKTRAP	= 2;
+	public static final int UPGRADE			= 3;
+	public static final int ATTACK			= 4;
+	public static final int GRENADEL		= 5;
+	public static final int GRENADER		= 6;
+	public static final int STOP			= 7;
 	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;
@@ -30,9 +33,7 @@ public class ButtonOptions
 	private double clock;
 	private int xpos;
 	private int ypos;
-	private int count;
-	private int skipid = -1;
-	private int[] buttonGlyphs;
+	private ArrayList<Integer> buttonGlyphs;
 	private Rectangle[] bbox;
 	
 	public static void release()
@@ -40,7 +41,7 @@ public class ButtonOptions
 		button.dispose();
 	}
 	
-	public ButtonOptions(int XPos, int YPos, int Count)
+	public ButtonOptions(int XPos, int YPos)
 	{
 		if (button == null)
 			button = new Texture( Gdx.files.internal("img/ui/indicators/button.png") );
@@ -52,24 +53,9 @@ public class ButtonOptions
 		}
 		
 		clock = 0.0;
-		count = Count;
 		
-		buttonGlyphs = new int[count];
-		for (int i=0; i<count; i++)
-			buttonGlyphs[i] = 0;
-		
-		bbox = new Rectangle[count];
+		buttonGlyphs = new ArrayList<Integer>();
 		setPos(XPos, YPos, new Vector2(0, 0));
-	}
-	
-	public void noSkip()
-	{
-		skipid = -1;
-	}
-	
-	public void setSkip(int ID)
-	{
-		skipid = ID;
 	}
 	
 	public void resetClock()
@@ -77,16 +63,53 @@ public class ButtonOptions
 		clock = 0.0;
 	}
 	
-	public void setGlyph(int ButtonIndex, int GlyphIndex)
+	public void addGlyph(Integer Glyph)
 	{
-		buttonGlyphs[ButtonIndex] = GlyphIndex;
+		if (buttonGlyphs.contains(Glyph)) {
+			return;
+		}
+		
+		int index = 0;
+		Iterator<Integer> i = buttonGlyphs.iterator();
+		while (i.hasNext()) {
+			// add the glyph at the first position available
+			if (Glyph < i.next()) {
+				buttonGlyphs.add(index, Glyph);
+				calcBoundingBoxes();
+				return;
+			}
+			
+			index++;
+		}
+		
+		// not less than any other glyph, add to the end of the list
+		calcBoundingBoxes();
+		buttonGlyphs.add(Glyph);
+	}
+	
+	public void removeGlyph(Integer Glyph)
+	{
+		if (!buttonGlyphs.contains(Glyph)) {
+			return;
+		}
+		
+		Iterator<Integer> i = buttonGlyphs.iterator();
+		while (i.hasNext()) {
+			// if the designated glyph is found, remove it
+			if (i.next() == Glyph) {
+				i.remove();
+			}
+		}
+		
+		calcBoundingBoxes();
 	}
 	
 	private void calcBoundingBoxes()
 	{
-		for (int i=0; i<count; i++) 
+		bbox = new Rectangle[buttonGlyphs.size()];
+		for (int i=0; i<buttonGlyphs.size(); i++) 
 		{
-			int width = button.getWidth()*count + BUTTONGAP*(count-1);
+			int width = button.getWidth()*buttonGlyphs.size()+ BUTTONGAP*(buttonGlyphs.size()-1);
 			int x = xpos + i*button.getWidth() - width/2 + i*BUTTONGAP;
 			
 			
@@ -104,31 +127,18 @@ public class ButtonOptions
 	
 	public int getAction(int Button)
 	{
-		if (Button == -1 || Button > count)
+		if (Button == -1 || Button > buttonGlyphs.size())
 			return -1;
 		
-		return buttonGlyphs[Button];
+		return buttonGlyphs.get(Button);
 	}
 	
 	public int getButtonDown(Vector2 Campos)
 	{
-		int shift = 0;
-		if (skipid != -1)
-			shift++;
-		
 		// loop through each button and find if the user selects it
-		for (int i=0; i<count; i++)
-		{
-			int mod = 0;
-			if (i >= skipid && skipid != -1) {
-				mod++;
-				
-				if (i+mod >= count)
-					return -1;
-			}
-			
-			if (Cursor.isMouseOver(bbox[i], new Vector2(Campos.x-shift*button.getWidth()/2, Campos.y)))
-				return i+mod;
+		for (int i=0; i<bbox.length; i++) {
+			if (Cursor.isMouseOver(bbox[i], new Vector2(Campos.x, Campos.y)))
+				return i;
 		}
 		
 		return -1;
@@ -142,33 +152,28 @@ public class ButtonOptions
 		if (GROWSPEED*clock*clock < 1.0)
 			scale = GROWSPEED*(float)(clock * clock);
 			
-		int width = button.getWidth()*count + BUTTONGAP*(count-1);
+		int width = button.getWidth()*buttonGlyphs.size()+ BUTTONGAP*(buttonGlyphs.size()-1);
 		int selected = getButtonDown(Cam.getPos());
 		
-		for (int i=0; i<count; i++)
-		{
-			int x = xpos + i*button.getWidth() - width/2 + i*BUTTONGAP;
+		int index = 0;
+		Iterator<Integer> i = buttonGlyphs.iterator();
+		while (i.hasNext()) {
+			Integer n = i.next();
 			
-			if (i == skipid) {
-				continue;
-			} else if (i > skipid && skipid != -1) {
-				x = xpos + (i-1)*button.getWidth() - width/2 + (i-1)*BUTTONGAP;
-			}
-			
-			if (skipid != -1)
-				x += button.getWidth()/2;
+			int x = xpos + index*button.getWidth() - width/2 + index*BUTTONGAP;
 			
 			int xoff = (int)(button.getWidth()*(1-scale) )/2;
 			int yoff = (int)(button.getHeight()*(1-scale) )/2;
 			
 			// push the button down
-			if (selected == i && Cursor.isButtonPressed(Cursor.LEFT))
+			if (selected == index && Cursor.isButtonPressed(Cursor.LEFT))
 				yoff -= BUTTONDOWN;
 			
 			Batch.draw(button, Cam.getRenderX(x+xoff), Cam.getRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
-			Batch.draw(glyphs[buttonGlyphs[i]], Cam.getRenderX(x+xoff), Cam.getRenderY(ypos+yoff), 
+			Batch.draw(glyphs[n], Cam.getRenderX(x+xoff), Cam.getRenderY(ypos+yoff), 
 					button.getWidth()*scale, button.getHeight()*scale);
+			index++;
 		}
 	}
 }

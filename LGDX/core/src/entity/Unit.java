@@ -28,6 +28,7 @@ public class Unit
 	protected int width = 0;
 	protected int height = 0;
 	
+	protected Vector2 barrelsrc = new Vector2();
 	protected boolean isFiring = false;
 	protected int mugshotIndex = 0;
 	protected int id;
@@ -109,6 +110,16 @@ public class Unit
 	public void setMugShotIndex(int Index)
 	{
 		mugshotIndex = Index;
+	}
+	
+	public Vector2 getBarrelSrc()
+	{
+		return barrelsrc;
+	}
+	
+	public void setBarrelSrc(Vector2 BarrelSrc)
+	{
+		barrelsrc = new Vector2(BarrelSrc);
 	}
 	
 	public boolean isAlive()

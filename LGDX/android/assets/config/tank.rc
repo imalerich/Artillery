@@ -15,7 +15,7 @@ ARMOR
 
 END
 
-ARMAMENT
+PRIMARY
 
 	type: POINT
 	firerate: 1

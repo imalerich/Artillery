@@ -13,7 +13,7 @@ public class ConfigGenerator
 	/**
 	 * Valid data tokens to be contained within a config file
 	 */
-	public static final String[] TOKENS = { "UNIT", "ARMOR", "ARMAMENT", "END", "count:", "speed:", "health:",
+	public static final String[] TOKENS = { "UNIT", "ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
 		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "#" };
 	
 	/**
@@ -208,6 +208,15 @@ public class ConfigGenerator
 		}
 	}
 	
+	/**
+	 * Prase the input string for armament data and add them to the configuration.
+	 * @param Filename
+	 * File name to be parsed.
+	 * @param Confg
+	 * Configuration to add the data to.
+	 * @param Data
+	 * Data to be parsed.
+	 */
 	private static void buildArmamentStack(String Filename, ConfigSettings Confg, String Data)
 	{
 		int type = DEFAULT_ARMAMENT_TYPE;
@@ -217,6 +226,7 @@ public class ConfigGenerator
 		int speed = DEFAULT_ARMAMENT_SPEED;
 		float accuracy = DEFAULT_ARMAMENT_ACCURACY;
 		
+		boolean inprimary = false;
 		boolean insegment = false;
 		int linenumber = 0;
 		
@@ -229,13 +239,26 @@ public class ConfigGenerator
 				continue;
 			}
 			
-			if (d.param.equals("ARMAMENT")) {
+			if (d.param.equals("PRIMARY")) {
 				insegment = true;
+				inprimary = true;
 				continue;
+				
+			} else if (d.param.equals("SECONDARY")) {
+				insegment = true;
+				inprimary = false;
+				continue;
+				
 			} else if (d.param.equals("END") && insegment) { 
 				// end of ARMOR section - add the armor found and reset defaults
 				insegment = false;
-				Confg.addArmament( new Armament(type, range, firerate, strength, speed, accuracy));
+				
+				Armament a = new Armament(type, range, firerate, strength, speed, accuracy);
+				if (inprimary) {
+					Confg.addPrimary(a);
+				} else {
+					Confg.addSecondary(a);
+				}
 				
 				type = DEFAULT_ARMAMENT_TYPE;
 				range = DEFAULT_ARMAMENT_RANGE;

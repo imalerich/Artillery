@@ -10,7 +10,8 @@ public class ConfigSettings
 {
 	// store a list of available armor and weapons
 	private Vector<Armor> armor;
-	private Vector<Armament> arms;
+	private Vector<Armament> primary;
+	private Vector<Armament> secondary;
 	
 	/**
 	 * Default count of a unit.
@@ -55,7 +56,8 @@ public class ConfigSettings
 		reqcost = ReqCost;
 		
 		armor = new Vector<Armor>();
-		arms = new Vector<Armament>();
+		primary = new Vector<Armament>();
+		secondary = new Vector<Armament>();
 	}
 	
 	/**
@@ -69,13 +71,23 @@ public class ConfigSettings
 	}
 	
 	/**
-	 * Add a new armament configuration for the unit.
+	 * Add a new primary armament configuration for the unit.
 	 * @param A
-	 * 	Armament to be added.
+	 * 	Primary armament to be added.
 	 */
-	public void addArmament(Armament A)
+	public void addPrimary(Armament A)
 	{
-		arms.add(A);
+		primary.add(A);
+	}
+	
+	/**
+	 * Add a new secondary armament configuration for the unit.
+	 * @param A
+	 * 	Secondary armament to be added.
+	 */
+	public void addSecondary(Armament A)
+	{
+		secondary.add(A);
 	}
 	
 	/**
@@ -89,13 +101,23 @@ public class ConfigSettings
 	}
 	
 	/**
+	 * Get an accessor for this configurations primary armaments.
+	 * @return
+	 * Iterator of the configurations primary weapons.
+	 */
+	public Iterator<Armament> getPrimary()
+	{
+		return primary.iterator();
+	}
+	
+	/**
 	 * Get an accessor for this configurations armaments.
 	 * @return
-	 * Iterator of the configurations weapons.
+	 * Iterator of the configurations secondary weapons.
 	 */
-	public Iterator<Armament> getArmament()
+	public Iterator<Armament> getSeconary()
 	{
-		return arms.iterator();
+		return secondary.iterator();
 	}
 	
 	/**
@@ -109,13 +131,23 @@ public class ConfigSettings
 	}
 	
 	/**
+	 * Get the first primary armement in the list.
+	 * @return
+	 * 	The first primary armament.
+	 */
+	public Armament getFirstPrimary()
+	{
+		return primary.firstElement();
+	}
+	
+	/**
 	 * Get the first armement in the list.
 	 * @return
 	 * 	The first armament.
 	 */
-	public Armament getFirstArmament()
+	public Armament getFirstSecondary()
 	{
-		return arms.firstElement();
+		return secondary.firstElement();
 	}
 	
 	/**
@@ -129,12 +161,22 @@ public class ConfigSettings
 	}
 	
 	/**
-	 * Get the number of elements in the armament list.
+	 * Get the number of elements in the primary armament list.
 	 * @return
-	 * 	Number of armament elements available.
+	 * 	Number of primary armament elements available.
 	 */
-	public int armamentCount()
+	public int primaryCount()
 	{
-		return arms.size();
+		return primary.size();
+	}
+	
+	/**
+	 * Get the number of elements in the secondary armament list.
+	 * @return
+	 * 	Number of secondary armament elements available.
+	 */
+	public int secondaryCount()
+	{
+		return secondary.size();
 	}
 }

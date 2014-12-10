@@ -14,10 +14,11 @@ import ui.MenuBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
-import com.mygdx.game.Shaders;
 
 import entity.Army;
 import entity.SelectionStack;
@@ -280,6 +281,29 @@ public class GameWorld
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().procBlasts(B);
+		
+		procFoxBlast(B);
+		
+		ter.cutHole((int)B.pos.x, Game.WORLDH - (int)B.pos.y, (int)B.radius);
+	}
+	
+	private void procFoxBlast(Blast B)
+	{
+		Iterator<FoxHole> f = foxholes.iterator();
+		while (f.hasNext()) {
+			
+			FoxHole fox = f.next();
+			if (Intersector.overlaps(new Circle(B.pos, B.radius), fox.getBBox()) || 
+					fox.getBBox().contains(B.pos)) 
+			{
+				if (fox.isOccupied()) {
+					fox.getOccupied().setUnoccupiedFox();
+				}
+				
+				ter.addFoxHole((int)fox.getPos().x);
+				f.remove();
+			}
+		}
 	}
 	
 	private int getTargetSize(Camera Cam)

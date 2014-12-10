@@ -12,7 +12,6 @@ import physics.GameWorld;
 import physics.NullTank;
 import terrain.Terrain;
 import ui.UnitDeployer;
-import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -64,6 +63,8 @@ public abstract class Army
 	public abstract void catchMessage(Response r);
 	
 	public abstract void addFox(Vector2 Pos);
+	
+	public abstract void addCombatData(CombatResolver Resolver);
 	
 	public void setID(int ID)
 	{
@@ -181,7 +182,8 @@ public abstract class Army
 		addSquad(s);
 		
 		// set the armor and armament for the squad
-		s.getArmament(c.getFirstArmament());
+		s.setPrimary(c.getFirstPrimary());
+		s.setSecondary(c.getFirstSecondary());
 		s.setArmor(c.getFirstArmor());
 		
 		for (int i=0; i<c.count; i++)
@@ -208,22 +210,6 @@ public abstract class Army
 		}
 		
 		return s.getID();
-	}
-	
-	public void addCombatData(CombatResolver Resolver)
-	{
-		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext()) {
-			Squad squad = s.next();
-			
-			// add each squad and its target to the combat resolver
-			if (squad.getTargetSquad() != null && 
-					squad.getArmament().getType() == Armament.UNITTARGET) {
-				Resolver.addConflict(squad, squad.getTargetSquad());
-			} else if (squad.isFiring() && squad.getArmament().getType() == Armament.POINTTARGET) {
-				Resolver.addProjectile(squad, 1f, squad.getArmament().getStrength());
-			}
-		}	
 	}
 	
 	public void addSquad(Squad Add)

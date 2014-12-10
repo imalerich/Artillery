@@ -42,32 +42,62 @@ public class CombatResolver
 		combatqueue.clear();
 	}
 	
-	public void addProjectile(Squad Offense, float Power, float Strength)
+	public void addGrenade(Squad Offense, Armament Grenade)
+	{
+		Vector2 vel = getVel(Grenade, Offense, Offense.getPowerRatio());
+		
+		Iterator<Unit> u = Offense.getUnitIterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			Vector2 pos = getPos(unit);
+			
+			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength()) );
+		}
+	}
+	
+	public void addMissile(Squad Offense)
+	{
+		float strength = Offense.getPrimary().getStrength();
+		Vector2 vel = getVel(Offense.getPrimary(), Offense, Offense.getPowerRatio());
+		
+		Iterator<Unit> u = Offense.getUnitIterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			Vector2 pos = getPos(unit);
+			
+			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength) );
+		}
+			
+	}
+	
+	private Vector2 getVel(Armament Arms, Squad Offense, float Power)
 	{
 		// calculate the starting velocity
-		Armament arms = Offense.getArmament();
-		double theta = Math.toRadians( Offense.getBarrelAngle() );
-		Vector2 vel = new Vector2((float)Math.cos(theta) * arms.getSpeed() * Power, 
-				(float)Math.sin(theta) * arms.getSpeed() * Power);
-		
-		// calculate the starting position
-		Vector2 pos = new Vector2(Offense.getBBox().x, Offense.getBBox().y);
-		Vector2 barrelsrc = Offense.getBarrelSrc();
-		pos.x += barrelsrc.x;
-		pos.y += barrelsrc.y;
+		double theta = Math.toRadians( Arms.getAngle() );
+		Vector2 vel = new Vector2((float)Math.cos(theta) * Arms.getSpeed() * Power, 
+				(float)Math.sin(theta) * Arms.getSpeed() * Power);
 		
 		// check if the projectile should be fired to the left
 		if (!Offense.isForward()) {
 			vel.x = -vel.x;
 		}
 		
-		// add the projectile
-		projectilequeue.add( new Missile(gw, ter, particles, pos, vel, Strength) );
+		return vel;
+	}
+	
+	public Vector2 getPos(Unit U)
+	{
+		Vector2 pos = new Vector2(U.getPos().x, U.getPos().y);
+		Vector2 barrelsrc = U.getBarrelSrc();
+		pos.x += barrelsrc.x;
+		pos.y += barrelsrc.y;
+		
+		return pos;
 	}
 		
 	public void addConflict(Squad Offense, Squad Defense)
 	{
-		Armament arms = Offense.getArmament();
+		Armament arms = Offense.getPrimary();
 		Armor armor = Defense.getArmor();
 		Vector<Unit> u = Defense.getUnits();
 		int index = 0;
