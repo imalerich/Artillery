@@ -39,7 +39,7 @@ public abstract class Army
 	/**
 	 * Process methods from other threads.
 	 */
-	public abstract void updateThreads();
+	public abstract void updateThreads(Camera Cam);
 	
 	public abstract boolean isTargeting();
 	
@@ -114,7 +114,7 @@ public abstract class Army
 		}
 	}
 	
-	public void initStage(int NewStage)
+	public void initStage(Camera Cam, int NewStage)
 	{
 		// set the each squad as not firing
 		if (NewStage == GameWorld.MOVESELECT) {
@@ -138,6 +138,14 @@ public abstract class Army
 			if (squad.getUnitCount() == 0) {
 				s.remove();
 			}
+		}
+	}
+	
+	public void checkForFoxOccupancy(Vector2 Campos)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			s.next().checkIfOccupiesFox(Campos);
 		}
 	}
 	

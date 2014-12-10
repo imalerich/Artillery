@@ -67,17 +67,17 @@ public class RemoteArmy extends Army
 	}
 	
 	@Override
-	public void updateThreads() 
+	public void updateThreads(Camera Cam) 
 	{
 		// process each message
 		for (int i=0; i<response.size(); i++) {
-			procMessage(response.get(i));
+			procMessage(Cam, response.get(i));
 		}
 		
 		response.clear();
 	}
 	
-	public void procMessage(Response r)
+	public void procMessage(Camera Cam, Response r)
 	{
 		// check for stage completion
 		if (r.request.equals("MOVESELECT")) {
@@ -142,11 +142,10 @@ public class RemoteArmy extends Army
 		}
 		
 		if (r.request.equals("ADDFOX")) {
-			System.out.println("r.f1: " + r.f1);
 			Vector2 pos = new Vector2(r.f0, r.f1);
 			FoxHoleMenu.cutRoom(ter, pos);
 			world.addFoxHole(pos);
-			System.out.println("Pos.y: " + pos.y);
+			checkForFoxOccupancy(Cam.getPos());
 		}
 	}
 
@@ -212,9 +211,13 @@ public class RemoteArmy extends Army
 	}
 	
 	@Override
-	public void initStage(int NewStage)
+	public void initStage(Camera Cam, int NewStage)
 	{
-		super.initStage(NewStage);
+		super.initStage(Cam, NewStage);
+		
+		if (NewStage == GameWorld.ATTACKSELECT) {
+			checkForFoxOccupancy(Cam.getPos());
+		}
 		
 		// set the new stage as not completed
 		stagecompleted[NewStage] = false;

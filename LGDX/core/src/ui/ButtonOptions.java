@@ -16,6 +16,7 @@ public class ButtonOptions
 	public static final int STOP = 2;
 	public static final int UPGRADE = 3;
 	public static final int MOVEFOXHOLE = 4;
+	public static final int MOVETANKTRAP = 5;
 	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;

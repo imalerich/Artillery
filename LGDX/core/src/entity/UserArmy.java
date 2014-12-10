@@ -226,7 +226,7 @@ public class UserArmy extends Army
 	}
 	
 	@Override
-	public void updateThreads() 
+	public void updateThreads(Camera Cam) 
 	{
 		//
 	}
@@ -252,9 +252,9 @@ public class UserArmy extends Army
 	}
 	
 	@Override
-	public void initStage(int NewStage)
+	public void initStage(Camera Cam, int NewStage)
 	{
-		super.initStage(NewStage);
+		super.initStage(Cam, NewStage);
 		
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			targetstack.reset();
@@ -265,6 +265,8 @@ public class UserArmy extends Army
 				squad.setTargetSquad(null);
 				squad.setFiring(false);
 			}
+			
+			checkForFoxOccupancy(Cam.getPos());
 		} else if (NewStage == GameWorld.MOVESELECT) {
 			requisition += REQBONUS;
 		}

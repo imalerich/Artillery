@@ -530,12 +530,6 @@ public class Squad
 	
 	public void move(Vector2 Campos)
 	{
-		// set the occupied fox hole as not occupied
-		if (occupied != null) {
-			occupied.setOccupedi(false);
-			occupied = null;
-		}
-		
 		// calculate the bounding box
 		calcBoundingBox(Campos);
 		
@@ -573,11 +567,19 @@ public class Squad
 				u.moveRight();
 		}
 		
+		if (updated > 0) {
+			// set the occupied fox hole as not occupied
+			if (occupied != null) {
+				occupied.setOccupedi(false);
+				occupied = null;
+			}
+		}
+		
 		// if they have all met their positional conditional, stop moving them
 		if (updated == 0 && ismoving) {
 			calcBoundingBox(Campos);
 			ismoving = false;
-			finishedMoving();
+			finishedMoving(Campos);
 			
 		} else if (updated > 0) {
 			ismoving = true;
@@ -585,7 +587,7 @@ public class Squad
 		}
 	}
 	
-	private void finishedMoving()
+	private void finishedMoving(Vector2 Campos)
 	{
 		// add a fox hole when done moving
 		if (addfox) {
@@ -593,20 +595,8 @@ public class Squad
 			addfox = false;
 		}
 		
-		// check if this squad now occupied a fox hole
-		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();
-		while (f.hasNext()) {
-			FoxHole h = f.next();
-			
-			// if this squad overlaps the fox hole, set this fox hole as the occupied
-			if (bbox.overlaps(h.getBBox())) {
-				h.setOccupedi(true);
-				occupied = h;
-			
-				break;
-			}
-		}
-
+		checkIfOccupiesFox(Campos);
+		
 		// send a message of units position to clients
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
@@ -620,6 +610,25 @@ public class Squad
 			r.f0 = u.getPos().x;
 			r.f1 = u.getPos().y;
 			getArmy().getNetwork().getClient().sendTCP(r);
+		}
+	}
+	
+	public void checkIfOccupiesFox(Vector2 Campos)
+	{
+		calcBoundingBox(Campos);
+		
+		// check if this squad now occupied a fox hole
+		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();
+		while (f.hasNext()) {
+			FoxHole h = f.next();
+			
+			// if this squad overlaps the fox hole, set this fox hole as the occupied
+			if ( bbox.overlaps(h.getBBox()) || bbox.contains(h.getBBox()) ) {
+				h.setOccupedi(true);
+				occupied = h;
+			
+				break;
+			}
 		}
 	}
 	
@@ -724,7 +733,7 @@ public class Squad
 	
 	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
-		if (occupied != null) {
+		if (occupied != null && !Highlight) {
 			Batch.setColor(1f, 1f, 1f, 0.6f);
 		}
 		

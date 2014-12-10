@@ -145,23 +145,23 @@ public class GameWorld
 		return foxholes.iterator();
 	}
 	
-	public void updateThreads()
+	public void updateThreads(Camera Cam)
 	{
 		// synchronize data between threads
-		userArmy.updateThreads();
+		userArmy.updateThreads(Cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().updateThreads();
+			f.next().updateThreads(Cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().updateThreads();
+			e.next().updateThreads(Cam);
 	}
 	
 	public void update(Camera Cam)
 	{
-		updateThreads();
+		updateThreads(Cam);
 		ter.update();
 		particles.update();
 		
@@ -190,7 +190,7 @@ public class GameWorld
 		updateObjects(Cam);
 		updateNullTanks(Cam);
 		checkForDeaths(Cam);
-		checkNextStage();
+		checkNextStage(Cam);
 	}
 	
 	public void updateObjects(Camera Cam)
@@ -410,11 +410,9 @@ public class GameWorld
 		enableStencil(Batch);
 		
 		// draw all enemy units above the terrain, but hidden by the fog 
-		Shaders.setShader(Batch, Shaders.enemy);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().draw(Batch, Cam, checkTargets(), currentstage);
-		Shaders.revertShader(Batch);
 		
 		FogOfWar.maskOff(Batch);
 	}
@@ -487,23 +485,23 @@ public class GameWorld
 		}
 	}
 	
-	private void initNewStage()
+	private void initNewStage(Camera Cam)
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 
-		userArmy.initStage(currentstage);
+		userArmy.initStage(Cam, currentstage);
 		
 		while (f.hasNext())
-			f.next().initStage(currentstage);
+			f.next().initStage(Cam, currentstage);
 
 		while (e.hasNext())
-			e.next().initStage(currentstage);
+			e.next().initStage(Cam, currentstage);
 		
 		initResolver();
 	}
 	
-	public void checkNextStage()
+	public void checkNextStage(Camera Cam)
 	{
 		// if all the armies are ready to update update the current stage
 		if ( !isArmiesStageCompleted() )
@@ -514,7 +512,7 @@ public class GameWorld
 		if (currentstage == STAGECOUNT)
 			currentstage = 0;
 		
-		initNewStage();
+		initNewStage(Cam);
 	}
 	
 	public static int getDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)
