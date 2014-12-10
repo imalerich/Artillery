@@ -33,6 +33,8 @@ public class Squad
 	public static Texture pointer;
 	public static AnimTex target;
 	private static TextureRegion[] mugshots;
+	private static Texture health_f;
+	private static Texture health_b;
 	private static final int MUGSHOTCOUNT = 4;
 	private static final int SPACING = 2;
 	
@@ -83,6 +85,14 @@ public class Squad
 			target.newAnimation(0, 4, 0, 3, 0.12f);
 		}
 		
+		if (health_f == null) {
+			health_f = new Texture( Gdx.files.internal("img/ui/profile/health_f.png") );
+		}
+		
+		if (health_b == null) {
+			health_b = new Texture( Gdx.files.internal("img/ui/profile/health_b.png"));
+		}
+		
 		if (mugshots == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/profile/mugshots.png") );
 			mugshots = TextureRegion.split(tmp, 32, 32)[0];
@@ -96,6 +106,12 @@ public class Squad
 		
 		if (target != null)
 			target.release();
+		
+		if (health_f != null)
+			health_f.dispose();
+		
+		if (health_b != null)
+			health_b.dispose();
 	}
 	
 	public Squad(Terrain Ter, int MoveDist, Army A)
@@ -706,13 +722,18 @@ public class Squad
 		int i = 0;
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext()) {
-			int index = u.next().getMugShotIndex();
+			Unit unit = u.next();
+			int index = unit.getMugShotIndex();
 			if (index < 0) index = 0;
 			else if (index >= MUGSHOTCOUNT)
 				index = MUGSHOTCOUNT-1;
 			int offset = (32+SPACING)*i;
 			
 			Batch.draw(mugshots[index], XPos+offset, YPos);
+			Batch.draw(health_b, XPos+offset,YPos-health_b.getHeight());
+			Batch.draw(health_f, XPos+offset+2, YPos-health_b.getHeight()+2, 
+					(int)(unit.getHealthPercentage()*health_f.getWidth()), health_f.getHeight(), 0, 0, 
+					(int)(unit.getHealthPercentage()*health_f.getWidth()), health_f.getHeight(), false, false);
 			i++;
 		}
 	}

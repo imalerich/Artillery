@@ -127,6 +127,11 @@ public class Unit
 		return health > 0;
 	}
 	
+	public float getHealthPercentage()
+	{
+		return health/maxhealth;
+	}
+	
 	public float getHealth()
 	{
 		return health;
