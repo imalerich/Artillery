@@ -647,7 +647,16 @@ public class Squad
 		// check if this squad now occupied a fox hole
 		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();
 		while (f.hasNext()) {
+			// heavy units can not be in fox holes
+			if (primary.getType() == Armament.POINTTARGET) {
+				continue;
+			}
+			
+			// cannot occupy an already occupied position
 			FoxHole h = f.next();
+			if (h.isOccupied()) {
+				continue;
+			}
 			
 			// if this squad overlaps the fox hole, set this fox hole as the occupied
 			if ( bbox.overlaps(h.getBBox()) || bbox.contains(h.getBBox()) ) {
