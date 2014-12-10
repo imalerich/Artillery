@@ -250,7 +250,7 @@ public class GameWorld
 	{
 		userArmy.updateAttackSelect(Cam);
 		if (userArmy.isTargeting()) {
-			buildTargetStack(Cam);
+			buildTargetStack(Cam, true);
 		}
 		
 		Iterator<Army> f = friendlyArmy.iterator();
@@ -292,7 +292,7 @@ public class GameWorld
 		return count;
 	}
 	
-	private void buildTargetStack(Camera Cam)
+	private void buildTargetStack(Camera Cam, boolean IgnoreFox)
 	{
 		// do not rebuilt the target stack when the stack size does not change
 		if (!userArmy.updateTargetOptions( getTargetSize(Cam) ))
@@ -304,7 +304,7 @@ public class GameWorld
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext()) {
-			e.next().getMouseOver(stack, Cam);
+			e.next().getMouseOver(stack, Cam, IgnoreFox);
 		}
 	}
 	

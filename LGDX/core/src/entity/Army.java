@@ -268,11 +268,15 @@ public abstract class Army
 		return count;
 	}
 	
-	public void getMouseOver(SelectionStack Stack, Camera Cam)
+	public void getMouseOver(SelectionStack Stack, Camera Cam, boolean IgnoreFox)
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
+			
+			if (IgnoreFox && squad.isInFox()) {
+				continue;
+			}
 			
 			if (squad.isMouseOver(Cam.getPos())) {
 				Stack.addSquadOver(squad);

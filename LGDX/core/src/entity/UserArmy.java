@@ -332,7 +332,7 @@ public class UserArmy extends Army
 		
 		// reset the option stack and recalculate its contents
 		optionstack.reset();
-		getMouseOver(optionstack, Cam);
+		getMouseOver(optionstack, Cam, false);
 		
 		if (!IncludeDeployer)
 			return;
