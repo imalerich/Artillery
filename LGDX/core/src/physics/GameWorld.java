@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import objects.FoxHole;
+import objects.TankBarrier;
 import particles.Particles;
 import particles.Weather;
 import terrain.Background;
@@ -43,6 +44,7 @@ public class GameWorld
 	private Vector<Army> enemyArmy;
 	private Vector<NullTank> nullTanks;
 	private Vector<FoxHole> foxholes;
+	private Vector<TankBarrier> barriers;
 	
 	public GameWorld(Terrain Ter)
 	{
@@ -57,6 +59,7 @@ public class GameWorld
 		enemyArmy		= new Vector<Army>();
 		nullTanks		= new Vector<NullTank>();
 		foxholes		= new Vector<FoxHole>();
+		barriers		= new Vector<TankBarrier>();
 	}
 	
 	public void release()
@@ -141,9 +144,19 @@ public class GameWorld
 		foxholes.add(new FoxHole(Pos));
 	}
 	
+	public void addTankBarrier(Vector2 Pos)
+	{
+		barriers.add(new TankBarrier(Pos, ter));
+	}
+	
 	public Iterator<FoxHole> getFoxHoles()
 	{
 		return foxholes.iterator();
+	}
+	
+	public Iterator<TankBarrier> getBarriers()
+	{
+		return barriers.iterator();
 	}
 	
 	public void updateThreads(Camera Cam)
@@ -199,6 +212,10 @@ public class GameWorld
 		Iterator<FoxHole> f = foxholes.iterator();
 		while (f.hasNext())
 			f.next().update();
+		
+		Iterator<TankBarrier> b = barriers.iterator();
+		while (b.hasNext())
+			b.next().update();
 	}
 	
 	public void updateNullTanks(Camera Cam)
@@ -432,6 +449,11 @@ public class GameWorld
 			f.next().drawBase(Batch, Cam);
 		
 		enableStencil(Batch);
+		
+		// draw the barricades
+		Iterator<TankBarrier> barrIterator = barriers.iterator();
+		while (barrIterator.hasNext())
+			barrIterator.next().render(Batch, Cam);
 		
 		// draw all enemy units above the terrain, but hidden by the fog 
 		e = enemyArmy.iterator();

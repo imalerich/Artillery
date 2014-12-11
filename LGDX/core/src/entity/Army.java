@@ -64,6 +64,8 @@ public abstract class Army
 	
 	public abstract void addFox(Vector2 Pos);
 	
+	public abstract void addBarricade(Vector2 Pos);
+	
 	public abstract void addCombatData(CombatResolver Resolver);
 	
 	public void setID(int ID)

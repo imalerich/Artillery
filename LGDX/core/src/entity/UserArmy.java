@@ -3,9 +3,10 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
-import objects.FoxHole;
 import network.NetworkManager;
 import network.Response;
+import objects.FoxHole;
+import objects.TankBarrier;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
@@ -15,6 +16,7 @@ import ui.MenuBar;
 import ui.PointSelect;
 import ui.PowerButtons;
 import ui.Profile;
+import ui.TankBarrierMenu;
 import ui.UnitDeployer;
 import arsenal.Armament;
 
@@ -43,12 +45,14 @@ public class UserArmy extends Army
 	private ButtonOptions menu;
 	private ButtonOptions offensemenu;
 	private FoxHoleMenu foxselect;
+	private TankBarrierMenu barrierselect;
 	
 	private int prevdeployi;
 	private PointSelect moveselect;
 	private PowerButtons powerselect;
 	private boolean moveactive;
 	private boolean foxactive;
+	private boolean barricadeactive;
 	private boolean profileactive;
 	private boolean targetenemies;
 	private boolean targetpoint;
@@ -93,6 +97,7 @@ public class UserArmy extends Army
 		offensemenu.addGlyph(ButtonOptions.STOP);
 		
 		foxselect = new FoxHoleMenu(Ter);
+		barrierselect = new TankBarrierMenu(Ter);
 		
 		moveselect = new PointSelect(Ter);
 		powerselect = new PowerButtons();
@@ -101,6 +106,7 @@ public class UserArmy extends Army
 		targetenemies = false;
 		targetpoint = false;
 		targetpower = false;
+		barricadeactive = false;
 		
 		prevdeployi = -1;
 		selected = null;
@@ -490,6 +496,9 @@ public class UserArmy extends Army
 		
 		if (foxactive)
 			updateFox(Cam);
+		
+		if (barricadeactive)
+			updateBarricade(Cam);
 	}
 	
 	private void updateOffenseMenu(Camera Cam)
@@ -588,9 +597,21 @@ public class UserArmy extends Army
 			break;
 			
 		case ButtonOptions.MOVEFOXHOLE:
-			if (requisition - 100 >= 0) {
+			if (requisition - FoxHole.REQCOST >= 0) {
 				foxselect.setSelected(selected);
 				foxactive = true;
+			}
+			
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.resetClock();
+			break;
+			
+		case ButtonOptions.MOVETANKTRAP:
+			if (requisition - TankBarrier.REQCOST >= 0) {
+				barrierselect.setSelected(selected);
+				barricadeactive = true;
 			}
 			
 			// leave the menu
@@ -634,6 +655,23 @@ public class UserArmy extends Army
 		foxselect.update(Cam);
 	}
 	
+	private void updateBarricade(Camera Cam)
+	{
+		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
+			barricadeactive = false;
+			return;
+		}
+		
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			barrierselect.setSelectedTarget(selected);
+			
+			barricadeactive = false;
+			return;
+		}
+		
+		barrierselect.update(Cam);
+	}
+	
 	public void addFox(Vector2 Pos)
 	{
 		FoxHoleMenu.cutRoom(ter, Pos);
@@ -646,6 +684,20 @@ public class UserArmy extends Army
 		r.f0 = Pos.x;
 		r.f1 = Pos.y;
 
+		network.getClient().sendTCP(r);
+	}
+	
+	public void addBarricade(Vector2 Pos)
+	{
+		world.addTankBarrier(Pos);
+		
+		// inform all clients of the added barricade
+		Response r = new Response();
+		r.source = getConnection();
+		r.request = "ADDBARRICADE";
+		r.f0 = Pos.x;
+		r.f1 = Pos.y;
+		
 		network.getClient().sendTCP(r);
 	}
 	
@@ -963,7 +1015,7 @@ public class UserArmy extends Army
 	@Override
 	public boolean isMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive || grenade);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive || grenade || barricadeactive);
 	}
 	
 	private void drawDeployer(SpriteBatch Batch, Camera Cam)
@@ -1078,6 +1130,10 @@ public class UserArmy extends Army
 		
 		if (foxactive && selected != null) {
 			foxselect.render(Batch, Cam);
+		}
+		
+		if (barricadeactive && selected != null) {
+			barrierselect.render(Batch, Cam);
 		}
 	}
 }

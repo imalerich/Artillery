@@ -70,6 +70,9 @@ public class Squad
 	private boolean addfox;
 	private Vector2 foxpos;
 	
+	private boolean addbarrier;
+	private Vector<Vector2> barrierpos;
+	
 	// state to use when adding a unit
 	private Vector2 barrelSrc = new Vector2();
 	
@@ -133,6 +136,10 @@ public class Squad
 		isforward = true;
 		
 		occupied = null;
+		addfox = false;
+		addbarrier = false;
+		foxpos = null;
+		barrierpos = null;
 	}
 	
 	public Army getArmy()
@@ -186,6 +193,12 @@ public class Squad
 	{
 		addfox = true;
 		foxpos = Pos;
+	}
+	
+	public void addBarrierOnFinishedMove(Vector<Vector2> Pos)
+	{
+		addbarrier = true;
+		barrierpos = Pos;
 	}
 	
 	public void takesDirectDamage(boolean B)
@@ -636,6 +649,14 @@ public class Squad
 		if (addfox) {
 			getArmy().addFox(foxpos);
 			addfox = false;
+		}
+		
+		if (addbarrier) {
+			Iterator<Vector2> i = barrierpos.iterator();
+			while (i.hasNext())
+				getArmy().addBarricade( new Vector2(i.next()) );
+			
+			addbarrier = false;
 		}
 		
 		checkIfOccupiesFox(Campos);

@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import network.NetworkManager;
 import objects.FoxHole;
+import objects.TankBarrier;
 import particles.ParticleMask;
 import particles.Weather;
 import physics.CombatPacket;
@@ -98,6 +99,7 @@ public class Game extends ApplicationAdapter
 		Weather.init();
 		SquadConfigurations.init();
 		FoxHole.init();
+		TankBarrier.init();
 	}
 	
 	public void release()
@@ -115,6 +117,7 @@ public class Game extends ApplicationAdapter
 		ParticleMask.release();
 		Weather.release();
 		FoxHole.release();
+		TankBarrier.release();
 		
 		physics.release();
 	}

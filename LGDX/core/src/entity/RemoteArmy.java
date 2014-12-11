@@ -152,6 +152,9 @@ public class RemoteArmy extends Army
 			FoxHoleMenu.cutRoom(ter, pos);
 			world.addFoxHole(pos);
 			checkForFoxOccupancy(Cam.getPos());
+		} else if (r.request.equals("ADDBARRICADE")) {
+			Vector2 pos = new Vector2(r.f0, r.f1);
+			world.addTankBarrier(pos);
 		}
 	}
 
@@ -250,6 +253,12 @@ public class RemoteArmy extends Army
 
 	@Override
 	public void addFox(Vector2 Pos) 
+	{
+		//
+	}
+
+	@Override
+	public void addBarricade(Vector2 Pos) 
 	{
 		//
 	}
