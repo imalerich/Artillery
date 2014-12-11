@@ -217,11 +217,11 @@ public class UserArmy extends Army
 			// add each squad and its target to the combat resolver
 			if (squad.getTargetSquad() != null && squad.getPrimary().getType() == Armament.UNITTARGET) {
 				Resolver.addConflict(squad, squad.getTargetSquad());
-				return;
+				continue;
 				
 			} else if (squad.isFiring() && squad.getPrimary().getType() == Armament.POINTTARGET) {
 				Resolver.addMissile(squad);
-				return;
+				continue;
 				
 			}
 			

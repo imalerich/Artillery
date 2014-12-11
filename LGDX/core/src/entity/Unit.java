@@ -32,6 +32,7 @@ public class Unit
 	protected boolean isFiring = false;
 	protected int mugshotIndex = 0;
 	protected int id;
+	protected float animtime = 0f;
 	
 	private Squad squad;
 	
@@ -234,6 +235,20 @@ public class Unit
 	public void setTerrainReference(Terrain Ter)
 	{
 		ter = Ter;
+	}
+	
+	protected Vector2 rotateCoord(Vector2 Coord, float Theta)
+	{
+		float x = Coord.x;
+		float y = Coord.y;
+		
+		float cos = (float)Math.cos( Theta );
+		float sin = (float)Math.sin( Theta );
+		
+		float rx = x*cos - y*sin;
+		float ry = x*sin + y*cos;
+		
+		return new Vector2(rx, ry);
 	}
 	
 	public void moveRight()

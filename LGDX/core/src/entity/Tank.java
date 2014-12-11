@@ -148,20 +148,6 @@ public class Tank extends Unit
 		barrelOffset = Offset;
 	}
 	
-	private Vector2 rotateCoord(Vector2 Coord, float Theta)
-	{
-		float x = Coord.x;
-		float y = Coord.y;
-		
-		float cos = (float)Math.cos( Theta );
-		float sin = (float)Math.sin( Theta );
-		
-		float rx = x*cos - y*sin;
-		float ry = x*sin + y*cos;
-		
-		return new Vector2(rx, ry);
-	}
-	
 	@Override
 	public float getAngle()
 	{
@@ -307,7 +293,8 @@ public class Tank extends Unit
 		offset.x += src.x;
 		offset.y += src.y;
 		
-		Squad.target.updateClock();
+		animtime += Gdx.graphics.getDeltaTime();
+		Squad.target.setTime(animtime);
 		Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + halfwidth + offset.x - width/2f),
 				Cam.getRenderY(pos.y + offset.y - height/2f));
 	}

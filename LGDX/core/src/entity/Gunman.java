@@ -182,4 +182,19 @@ public class Gunman extends Unit
 			anim.render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
 		else anim.render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
 	}
+	
+	@Override
+	public void drawTargetAngle(SpriteBatch Batch, Camera Cam)
+	{
+		float width = anim.getFrameWidth();
+		float height = anim.getFrameHeight();
+		int direction = 1;
+		if (!forward)
+			direction = -1;
+		
+		animtime += Gdx.graphics.getDeltaTime();
+		Squad.target.setTime(animtime);
+		Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
+				Cam.getRenderY(pos.y + height/2f + width));
+	}
 }
