@@ -94,9 +94,11 @@ public class RemoteArmy extends Army
 		}
 		
 		if (r.request.equals("SQUADMOVE")) {
-			int id = r.i0;
-			int targetx = r.i1;
-			getSquad(id).setTargetX(targetx);
+			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			
+			s.setTargetX(r.i1);
 			return;
 			
 		} else if (r.request.equals("SQUADSPAWNED")) {
@@ -109,6 +111,9 @@ public class RemoteArmy extends Army
 		
 		if (r.request.equals("TANKFIRING")) {
 			Squad s = getSquad(r.i0);
+			if (s == null) 
+				return;
+			
 			s.setForward(r.b1);
 			s.setFiring(r.b0);
 			s.setBarrelAngle(r.f0);
@@ -117,6 +122,9 @@ public class RemoteArmy extends Army
 			
 		} else if (r.request.equals("UNITTARGET")) {
 			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			
 			Squad t = world.getRemoteArmy(r.i1).getSquad(r.i2);
 			s.setTargetSquad(t);
 			
@@ -127,6 +135,9 @@ public class RemoteArmy extends Army
 			return;
 		} else if (r.request.equals("UNITGRENADE")) {
 			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			
 			s.setForward(r.b1);
 			s.setFiring(r.b0);
 			s.getSecondary().setAngle(r.f0);
@@ -136,12 +147,18 @@ public class RemoteArmy extends Army
 		
 		if (r.request.equals("UNITHEALTH")) {
 			Unit u = getSquad(r.i0).getUnit(r.i1);
+			if (u == null)
+				return;
+			
 			u.setHealth(r.f0);
 			u.setMaxHealth(r.f1);
 			return;
 			
 		} else if (r.request.equals("UNITPOSITION")) {
 			Unit u = getSquad(r.i0).getUnit(r.i1);
+			if (u == null)
+				return;
+			
 			u.getPos( new Vector2(r.f0, r.f1) );
 			return;
 			
