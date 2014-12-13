@@ -3,10 +3,9 @@ package physics;
 import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
-import arsenal.Armor;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -35,7 +34,6 @@ public class CombatPacket
 	private final Unit offense;
 	private final Unit defense;
 	private final Armament arms;
-	private final Armor armor;
 	private boolean iscompleted;
 	private int prevdir;
 	
@@ -91,7 +89,7 @@ public class CombatPacket
 	}
 	
 	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, 
-			Armament Arms, Armor Armor, float Delay, float Offset, boolean TargetInFox)
+			Armament Arms, float Delay, float Offset, boolean TargetInFox)
 	{
 		delay = Delay;
 		offset = Offset;
@@ -100,7 +98,6 @@ public class CombatPacket
 		offense = Offense;
 		defense = Defense;
 		arms = Arms;
-		armor = Armor;
 		iscompleted = false;
 		prevdir = 0;
 		targetInFox = TargetInFox;
@@ -233,11 +230,11 @@ public class CombatPacket
 			return;
 		}
 		
-		float dmg = Math.max(arms.getStrength() - armor.getStrength(), 0);
+		float dmg = Math.max(arms.getStrength() - defense.getArmor().getStrength(), 0);
 		if (distancetraveled > MINFOXDIST && targetInFox)
 			dmg = 0f;
 		
-		armor.damage(arms.getStrength());
+		defense.getArmor().damage(arms.getStrength());
 		defense.damage(dmg);
 	}
 	

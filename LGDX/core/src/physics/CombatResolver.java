@@ -6,7 +6,6 @@ import java.util.Vector;
 import particles.Particles;
 import terrain.Terrain;
 import arsenal.Armament;
-import arsenal.Armor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -98,7 +97,6 @@ public class CombatResolver
 	public void addConflict(Squad Offense, Squad Defense)
 	{
 		Armament arms = Offense.getPrimary();
-		Armor armor = Defense.getArmor();
 		Vector<Unit> u = Defense.getUnits();
 		int index = 0;
 		
@@ -114,7 +112,7 @@ public class CombatResolver
 			
 			for (int k=0; k<arms.getFireRate(); k++) {
 				// for each round a second apart
-				combatqueue.add( new CombatPacket(ter, particles, offense, defense, arms, armor, 2*k, offset, Defense.isInFox()) );
+				combatqueue.add( new CombatPacket(ter, particles, offense, defense, arms, 2*k, offset, Defense.isInFox()) );
 			}
 			
 			// increment the index

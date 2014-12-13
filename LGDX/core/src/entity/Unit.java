@@ -6,6 +6,7 @@ import network.Response;
 import particles.Particles;
 import physics.NullTank;
 import terrain.Terrain;
+import arsenal.Armor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,6 +34,7 @@ public class Unit
 	protected int mugshotIndex = 0;
 	protected int id;
 	protected float animtime = 0f;
+	protected Armor armor;
 	
 	private Squad squad;
 	
@@ -41,6 +43,16 @@ public class Unit
 		speed = Speed;
 		health = Health;
 		maxhealth = Health;
+	}
+	
+	public void setArmor(Armor A)
+	{
+		armor = new Armor(A);
+	}
+	
+	public Armor getArmor()
+	{
+		return armor;
 	}
 	
 	public void setSquad(Squad S)

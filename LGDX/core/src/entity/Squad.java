@@ -237,8 +237,8 @@ public class Squad
 				
 			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.getBBox()) ||
 					unit.getBBox().contains(B.pos)) {
-				float dmg = Math.max(B.strength - armor.getStrength(), 0);
-				armor.damage((int)B.strength);
+				float dmg = Math.max(B.strength - unit.getArmor().getStrength(), 0);
+				unit.getArmor().damage((int)B.strength);
 
 				unit.damage(dmg);
 			}
@@ -308,6 +308,9 @@ public class Squad
 	public void setArmor(Armor Set)
 	{
 		armor = new Armor(Set);
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+			u.next().setArmor(armor);
 	}
 	
 	public Armor getArmor()
@@ -493,6 +496,7 @@ public class Squad
 		units.lastElement().setDirectDamage(takesdirectdamage);
 		units.lastElement().setBarrelSrc(barrelSrc);
 		units.lastElement().setSquad(this);
+		units.lastElement().setArmor(armor);
 		addid++;
 	}
 	
@@ -682,15 +686,16 @@ public class Squad
 	
 	public void checkIfOccupiesFox(Vector2 Campos)
 	{
+		// heavy units can not be in fox holes
+		if (primary.getType() == Armament.POINTTARGET) {
+			return;
+		}
+		
 		calcBoundingBox(Campos);
 		
 		// check if this squad now occupied a fox hole
 		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();
 		while (f.hasNext()) {
-			// heavy units can not be in fox holes
-			if (primary.getType() == Armament.POINTTARGET) {
-				return;
-			}
 			
 			// cannot occupy an already occupied position
 			FoxHole h = f.next();
