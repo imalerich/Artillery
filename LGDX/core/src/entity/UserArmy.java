@@ -273,8 +273,6 @@ public class UserArmy extends Army
 	@Override
 	public void initStage(Camera Cam, int NewStage)
 	{
-		super.initStage(Cam, NewStage);
-		
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			targetstack.reset();
 			
@@ -638,6 +636,10 @@ public class UserArmy extends Army
 	
 	private void updateFox(Camera Cam)
 	{
+		if (selected == null) {
+			return;
+		}
+		
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			foxactive = false;
 			return;
@@ -645,6 +647,7 @@ public class UserArmy extends Army
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			if (foxselect.isPosValid()) {
+				requisition -= FoxHole.REQCOST;
 				foxselect.setSelectedTarget(selected);
 			}
 			
@@ -657,12 +660,17 @@ public class UserArmy extends Army
 	
 	private void updateBarricade(Camera Cam)
 	{
+		if (selected == null) {
+			return;
+		}
+		
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			barricadeactive = false;
 			return;
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			requisition -= TankBarrier.REQCOST;
 			barrierselect.setSelectedTarget(selected);
 			
 			barricadeactive = false;
@@ -1075,7 +1083,6 @@ public class UserArmy extends Army
 	
 	private void checkReqCosts(Camera Cam)
 	{
-		//
 		MenuBar.setRequisition(requisition);
 		MenuBar.setTmpRequisition(requisition);
 		
@@ -1083,10 +1090,17 @@ public class UserArmy extends Army
 		if (menuactive) {
 			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVEFOXHOLE) {
 				MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVETANKTRAP) {
+				MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
 			} else {
 				MenuBar.setTmpRequisition(requisition);
 			}
 		}
+		
+		if (foxactive)
+			MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+		else if (barricadeactive)
+			MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
 	}
 	
 	@Override

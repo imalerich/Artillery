@@ -649,14 +649,17 @@ public class Squad
 		if (addfox) {
 			getArmy().addFox(foxpos);
 			addfox = false;
-		}
+			foxpos = null;
+		} 
 		
-		if (addbarrier) {
-			Iterator<Vector2> i = barrierpos.iterator();
+		if (addbarrier) 
+		{ 
+			Iterator<Vector2> i = barrierpos.iterator(); 
 			while (i.hasNext())
 				getArmy().addBarricade( new Vector2(i.next()) );
 			
 			addbarrier = false;
+			barrierpos = null;
 		}
 		
 		checkIfOccupiesFox(Campos);
@@ -686,7 +689,7 @@ public class Squad
 		while (f.hasNext()) {
 			// heavy units can not be in fox holes
 			if (primary.getType() == Armament.POINTTARGET) {
-				continue;
+				return;
 			}
 			
 			// cannot occupy an already occupied position
@@ -700,7 +703,7 @@ public class Squad
 				h.setOccupied(this);
 				occupied = h;
 			
-				break;
+				return;
 			}
 		}
 	}

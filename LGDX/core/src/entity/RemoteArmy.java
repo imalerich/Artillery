@@ -230,9 +230,14 @@ public class RemoteArmy extends Army
 	@Override
 	public void initStage(Camera Cam, int NewStage)
 	{
-		super.initStage(Cam, NewStage);
-		
 		if (NewStage == GameWorld.ATTACKSELECT) {
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext()) {
+				Squad squad = s.next();
+				squad.setTargetSquad(null);
+				squad.setFiring(false);
+			}
+			
 			checkForFoxOccupancy(Cam.getPos());
 		}
 		

@@ -552,7 +552,7 @@ public class GameWorld
 		// if all the armies are ready to update update the current stage
 		if ( !isArmiesStageCompleted() )
 			return;
-		
+	
 		// set the new stage
 		currentstage++;
 		if (currentstage == STAGECOUNT)

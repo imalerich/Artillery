@@ -68,6 +68,8 @@ public abstract class Army
 	
 	public abstract void addCombatData(CombatResolver Resolver);
 	
+	public abstract void initStage(Camera Cam, int NewStage);
+	
 	public void setID(int ID)
 	{
 		id = ID;
@@ -114,19 +116,6 @@ public abstract class Army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			s.next().procBlasts(B);
-		}
-	}
-	
-	public void initStage(Camera Cam, int NewStage)
-	{
-		// set the each squad as not firing
-		if (NewStage == GameWorld.MOVESELECT) {
-			Iterator<Squad> s = squads.iterator();
-			while (s.hasNext()) {
-				Squad squad = s.next();
-				squad.setFiring(false);
-				squad.setTargetSquad(null);
-			}
 		}
 	}
 	
