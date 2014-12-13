@@ -24,6 +24,10 @@ public class Missile
 	protected float postdustr = 32;
 	protected double dustspeed = 512.0;
 	
+	protected float x0 = 0f;
+	protected float x1 = 0f;
+	protected float x2 = 0f;
+	
 	protected static Sound sfx;
 	protected static Texture tex;
 	
@@ -135,6 +139,10 @@ public class Missile
 	
 	protected void procBlast()
 	{
+		x0 = Game.WORLDH - ter.getHeight((int)(pos.x - 16));
+		x1 = Game.WORLDH - ter.getHeight((int)pos.x);
+		x2 = Game.WORLDH - ter.getHeight((int)(pos.x + 16));
+		
 		gw.procBlast( new Blast(pos, 64, strength));
 	}
 	
@@ -227,11 +235,8 @@ public class Missile
 			return;
 		}
 		
-		float x0 = Game.WORLDH - ter.getHeight((int)pos.x - 8);
-		float x1 = Game.WORLDH - ter.getHeight((int)pos.x + 8);
-		
-		Vector2 v0 = new Vector2(-8, x0-pos.y);
-		Vector2 v1 = new Vector2(8, x1-pos.y);
+		Vector2 v0 = new Vector2(-16, x0-x1);
+		Vector2 v1 = new Vector2(16, x2-x1);
 		v0 = v0.nor();
 		v1 = v1.nor();
 		
