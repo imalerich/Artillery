@@ -32,6 +32,12 @@ public class Host
 		s = new Server();
 	}
 	
+	public void release()
+	{
+		s.close();
+		System.out.println("Network closed.");
+	}
+	
 	public Kryo getKryo()
 	{
 		return s.getKryo();
@@ -46,8 +52,15 @@ public class Host
 	{
 		s.addListener(new Listener() {
 			public void connected(Connection connection) {
-				connection.sendTCP(seed);
 				System.out.println("Connection recieved from " + connection.toString());
+					
+				// do not let the lobby over fill
+				if (s.getConnections().length > lobbysize) {
+					connection.close();
+					System.err.println("Connections full - disconnecting at " + connection.toString());
+				} else {
+					connection.sendTCP(seed);
+				}
 			}
 			
 			public void received(Connection connection, Object object)  {
@@ -72,6 +85,11 @@ public class Host
 						res.i0 = lobbysize;
 						connection.sendTCP(res);
 					
+					} else if (r.req.equals("LobbyCount")) {
+						Response res = new Response();
+						res.request = r.req;
+						res.i0 = s.getConnections().length;
+						connection.sendTCP(res);
 					}
 				} else if (object instanceof Response) {
 					// pass the message to all other clients to be processed

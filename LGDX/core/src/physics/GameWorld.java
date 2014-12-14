@@ -13,12 +13,14 @@ import terrain.Terrain;
 import ui.MenuBar;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 
 import entity.Army;
@@ -31,9 +33,13 @@ public class GameWorld
 	public static final int MOVEUPDATE = 1;
 	public static final int ATTACKSELECT = 2;
 	public static final int ATTACKUPDATE = 3;
+	
+	public static final int CAMSPEED = 512;
+	
 	private int currentstage;
 	private int armyid = 0;
 	
+	private Camera cam;
 	private CombatResolver resolver;
 	
 	private Terrain ter;
@@ -60,11 +66,23 @@ public class GameWorld
 		nullTanks		= new Vector<NullTank>();
 		foxholes		= new Vector<FoxHole>();
 		barriers		= new Vector<TankBarrier>();
+		
+		// create the camera
+		cam = new Camera();
+		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
+		cam.setWorldMax( new Vector2(Game.WORLDW, Game.WORLDH) );
+		cam.setPos( new Vector2(0, ter.getHeight(0) - Game.SCREENH/2) );
+		
 	}
 	
 	public void release()
 	{
 		ter.release();
+	}
+	
+	public Camera getCam()
+	{
+		return cam;
 	}
 	
 	public Terrain getTerrain()
@@ -159,55 +177,77 @@ public class GameWorld
 		return barriers.iterator();
 	}
 	
-	public void updateThreads(Camera Cam)
+	public void updateThreads()
 	{
 		// synchronize data between threads
-		userArmy.updateThreads(Cam);
+		userArmy.updateThreads(cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().updateThreads(Cam);
+			f.next().updateThreads(cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().updateThreads(Cam);
+			e.next().updateThreads(cam);
 	}
 	
-	public void update(Camera Cam)
+	public void update()
 	{
-		updateThreads(Cam);
+		updateCam();
+		updateThreads();
 		ter.update();
 		particles.update();
 		
 		switch (currentstage)
 		{
 		case MOVESELECT:
-			updateMoveSelect(Cam);
+			updateMoveSelect();
 			break;
 			
 		case MOVEUPDATE:
-			updateMove(Cam);
+			updateMove();
 			break;
 			
 		case ATTACKSELECT:
-			updateAttackSelect(Cam);
+			updateAttackSelect();
 			break;
 			
 		case ATTACKUPDATE:
-			updateAttack(Cam);
+			updateAttack();
 			break;
 			
 		default:
 			break;
 		}
 		
-		updateObjects(Cam);
-		updateNullTanks(Cam);
-		checkForDeaths(Cam);
-		checkNextStage(Cam);
+		updateObjects();
+		updateNullTanks();
+		checkForDeaths();
+		checkNextStage();
 	}
 	
-	public void updateObjects(Camera Cam)
+	private void updateCam()
+	{
+		// move the camera with the mouse
+		if (Cursor.isButtonPressed(Cursor.MIDDLE))
+		{
+			cam.moveHorizontal( 6 * -Cursor.getDeltaX() );
+			cam.moveVertical( 6 * Cursor.getDeltaY() );
+		}
+		
+		// move the camera with the keyboard
+		if (Gdx.input.isKeyPressed(Keys.D))
+			cam.moveHorizontal( CAMSPEED * Gdx.graphics.getDeltaTime() );
+		else if (Gdx.input.isKeyPressed(Keys.A))
+			cam.moveHorizontal( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+		
+		if (Gdx.input.isKeyPressed(Keys.W))
+			cam.moveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
+		else if (Gdx.input.isKeyPressed(Keys.S))
+			cam.moveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
+	}
+	
+	public void updateObjects()
 	{
 		Iterator<FoxHole> f = foxholes.iterator();
 		while (f.hasNext())
@@ -218,69 +258,69 @@ public class GameWorld
 			b.next().update();
 	}
 	
-	public void updateNullTanks(Camera Cam)
+	public void updateNullTanks()
 	{
 		Iterator<NullTank> t = nullTanks.iterator();
 		while (t.hasNext())
-			t.next().update(Cam);
+			t.next().update(cam);
 	}
 	
-	public void checkForDeaths(Camera Cam)
+	public void checkForDeaths()
 	{
-		userArmy.checkForDeaths(Cam, nullTanks, particles);
+		userArmy.checkForDeaths(cam, nullTanks, particles);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().checkForDeaths(Cam, nullTanks, particles);
+			f.next().checkForDeaths(cam, nullTanks, particles);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().checkForDeaths(Cam, nullTanks, particles);
+			e.next().checkForDeaths(cam, nullTanks, particles);
 	}
 	
-	public void updateMoveSelect(Camera Cam)
+	public void updateMoveSelect()
 	{
-		userArmy.updateMoveSelect(Cam);
+		userArmy.updateMoveSelect(cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().updateMoveSelect(Cam);
+			f.next().updateMoveSelect(cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().updateMoveSelect(Cam);
+			e.next().updateMoveSelect(cam);
 	}
 	
-	public void updateMove(Camera Cam)
+	public void updateMove()
 	{
-		userArmy.updateMove(Cam);
+		userArmy.updateMove(cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().updateMove(Cam);
+			f.next().updateMove(cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().updateMove(Cam);
+			e.next().updateMove(cam);
 	}
 	
-	public void updateAttackSelect(Camera Cam)
+	public void updateAttackSelect()
 	{
-		userArmy.updateAttackSelect(Cam);
+		userArmy.updateAttackSelect(cam);
 		if (userArmy.isTargeting()) {
-			buildTargetStack(Cam, true);
+			buildTargetStack(true);
 		}
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext()) 
-			f.next().updateAttackSelect(Cam);
+			f.next().updateAttackSelect(cam);
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().updateAttackSelect(Cam);
+			e.next().updateAttackSelect(cam);
 	}
 	
-	private void updateAttack(Camera Cam)
+	private void updateAttack()
 	{
 		// update the combat resolver
 		resolver.updateSimulation();
@@ -323,20 +363,20 @@ public class GameWorld
 		}
 	}
 	
-	private int getTargetSize(Camera Cam)
+	private int getTargetSize()
 	{
 		int count = 0;
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			count += e.next().getMouseOverCount(Cam);
+			count += e.next().getMouseOverCount(cam);
 		
 		return count;
 	}
 	
-	private void buildTargetStack(Camera Cam, boolean IgnoreFox)
+	private void buildTargetStack(boolean IgnoreFox)
 	{
 		// do not rebuilt the target stack when the stack size does not change
-		if (!userArmy.updateTargetOptions( getTargetSize(Cam) ))
+		if (!userArmy.updateTargetOptions( getTargetSize() ))
 			return;
 		
 		// get all squad options from the mouse over
@@ -345,30 +385,30 @@ public class GameWorld
 		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext()) {
-			e.next().getMouseOver(stack, Cam, IgnoreFox);
+			e.next().getMouseOver(stack, cam, IgnoreFox);
 		}
 	}
 	
-	private void drawTargets(SpriteBatch Batch, Camera Cam)
+	private void drawTargets(SpriteBatch Batch)
 	{
 		if (currentstage != MOVESELECT && currentstage != ATTACKSELECT)
 			return;
 		
 		if (currentstage == MOVESELECT) {
-			userArmy.drawTargetPos(Batch, Cam);
+			userArmy.drawTargetPos(Batch, cam);
 		} else if (currentstage == ATTACKSELECT) {
-			userArmy.drawTargetSquad(Batch, Cam);
+			userArmy.drawTargetSquad(Batch, cam);
 		}
 	}
 	
-	private void drawFogMask(SpriteBatch Batch, Camera Cam)
+	private void drawFogMask(SpriteBatch Batch)
 	{
 		FogOfWar.begin(Batch);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().drawView(Cam);
-		userArmy.drawView(Cam);
+			f.next().drawView(cam);
+		userArmy.drawView(cam);
 		
 		FogOfWar.end(Batch);
 	}
@@ -396,14 +436,14 @@ public class GameWorld
 		Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
 	}
 	
-	private void drawNullTanks(SpriteBatch Batch, Camera Cam)
+	private void drawNullTanks(SpriteBatch Batch)
 	{
 		Iterator<NullTank> t = nullTanks.iterator();
 		while (t.hasNext()) 
-			t.next().draw(Batch, Cam);
+			t.next().draw(Batch, cam);
 	}
 	
-	private void drawHidden(SpriteBatch Batch, Camera Cam)
+	private void drawHidden(SpriteBatch Batch)
 	{
 		// enable fog of war and draw the background
 		FogOfWar.maskOn(Batch);
@@ -413,18 +453,18 @@ public class GameWorld
 		disableStencil(Batch);
 		
 		// draw the weather and the bases
-		userArmy.drawBase(Batch, Cam);
+		userArmy.drawBase(Batch, cam);
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().drawBase(Batch, Cam);
+			e.next().drawBase(Batch, cam);
 		
 		enableStencil(Batch);
 		
 		// draw the base logo's with the stencil test enabled
-		userArmy.drawBaseLogo(Batch, Cam);
+		userArmy.drawBaseLogo(Batch, cam);
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().drawBaseLogo(Batch, Cam);
+			e.next().drawBaseLogo(Batch, cam);
 		
 		disableStencil(Batch);
 		
@@ -432,56 +472,57 @@ public class GameWorld
 		 * Draw the terrain, weather and world objects.
 		 */
 		
-		Weather.draw(Batch, Cam);
-		ter.draw(Batch, Cam.getPos());
+		Weather.draw(Batch, cam);
+		ter.draw(Batch, cam.getPos());
 		
 		Iterator<FoxHole> holes = foxholes.iterator();
 		while (holes.hasNext())
-			holes.next().render(Batch, Cam);
+			holes.next().render(Batch, cam);
 	
-		drawNullTanks(Batch, Cam);
+		drawNullTanks(Batch);
+		
 		/*
 		 * Draw the terrain, weather and world objects.
 		 */
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().drawBase(Batch, Cam);
+			f.next().drawBase(Batch, cam);
 		
 		enableStencil(Batch);
 		
 		// draw the barricades
 		Iterator<TankBarrier> barrIterator = barriers.iterator();
 		while (barrIterator.hasNext())
-			barrIterator.next().render(Batch, Cam);
+			barrIterator.next().render(Batch, cam);
 		
 		// draw all enemy units above the terrain, but hidden by the fog 
 		e = enemyArmy.iterator();
 		while (e.hasNext())
-			e.next().draw(Batch, Cam, checkTargets(), currentstage);
+			e.next().draw(Batch, cam, checkTargets(), currentstage);
 		
 		FogOfWar.maskOff(Batch);
 	}
 	
-	public void draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch)
 	{
 		Background.drawBG(Batch);
-		drawFogMask(Batch, Cam);
-		drawHidden(Batch, Cam);
+		drawFogMask(Batch);
+		drawHidden(Batch);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
 		while (f.hasNext())
-			f.next().draw(Batch, Cam, false, currentstage);
+			f.next().draw(Batch, cam, false, currentstage);
 		
-		userArmy.draw(Batch, Cam, false, currentstage);
-		drawTargets(Batch, Cam);
+		userArmy.draw(Batch, cam, false, currentstage);
+		drawTargets(Batch);
 		
 		if (currentstage == ATTACKUPDATE) {
-			resolver.drawSimulation(Batch, Cam);
+			resolver.drawSimulation(Batch, cam);
 		}
 		
-		particles.draw(Batch, Cam);
-		MenuBar.draw(Batch, Cam, currentstage, 
+		particles.draw(Batch, cam);
+		MenuBar.draw(Batch, cam, currentstage, 
 				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.isMenuOpen() && !userArmy.isStageCompleted(currentstage));
 	}
 	
@@ -531,23 +572,23 @@ public class GameWorld
 		}
 	}
 	
-	private void initNewStage(Camera Cam)
+	private void initNewStage()
 	{
 		Iterator<Army> f = friendlyArmy.iterator();
 		Iterator<Army> e = enemyArmy.iterator();
 
-		userArmy.initStage(Cam, currentstage);
+		userArmy.initStage(cam, currentstage);
 		
 		while (f.hasNext())
-			f.next().initStage(Cam, currentstage);
+			f.next().initStage(cam, currentstage);
 
 		while (e.hasNext())
-			e.next().initStage(Cam, currentstage);
+			e.next().initStage(cam, currentstage);
 		
 		initResolver();
 	}
 	
-	public void checkNextStage(Camera Cam)
+	public void checkNextStage()
 	{
 		// if all the armies are ready to update update the current stage
 		if ( !isArmiesStageCompleted() )
@@ -558,7 +599,7 @@ public class GameWorld
 		if (currentstage == STAGECOUNT)
 			currentstage = 0;
 		
-		initNewStage(Cam);
+		initNewStage();
 	}
 	
 	public static int getDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)

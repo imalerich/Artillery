@@ -9,7 +9,6 @@ import com.mygdx.game.Game;
 public class DesktopLauncher 
 {
 	private static boolean IsFullscreen = false;
-	private static boolean IsClient = false;
 	private static boolean ShowFPS = false;
 	private static boolean ShowPing = false;
 	private static boolean Run = true;
@@ -39,16 +38,13 @@ public class DesktopLauncher
 		}
 		
 		if (Run) {
-			new LwjglApplication(new Game(config.width, config.height, !IsClient), config);
+			new LwjglApplication(new Game(config.width, config.height), config);
 		}
 	}
 	
 	private static void SetGameState()
 	{
 		// do not show ping when you are the host
-		if (!IsClient) 
-			ShowPing = false;
-		
 		if (ShowFPS)
 			FrameRate.SHOWFPS = true;
 		
@@ -69,8 +65,6 @@ public class DesktopLauncher
 				ShowFPS = true;
 			else if (opt.equals("-p") || opt.equals("--showping"))
 				ShowPing = true;
-			else if (opt.equals("-c") || opt.equals("--client"))
-				IsClient = true;
 			else {
 				System.err.println("Error: Invalid option! Valid options are: \n");
 				PrintLaunchOptions();
@@ -88,7 +82,6 @@ public class DesktopLauncher
 		System.out.println("<-f> <--fullscreen>\t+ Run in fullscreen mode.");
 		System.out.println("<-s> <--showfps>\t+ Show framerate counter in the console.");
 		System.out.println("<-p> <--showping>\t+ Show the ping counter in the console.");
-		System.out.println("<-c> <--client>\t\t+ Run as client, not as host.");
 		System.out.println("-----------------------------------------------------------");
 	}
 }

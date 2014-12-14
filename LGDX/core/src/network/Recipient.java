@@ -32,10 +32,12 @@ public class Recipient
 	private TerrainSeed seed;
 	private GameWorld game;
 	private Client c;
+	private boolean connected = false;
 	
 	private UserArmy owned;
 	
 	private int lobbysize = 0;
+	private int lobbycount = 0;
 	private boolean islobbyfull = false;
 	private double pingtime = 0.0;
 	private double ping = 0.0;
@@ -138,6 +140,9 @@ public class Recipient
 					} else if (r.request.equals("LobbySize")) {
 						lobbysize = r.i0;
 						
+					} else if (r.request.equals("LobbyCount")) {
+						lobbycount = r.i0;
+						
 					} else if (r.source != -1) {
 						// get the army it pertains to to process the message
 						game.getRemoteArmy(r.source).catchMessage(r);
@@ -167,6 +172,21 @@ public class Recipient
 		req.req = "IsLobbyFull";
 		
 		c.sendTCP(req);
+		
+		req = new Request();
+		req.req = "LobbyCount";
+		
+		c.sendTCP(req);
+	}
+	
+	public int getLobbyCount()
+	{
+		return lobbycount;
+	}
+	
+	public int getLobbySize()
+	{
+		return lobbysize;
 	}
 	
 	public boolean isLobbyFull()
@@ -195,15 +215,27 @@ public class Recipient
 	
 	private void start()
 	{
-		try {
-			InetAddress address = c.discoverHost(54777, 5000);
+		try{
+			InetAddress address = null;
+			while (address == null) {
+				address = c.discoverHost(54777, 5000);
+			}
+
 			c.connect(5000, address, 54555, 54777);
-			
+			connected = true;
+			return;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Error: Failed to Connect to the Remote Server.");
 			return;
+
 		}
+	}
+	
+	public boolean isConnected()
+	{
+		return connected;
 	}
 	
 	public TerrainSeed getSeed()

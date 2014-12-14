@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import menu.MainMenu;
 import network.NetworkManager;
 import objects.FoxHole;
 import objects.TankBarrier;
@@ -12,7 +13,6 @@ import physics.Missile;
 import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
-import terrain.TerrainSeed;
 import ui.MenuBar;
 import ui.PowerButtons;
 import ui.Profile;
@@ -25,7 +25,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 import config.SquadConfigurations;
 import entity.Gunman;
@@ -39,7 +38,6 @@ public class Game extends ApplicationAdapter
 	 */
 	private static final int MINHEIGHT = 400;
 	private static final int MAXHEIGHT = 1200;
-	private final boolean ISHOST;
 	
 	public static int WINDOWW =	960;
 	public static int WINDOWH = 1200;
@@ -52,19 +50,19 @@ public class Game extends ApplicationAdapter
 	public static final int WORLDW = (int)1920*2;
 	public static final int WORLDH = 1200;
 	
-	public static final int GRAVITY	= 160;
-	public static final int CAMSPEED = 512;
+	public static final int HOME = 0;
+	public static final int GAME = 1;
+	public static int stage = HOME;
 	
 	private static OrthographicCamera proj;
 	private static SpriteBatch batch;
 
-	private Camera cam;
+	private MainMenu menu;
 	private GameWorld physics;
 	private NetworkManager network;
 	
-	public Game(int WindowW, int WindowH, boolean IsHost)
+	public Game(int WindowW, int WindowH)
 	{
-		ISHOST = IsHost;
 		resizeScreen(WindowW, WindowH);
 	}
 	
@@ -119,7 +117,11 @@ public class Game extends ApplicationAdapter
 		FoxHole.release();
 		TankBarrier.release();
 		
-		physics.release();
+		if (physics != null)
+			physics.release();
+		
+		if (network != null)
+			network.release();
 	}
 	
 	@Override
@@ -132,47 +134,9 @@ public class Game extends ApplicationAdapter
 		batch = new SpriteBatch();
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
-
-		// generate the terrain
+		
 		network = new NetworkManager();
-		if (ISHOST)
-			network.initHost();
-		network.initClient();
-		
-		TerrainSeed seed = network.getSeed();
-		while (seed == null)
-			seed = network.getSeed();
-		Terrain ter = new Terrain( seed );
-		
-		// create the camera
-		cam = new Camera();
-		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
-		cam.setWorldMax( new Vector2(WORLDW, WORLDH) );
-		cam.setPos( new Vector2(0, ter.getHeight(0) - SCREENH/2) );
-		
-		// initialize the physics world
-		physics = new GameWorld(ter);
-		network.setGameWorld(physics, cam);
-	
-		try {
-			// wait for the lobby to fill
-			while (!network.isLobbyFull()) {
-				Thread.sleep(50);
-			}
-			
-			// if host, dispatch armies to clients
-			network.dispatchRemoteArmies();
-			
-			
-			// wait for the client to recieve the armies
-			while (!network.recievedAllArmies()) {
-				Thread.sleep(50);
-			}
-			
-			network.readRemoteArmies();
-		} catch (InterruptedException e) {
-			System.err.println("Error: thread sleep interrupted.");
-		}
+		menu = new MainMenu(network);
 	}
 	
 	public static OrthographicCamera getProj()
@@ -185,7 +149,9 @@ public class Game extends ApplicationAdapter
 	{
 		FrameRate.update();
 		Cursor.update();
-		updateScene();
+		updateZoom();
+		
+		update();
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -195,7 +161,7 @@ public class Game extends ApplicationAdapter
 		batch.setProjectionMatrix(proj.combined);
 		batch.begin();
 		
-		drawScene();
+		draw();
 		
 		batch.end();
 		
@@ -209,31 +175,46 @@ public class Game extends ApplicationAdapter
 		CursorInput.clearInput();
 	}
 	
-	private void drawScene()
+	private void update()
 	{
-		physics.draw(batch, cam);
+		switch (stage) {
+		case HOME:
+			physics = menu.update();
+			
+			// when the game world is received from the menu, set the stage to game
+			if (physics != null) {
+				stage = GAME;
+			}
+			
+			return;
+			
+		case GAME:
+			physics.update();
+			return;
+			
+		default:
+			return;
+		}
 	}
 	
-	private void updatePos()
+	private void draw()
 	{
-		// move the camera with the mouse
-		if (Cursor.isButtonPressed(Cursor.MIDDLE))
-		{
-			cam.moveHorizontal( 6 * -Cursor.getDeltaX() );
-			cam.moveVertical( 6 * Cursor.getDeltaY() );
+		switch (stage) {
+		case HOME:
+			menu.draw(batch);
+			return;
+			
+		case GAME:
+			physics.draw(batch);
+			return;
+			
+		default:
+			return;
 		}
+	}
 		
-		// move the camera with the keyboard
-		if (Gdx.input.isKeyPressed(Keys.D))
-			cam.moveHorizontal( CAMSPEED * Gdx.graphics.getDeltaTime() );
-		else if (Gdx.input.isKeyPressed(Keys.A))
-			cam.moveHorizontal( -CAMSPEED * Gdx.graphics.getDeltaTime() );
-		
-		if (Gdx.input.isKeyPressed(Keys.W))
-			cam.moveVertical( CAMSPEED * Gdx.graphics.getDeltaTime() );
-		else if (Gdx.input.isKeyPressed(Keys.S))
-			cam.moveVertical( -CAMSPEED * Gdx.graphics.getDeltaTime() );
-		
+	private void updateZoom() 
+	{
 		if (Gdx.input.isKeyJustPressed(Keys.PLUS)) {
 			zoomScreen(-32);
 		} else if (Gdx.input.isKeyJustPressed(Keys.MINUS)) {
@@ -257,8 +238,8 @@ public class Game extends ApplicationAdapter
 		SCREENRATIOX = (float)SCREENW/WINDOWW;
 		proj.setToOrtho(false, SCREENW, SCREENH);
 	
-		cam.moveVertical(-((SCREENH-prevh)/2) * SCREENRATIOY);
-		cam.moveHorizontal(-((SCREENW-prevw)/2) * SCREENRATIOX);
+		physics.getCam().moveVertical(-((SCREENH-prevh)/2) * SCREENRATIOY);
+		physics.getCam().moveHorizontal(-((SCREENW-prevw)/2) * SCREENRATIOX);
 	}
 	
 	private void resizeScreen(int Width, int Height)
@@ -276,13 +257,5 @@ public class Game extends ApplicationAdapter
 		
 		SCREENW = (int)(WINDOWW*SCREENRATIOY);
 		SCREENRATIOX = (float)SCREENW/WINDOWW;
-	}
-	
-	private void updateScene()
-	{
-		// update the camera position
-		updatePos();
-		
-		physics.update(cam);
 	}
 }

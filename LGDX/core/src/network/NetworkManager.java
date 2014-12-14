@@ -17,6 +17,8 @@ import entity.Army;
 
 public class NetworkManager 
 {
+	private static final int MAXLOBBYSIZE = 4;
+	private int lobbysize = 2;
 	private Host h;
 	private Recipient c;
 	
@@ -24,11 +26,29 @@ public class NetworkManager
 	{
 		c.setGameWorld(Game, Cam);
 	}
+	
+	public void release()
+	{
+		if (h != null)
+			h.release();
+	}
+	
+	public int getLobbySize()
+	{
+		return lobbysize;
+	}
+	
+	public void setLobbySize(int Size)
+	{
+		lobbysize = Size;
+		if (lobbysize > MAXLOBBYSIZE)
+			lobbysize = MAXLOBBYSIZE;
+	}
 
 	public void initHost()
 	{
 		Log.set(Log.LEVEL_DEBUG);
-		h = new Host(2);
+		h = new Host(lobbysize);
 		
 		Kryo k = h.getKryo();
 		k.register(ArmyConnection.class);
@@ -83,8 +103,29 @@ public class NetworkManager
 	
 	public boolean isLobbyFull()
 	{
+		if (c == null)
+			return false;
+		
 		c.pollLobby();
 		return c.isLobbyFull();
+	}
+	
+	public int lobbySize()
+	{
+		if (c == null)
+			return 0;
+		
+		c.pollLobby();
+		return c.getLobbySize();
+	}
+	
+	public int lobbyConnected()
+	{
+		if (c == null)
+			return 0;
+		
+		c.pollLobby();
+		return c.getLobbyCount();
 	}
 	
 	public boolean recievedAllArmies()
