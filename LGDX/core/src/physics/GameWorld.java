@@ -53,6 +53,7 @@ public class GameWorld
 	private Vector<NullTank> nullTanks;
 	private Vector<FoxHole> foxholes;
 	private Vector<TankBarrier> barriers;
+	private Vector<Blast> blasts;
 	
 	public GameWorld(Terrain Ter)
 	{
@@ -70,6 +71,7 @@ public class GameWorld
 		nullTanks		= new Vector<NullTank>();
 		foxholes		= new Vector<FoxHole>();
 		barriers		= new Vector<TankBarrier>();
+		blasts 			= new Vector<Blast>();
 		
 		// create the camera
 		cam = new Camera();
@@ -257,6 +259,15 @@ public class GameWorld
 		Iterator<TankBarrier> b = barriers.iterator();
 		while (b.hasNext())
 			b.next().update();
+		
+		Iterator<Blast> bl = blasts.iterator();
+		while (bl.hasNext()) {
+			Blast blast = bl.next();
+			blast.update();
+			
+			if (!blast.isAlive())
+				bl.remove();
+		}
 	}
 	
 	public void updateNullTanks()
@@ -321,6 +332,8 @@ public class GameWorld
 	
 	public void procBlast(Blast B)
 	{
+		blasts.add(B);
+		
 		cam.addShakeIntensity(B.radius/16f);
 		
 		// process any blasts on all armies
@@ -517,6 +530,13 @@ public class GameWorld
 		}
 		
 		particles.draw(Batch, cam);
+		
+		Blast.begin(Batch);
+		Iterator<Blast> b = blasts.iterator();
+		while (b.hasNext())
+			b.next().draw(cam);
+		Blast.end(Batch);
+		
 		if (currentTurn == userArmy) {
 			MenuBar.setUsersTurn(true);
 		} else {

@@ -6,6 +6,7 @@ import objects.FoxHole;
 import objects.TankBarrier;
 import particles.ParticleMask;
 import particles.Weather;
+import physics.Blast;
 import physics.CombatPacket;
 import physics.GameWorld;
 import physics.Grenade;
@@ -233,6 +234,7 @@ public class Game extends ApplicationAdapter
 		SquadConfigurations.init();
 		FoxHole.init();
 		TankBarrier.init();
+		Blast.init();
 	}
 	
 	public void release()
@@ -251,6 +253,7 @@ public class Game extends ApplicationAdapter
 		Weather.release();
 		FoxHole.release();
 		TankBarrier.release();
+		Blast.init();
 		
 		if (physics != null)
 			physics.release();
