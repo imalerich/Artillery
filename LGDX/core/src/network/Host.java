@@ -16,6 +16,7 @@ public class Host
 {
 	public final TerrainSeed seed;
 	
+	private int currentindex = -1;
 	private int lobbysize;
 	private Server s;
 	
@@ -90,6 +91,19 @@ public class Host
 						res.request = r.req;
 						res.i0 = s.getConnections().length;
 						connection.sendTCP(res);
+					} else if (r.req.equals("NextTurn")) {
+						Response res = new Response();
+						res.request = r.req;
+						
+						// if current turns differ, do not increment the turn
+						if (r.i0 == s.getConnections()[currentindex].getID()) {
+							res.i0 = s.getConnections()[nextTurn()].getID();
+						} else {
+							res.i0 = s.getConnections()[currentindex].getID();
+						}
+						
+						connection.sendTCP(res);
+						
 					}
 				} else if (object instanceof Response) {
 					// pass the message to all other clients to be processed
@@ -114,6 +128,8 @@ public class Host
 	
 	public void dispatchRemoteArmies()
 	{
+		currentindex = (int)(Math.random()*s.getConnections().length);
+		
 		// inform each client of all connected clients
 		for (Connection c : s.getConnections()) {
 			int pos = (c.getID()-1) * Game.WORLDW/lobbysize;
@@ -138,5 +154,14 @@ public class Host
 		}
 		
 		s.start();
+	}
+	
+	private int nextTurn()
+	{
+		currentindex++;
+		if (currentindex >= s.getConnections().length)
+			currentindex = 0;
+		
+		return currentindex;
 	}
 }

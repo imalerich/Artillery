@@ -23,17 +23,19 @@ import config.SquadConfigurations;
 
 public abstract class Army 
 {
-	private int id = 0;
 	private int connection = -1;
 	protected int squadid = 0;
 	
 	protected GameWorld world;
-	protected boolean[] stagecompleted;
+	protected Terrain ter;
 	protected NetworkManager network;
+	
+	protected boolean[] stagecompleted;
+	protected Vector<Response> response;
+	protected int requisition = 500;
+	
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
-	protected Terrain ter;
-	protected int requisition = 500;
 	
 	/**
 	 * Process methods from other threads.
@@ -69,16 +71,6 @@ public abstract class Army
 	public abstract void addCombatData(CombatResolver Resolver);
 	
 	public abstract void initStage(Camera Cam, int NewStage);
-	
-	public void setID(int ID)
-	{
-		id = ID;
-	}
-	
-	public int getID()
-	{
-		return id;
-	}
 	
 	public GameWorld getWorld()
 	{

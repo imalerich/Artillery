@@ -3,6 +3,7 @@ package physics;
 import java.util.Iterator;
 import java.util.Vector;
 
+import network.Request;
 import objects.FoxHole;
 import objects.TankBarrier;
 import particles.Particles;
@@ -37,7 +38,6 @@ public class GameWorld
 	public static final int CAMSPEED = 512;
 	
 	private int currentstage;
-	private int armyid = 0;
 	
 	private Camera cam;
 	private CombatResolver resolver;
@@ -45,9 +45,11 @@ public class GameWorld
 	private Terrain ter;
 	private Particles particles;
 	
+	private Army currentTurn;
 	private Army userArmy;
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
+	
 	private Vector<NullTank> nullTanks;
 	private Vector<FoxHole> foxholes;
 	private Vector<TankBarrier> barriers;
@@ -61,6 +63,8 @@ public class GameWorld
 		resolver = new CombatResolver(this, ter, particles);
 		
 		userArmy = null;
+		currentTurn = null;
+		
 		friendlyArmy	= new Vector<Army>();
 		enemyArmy		= new Vector<Army>();
 		nullTanks		= new Vector<NullTank>();
@@ -72,7 +76,6 @@ public class GameWorld
 		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.setWorldMax( new Vector2(Game.WORLDW, Game.WORLDH) );
 		cam.setPos( new Vector2(0, ter.getHeight(0) - Game.SCREENH/2) );
-		
 	}
 	
 	public void release()
@@ -90,27 +93,11 @@ public class GameWorld
 		return ter;
 	}
 	
-	public Army getArmy(int ID)
+	public void setCurrentTurn(int ID)
 	{
-		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext()) {
-			Army a = f.next();
-			if (a.getID() == ID) 
-				return a;
-		}
-		
-		Iterator<Army> e = enemyArmy.iterator();
-		while (e.hasNext()) {
-			Army a = e.next();
-			if (a.getID() == ID) 
-				return a;
-		}
-		
-		if (userArmy.getID() == ID) {
-			return userArmy;
-		}
-		
-		return null;
+		// next turn received 
+		currentTurn = getRemoteArmy(ID);
+		initNewStage();
 	}
 	
 	public Army getRemoteArmy(int Connection)
@@ -139,22 +126,34 @@ public class GameWorld
 	public void setUserArmy(Army Add)
 	{
 		userArmy = Add;
-		userArmy.setID(armyid);
-		armyid++;
+	}
+	
+	public void requestTurn()
+	{
+		if (userArmy == null) {
+			System.err.print("Error: cannot request turn when user army is not set.");
+		}
+		
+		// request the first turn for the game
+		Request r = new Request();
+		r.source = userArmy.getConnection();
+		r.req = "NextTurn";
+		if (currentTurn != null)
+			r.i0 = currentTurn.getConnection();
+		else
+			r.i0 = -1;
+
+		userArmy.getNetwork().getClient().sendTCP(r);
 	}
 	
 	public void addFriendlyArmy(Army Add)
 	{
 		friendlyArmy.add(Add);
-		friendlyArmy.lastElement().setID(armyid);
-		armyid++;
 	}
 	
 	public void addEnemyArmy(Army Add)
 	{
 		enemyArmy.add(Add);
-		enemyArmy.lastElement().setID(armyid);
-		armyid++;
 	}
 	
 	public void addFoxHole(Vector2 Pos)
@@ -280,15 +279,11 @@ public class GameWorld
 	
 	public void updateMoveSelect()
 	{
-		userArmy.updateMoveSelect(cam);
+		if (currentTurn == null) {
+			return;
+		}
 		
-		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext())
-			f.next().updateMoveSelect(cam);
-		
-		Iterator<Army> e = enemyArmy.iterator();
-		while (e.hasNext())
-			e.next().updateMoveSelect(cam);
+		currentTurn.updateMoveSelect(cam);
 	}
 	
 	public void updateMove()
@@ -306,18 +301,14 @@ public class GameWorld
 	
 	public void updateAttackSelect()
 	{
-		userArmy.updateAttackSelect(cam);
-		if (userArmy.isTargeting()) {
-			buildTargetStack(true);
+		if (currentTurn == null) {
+			return;
 		}
 		
-		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext()) 
-			f.next().updateAttackSelect(cam);
-		
-		Iterator<Army> e = enemyArmy.iterator();
-		while (e.hasNext())
-			e.next().updateAttackSelect(cam);
+		currentTurn.updateAttackSelect(cam);
+		if (currentTurn == userArmy && userArmy.isTargeting()) {
+			buildTargetStack(true);
+		}
 	}
 	
 	private void updateAttack()
@@ -522,27 +513,24 @@ public class GameWorld
 		}
 		
 		particles.draw(Batch, cam);
-		MenuBar.draw(Batch, cam, currentstage, 
+		if (currentTurn == userArmy) {
+			MenuBar.setUsersTurn(true);
+		} else {
+			MenuBar.setUsersTurn(false);
+		}
+		
+		MenuBar.draw(Batch, cam, currentstage, (currentTurn == userArmy) && 
 				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.isMenuOpen() && !userArmy.isStageCompleted(currentstage));
 	}
 	
 	private boolean isArmiesStageCompleted()
 	{
-		Iterator<Army> f = friendlyArmy.iterator();
-		Iterator<Army> e = enemyArmy.iterator();
-		
-		if (!userArmy.isStageCompleted(currentstage))
+		if (currentTurn == null) {
 			return false;
-		
-		// loop through each army and check if any of them are not completed
-		while (f.hasNext()) {
-			if (!f.next().isStageCompleted(currentstage))
-				return false;
 		}
-
-		while (e.hasNext()) {
-			if (!e.next().isStageCompleted(currentstage))
-				return false;
+		
+		if (!currentTurn.isStageCompleted(currentstage)) {
+			return false;
 		}
 		
 		if (currentstage == ATTACKUPDATE && !resolver.isSimulationCompleted()) {
@@ -559,33 +547,20 @@ public class GameWorld
 		}
 		
 		resolver.startSimulation();
-		Iterator<Army> f = friendlyArmy.iterator();
-		Iterator<Army> e = enemyArmy.iterator();
-		
-		userArmy.addCombatData(resolver);
-		while (f.hasNext()) {
-			f.next().addCombatData(resolver);
+		if (currentTurn == null) {
+			return;
 		}
 		
-		while (e.hasNext()) {
-			e.next().addCombatData(resolver);
-		}
+		currentTurn.addCombatData(resolver);
 	}
 	
 	private void initNewStage()
 	{
-		Iterator<Army> f = friendlyArmy.iterator();
-		Iterator<Army> e = enemyArmy.iterator();
-
-		userArmy.initStage(cam, currentstage);
+		if (currentTurn == null) {
+			return;
+		}
 		
-		while (f.hasNext())
-			f.next().initStage(cam, currentstage);
-
-		while (e.hasNext())
-			e.next().initStage(cam, currentstage);
-		
-		initResolver();
+		currentTurn.initStage(cam, currentstage);
 	}
 	
 	public void checkNextStage()
@@ -596,10 +571,24 @@ public class GameWorld
 	
 		// set the new stage
 		currentstage++;
-		if (currentstage == STAGECOUNT)
+		if (currentstage == STAGECOUNT) {
 			currentstage = 0;
+			
+			// request for the next turn
+			Request r = new Request();
+			r.source = userArmy.getConnection();
+			r.req = "NextTurn";
+			if (currentTurn != null)
+				r.i0 = currentTurn.getConnection();
+			else
+				r.i0 = -1;
+			
+			userArmy.getNetwork().getClient().sendTCP(r);
+			currentTurn = null;
+		}
 		
 		initNewStage();
+		initResolver();
 	}
 	
 	public static int getDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)

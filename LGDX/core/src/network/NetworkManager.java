@@ -174,6 +174,11 @@ public class NetworkManager
 		return c.getClient();
 	}
 	
+	public Recipient getRecipients()
+	{
+		return c;
+	}
+	
 	public void attemptConnect()
 	{
 		c.start();

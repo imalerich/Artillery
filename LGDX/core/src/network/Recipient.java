@@ -98,6 +98,8 @@ public class Recipient
 			ArmyConnection a = i.next();
 			addNetworkedArmy(a.pos, a.tankoff, a.id);
 		}
+		
+		game.requestTurn();
 	}
 	
 	public Kryo getKryo()
@@ -142,6 +144,9 @@ public class Recipient
 						
 					} else if (r.request.equals("LobbyCount")) {
 						lobbycount = r.i0;
+						
+					}  else if (r.request.equals("NextTurn")) {
+						game.setCurrentTurn(r.i0);
 						
 					} else if (r.source != -1) {
 						// get the army it pertains to to process the message

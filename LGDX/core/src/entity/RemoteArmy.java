@@ -18,8 +18,6 @@ import com.mygdx.game.MilitaryBase;
 
 public class RemoteArmy extends Army
 {
-	private Vector<Response> response;
-	
 	public RemoteArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int ID)
 	{
 		response = new Vector<Response>();
@@ -206,6 +204,13 @@ public class RemoteArmy extends Army
 				continue;
 			}
 		}
+		
+		s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			squad.setTargetSquad(null);
+			squad.setFiring(false);
+		}
 	}
 
 	@Override
@@ -248,13 +253,6 @@ public class RemoteArmy extends Army
 	public void initStage(Camera Cam, int NewStage)
 	{
 		if (NewStage == GameWorld.ATTACKSELECT) {
-			Iterator<Squad> s = squads.iterator();
-			while (s.hasNext()) {
-				Squad squad = s.next();
-				squad.setTargetSquad(null);
-				squad.setFiring(false);
-			}
-			
 			checkForFoxOccupancy(Cam.getPos());
 		}
 		

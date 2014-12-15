@@ -26,6 +26,7 @@ public class MenuBar
 	private static float powerlevel = PowerButtons.DEFAULTPOWER/PowerButtons.MAXPOWER;
 	private static int req = 0;
 	private static int tmpreq = 0;
+	private static boolean isUsersTurn = false;
 	
 	public static void init()
 	{
@@ -52,7 +53,7 @@ public class MenuBar
 		
 		if (currentstage == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/menubar/CurrentStage.png") );
-			currentstage = TextureRegion.split(tmp, tmp.getWidth()/4, tmp.getHeight())[0];
+			currentstage = TextureRegion.split(tmp, tmp.getWidth()/5, tmp.getHeight())[0];
 		}
 		
 		if (charset == null) {
@@ -124,6 +125,11 @@ public class MenuBar
 		return (Cursor.isMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
 	}
 	
+	public static void setUsersTurn(boolean State)
+	{
+		isUsersTurn = State;
+	}
+	
 	public static void draw(SpriteBatch Batch, Camera Cam, int CurrentStage, boolean Active)
 	{
 		for (int x=0; x<Game.WORLDW; x += bar.getWidth())
@@ -145,8 +151,13 @@ public class MenuBar
 				0, 0, (int)(powerindicator.getWidth()*powerlevel), 
 				(int)powerindicator.getHeight(), false, false);
 		
-		Batch.draw(currentstage[CurrentStage], Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 2,
-				Game.SCREENH-currentstage[CurrentStage].getRegionHeight()+3);
+		if (isUsersTurn) {
+			Batch.draw(currentstage[CurrentStage], Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 2,
+					Game.SCREENH-currentstage[CurrentStage].getRegionHeight()+3);
+		} else {
+			Batch.draw(currentstage[4], Game.SCREENW - currentstage[4].getRegionWidth() - 2,
+					Game.SCREENH-currentstage[4].getRegionHeight()+3);
+		}
 		
 		drawReq(Batch, Cam, Game.SCREENW - currentstage[CurrentStage].getRegionWidth() - 16);
 	}

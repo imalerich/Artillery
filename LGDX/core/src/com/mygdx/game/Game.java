@@ -74,56 +74,6 @@ public class Game extends ApplicationAdapter
 		proj.setToOrtho(false, SCREENW, SCREENH);
 	}
 	
-	public void init()
-	{
-		Terrain.setColor( new Color(54/255f, 47/255f, 43/255f, 1f));
-		
-		Tank.init();
-		Gunman.init();
-		Squad.init();
-		Shaders.init();
-		Cursor.init();
-		Background.init();
-		FogOfWar.init();
-		UnitDeployer.init();
-		MenuBar.init();
-		CombatPacket.init();
-		Missile.init();
-		Grenade.init();
-		Profile.init();
-		PowerButtons.init();
-		ParticleMask.init();
-		Terrain.init();
-		Weather.init();
-		SquadConfigurations.init();
-		FoxHole.init();
-		TankBarrier.init();
-	}
-	
-	public void release()
-	{
-		Squad.release();
-		Shaders.release();
-		MilitaryBase.release();
-		Background.release();
-		MenuBar.release();
-		CombatPacket.release();
-		Missile.release();
-		Grenade.release();
-		Profile.release();
-		PowerButtons.release();
-		ParticleMask.release();
-		Weather.release();
-		FoxHole.release();
-		TankBarrier.release();
-		
-		if (physics != null)
-			physics.release();
-		
-		if (network != null)
-			network.release();
-	}
-	
 	@Override
 	public void create() 
 	{
@@ -257,5 +207,55 @@ public class Game extends ApplicationAdapter
 		
 		SCREENW = (int)(WINDOWW*SCREENRATIOY);
 		SCREENRATIOX = (float)SCREENW/WINDOWW;
+	}
+	
+	public void init()
+	{
+		Terrain.setColor( new Color(54/255f, 47/255f, 43/255f, 1f));
+		
+		Tank.init();
+		Gunman.init();
+		Squad.init();
+		Shaders.init();
+		Cursor.init();
+		Background.init();
+		FogOfWar.init();
+		UnitDeployer.init();
+		MenuBar.init();
+		CombatPacket.init();
+		Missile.init();
+		Grenade.init();
+		Profile.init();
+		PowerButtons.init();
+		ParticleMask.init();
+		Terrain.init();
+		Weather.init();
+		SquadConfigurations.init();
+		FoxHole.init();
+		TankBarrier.init();
+	}
+	
+	public void release()
+	{
+		Squad.release();
+		Shaders.release();
+		MilitaryBase.release();
+		Background.release();
+		MenuBar.release();
+		CombatPacket.release();
+		Missile.release();
+		Grenade.release();
+		Profile.release();
+		PowerButtons.release();
+		ParticleMask.release();
+		Weather.release();
+		FoxHole.release();
+		TankBarrier.release();
+		
+		if (physics != null)
+			physics.release();
+		
+		if (network != null)
+			network.release();
 	}
 }

@@ -193,8 +193,9 @@ public class MainMenu
 			time = 1f;
 			lpos++;
 			if (lpos == 4) {
-				if (!network.isConnected())
+				if (!network.isConnected()) {
 					network.attemptConnect();
+				}
 				
 				lpos = 0;
 			}

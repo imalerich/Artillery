@@ -111,6 +111,7 @@ public class UserArmy extends Army
 		prevdeployi = -1;
 		selected = null;
 		
+		response = new Vector<Response>();
 		stagecompleted = new boolean[GameWorld.STAGECOUNT];
 		for (int i=0; i<GameWorld.STAGECOUNT; i++) {
 			stagecompleted[i] = false;
@@ -119,6 +120,11 @@ public class UserArmy extends Army
 
 	@Override
 	public void catchMessage(Response r) 
+	{
+		response.add(r);
+	}
+	
+	public void procMessage(Camera Cam, Response r)
 	{
 		//
 	}
@@ -231,6 +237,16 @@ public class UserArmy extends Army
 				continue;
 			}
 		}
+		
+		// remove combat information from all squads
+		targetstack.reset();
+
+		s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			squad.setTargetSquad(null);
+			squad.setFiring(false);
+		}
 	}
 	
 	@Override
@@ -247,7 +263,12 @@ public class UserArmy extends Army
 	@Override
 	public void updateThreads(Camera Cam) 
 	{
-		//
+		// process each message
+		for (int i=0; i<response.size(); i++) {
+			procMessage(Cam, response.get(i));
+		}
+		
+		response.clear();
 	}
 	
 	@Override
@@ -274,15 +295,6 @@ public class UserArmy extends Army
 	public void initStage(Camera Cam, int NewStage)
 	{
 		if (NewStage == GameWorld.ATTACKSELECT) {
-			targetstack.reset();
-			
-			Iterator<Squad> s = squads.iterator();
-			while (s.hasNext()) {
-				Squad squad = s.next();
-				squad.setTargetSquad(null);
-				squad.setFiring(false);
-			}
-			
 			checkForFoxOccupancy(Cam.getPos());
 		} else if (NewStage == GameWorld.MOVESELECT) {
 			requisition += REQBONUS;
