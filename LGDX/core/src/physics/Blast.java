@@ -61,7 +61,7 @@ public class Blast
 	public void draw(Camera Cam)
 	{
 		time += Gdx.graphics.getDeltaTime();
-		float c = (float)(time / 0.5f);
+		float c = (float)(Math.pow(time/0.5f, 2f));
 		
 		sr.setColor(c, c, c, 1f);
 		sr.circle(Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), radius*1.1f);
