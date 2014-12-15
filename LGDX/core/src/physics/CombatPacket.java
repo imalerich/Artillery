@@ -39,7 +39,7 @@ public class CombatPacket
 	
 	private Vector2 pos;
 	private Vector2 target;
-	private Vector2 speed;
+	private Vector2 vel;
 	
 	private Terrain ter;
 	private Particles particle;
@@ -108,16 +108,16 @@ public class CombatPacket
 		target = new Vector2(defense.getPos().x, defense.getPos().y + defense.getHeight()/2f);
 		
 		// calculate the speed in each direction
-		speed = new Vector2(target);
+		vel = new Vector2(target);
 		int direction = getMoveDirection();
 		if (direction == -1)
-			speed.x += defense.getWidth();
+			vel.x += defense.getWidth();
 		
-		speed.x -= pos.x;
-		speed.y -= pos.y;
-		speed.nor();
-		speed.x = Math.abs(speed.x * arms.getSpeed());
-		speed.y *= arms.getSpeed();
+		vel.x -= pos.x;
+		vel.y -= pos.y;
+		vel.nor();
+		vel.x = Math.abs(vel.x * arms.getSpeed());
+		vel.y *= arms.getSpeed();
 		
 		// set the target bounding box
 		targetBBox = new Rectangle(target.x, target.y, defense.getWidth(), defense.getHeight());
@@ -132,7 +132,7 @@ public class CombatPacket
 		distancetraveled = 0f;
 	}
 	
-	public void update()
+	public void update(Camera Cam)
 	{
 		if (iscompleted || !checkDelay()) {
 			// do not fire again if the target is dead
@@ -147,6 +147,7 @@ public class CombatPacket
 			float pan = 2f*(float)(offset/0.74f)-1f;
 			sfx.play((float)(Math.random()*0.35f)+0.05f, 1f, pan);
 			hasfired = true;
+			addKick(Cam);
 		}
 		
 		// check if this unit has reached his position
@@ -164,9 +165,9 @@ public class CombatPacket
 			return;
 		}
 		
-		pos.x += (direction * speed.x * Gdx.graphics.getDeltaTime());
-		pos.y += (speed.y * Gdx.graphics.getDeltaTime());
-		distancetraveled += ( speed.len() * Gdx.graphics.getDeltaTime() );
+		pos.x += (direction * vel.x * Gdx.graphics.getDeltaTime());
+		pos.y += (vel.y * Gdx.graphics.getDeltaTime());
+		distancetraveled += ( vel.len() * Gdx.graphics.getDeltaTime() );
 		
 		if (pos.x < 0) {
 			pos.x += Game.WORLDW;
@@ -175,6 +176,23 @@ public class CombatPacket
 		}
 		
 		prevdir = direction;
+	}
+	
+	protected void addKick(Camera Cam)
+	{
+		// get the distance from the point of fire to the center of the screen
+		float dist = Vector2.dst(pos.x, pos.y, Cam.getPos().x + Game.SCREENW/2f, Cam.getPos().y + Game.SCREENH/2f);
+		Vector2 tmp = new Vector2(vel);
+		tmp.nor();
+
+		float mag = 4;
+		if (dist > Game.SCREENW)
+			mag = 0f;
+		else if (dist > 0f) {
+			mag *= (Game.SCREENW-dist)/(Game.SCREENW);
+		}
+
+		Cam.addKick(-getMoveDirection()*tmp.x*mag, -tmp.y*mag);
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam)
@@ -279,8 +297,8 @@ public class CombatPacket
 			radius *= getRadiusMod();
 			Vector2 vel = new Vector2((float)Math.random()*4, (float)Math.random()*4);
 			
-			float xpos = pos.x + direction * speed.x * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
-			float ypos = pos.y + speed.y * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			float xpos = pos.x + direction * vel.x * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
+			float ypos = pos.y + vel.y * (i/(float)addcount) * Gdx.graphics.getDeltaTime();
 			
 			particle.addParticle(radius, new Vector2(xpos, ypos), vel);
 		}

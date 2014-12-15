@@ -136,7 +136,7 @@ public class CombatResolver
 	{
 		// update the current stage
 		if (stage == UNITSTAGE) {
-			updateUnitStage();
+			updateUnitStage(Cam);
 		} else if (stage == POINTSTAGE) {
 			updatePointStage(Cam);
 		}
@@ -187,7 +187,7 @@ public class CombatResolver
 		}
 	}
 	
-	private void updateUnitStage()
+	private void updateUnitStage(Camera Cam)
 	{
 		Iterator<CombatPacket> i = combatqueue.iterator();
 		while (i.hasNext()) {
@@ -196,7 +196,7 @@ public class CombatResolver
 				continue;
 			}
 			
-			p.update();
+			p.update(Cam);
 		}
 	}
 	
