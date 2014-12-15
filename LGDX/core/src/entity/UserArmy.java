@@ -985,14 +985,14 @@ public class UserArmy extends Army
 	{
 		// INVALID - do not select a point
 		if (selected == null) {
-			targetpower = false;
+			grenade = false;
 			return;
 		}
 		
 		// leave targeting, do not select a point
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			selected.setFiring(false);
-			targetpower = false;
+			grenade = false;
 			
 			return;
 		}

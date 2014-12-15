@@ -52,6 +52,12 @@ public class Grenade extends Missile
 	}
 	
 	@Override
+	protected void addKick(Camera Cam)
+	{
+		//
+	}
+	
+	@Override
 	protected void procBlast()
 	{
 		gw.procBlast( new Blast(pos, 16, strength));

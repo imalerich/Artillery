@@ -132,13 +132,13 @@ public class CombatResolver
 		return stage == COMPLETED;
 	}
 	
-	public void updateSimulation()
+	public void updateSimulation(Camera Cam)
 	{
 		// update the current stage
 		if (stage == UNITSTAGE) {
 			updateUnitStage();
 		} else if (stage == POINTSTAGE) {
-			updatePointStage();
+			updatePointStage(Cam);
 		}
 	}
 	
@@ -214,7 +214,7 @@ public class CombatResolver
 		}
 	}
 	
-	private void updatePointStage()
+	private void updatePointStage(Camera Cam)
 	{
 		Iterator<Missile> i = projectilequeue.iterator();
 		while (i.hasNext()) {
@@ -223,7 +223,7 @@ public class CombatResolver
 				continue;
 			}
 			
-			m.update();
+			m.update(Cam);
 		}
 	}
 	

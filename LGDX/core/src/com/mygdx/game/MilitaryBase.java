@@ -81,9 +81,9 @@ public class MilitaryBase
 		xpos = XPos;
 		
 		// generate the base data
-		ypos = Ter.getMinHeight(xpos, xpos+tex.getWidth());
-		int max = Ter.getMaxHeight(xpos, xpos+tex.getWidth());
-		Ter.cutRegion(xpos, ypos, tex.getWidth(), max-ypos);
+		ypos = Ter.getMaxHeight(xpos, xpos+tex.getWidth());
+		int max = Ter.getMinHeight(xpos, xpos+tex.getWidth());
+		Ter.cutRegion(xpos, ypos, tex.getWidth(), ypos-max);
 		ypos = Game.WORLDH - Ter.getHeight(0) - 3;
 	}
 	

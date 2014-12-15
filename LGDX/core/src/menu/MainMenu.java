@@ -128,10 +128,11 @@ public class MainMenu
 		} else if (status == HOST) {
 			drawHost(Batch);
 		} else if (status == CLIENT) {
-			if (network.getClient().isConnected())
+			if (network.getClient().isConnected()) {
 				drawHost(Batch);
-			else
+			} else {
 				drawClient(Batch);
+			}
 		}
 	}
 	
@@ -165,7 +166,6 @@ public class MainMenu
 		
 		int lobbysize = network.lobbySize();
 		int lobbycount = network.lobbyConnected();
-		
 		
 		for (int i=0; i<lobbycount; i++) {
 			Batch.draw(greenbutton, xpos+3+(15*i), ypos+3);
@@ -284,7 +284,7 @@ public class MainMenu
 		} catch (InterruptedException e) {
 			System.err.println("Error: thread sleep interrupted.");
 		}
-		
+	
 		return physics;
 	}
 }

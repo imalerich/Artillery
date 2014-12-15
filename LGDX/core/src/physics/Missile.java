@@ -97,7 +97,7 @@ public class Missile
 		hasfired = false;
 	}
 	
-	public void update()
+	public void update(Camera Cam)
 	{
 		if (hashit) {
 			addTerrainParticles();
@@ -111,6 +111,7 @@ public class Missile
 			
 			time = 0.1f;
 			addParticle();
+			addKick(Cam);
 		}
 		
 		// apply gravity to the velocity
@@ -135,6 +136,23 @@ public class Missile
 			// process the blast
 			procBlast();
 		}
+	}
+	
+	protected void addKick(Camera Cam)
+	{
+		// get the distance from the point of fire to the center of the screen
+		float dist = Vector2.dst(pos.x, pos.y, Cam.getPos().x + Game.SCREENW/2f, Cam.getPos().y + Game.SCREENH/2f);
+		Vector2 tmp = new Vector2(vel);
+		tmp.nor();
+
+		float mag = 16;
+		if (dist > Game.SCREENW)
+			mag = 0f;
+		else if (dist > 0f) {
+			mag *= (Game.SCREENW-dist)/(Game.SCREENW);
+		}
+
+		Cam.addKick(-tmp.x*mag, -tmp.y*mag);
 	}
 	
 	protected void procBlast()

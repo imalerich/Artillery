@@ -469,6 +469,7 @@ public class Terrain
 			isSegmentValid[i] = false;
 			
 			data[i].setColor(Color.CLEAR);
+			
 			data[i].fillRectangle(localx, Y, Width, Height);
 			invalidateSegment(i);
 		}

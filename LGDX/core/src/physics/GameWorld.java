@@ -227,6 +227,8 @@ public class GameWorld
 	
 	private void updateCam()
 	{
+		cam.update();
+		
 		// move the camera with the mouse
 		if (Cursor.isButtonPressed(Cursor.MIDDLE))
 		{
@@ -314,11 +316,13 @@ public class GameWorld
 	private void updateAttack()
 	{
 		// update the combat resolver
-		resolver.updateSimulation();
+		resolver.updateSimulation(cam);
 	}
 	
 	public void procBlast(Blast B)
 	{
+		cam.addShakeIntensity(B.radius/16f);
+		
 		// process any blasts on all armies
 		userArmy.procBlasts(B);
 		

@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class Camera 
@@ -8,8 +9,19 @@ public class Camera
 	private Vector2 worldmin;
 	private Vector2 worldmax;
 	
+	private Vector2 shakepos;
+	private float shakeintensity = 0;
+	private double shaketime = 0f;
+	
+	private Vector2 kickpos;
+	private Vector2 kicktarget;
+	
 	public Camera()
 	{
+		kicktarget = new Vector2();
+		kickpos = new Vector2();
+		shakepos = new Vector2();
+		
 		pos = new Vector2();
 		worldmin = new Vector2();
 		worldmax = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
@@ -22,23 +34,99 @@ public class Camera
 		worldmax = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
 	}
 	
+	public void addShakeIntensity(float Intensity)
+	{
+		shakeintensity += Intensity;
+	}
+	
+	public void addKick(float X, float Y)
+	{
+		kicktarget.x += X;
+		kicktarget.y += Y;
+	}
+	
+	public void update()
+	{
+		// update the camera shake
+		if (shakeintensity > 0f) {
+			shaketime += Gdx.graphics.getDeltaTime();
+			shakeintensity -= Math.pow(shaketime, 2f);
+		}
+		
+		if (shakeintensity < 0f) {
+			shakeintensity = 0f;
+			shaketime = 0f;
+			
+			shakepos.x = 0f;
+			shakepos.y = 0f;
+		}
+		
+		shakepos.x = (float)(shakeintensity * Math.sin(shaketime*64));
+		shakepos.y = (float)(shakeintensity * Math.cos(shaketime*58));
+		
+		if (kicktarget.x == 0f || kicktarget.y == 0f)
+			return;
+		
+		double mod = Gdx.graphics.getDeltaTime() * (kicktarget.len() - kickpos.len()) * 32f + 4f;
+		
+		if (kicktarget.x > 0f) {
+			if (kickpos.x < kicktarget.x)
+				kickpos.x += mod;
+			
+			if (kickpos.x > kicktarget.x)
+				kickpos.x = kicktarget.x;
+			
+		} else if (kicktarget.x < 0f) {
+			if (kickpos.x > kicktarget.x)
+				kickpos.x -= mod;
+			
+			if (kickpos.x < kicktarget.x)
+				kickpos.x = kicktarget.x;
+		}
+		
+		if (kicktarget.y > 0f) {
+			if (kickpos.y < kicktarget.y)
+				kickpos.y += mod;
+			
+			if (kickpos.y > kicktarget.y)
+				kickpos.y = kicktarget.y;
+			
+		} else if (kicktarget.y < 0f) {
+			if (kickpos.y > kicktarget.y)
+				kickpos.y -= mod;
+			
+			if (kickpos.y < kicktarget.y)
+				kickpos.y = kicktarget.y;
+		}
+		
+		if (kickpos.x == kicktarget.x && kickpos.y == kicktarget.y) {
+			pos.x += kicktarget.x;
+			pos.y += kicktarget.y;
+			
+			kicktarget.x = 0f;
+			kicktarget.y = 0f;
+			kickpos.x = 0f;
+			kickpos.y = 0f;
+		}
+	}
+	
 	public float getRenderX(float XPos)
 	{
 		float xpos = XPos;
-		if (pos.x > Game.WORLDW/2 && XPos < Game.SCREENW)
+		if (getPos().x > Game.WORLDW/2 && XPos < Game.SCREENW)
 			xpos += Game.WORLDW;
 		
-		return xpos - pos.x;
+		return xpos - getPos().x;
 	}
 	
 	public float getRenderY(float YPos)
 	{
-		return YPos - pos.y;
+		return YPos - getPos().y;
 	}
 	
 	public Vector2 getPos()
 	{
-		return pos;
+		return new Vector2(pos.x + shakepos.x + kickpos.x, pos.y + shakepos.y + kickpos.y);
 	}
 	
 	public void setPos(Vector2 Pos)
