@@ -45,9 +45,10 @@ public class WarPlane extends Unit
 		theta = 0.0f;
 	}
 	
-	public void moveRight()
+	@Override
+	public void moveRight(Camera Cam)
 	{
-		super.moveRight();
+		super.moveRight(Cam);
 		
 		// overwrite the height set by the super class MoveRight()
 		if ( minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth) > flightheight )
@@ -55,9 +56,10 @@ public class WarPlane extends Unit
 		else pos.y = flightheight;
 	}
 	
-	public void moveLeft()
+	@Override
+	public void moveLeft(Camera Cam)
 	{
-		super.moveLeft();
+		super.moveLeft(Cam);
 		
 		// overwrite the height set by the super class MoveLeft()
 		if ( minheight + Game.WORLDH - ter.getHeight((int)pos.x + halfwidth) > flightheight )

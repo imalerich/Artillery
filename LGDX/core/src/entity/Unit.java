@@ -263,7 +263,7 @@ public class Unit
 		return new Vector2(rx, ry);
 	}
 	
-	public void moveRight()
+	public void moveRight(Camera Cam)
 	{
 		int midpoint = width/2;
 		int frontpoint = midpoint + width/4;
@@ -287,7 +287,7 @@ public class Unit
 		setHeight();
 	}
 	
-	public void moveLeft()
+	public void moveLeft(Camera Cam)
 	{
 		int midpoint = width/2;
 		int backpoint = midpoint - width/4;

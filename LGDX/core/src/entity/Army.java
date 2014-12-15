@@ -222,7 +222,7 @@ public abstract class Army
 	{
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext())
-			s.next().update(Cam.getPos());
+			s.next().update(Cam);
 	}
 	
 	public int getMouseOverCount(Camera Cam)

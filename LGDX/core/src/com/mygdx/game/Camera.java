@@ -10,17 +10,22 @@ public class Camera
 	private Vector2 worldmax;
 	
 	private Vector2 shakepos;
-	private float shakeintensity = 0;
+	private float shakeintensity = 0f;
 	private double shaketime = 0f;
 	
 	private Vector2 kickpos;
 	private Vector2 kicktarget;
+	
+	private Vector2 rumblepos;
+	private float rumble = 0f;
+	private double rumbletime = 0f;
 	
 	public Camera()
 	{
 		kicktarget = new Vector2();
 		kickpos = new Vector2();
 		shakepos = new Vector2();
+		rumblepos = new Vector2();
 		
 		pos = new Vector2();
 		worldmin = new Vector2();
@@ -39,6 +44,11 @@ public class Camera
 		shakeintensity += Intensity;
 	}
 	
+	public void setRumble(float Intensity)
+	{
+		rumble = Intensity;
+	}
+	
 	public void addKick(float X, float Y)
 	{
 		kicktarget.x += X;
@@ -48,10 +58,8 @@ public class Camera
 	public void update()
 	{
 		// update the camera shake
-		if (shakeintensity > 0f) {
-			shaketime += Gdx.graphics.getDeltaTime();
-			shakeintensity -= Math.pow(shaketime, 2f);
-		}
+		shaketime += Gdx.graphics.getDeltaTime();
+		shakeintensity -= Math.pow(shaketime, 2f);
 		
 		if (shakeintensity < 0f) {
 			shakeintensity = 0f;
@@ -64,6 +72,11 @@ public class Camera
 		shakepos.x = (float)(shakeintensity * Math.sin(shaketime*64));
 		shakepos.y = (float)(shakeintensity * Math.cos(shaketime*58));
 		
+		// update rumble
+		rumbletime += Gdx.graphics.getDeltaTime();
+		rumblepos.y = (float)(rumble * Math.cos(rumbletime*64f));
+		
+		// update kick back
 		if (kicktarget.x == 0f || kicktarget.y == 0f)
 			return;
 		
@@ -126,7 +139,7 @@ public class Camera
 	
 	public Vector2 getPos()
 	{
-		return new Vector2(pos.x + shakepos.x + kickpos.x, pos.y + shakepos.y + kickpos.y);
+		return new Vector2(pos.x + shakepos.x + kickpos.x, pos.y + shakepos.y + kickpos.y + rumblepos.y);
 	}
 	
 	public void setPos(Vector2 Pos)

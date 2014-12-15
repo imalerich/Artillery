@@ -73,6 +73,8 @@ public class Squad
 	private boolean addbarrier;
 	private Vector<Vector2> barrierpos;
 	
+	private boolean rumble = false;
+	
 	// state to use when adding a unit
 	private Vector2 barrelSrc = new Vector2();
 	
@@ -360,6 +362,22 @@ public class Squad
 		return units.size();
 	}
 	
+	private void rumbleCam(Camera Cam)
+	{
+		// get the distance from the point of fire to the center of the screen
+		float dist = Vector2.dst(bbox.x + bbox.getWidth()/2f, bbox.y + bbox.getHeight()/2f, 
+				Cam.getPos().x + Game.SCREENW/2f, Cam.getPos().y + Game.SCREENH/2f);
+		float mag = 1f;
+		if (dist > Game.SCREENW)
+			mag = 0f;
+		else if (dist > 0f) {
+			mag *= (Game.SCREENW-dist)/(Game.SCREENW);
+		}
+
+		rumble = true;
+		Cam.setRumble(mag);
+	}
+	
 	private void calcBoundingBox(Vector2 Campos)
 	{
 		// do not calculate the bounding box if there are no units in this squad
@@ -513,10 +531,10 @@ public class Squad
 		return null;
 	}
 	
-	public void update(Vector2 Campos)
+	public void update(Camera Cam)
 	{
 		if (targetpos >= 0)
-			move(Campos);
+			move(Cam);
 	}
 	
 	private void modTarget()
@@ -583,10 +601,10 @@ public class Squad
 			return 0;
 	}
 	
-	public void move(Vector2 Campos)
+	public void move(Camera Cam)
 	{
 		// calculate the bounding box
-		calcBoundingBox(Campos);
+		calcBoundingBox(Cam.getPos());
 		
 		// for each unit in this squad
 		Iterator<Unit> i = units.iterator();
@@ -617,9 +635,9 @@ public class Squad
 			// move the unit
 			updated++;
 			if (direction == -1)
-				u.moveLeft();
+				u.moveLeft(Cam);
 			else if (direction == 1)
-				u.moveRight();
+				u.moveRight(Cam);
 		}
 		
 		if (updated > 0) {
@@ -632,13 +650,25 @@ public class Squad
 		
 		// if they have all met their positional conditional, stop moving them
 		if (updated == 0 && ismoving) {
-			calcBoundingBox(Campos);
+			calcBoundingBox(Cam.getPos());
 			ismoving = false;
-			finishedMoving(Campos);
+			finishedMoving(Cam.getPos());
+			
+			if (primary != null) {
+				if (primary.getType() == Armament.POINTTARGET && rumble) {
+					rumble = false;
+					Cam.setRumble(0f);
+				}
+			}
 			
 		} else if (updated > 0) {
 			ismoving = true;
 			
+			if (primary != null) {
+				if (primary.getType() == Armament.POINTTARGET) {
+					rumbleCam(Cam);
+				}
+			}
 		}
 	}
 	
