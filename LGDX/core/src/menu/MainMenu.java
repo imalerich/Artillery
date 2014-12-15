@@ -192,8 +192,12 @@ public class MainMenu
 		if (time > 2f) {
 			time = 1f;
 			lpos++;
-			if (lpos == 4)
+			if (lpos == 4) {
+				if (!network.isConnected())
+					network.attemptConnect();
+				
 				lpos = 0;
+			}
 		}
 		
 		// get position information
@@ -243,6 +247,9 @@ public class MainMenu
 		status = HOST;
 		network.initHost();
 		network.initClient();
+		
+		while (!network.isConnected())
+			network.attemptConnect();
 	}
 	
 	private void setAsClient()

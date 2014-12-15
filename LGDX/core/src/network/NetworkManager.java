@@ -173,4 +173,14 @@ public class NetworkManager
 	{
 		return c.getClient();
 	}
+	
+	public void attemptConnect()
+	{
+		c.start();
+	}
+	
+	public boolean isConnected()
+	{
+		return c.isConnected();
+	}
 }

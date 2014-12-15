@@ -158,7 +158,7 @@ public class Recipient
 			
 		} );
 		
-		start();
+		//start();
 	}
 	
 	public boolean armiesRecieved()
@@ -213,15 +213,17 @@ public class Recipient
 		return ping;
 	}
 	
-	private void start()
+	public void start()
 	{
+		// try for one second to connect to the server
 		try{
 			InetAddress address = null;
-			while (address == null) {
-				address = c.discoverHost(54777, 5000);
+			address = c.discoverHost(54777, 500);
+			if (address == null) {
+				return;
 			}
 
-			c.connect(5000, address, 54555, 54777);
+			c.connect(500, address, 54555, 54777);
 			connected = true;
 			return;
 
