@@ -178,14 +178,4 @@ public class NetworkManager
 	{
 		return c;
 	}
-	
-	public void attemptConnect()
-	{
-		c.start();
-	}
-	
-	public boolean isConnected()
-	{
-		return c.isConnected();
-	}
 }

@@ -32,7 +32,6 @@ public class Recipient
 	private TerrainSeed seed;
 	private GameWorld game;
 	private Client c;
-	private boolean connected = false;
 	
 	private UserArmy owned;
 	
@@ -163,7 +162,7 @@ public class Recipient
 			
 		} );
 		
-		//start();
+		start();
 	}
 	
 	public boolean armiesRecieved()
@@ -221,7 +220,7 @@ public class Recipient
 	public void start()
 	{
 		// try for one second to connect to the server
-		try{
+		/*try{
 			InetAddress address = null;
 			address = c.discoverHost(54777, 500);
 			if (address == null) {
@@ -238,12 +237,33 @@ public class Recipient
 			connected = true;
 			return;
 
+		}*/
+		
+		String address = "10.30.168.231";
+		try {
+			c.connect(10000, address, 54555, 54777);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
-	
-	public boolean isConnected()
-	{
-		return connected;
+		
+		/*new Thread("Connect") {
+			public void run() {
+				try {
+					InetAddress address = null;
+					while (address == null) {
+						address = c.discoverHost(54777, 10000);
+					}
+					
+					c.connect(10000, address, 54555, 54777);
+					return;
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.err.println("Error: Failed to Connect to the Remote Server.");
+					System.exit(1);
+				}
+			}
+		}.start();*/
 	}
 	
 	public TerrainSeed getSeed()
