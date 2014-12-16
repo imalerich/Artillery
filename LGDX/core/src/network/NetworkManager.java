@@ -11,7 +11,6 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import com.mygdx.game.Camera;
 
 import entity.Army;
 
@@ -30,12 +29,6 @@ public class NetworkManager
 	public void setUserArmy()
 	{
 		c.setUserArmy();
-	}
-	
-	public void release()
-	{
-		if (h != null)
-			h.release();
 	}
 	
 	public int getLobbySize()

@@ -33,12 +33,6 @@ public class Host
 		s = new Server();
 	}
 	
-	public void release()
-	{
-		s.close();
-		System.out.println("Network closed.");
-	}
-	
 	public Kryo getKryo()
 	{
 		return s.getKryo();

@@ -257,8 +257,5 @@ public class Game extends ApplicationAdapter
 		
 		if (physics != null)
 			physics.release();
-		
-		if (network != null)
-			network.release();
 	}
 }

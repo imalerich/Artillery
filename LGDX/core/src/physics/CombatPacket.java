@@ -23,14 +23,16 @@ public class CombatPacket
 	public static Sound sfx;
 	public static Sound reload;
 	public static final int MINFOXDIST = 128;
-	public static final Color BULLETCOL = new Color(128/255f, 128/255f, 128/255f, 1f);
-	public static final int BULLETDIMMENSIONX = 3;
-	public static final int BULLETDIMMENSIONY = 2;
-	public static final float HALFWIDTH = BULLETDIMMENSIONX/2f;
+	public static final Color BULLETCOL = new Color(55/255f, 55/255f, 55/255f, 1f);
+	public static final int BULLETDIMMENSIONX = 4;
+	public static final int BULLETDIMMENSIONY = 4;
+	public static final int FLASHSIZE = 18;
+	public static final int HALFWIDTH = BULLETDIMMENSIONX/2;
 	
 	private static final int PPS = 400; // particles per second
 	private static final float DECAY = 0.4f;
 	private static Texture tex;
+	private static Texture flash;
 	
 	private final Unit offense;
 	private final Unit defense;
@@ -38,6 +40,7 @@ public class CombatPacket
 	private boolean iscompleted;
 	private int prevdir;
 	
+	private Vector2 source;
 	private Vector2 pos;
 	private Vector2 target;
 	private Vector2 vel;
@@ -59,12 +62,25 @@ public class CombatPacket
 	
 	public static void init()
 	{
-		if (tex == null)
-		{
-			Pixmap tmp = new Pixmap(BULLETDIMMENSIONX, BULLETDIMMENSIONY, Pixmap.Format.RGB888);
-			tmp.setColor(BULLETCOL);
+		if (tex == null) {
+			Pixmap tmp = new Pixmap(BULLETDIMMENSIONX, BULLETDIMMENSIONY, Pixmap.Format.RGBA8888);
+			tmp.setColor(Color.CLEAR);
 			tmp.fill();
+			tmp.setColor(Color.WHITE);
+			tmp.fillCircle(HALFWIDTH, HALFWIDTH, HALFWIDTH);
+			
 			tex = new Texture(tmp);
+			tmp.dispose();
+		}
+		
+		if (flash == null) {
+			Pixmap tmp = new Pixmap(FLASHSIZE, FLASHSIZE, Pixmap.Format.RGBA8888);
+			tmp.setColor(Color.CLEAR);
+			tmp.fill();
+			tmp.setColor(Color.WHITE);
+			tmp.fillCircle(FLASHSIZE/2, FLASHSIZE/2, FLASHSIZE/2);
+			
+			flash = new Texture(tmp);
 			tmp.dispose();
 		}
 		
@@ -81,6 +97,9 @@ public class CombatPacket
 	{
 		if (tex != null)
 			tex.dispose();
+		
+		if (flash != null)
+			flash.dispose();
 		
 		if (sfx != null)
 			sfx.dispose();
@@ -119,6 +138,14 @@ public class CombatPacket
 		vel.nor();
 		vel.x = Math.abs(vel.x * arms.getSpeed());
 		vel.y *= arms.getSpeed();
+		
+		// set the source position
+		Vector2 tmp = new Vector2(vel);
+		tmp.x *= getMoveDirection();
+		tmp.nor();
+		source = new Vector2(pos);
+		source.x += tmp.x * Offense.getWidth()/2f;
+		source.y += tmp.y * Offense.getHeight()/2f;
 		
 		// set the target bounding box
 		targetBBox = new Rectangle(target.x, target.y, defense.getWidth(), defense.getHeight());
@@ -205,7 +232,20 @@ public class CombatPacket
 			return;
 		}
 		
+		if (totaltime < 0.3f) {
+			float scale = (float)((Math.log(totaltime/0.3f) + Math.E)/Math.E);
+			scale = Math.max(Math.min(1f, scale), 0f);
+			
+			float off = (FLASHSIZE - (FLASHSIZE*scale))/2f;
+			float xpos = Cam.getRenderX(source.x + off);
+			float ypos = Cam.getRenderY(source.y + off);
+			
+			Batch.draw(flash, xpos, ypos, FLASHSIZE*scale, FLASHSIZE*scale);
+		}
+		
+		Batch.setColor(BULLETCOL);
 		Batch.draw(tex, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y));
+		Batch.setColor(Color.WHITE);
 	}
 	
 	public Unit getOffense()

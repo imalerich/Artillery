@@ -162,7 +162,7 @@ public class Recipient
 			
 			public void disconnected(Connection connection) {
 				System.err.println("Disconnected");
-				Gdx.app.exit();
+				System.exit(1);
 			}
 			
 		} );
