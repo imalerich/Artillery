@@ -39,6 +39,7 @@ public class CombatResolver
 	{
 		stage = UNITSTAGE;
 		combatqueue.clear();
+		projectilequeue.clear();
 	}
 	
 	public void addGrenade(Squad Offense, Armament Grenade)
@@ -49,7 +50,7 @@ public class CombatResolver
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
-			
+		
 			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength()) );
 		}
 	}
@@ -183,6 +184,9 @@ public class CombatResolver
 			}
 
 			stage = COMPLETED;
+			combatqueue.clear();
+			projectilequeue.clear();
+		
 			return;
 		}
 	}

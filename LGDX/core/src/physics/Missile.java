@@ -76,8 +76,8 @@ public class Missile
 		gw = GW;
 		particle = Particle;
 		
-		pos = Source;
-		vel = Velocity;
+		pos = new Vector2(Source);
+		vel = new Vector2(Velocity);
 		strength = Strength;
 		hashit = false;
 		

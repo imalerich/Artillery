@@ -30,7 +30,6 @@ public class Grenade extends Missile
 	public Grenade(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength) 
 	{
 		super(GW, Ter, Particle, Source, Velocity, Strength);
-		gravity = 144; // px's per second
 		dusttime = 0.3f;
 		dustdecay = 1f;
 		dustspeed = 256.0;
