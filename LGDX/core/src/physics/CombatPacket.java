@@ -16,6 +16,7 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
 import entity.Unit;
+import entity.UserArmy;
 
 public class CombatPacket 
 {
@@ -181,6 +182,9 @@ public class CombatPacket
 	protected void addKick(Camera Cam)
 	{
 		// get the distance from the point of fire to the center of the screen
+		if (!(offense.getSquad().getArmy() instanceof UserArmy))
+			return;
+		
 		float dist = Vector2.dst(pos.x, pos.y, Cam.getPos().x + Game.SCREENW/2f, Cam.getPos().y + Game.SCREENH/2f);
 		Vector2 tmp = new Vector2(vel);
 		tmp.nor();

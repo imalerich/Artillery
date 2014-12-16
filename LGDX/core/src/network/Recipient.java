@@ -235,6 +235,7 @@ public class Recipient
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Error: Failed to Connect to the Remote Server.");
+			connected = true;
 			return;
 
 		}

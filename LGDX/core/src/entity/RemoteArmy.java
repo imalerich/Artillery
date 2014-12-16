@@ -144,7 +144,10 @@ public class RemoteArmy extends Army
 		}
 		
 		if (r.request.equals("UNITHEALTH")) {
-			Unit u = getSquad(r.i0).getUnit(r.i1);
+			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			Unit u = s.getUnit(r.i1);
 			if (u == null)
 				return;
 			
@@ -153,7 +156,10 @@ public class RemoteArmy extends Army
 			return;
 			
 		} else if (r.request.equals("UNITPOSITION")) {
-			Unit u = getSquad(r.i0).getUnit(r.i1);
+			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			Unit u = s.getUnit(r.i1);
 			if (u == null)
 				return;
 			
