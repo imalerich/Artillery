@@ -78,14 +78,17 @@ public class RemoteArmy extends Army
 	{
 		// check for stage completion
 		if (r.request.equals("MOVESELECT")) {
+			world.forceStage(GameWorld.MOVESELECT);
 			stagecompleted[GameWorld.MOVESELECT] = r.b0;
 			return;
 			
 		} else if (r.request.equals("MOVEUPDATE")) {
+			world.forceStage(GameWorld.MOVEUPDATE);
 			stagecompleted[GameWorld.MOVEUPDATE] = r.b0;
 			return;
 			
 		} else if (r.request.equals("ATTACKSELECT")) {
+			world.forceStage(GameWorld.ATTACKSELECT);
 			stagecompleted[GameWorld.ATTACKSELECT] = r.b0;
 			return;
 			
@@ -109,8 +112,9 @@ public class RemoteArmy extends Army
 		
 		if (r.request.equals("TANKFIRING")) {
 			Squad s = getSquad(r.i0);
-			if (s == null) 
+			if (s == null)  {
 				return;
+			}
 			
 			s.setForward(r.b1);
 			s.setFiring(r.b0);

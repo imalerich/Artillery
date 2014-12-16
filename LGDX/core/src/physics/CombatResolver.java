@@ -141,6 +141,9 @@ public class CombatResolver
 		} else if (stage == POINTSTAGE) {
 			updatePointStage(Cam);
 		}
+		
+		// check if we should move on to the next stage
+		checkNextStage();
 	}
 	
 	public void drawSimulation(SpriteBatch Batch, Camera Cam)
@@ -151,9 +154,6 @@ public class CombatResolver
 		} else if (stage == POINTSTAGE) {
 			drawPointStage(Batch, Cam);
 		}
-		
-		// check if we should move on to the next stage
-		checkNextStage();
 	}
 	
 	private void checkNextStage()

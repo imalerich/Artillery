@@ -86,18 +86,20 @@ public class Host
 						res.i0 = s.getConnections().length;
 						connection.sendTCP(res);
 						
+					} else if (r.req.equals("FirstTurn")) {
+						Response res = new Response();
+						res.request = "NextTurn";
+						
+						res.i0 = s.getConnections()[currentindex].getID();
+						connection.sendTCP(res);
+						
 					} else if (r.req.equals("NextTurn")) {
 						Response res = new Response();
 						res.request = r.req;
+						nextTurn();
 						
-						// if current turns differ, do not increment the turn
-						if (r.i0 == s.getConnections()[currentindex].getID()) {
-							res.i0 = s.getConnections()[nextTurn()].getID();
-						} else {
-							res.i0 = s.getConnections()[currentindex].getID();
-						}
-						
-						connection.sendTCP(res);
+						res.i0 = s.getConnections()[currentindex].getID();
+						s.sendToAllTCP(res);
 						
 					}
 				} else if (object instanceof Response) {

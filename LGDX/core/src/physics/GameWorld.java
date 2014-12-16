@@ -38,6 +38,7 @@ public class GameWorld
 	public static final int CAMSPEED = 512;
 	
 	private int currentstage;
+	private int nextturn = -1;
 	
 	private Camera cam;
 	private CombatResolver resolver;
@@ -98,8 +99,7 @@ public class GameWorld
 	public void setCurrentTurn(int ID)
 	{
 		// next turn received 
-		currentTurn = getRemoteArmy(ID);
-		initNewStage();
+		nextturn = ID;
 	}
 	
 	public Army getRemoteArmy(int Connection)
@@ -125,12 +125,25 @@ public class GameWorld
 		return null;
 	}
 	
+	public void forceStage(int Stage)
+	{
+		currentstage = Stage;
+	}
+	
+	public int getTurn()
+	{
+		if (currentTurn == null)
+			return -1;
+		
+		return currentTurn.getConnection();
+	}
+	
 	public void setUserArmy(Army Add)
 	{
 		userArmy = Add;
 	}
 	
-	public void requestTurn()
+	public void requestFirstTurn()
 	{
 		if (userArmy == null) {
 			System.err.print("Error: cannot request turn when user army is not set.");
@@ -139,11 +152,8 @@ public class GameWorld
 		// request the first turn for the game
 		Request r = new Request();
 		r.source = userArmy.getConnection();
-		r.req = "NextTurn";
-		if (currentTurn != null)
-			r.i0 = currentTurn.getConnection();
-		else
-			r.i0 = -1;
+		r.req = "FirstTurn";
+		r.i0 = 0;
 
 		userArmy.getNetwork().getClient().sendTCP(r);
 	}
@@ -195,7 +205,6 @@ public class GameWorld
 	public void update()
 	{
 		updateCam();
-		updateThreads();
 		ter.update();
 		particles.update();
 		
@@ -225,6 +234,7 @@ public class GameWorld
 		updateNullTanks();
 		checkForDeaths();
 		checkNextStage();
+		updateThreads();
 	}
 	
 	private void updateCam()
@@ -589,6 +599,14 @@ public class GameWorld
 	
 	public void checkNextStage()
 	{
+		// if there currently is not turn set, initialize a new turn
+		if (currentTurn == null && nextturn != -1) {
+			currentTurn = getRemoteArmy(nextturn);
+			currentstage = 0;
+			nextturn = -1;
+			initNewStage();
+		}
+		
 		// if all the armies are ready to update update the current stage
 		if ( !isArmiesStageCompleted() )
 			return;
@@ -599,15 +617,14 @@ public class GameWorld
 			currentstage = 0;
 			
 			// request for the next turn
-			Request r = new Request();
-			r.source = userArmy.getConnection();
-			r.req = "NextTurn";
-			if (currentTurn != null)
-				r.i0 = currentTurn.getConnection();
-			else
-				r.i0 = -1;
+			if (currentTurn == userArmy) {
+				Request r = new Request();
+				r.source = userArmy.getConnection();
+				r.req = "NextTurn";
+
+				userArmy.getNetwork().getClient().sendTCP(r);
+			}
 			
-			userArmy.getNetwork().getClient().sendTCP(r);
 			currentTurn = null;
 		}
 		

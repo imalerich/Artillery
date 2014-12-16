@@ -100,7 +100,7 @@ public class Recipient
 			addNetworkedArmy(a.pos, a.tankoff, a.id);
 		}
 		
-		game.requestTurn();
+		game.requestFirstTurn();
 	}
 	
 	public Kryo getKryo()
@@ -224,26 +224,6 @@ public class Recipient
 	
 	public void start()
 	{
-		// try for one second to connect to the server
-		/*try{
-			InetAddress address = null;
-			address = c.discoverHost(54777, 500);
-			if (address == null) {
-				return;
-			}
-
-			c.connect(500, address, 54555, 54777);
-			connected = true;
-			return;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("Error: Failed to Connect to the Remote Server.");
-			connected = true;
-			return;
-
-		}*/
-		
 		new Thread("Connect") {
 			public void run() {
 				while (true) {
