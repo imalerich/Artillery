@@ -14,8 +14,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.mygdx.game.Camera;
-import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
@@ -35,6 +33,7 @@ public class Recipient
 	
 	private UserArmy owned;
 	
+	private int pos = -1;
 	private int lobbysize = 0;
 	private int lobbycount = 0;
 	private boolean islobbyfull = false;
@@ -50,25 +49,28 @@ public class Recipient
 		c.start();
 	}
 	
-	public void setGameWorld(GameWorld World, Camera Cam)
+	public void setGameWorld(GameWorld World)
+	{
+		// register the game world this host belongs to
+		game = World;
+	}
+	
+	public void setUserArmy()
 	{
 		// if we have not yet received the lobby size from the server, wait for it
 		try {
-			while (lobbysize == 0) {
+			while (lobbysize == 0 || pos == -1) {
 				Thread.sleep(50);
 			}
+			
 		} catch (InterruptedException e) {
 			System.err.println("Error: thread sleep interrupted.");
 		}
 		
-		// register the game world this host belongs to
-		game = World;
-		
 		// add the hosts base to the game world
 		ConfigSettings tankSettings = SquadConfigurations.getConfiguration(SquadConfigurations.TANK);
 		
-		int offset = (id-1) * Game.WORLDW/lobbysize;
-		MilitaryBase base = new MilitaryBase(offset, game.getTerrain());
+		MilitaryBase base = new MilitaryBase(pos, game.getTerrain());
 		base.setLogo(id-1);
 		owned = new UserArmy(game, base, game.getTerrain(), parent, c.getID());
 		game.setUserArmy(owned);
@@ -85,9 +87,9 @@ public class Recipient
 		owned.addSquad(squad);
 		
 		// set the camera to center the base
-		Vector2 campos = Cam.getPos();
-		campos.x = offset;
-		Cam.setPos(campos);
+		Vector2 campos = game.getCam().getPos();
+		campos.x = pos;
+		game.getCam().setPos(campos);
 	}
 	
 	public void readRemoteArmies()
@@ -132,7 +134,10 @@ public class Recipient
 					
 					if (a.id != id) {
 						remoteconnections.add(new ArmyConnection(a));
+					} else {
+						pos = a.pos;
 					}
+					
 				} else if (object instanceof Response) {
 					Response r = (Response)object;
 					if (r.request.equals("IsLobbyFull")) {
@@ -239,31 +244,25 @@ public class Recipient
 
 		}*/
 		
-		String address = "10.30.168.231";
-		try {
-			c.connect(10000, address, 54555, 54777);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		/*new Thread("Connect") {
+		new Thread("Connect") {
 			public void run() {
-				try {
-					InetAddress address = null;
-					while (address == null) {
-						address = c.discoverHost(54777, 10000);
-					}
-					
-					c.connect(10000, address, 54555, 54777);
-					return;
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("Error: Failed to Connect to the Remote Server.");
-					System.exit(1);
+				while (true) {
+					try {
+						InetAddress address = null;
+						while (address == null) {
+							address = c.discoverHost(54777, 10000);
+						}
+
+						c.connect(10000, address, 54555, 54777);
+						return;
+
+					} catch (IOException e) {
+						e.printStackTrace();
+						System.err.println("Error: Failed to Connect to the Remote Server.");
+					} 
 				}
 			}
-		}.start();*/
+		}.start();
 	}
 	
 	public TerrainSeed getSeed()

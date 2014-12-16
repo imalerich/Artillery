@@ -22,9 +22,14 @@ public class NetworkManager
 	private Host h;
 	private Recipient c;
 	
-	public void setGameWorld(GameWorld Game, Camera Cam)
+	public void setGameWorld(GameWorld Game)
 	{
-		c.setGameWorld(Game, Cam);
+		c.setGameWorld(Game);
+	}
+	
+	public void setUserArmy()
+	{
+		c.setUserArmy();
 	}
 	
 	public void release()

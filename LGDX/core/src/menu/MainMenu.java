@@ -261,11 +261,12 @@ public class MainMenu
 		
 		// initialize the physics world
 		GameWorld physics = new GameWorld(ter);
-		network.setGameWorld(physics, physics.getCam());
+		network.setGameWorld(physics);
 		
 		try {
 			// if host, dispatch armies to clients
 			network.dispatchRemoteArmies();
+			network.setUserArmy();
 			
 			// wait for the client to receive the armies
 			while (!network.recievedAllArmies()) {

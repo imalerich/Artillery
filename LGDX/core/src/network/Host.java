@@ -91,6 +91,7 @@ public class Host
 						res.request = r.req;
 						res.i0 = s.getConnections().length;
 						connection.sendTCP(res);
+						
 					} else if (r.req.equals("NextTurn")) {
 						Response res = new Response();
 						res.request = r.req;
@@ -131,8 +132,9 @@ public class Host
 		currentindex = (int)(Math.random()*s.getConnections().length);
 		
 		// inform each client of all connected clients
+		int index = 0;
 		for (Connection c : s.getConnections()) {
-			int pos = (c.getID()-1) * Game.WORLDW/lobbysize;
+			int pos = (index) * Game.WORLDW/lobbysize;
 			int tankoffset = 70;
 			ArmyConnection a = new ArmyConnection();
 			a.pos = pos;
@@ -140,6 +142,7 @@ public class Host
 			a.id = c.getID();
 
 			s.sendToAllTCP(a);
+			index++;
 		}
 	}
 	
