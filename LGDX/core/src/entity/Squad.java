@@ -665,7 +665,8 @@ public class Squad
 			ismoving = true;
 			
 			if (primary != null) {
-				if (primary.getType() == Armament.POINTTARGET) {
+				if (primary.getType() == Armament.POINTTARGET &&
+						getArmy() instanceof UserArmy) {
 					rumbleCam(Cam);
 				}
 			}

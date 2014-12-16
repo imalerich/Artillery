@@ -4,16 +4,16 @@ UNIT
 
 	count: 6
 	speed: 160
-	health: 16
-	movedist: 1024
-	reqcost: 400
+	health: 10
+	movedist: 768
+	reqcost: 300
 
 END
 
 ARMOR
 
-	health: 12
-	strength: 8
+	health: 4
+	strength: 2
 
 END
 
@@ -43,7 +43,7 @@ SECONDARY
 
 	type: POINT
 	firerate: 1
-	strength: 8
+	strength: 2
 	speed: 800
 
 END

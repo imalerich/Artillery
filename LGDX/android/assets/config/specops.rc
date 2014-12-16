@@ -4,15 +4,15 @@ UNIT
 
 	count: 4
 	speed: 160
-	health: 22
-	reqcost: 800
+	health: 10
+	reqcost: 500
 
 END
 
 ARMOR
 
-	health: 14
-	strength: 8
+	health: 8
+	strength: 6
 
 END
 
@@ -31,7 +31,7 @@ SECONDARY
 
 	type: POINT
 	firerate: 1
-	strength: 8
+	strength: 2
 	speed: 800
 
 END
