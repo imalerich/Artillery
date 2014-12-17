@@ -166,7 +166,7 @@ public class Missile
 	
 	protected void playSound()
 	{
-		sfx.play();
+		gw.getAudio().playSound(sfx, pos.x);
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam)

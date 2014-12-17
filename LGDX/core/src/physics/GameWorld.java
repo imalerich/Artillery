@@ -12,6 +12,7 @@ import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
+import audio.AudioWorld;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -45,6 +46,7 @@ public class GameWorld
 	
 	private Terrain ter;
 	private Particles particles;
+	private AudioWorld audio;
 	
 	private Army currentTurn;
 	private Army userArmy;
@@ -63,6 +65,7 @@ public class GameWorld
 		currentstage = MOVESELECT;
 		particles = new Particles();
 		resolver = new CombatResolver(this, ter, particles);
+		audio = new AudioWorld(this);
 		
 		userArmy = null;
 		currentTurn = null;
@@ -84,6 +87,11 @@ public class GameWorld
 	public void release()
 	{
 		ter.release();
+	}
+	
+	public AudioWorld getAudio()
+	{
+		return audio;
 	}
 	
 	public Camera getCam()

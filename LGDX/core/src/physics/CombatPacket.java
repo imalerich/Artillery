@@ -172,8 +172,9 @@ public class CombatPacket
 		}
 		
 		if (!hasfired) {
-			float pan = 2f*(float)(offset/0.74f)-1f;
-			sfx.play((float)(Math.random()*0.35f)+0.05f, 1f, pan);
+			float vol = (float)(Math.random()*0.35f + 0.05f);
+			offense.getSquad().getArmy().getWorld().getAudio().playSound(sfx, source.x, vol);
+			
 			hasfired = true;
 			addKick(Cam);
 		}
