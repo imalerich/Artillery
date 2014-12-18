@@ -12,6 +12,7 @@ import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
+import ui.OutpostFlag;
 import audio.AudioWorld;
 
 import com.badlogic.gdx.Gdx;
@@ -53,6 +54,8 @@ public class GameWorld
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
 	
+	private Vector<OutpostFlag> markers;
+	
 	private Vector<NullTank> nullTanks;
 	private Vector<FoxHole> foxholes;
 	private Vector<TankBarrier> barriers;
@@ -72,6 +75,8 @@ public class GameWorld
 		
 		friendlyArmy	= new Vector<Army>();
 		enemyArmy		= new Vector<Army>();
+		
+		markers			= new Vector<OutpostFlag>();
 		nullTanks		= new Vector<NullTank>();
 		foxholes		= new Vector<FoxHole>();
 		barriers		= new Vector<TankBarrier>();
@@ -166,6 +171,11 @@ public class GameWorld
 		userArmy.getNetwork().getClient().sendTCP(r);
 	}
 	
+	public void addOutpostMarker(int XPos)
+	{
+		markers.add( new OutpostFlag(XPos, ter) );
+	}
+	
 	public void addFriendlyArmy(Army Add)
 	{
 		friendlyArmy.add(Add);
@@ -239,7 +249,6 @@ public class GameWorld
 		}
 		
 		updateObjects();
-		updateNullTanks();
 		checkForDeaths();
 		checkNextStage();
 		updateThreads();
@@ -270,6 +279,8 @@ public class GameWorld
 	
 	public void updateObjects()
 	{
+		updateNullTanks();
+		
 		Iterator<FoxHole> f = foxholes.iterator();
 		while (f.hasNext())
 			f.next().update();
@@ -469,6 +480,13 @@ public class GameWorld
 			t.next().draw(Batch, cam);
 	}
 	
+	private void drawMarkers(SpriteBatch Batch)
+	{
+		Iterator<OutpostFlag> m = markers.iterator();
+		while (m.hasNext())
+			m.next().draw(Batch, cam);
+	}
+	
 	private void drawHidden(SpriteBatch Batch)
 	{
 		// enable fog of war and draw the background
@@ -491,6 +509,8 @@ public class GameWorld
 		e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().drawBaseLogo(Batch, cam);
+		
+		drawMarkers(Batch);
 		
 		disableStencil(Batch);
 		

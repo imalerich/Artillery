@@ -3,6 +3,7 @@ package com.mygdx.game;
 import menu.MainMenu;
 import network.NetworkManager;
 import objects.FoxHole;
+import objects.RadioTower;
 import objects.TankBarrier;
 import particles.ParticleMask;
 import particles.Weather;
@@ -15,6 +16,7 @@ import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
+import ui.OutpostFlag;
 import ui.PowerButtons;
 import ui.Profile;
 import ui.UnitDeployer;
@@ -235,6 +237,8 @@ public class Game extends ApplicationAdapter
 		FoxHole.init();
 		TankBarrier.init();
 		Blast.init();
+		OutpostFlag.init();
+		RadioTower.init();
 	}
 	
 	public void release()
@@ -253,7 +257,9 @@ public class Game extends ApplicationAdapter
 		Weather.release();
 		FoxHole.release();
 		TankBarrier.release();
-		Blast.init();
+		Blast.release();
+		OutpostFlag.release();
+		RadioTower.release();
 		
 		if (physics != null)
 			physics.release();

@@ -2,6 +2,7 @@ package network;
 
 import java.io.IOException;
 
+import objects.RadioTower;
 import terrain.SeedGenerator;
 import terrain.TerrainSeed;
 
@@ -27,7 +28,11 @@ public class Host
 		
 		int offset = Game.WORLDW/lobbysize;
 		for (int i=0; i<lobbysize; i++) {
+			// will be used for an actual base
 			seed.addBase(offset*i, MilitaryBase.getWidth());
+			
+			// will be used for a requisition point
+			seed.addOutpost(offset*i + offset/2, RadioTower.Tower.getWidth());
 		}
 		
 		s = new Server();

@@ -1,5 +1,6 @@
 package terrain;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +12,7 @@ public class TerrainSeed {
 	private Vector<Integer> peakheight; // scale of those peaks, negative = valley
 	
 	private Vector<Vector2> baselocation; // each vector2 is a min/max xpos for the base
+	private Vector<Vector2> towerlocation; // store dedicated tower locations, will also be stored in baselocation as well
 	
 	private int width;
 	private int height;
@@ -26,6 +28,7 @@ public class TerrainSeed {
 		peakwidth = new Vector<Integer>();
 		peakheight = new Vector<Integer>();
 		baselocation = new Vector<Vector2>();
+		towerlocation = new Vector<Vector2>();
 		
 		width = 0;
 		height = 0;
@@ -96,6 +99,12 @@ public class TerrainSeed {
 		baselocation.add( new Vector2(XPos, XPos+Width) );
 	}
 	
+	public void addOutpost(int XPos, int Width)
+	{
+		baselocation.add( new Vector2(XPos, XPos+Width) );
+		towerlocation.add( new Vector2(XPos, XPos+Width) );
+	}
+	
 	public void addPeak(int XPos, int Sharpness, int ScaleX, int ScaleY)
 	{
 		// clamp the sharpness to the bounds
@@ -116,6 +125,11 @@ public class TerrainSeed {
 	public Vector<Vector2> getBases()
 	{
 		return baselocation;
+	}
+	
+	public Iterator<Vector2> getTowers()
+	{
+		return towerlocation.iterator();
 	}
 	
 	public Vector<Integer> getPeaks()

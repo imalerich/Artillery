@@ -53,6 +53,16 @@ public class Recipient
 	{
 		// register the game world this host belongs to
 		game = World;
+		
+		if (seed == null) {
+			System.err.println("Error: Invalid Seed.");
+			System.exit(1);
+		}
+		
+		// add all of the outposts to the game world
+		Iterator<Vector2> outposts = seed.getTowers();
+		while (outposts.hasNext())
+			game.addOutpostMarker((int)outposts.next().x);
 	}
 	
 	public void setUserArmy()
