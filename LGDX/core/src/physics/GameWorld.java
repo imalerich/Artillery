@@ -510,8 +510,6 @@ public class GameWorld
 		while (e.hasNext())
 			e.next().drawBaseLogo(Batch, cam);
 		
-		drawMarkers(Batch);
-		
 		disableStencil(Batch);
 		
 		/*
@@ -536,6 +534,8 @@ public class GameWorld
 			f.next().drawBase(Batch, cam);
 		
 		enableStencil(Batch);
+		
+		drawMarkers(Batch);
 		
 		// draw the barricades
 		Iterator<TankBarrier> barrIterator = barriers.iterator();
