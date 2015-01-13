@@ -11,6 +11,7 @@ import physics.GameWorld;
 import physics.NullTank;
 import terrain.FogOfWar;
 import terrain.Terrain;
+import ui.OutpostFlag;
 import arsenal.Armament;
 import arsenal.Armor;
 
@@ -43,7 +44,7 @@ public class Squad
 	private int maxmovedist = 0;
 	private int id = -1;
 	
-	// the armor and armament that is used by this squadbn
+	// the armor and armament that is used by this squad
 	private Armament primary;
 	private Armament secondary;
 	private Armor armor;
@@ -72,6 +73,9 @@ public class Squad
 	
 	private boolean addbarrier;
 	private Vector<Vector2> barrierpos;
+	
+	private boolean addoutpost;
+	private OutpostFlag outpost;
 	
 	private boolean rumble = false;
 	
@@ -195,6 +199,12 @@ public class Squad
 	{
 		addfox = true;
 		foxpos = Pos;
+	}
+	
+	public void addOutpostOnFinishedMove(OutpostFlag Outpost)
+	{
+		addoutpost = true;
+		outpost = Outpost;
 	}
 	
 	public void addBarrierOnFinishedMove(Vector<Vector2> Pos)
@@ -542,17 +552,8 @@ public class Squad
 		// -1 means don't move at all
 		if (targetpos < 0) return;
 		
-		// check the distance to the target in each direction
-		float rdist = (Game.WORLDW-(bbox.x+bbox.width))+targetpos;
-		if (targetpos > bbox.x+bbox.width)
-			rdist = targetpos -(bbox.x+bbox.width);
-
-		float ldist = bbox.x + (Game.WORLDW-targetpos);
-		if (targetpos < bbox.x)
-			ldist = (bbox.x - targetpos);
-		
 		// modify the target position so its facing the front of the squad
-		if (rdist < ldist)
+		if (getDirection() == 1)
 			targetpos -= (units.size()-1)*squadspacing;
 		
 		// set within the world bounds
@@ -560,7 +561,12 @@ public class Squad
 		else if (targetpos >= Game.WORLDW) targetpos -= Game.WORLDW;
 	}
 	
-	private int getTargetDirection()
+	public int getWidth()
+	{
+		return (units.size()-1)*squadspacing;
+	}
+	
+	public int getDirection()
 	{
 		float rdist = (Game.WORLDW-(bbox.x+bbox.width)) + targetpos;
 		if (targetpos > bbox.x)
@@ -686,6 +692,19 @@ public class Squad
 			addfox = false;
 			foxpos = null;
 		} 
+		
+		if (addoutpost) {
+			// inform clients of the added tower
+			Response r = new Response();
+			r.source = getArmy().getConnection();
+			r.request = "ADDTOWER";
+			r.i0 = outpost.getId();
+			getArmy().getNetwork().getClient().sendTCP(r);
+				
+			getArmy().addTower( outpost.getTower(getArmy().getWorld(), getArmy().base.getLogo()) );
+			addoutpost = false;
+			outpost = null;
+		}
 		
 		if (addbarrier) 
 		{ 
@@ -829,7 +848,7 @@ public class Squad
 		int xpos = targetpos;
 		
 		// if moving right, modify the xpos
-		int direction = getTargetDirection();
+		int direction = getDirection();
 		if (direction == 1 && units.size() > 1)
 			xpos += bbox.width - units.get(0).getWidth();
 		

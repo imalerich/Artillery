@@ -28,6 +28,7 @@ import com.mygdx.game.Game;
 
 import entity.Army;
 import entity.SelectionStack;
+import entity.UserArmy;
 
 public class GameWorld 
 {
@@ -50,7 +51,7 @@ public class GameWorld
 	private AudioWorld audio;
 	
 	private Army currentTurn;
-	private Army userArmy;
+	private UserArmy userArmy;
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
 	
@@ -151,7 +152,7 @@ public class GameWorld
 		return currentTurn.getConnection();
 	}
 	
-	public void setUserArmy(Army Add)
+	public void setUserArmy(UserArmy Add)
 	{
 		userArmy = Add;
 	}
@@ -171,9 +172,35 @@ public class GameWorld
 		userArmy.getNetwork().getClient().sendTCP(r);
 	}
 	
-	public void addOutpostMarker(int XPos)
+	public void addOutpostMarker(int XPos, int ID)
 	{
-		markers.add( new OutpostFlag(XPos, ter) );
+		markers.add( new OutpostFlag(XPos, ter, ID) );
+	}
+	
+	public OutpostFlag getMarker(int ID)
+	{
+		Iterator<OutpostFlag> i = markers.iterator();
+		while (i.hasNext()) {
+			OutpostFlag f = i.next();
+			if (f.getId() == ID) {
+				return f;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void removeOutpostMarker(int ID)
+	{
+		Iterator<OutpostFlag> i = markers.iterator();
+		while (i.hasNext()) {
+			if (i.next().getId() == ID) {
+				i.remove();
+				return;
+			}
+		}
+		
+		System.err.println("The Speicified marker at " + ID + " could not be found for removal, continuing normally.");
 	}
 	
 	public void addFriendlyArmy(Army Add)
@@ -461,6 +488,18 @@ public class GameWorld
 		return false;
 	}
 	
+	public OutpostFlag getFlagOver()
+	{
+		Iterator<OutpostFlag> m = markers.iterator();
+		while (m.hasNext()) {
+			OutpostFlag f = m.next();
+			if (Cursor.isMouseOver(f.getBBox(), cam.getPos()))
+				return f;
+		}
+		
+		return null;
+	}
+	
 	private void disableStencil(SpriteBatch Batch)
 	{
 		Batch.flush();
@@ -484,7 +523,7 @@ public class GameWorld
 	{
 		Iterator<OutpostFlag> m = markers.iterator();
 		while (m.hasNext())
-			m.next().draw(Batch, cam);
+			m.next().draw(Batch, cam, userArmy.checkOutpostFlags());
 	}
 	
 	private void drawHidden(SpriteBatch Batch)

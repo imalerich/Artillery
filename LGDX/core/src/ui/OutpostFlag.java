@@ -1,7 +1,7 @@
 package ui;
 
 import objects.RadioTower;
-import terrain.Background;
+import physics.GameWorld;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
@@ -17,10 +17,15 @@ import com.mygdx.game.Shaders;
 
 public class OutpostFlag 
 {
+	public static final int REQCOST = 200;
+	
 	private static AnimTex tex;
 	private float time = 0f;
 	private final Vector2 pos;
+	private final int id;
+	
 	private Rectangle bbox;
+	private int xpos;
 	
 	public static void init()
 	{
@@ -34,9 +39,10 @@ public class OutpostFlag
 			tex.release();
 	}
 	
-	public OutpostFlag(int XPos, Terrain Ter)
+	public OutpostFlag(int XPos, Terrain Ter, int ID)
 	{
-		int xpos = XPos;
+		id = ID;
+		xpos = XPos;
 		
 		// generate the base data
 		int ypos = Ter.getMaxHeight(xpos, xpos+RadioTower.Tower.getWidth());
@@ -44,8 +50,23 @@ public class OutpostFlag
 		Ter.cutRegion(xpos, ypos, RadioTower.Tower.getWidth(), ypos-max);
 		ypos = Game.WORLDH - Ter.getHeight(0) - 3;
 		
-		pos = new Vector2(xpos + RadioTower.Tower.getWidth() - tex.getFrameWidth()/2, ypos);
+		pos = new Vector2(xpos + RadioTower.Tower.getWidth()/2f - tex.getFrameWidth()/2, ypos);
 		bbox = new Rectangle(pos.x, pos.y + 15, tex.getFrameWidth(), tex.getFrameHeight()+10);
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	public Rectangle getBBox()
+	{
+		return bbox;
+	}
+	
+	public RadioTower getTower(GameWorld World, int Logo)
+	{
+		return new RadioTower( World, new Vector2(xpos, pos.y), Logo, id );
 	}
 	
 	private void drawOutline(SpriteBatch Batch, Camera Cam, float Offset)
@@ -63,14 +84,14 @@ public class OutpostFlag
 		Shaders.revertShader(Batch);
 	}
 	
-	public void draw(SpriteBatch Batch, Camera Cam)
+	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckOutline)
 	{
 		time += Gdx.graphics.getDeltaTime();
 		float offset = 20 + (float)Math.sin(time*2)*5;
 		
 		tex.setTime(time);
 		
-		if (Cursor.isMouseOver(bbox, Cam.getPos()))
+		if (CheckOutline && Cursor.isMouseOver(bbox, Cam.getPos()))
 			drawOutline(Batch, Cam, offset);
 		
 		Batch.setColor(Terrain.getColor());

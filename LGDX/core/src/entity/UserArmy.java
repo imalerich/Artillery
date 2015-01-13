@@ -6,6 +6,7 @@ import java.util.Vector;
 import network.NetworkManager;
 import network.Response;
 import objects.FoxHole;
+import objects.RadioTower;
 import objects.TankBarrier;
 import physics.CombatResolver;
 import physics.GameWorld;
@@ -13,6 +14,7 @@ import terrain.Terrain;
 import ui.ButtonOptions;
 import ui.FoxHoleMenu;
 import ui.MenuBar;
+import ui.OutpostFlag;
 import ui.PointSelect;
 import ui.PowerButtons;
 import ui.Profile;
@@ -40,8 +42,8 @@ public class UserArmy extends Army
 	private int prevOptionStackSize;
 	private int prevTargetStackSize;
 	
-	private boolean menuactive;
-	private boolean menurelease;
+	private boolean menuactive = false;
+	private boolean menurelease = false;
 	private ButtonOptions menu;
 	private ButtonOptions offensemenu;
 	private FoxHoleMenu foxselect;
@@ -50,14 +52,16 @@ public class UserArmy extends Army
 	private int prevdeployi;
 	private PointSelect moveselect;
 	private PowerButtons powerselect;
-	private boolean moveactive;
-	private boolean foxactive;
-	private boolean barricadeactive;
-	private boolean profileactive;
-	private boolean targetenemies;
-	private boolean targetpoint;
-	private boolean targetpower;
-	private boolean grenade;
+	
+	private boolean moveactive = false;
+	private boolean foxactive = false;
+	private boolean barricadeactive = false;
+	private boolean profileactive = false;
+	private boolean targetenemies = false;
+	private boolean targetpoint = false;
+	private boolean targetpower = false;
+	private boolean grenade = false;
+	private boolean selecttower = false;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -68,6 +72,7 @@ public class UserArmy extends Army
 		base = Base;
 		network = Network;
 		squads = new Vector<Squad>();
+		towers = new Vector<RadioTower>();
 		setConnection(Connection);
 		
 		UnitDeployer.setPos(base.getPos());
@@ -78,15 +83,11 @@ public class UserArmy extends Army
 		prevOptionStackSize = 0;
 		prevTargetStackSize = 0;
 		
-		menuactive = false;
-		menurelease = false;
-		foxactive = false;
-		grenade = false;
-		
 		menu = new ButtonOptions(0, 04);
 		menu.addGlyph(ButtonOptions.MOVE);
 		menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
 		menu.addGlyph(ButtonOptions.MOVETANKTRAP);
+		menu.addGlyph(ButtonOptions.TOWER);
 		menu.addGlyph(ButtonOptions.UPGRADE);
 		menu.addGlyph(ButtonOptions.STOP);
 		
@@ -101,12 +102,6 @@ public class UserArmy extends Army
 		
 		moveselect = new PointSelect(Ter);
 		powerselect = new PowerButtons();
-		moveactive = false;
-		profileactive = false;
-		targetenemies = false;
-		targetpoint = false;
-		targetpower = false;
-		barricadeactive = false;
 		
 		prevdeployi = -1;
 		selected = null;
@@ -127,6 +122,11 @@ public class UserArmy extends Army
 	public void procMessage(Camera Cam, Response r)
 	{
 		//
+	}
+	
+	public boolean checkOutpostFlags()
+	{
+		return selecttower;
 	}
 	
 	private void setDeployBBox()
@@ -509,6 +509,9 @@ public class UserArmy extends Army
 		
 		if (barricadeactive)
 			updateBarricade(Cam);
+		
+		if (selecttower)
+			updateTowerSelect(Cam);
 	}
 	
 	private void updateOffenseMenu(Camera Cam)
@@ -556,9 +559,11 @@ public class UserArmy extends Army
 		if (selected.getPrimary().getType() == Armament.POINTTARGET) {
 			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
 			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
+			menu.removeGlyph(ButtonOptions.TOWER);
 		} else {
 			menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
 			menu.addGlyph(ButtonOptions.MOVETANKTRAP);
+			menu.addGlyph(ButtonOptions.TOWER);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -630,6 +635,17 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 			
+		case ButtonOptions.TOWER:
+			if (requisition - OutpostFlag.REQCOST >= 0) {
+				selecttower = true;
+			}
+			
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			menu.resetClock();
+			break;
+			
 		case ButtonOptions.UPGRADE:
 			// activate the profile
 			profileactive = true;
@@ -672,10 +688,6 @@ public class UserArmy extends Army
 	
 	private void updateBarricade(Camera Cam)
 	{
-		if (selected == null) {
-			return;
-		}
-		
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			barricadeactive = false;
 			return;
@@ -690,6 +702,43 @@ public class UserArmy extends Army
 		}
 		
 		barrierselect.update(Cam);
+	}
+	
+	private void updateTowerSelect(Camera Cam)
+	{
+		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
+			selecttower = false;
+			return;
+		}
+		
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			OutpostFlag f = world.getFlagOver();
+			
+			if (f != null) {
+				// TODO target position should be variable to the direction traveled
+				selected.setTargetX( (int)(f.getBBox().x + f.getBBox().width/2) - (int)(selected.getBBox().width/2) );
+				
+				int direction = GameWorld.getDirection(selected.getBBox().x + selected.getBBox().width/2, 0f, 
+						selected.getTargetX() + selected.getBBox().width/2, 0f);
+				if (direction > 0)
+					selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
+				
+				selected.addOutpostOnFinishedMove(f);
+				requisition -= OutpostFlag.REQCOST;
+				
+				// tell all clients which squad is moving
+				Response r = new Response();
+				r.request = "SQUADMOVE";
+				r.i0 = selected.getID();
+				r.i1 = moveselect.getTargetX();
+				r.source = getConnection();
+
+				network.getClient().sendTCP(r);
+			}
+			
+			selecttower = false;
+			return;
+		}
 	}
 	
 	public void addFox(Vector2 Pos)
@@ -1035,7 +1084,8 @@ public class UserArmy extends Army
 	@Override
 	public boolean isMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetpower || foxactive || grenade || barricadeactive);
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || 
+				targetpower || foxactive || grenade || barricadeactive || selecttower);
 	}
 	
 	private void drawDeployer(SpriteBatch Batch, Camera Cam)
@@ -1102,10 +1152,16 @@ public class UserArmy extends Army
 		if (menuactive) {
 			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVEFOXHOLE) {
 				MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+				
 			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVETANKTRAP) {
 				MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
+				
+			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.TOWER) {
+				MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
+				
 			} else {
 				MenuBar.setTmpRequisition(requisition);
+				
 			}
 		}
 		
@@ -1120,6 +1176,13 @@ public class UserArmy extends Army
 	{
 		checkReqCosts(Cam);
 		
+		// draw each tower
+		Iterator<RadioTower> t = towers.iterator();
+		while (t.hasNext()) {
+			t.next().draw(Batch, Cam);
+		}
+		
+		// draw each squad
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad c = s.next();

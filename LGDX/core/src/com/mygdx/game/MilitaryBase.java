@@ -17,13 +17,13 @@ public class MilitaryBase
 	public static final Color BGCOLOR = Background.BGCOLOR; //new Color(56/255f, 17/255f, 14/255f, 1f);
 	
 	public static final int LOGOCOUNT = 4;
-	private static final int LOGOOFFSETX = -2;
-	private static final int LOGOOFFSETY = 185;
+	public static final int LOGOOFFSETX = -2;
+	public static final int LOGOOFFSETY = 185;
 	private static final int MOUSEYTOLERANCE = 16;
 	
+	public static TextureRegion[] logos;
 	private static Texture tex;
 	private static AnimTex flag;
-	private static TextureRegion[] logos;
 	
 	private int logo;
 	private int xpos;

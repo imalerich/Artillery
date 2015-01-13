@@ -3,12 +3,14 @@ package entity;
 import java.util.Iterator;
 import java.util.Vector;
 
+import objects.RadioTower;
 import network.NetworkManager;
 import network.Response;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
 import ui.FoxHoleMenu;
+import ui.OutpostFlag;
 import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,6 +28,7 @@ public class RemoteArmy extends Army
 		base = Base;
 		network = Network;
 		squads = new Vector<Squad>();
+		towers = new Vector<RadioTower>();
 		
 		setConnection(ID);
 		
@@ -177,9 +180,15 @@ public class RemoteArmy extends Army
 			FoxHoleMenu.cutRoom(ter, pos);
 			world.addFoxHole(pos);
 			checkForFoxOccupancy(Cam.getPos());
+			
 		} else if (r.request.equals("ADDBARRICADE")) {
 			Vector2 pos = new Vector2(r.f0, r.f1);
 			world.addTankBarrier(pos);
+			
+		} else if (r.request.equals("ADDTOWER")) {
+			OutpostFlag f = world.getMarker(r.i0);
+			world.getRemoteArmy(r.source).addTower( f.getTower(world, r.i0) );
+			
 		}
 	}
 

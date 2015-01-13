@@ -60,9 +60,12 @@ public class Recipient
 		}
 		
 		// add all of the outposts to the game world
+		int id = 0;
 		Iterator<Vector2> outposts = seed.getTowers();
-		while (outposts.hasNext())
-			game.addOutpostMarker((int)outposts.next().x);
+		while (outposts.hasNext()) {
+			id++;
+			game.addOutpostMarker((int)outposts.next().x, id);
+		}
 	}
 	
 	public void setUserArmy()

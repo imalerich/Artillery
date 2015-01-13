@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import network.NetworkManager;
 import network.Response;
+import objects.RadioTower;
 import particles.Particles;
 import physics.Blast;
 import physics.CombatResolver;
@@ -36,6 +37,7 @@ public abstract class Army
 	
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
+	protected Vector<RadioTower> towers;
 	
 	/**
 	 * Process methods from other threads.
@@ -71,6 +73,11 @@ public abstract class Army
 	public abstract void addCombatData(CombatResolver Resolver);
 	
 	public abstract void initStage(Camera Cam, int NewStage);
+	
+	public void addTower(RadioTower Tower)
+	{
+		towers.add(Tower);
+	}
 	
 	public GameWorld getWorld()
 	{
@@ -274,10 +281,16 @@ public abstract class Army
 	
 	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 
 	{
+		// draw each tower
+		Iterator<RadioTower> t = towers.iterator();
+		while (t.hasNext()) {
+			t.next().draw(Batch, Cam);
+		}
+		
+		// draw each squad
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
-			Squad squad = s.next();
-			squad.draw(Batch, Cam, false);
+			s.next().draw(Batch, Cam, false);
 		}
 	}
 }

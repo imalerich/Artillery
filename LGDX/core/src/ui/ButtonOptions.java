@@ -18,10 +18,11 @@ public class ButtonOptions
 	public static final int MOVEFOXHOLE		= 1;
 	public static final int MOVETANKTRAP	= 2;
 	public static final int UPGRADE			= 3;
-	public static final int ATTACK			= 4;
-	public static final int GRENADEL		= 5;
-	public static final int GRENADER		= 6;
-	public static final int STOP			= 7;
+	public static final int TOWER			= 4;
+	public static final int ATTACK			= 5;
+	public static final int GRENADEL		= 6;
+	public static final int GRENADER		= 7;
+	public static final int STOP			= 8;
 	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;
