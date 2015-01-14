@@ -23,7 +23,6 @@ public class MilitaryBase
 	
 	public static TextureRegion[] logos;
 	private static Texture tex;
-	private static AnimTex flag;
 	
 	private int logo;
 	private int xpos;
@@ -33,9 +32,6 @@ public class MilitaryBase
 	{
 		if (tex != null)
 			tex.dispose();
-		
-		if (flag != null)
-			flag.release();
 	}
 	
 	public static int getWidth()
@@ -54,11 +50,6 @@ public class MilitaryBase
 	{
 		if (tex == null)
 			tex = new Texture( Gdx.files.internal("img/army/base.png") );
-		
-		if (flag == null) {
-			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
-			flag.newAnimation(0, 3, 0, 2, 0.333f);
-		}
 		
 		if (logos == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/army/logos.png") );
@@ -130,19 +121,5 @@ public class MilitaryBase
 		
 		// draw the flag 
 		Batch.setColor( BGCOLOR );
-		flag.updateClock();
-		flag.render(Batch, Cam, 0, new Vector2(xpos+getWidth()-2, ypos), 1f, 1f);
-		flag.render(Batch, Cam, 0, new Vector2(xpos, ypos), 1f, 1f);
-	}
-	
-	public void drawLogo(SpriteBatch Batch, Camera Cam)
-	{
-		// draw the flags logo
-		Batch.setColor(Background.FGCOLOR);
-		Batch.draw(logos[logo], Cam.getRenderX(xpos+getWidth()-2+LOGOOFFSETX),
-				Cam.getRenderY(ypos+LOGOOFFSETY));
-		Batch.draw(logos[logo], Cam.getRenderX(xpos+LOGOOFFSETX),
-				Cam.getRenderY(ypos+LOGOOFFSETY));
-		Batch.setColor(Color.WHITE);
 	}
 }

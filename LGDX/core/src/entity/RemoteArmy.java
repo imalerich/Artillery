@@ -1,9 +1,7 @@
 package entity;
 
 import java.util.Iterator;
-import java.util.Vector;
 
-import objects.RadioTower;
 import network.NetworkManager;
 import network.Response;
 import physics.CombatResolver;
@@ -22,14 +20,13 @@ public class RemoteArmy extends Army
 {
 	public RemoteArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int ID)
 	{
-		response = new Vector<Response>();
+		super();
+		
 		world = World;
 		ter = Ter;
-		base = Base;
 		network = Network;
-		squads = new Vector<Squad>();
-		towers = new Vector<RadioTower>();
 		
+		setBase(Base);
 		setConnection(ID);
 		
 		stagecompleted = new boolean[GameWorld.STAGECOUNT];

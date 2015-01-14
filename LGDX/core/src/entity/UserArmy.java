@@ -1,12 +1,10 @@
 package entity;
 
 import java.util.Iterator;
-import java.util.Vector;
 
 import network.NetworkManager;
 import network.Response;
 import objects.FoxHole;
-import objects.RadioTower;
 import objects.TankBarrier;
 import physics.CombatResolver;
 import physics.GameWorld;
@@ -67,12 +65,13 @@ public class UserArmy extends Army
 	
 	public UserArmy(GameWorld World, MilitaryBase Base, Terrain Ter, NetworkManager Network, int Connection)
 	{
+		super();
+		
 		world = World;
 		ter = Ter;
-		base = Base;
 		network = Network;
-		squads = new Vector<Squad>();
-		towers = new Vector<RadioTower>();
+		
+		setBase(Base);
 		setConnection(Connection);
 		
 		UnitDeployer.setPos(base.getPos());
@@ -106,7 +105,6 @@ public class UserArmy extends Army
 		prevdeployi = -1;
 		selected = null;
 		
-		response = new Vector<Response>();
 		stagecompleted = new boolean[GameWorld.STAGECOUNT];
 		for (int i=0; i<GameWorld.STAGECOUNT; i++) {
 			stagecompleted[i] = false;
@@ -566,6 +564,12 @@ public class UserArmy extends Army
 			menu.addGlyph(ButtonOptions.TOWER);
 		}
 		
+		if (!selected.canMove()) {
+			menu.removeGlyph(ButtonOptions.MOVE);
+		} else {
+			menu.addGlyph(ButtonOptions.MOVE);
+		}
+		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
 			menuactive = false;
 			menurelease  = false;
@@ -715,7 +719,6 @@ public class UserArmy extends Army
 			OutpostFlag f = world.getFlagOver();
 			
 			if (f != null) {
-				// TODO target position should be variable to the direction traveled
 				selected.setTargetX( (int)(f.getBBox().x + f.getBBox().width/2) - (int)(selected.getBBox().width/2) );
 				
 				int direction = GameWorld.getDirection(selected.getBBox().x + selected.getBBox().width/2, 0f, 
@@ -1175,12 +1178,6 @@ public class UserArmy extends Army
 	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage)
 	{
 		checkReqCosts(Cam);
-		
-		// draw each tower
-		Iterator<RadioTower> t = towers.iterator();
-		while (t.hasNext()) {
-			t.next().draw(Batch, Cam);
-		}
 		
 		// draw each squad
 		Iterator<Squad> s = squads.iterator();

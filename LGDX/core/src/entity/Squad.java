@@ -71,6 +71,7 @@ public class Squad
 	private boolean addfox;
 	private Vector2 foxpos;
 	
+	private boolean canmove = true;
 	private boolean addbarrier;
 	private Vector<Vector2> barrierpos;
 	
@@ -146,6 +147,16 @@ public class Squad
 		addbarrier = false;
 		foxpos = null;
 		barrierpos = null;
+	}
+	
+	public boolean canMove()
+	{
+		return canmove;
+	}
+	
+	public void setCanMove(boolean CanMove)
+	{
+		canmove = CanMove;
 	}
 	
 	public Army getArmy()

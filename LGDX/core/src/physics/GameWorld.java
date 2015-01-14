@@ -236,15 +236,22 @@ public class GameWorld
 	public void updateThreads()
 	{
 		// synchronize data between threads
+		userArmy.update();
 		userArmy.updateThreads(cam);
 		
 		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext())
-			f.next().updateThreads(cam);
+		while (f.hasNext()) {
+			Army next = f.next();
+			next.update();
+			next.updateThreads(cam);
+		}
 		
 		Iterator<Army> e = enemyArmy.iterator();
-		while (e.hasNext())
-			e.next().updateThreads(cam);
+		while (e.hasNext()) {
+			Army next = e.next();
+			next.update();
+			next.updateThreads(cam);
+		}
 	}
 	
 	public void update()
@@ -540,16 +547,6 @@ public class GameWorld
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().drawBase(Batch, cam);
-		
-		enableStencil(Batch);
-		
-		// draw the base logo's with the stencil test enabled
-		userArmy.drawBaseLogo(Batch, cam);
-		e = enemyArmy.iterator();
-		while (e.hasNext())
-			e.next().drawBaseLogo(Batch, cam);
-		
-		disableStencil(Batch);
 		
 		/*
 		 * Draw the terrain, weather and world objects.

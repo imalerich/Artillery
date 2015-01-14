@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
-public class Unit 
+public abstract class Unit 
 {
 	protected Terrain ter;
 	protected Vector2 pos;
@@ -331,8 +331,5 @@ public class Unit
 		// override in implementation classes
 	}
 	
-	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
-	{
-		// override in implementation classes
-	}
+	public abstract void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target);
 }

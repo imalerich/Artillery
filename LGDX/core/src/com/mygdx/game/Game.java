@@ -259,7 +259,7 @@ public class Game extends ApplicationAdapter
 		TankBarrier.release();
 		Blast.release();
 		OutpostFlag.release();
-		RadioTower.release();
+		RadioTower.dispose();
 		
 		if (physics != null)
 			physics.release();

@@ -37,7 +37,8 @@ public abstract class Army
 	
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
-	protected Vector<RadioTower> towers;
+	
+	private Vector<RadioTower> towerqueue;
 	
 	/**
 	 * Process methods from other threads.
@@ -74,9 +75,51 @@ public abstract class Army
 	
 	public abstract void initStage(Camera Cam, int NewStage);
 	
+	public Army()
+	{
+		towerqueue = new Vector<RadioTower>();
+		squads = new Vector<Squad>();
+		response = new Vector<Response>();
+	}
+	
 	public void addTower(RadioTower Tower)
 	{
-		towers.add(Tower);
+		towerqueue.add(Tower);
+	}
+	
+	public void setBase(MilitaryBase Base)
+	{
+		// TODO add towers on either side of the base
+		base = Base;
+		
+		// add towers on both sides of the base
+		addTower( new RadioTower(world, new Vector2(base.getPos().x, base.getPos().y), base.getLogo(), -1));
+		addTower( new RadioTower(world, new Vector2(MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), base.getPos().y), base.getLogo(), -1));
+	}
+	
+	public void update()
+	{
+		Iterator<RadioTower> t = towerqueue.iterator();
+		
+		// add all towers in the queue to the army
+		while (t.hasNext()) {
+			ConfigSettings c = SquadConfigurations.getConfiguration(SquadConfigurations.TOWER);
+			
+			RadioTower Tower = t.next();
+			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
+
+			Squad s = new Squad(ter, 0, this);
+			s.setPrimary(c.getFirstPrimary());
+			s.setArmor(c.getFirstArmor());
+			s.setCanMove(false);
+			
+			s.addUnit(Tower);
+			s.setBarrelSrc( new Vector2(Tower.width/2f, Tower.height*0.8f) );
+			s.setTargetX(-1);
+
+			addSquad(s);
+			t.remove();
+		}
 	}
 	
 	public GameWorld getWorld()
@@ -265,11 +308,6 @@ public abstract class Army
 		base.draw(Batch, Cam);
 	}
 	
-	public void drawBaseLogo(SpriteBatch Batch, Camera Cam)
-	{
-		base.drawLogo(Batch, Cam);
-	}
-	
 	public void drawView(Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();
@@ -281,12 +319,6 @@ public abstract class Army
 	
 	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 
 	{
-		// draw each tower
-		Iterator<RadioTower> t = towers.iterator();
-		while (t.hasNext()) {
-			t.next().draw(Batch, Cam);
-		}
-		
 		// draw each squad
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
