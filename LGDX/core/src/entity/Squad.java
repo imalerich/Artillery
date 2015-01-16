@@ -79,6 +79,7 @@ public class Squad
 	private OutpostFlag outpost;
 	
 	private boolean rumble = false;
+	private int reqbonus = 0;
 	
 	// state to use when adding a unit
 	private Vector2 barrelSrc = new Vector2();
@@ -147,6 +148,16 @@ public class Squad
 		addbarrier = false;
 		foxpos = null;
 		barrierpos = null;
+	}
+	
+	public void setReqBonus(int Bonus)
+	{
+		reqbonus = Bonus;
+	}
+	
+	public int getReqBonus()
+	{
+		return reqbonus;
 	}
 	
 	public boolean canMove()

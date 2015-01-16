@@ -33,8 +33,6 @@ import config.SquadConfigurations;
 
 public class UserArmy extends Army
 {
-	public static final int REQBONUS = 100;
-	
 	private SelectionStack optionstack;
 	private SelectionStack targetstack;
 	private int prevOptionStackSize;
@@ -295,11 +293,22 @@ public class UserArmy extends Army
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			checkForFoxOccupancy(Cam.getPos());
 		} else if (NewStage == GameWorld.MOVESELECT) {
-			requisition += REQBONUS;
+			requisition += getReqBonus();
 		}
 		
 		// set the new stage as not completed
 		stagecompleted[NewStage] = false;
+	}
+	
+	public int getReqBonus()
+	{
+		int reqbonus = 0;
+		
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext())
+			reqbonus += s.next().getReqBonus();
+		
+		return reqbonus;
 	}
 	
 	@Override

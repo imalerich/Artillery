@@ -38,6 +38,7 @@ public abstract class Army
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
 	
+	// towers to be added (held in queue)
 	private Vector<RadioTower> towerqueue;
 	
 	/**
@@ -108,6 +109,7 @@ public abstract class Army
 			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
 
 			Squad s = new Squad(ter, 0, this);
+			s.setReqBonus(RadioTower.REQBONUS);
 			s.setPrimary(c.getFirstPrimary());
 			s.setArmor(c.getFirstArmor());
 			s.setCanMove(false);
