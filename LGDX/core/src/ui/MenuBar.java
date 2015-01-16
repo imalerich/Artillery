@@ -12,6 +12,7 @@ import com.mygdx.game.Game;
 
 public class MenuBar 
 {
+	public static TextureRegion[] CHARSET;
 	private static Texture bar;
 	private static Texture endbutton;
 	private static Texture endinactive;
@@ -20,7 +21,6 @@ public class MenuBar
 	private static Texture reqflag;
 	private static Texture reqx;
 	private static TextureRegion[] currentstage;
-	private static TextureRegion[] charset;
 	private static Rectangle bbox;
 	
 	private static float powerlevel = PowerButtons.DEFAULTPOWER/PowerButtons.MAXPOWER;
@@ -56,9 +56,9 @@ public class MenuBar
 			currentstage = TextureRegion.split(tmp, tmp.getWidth()/5, tmp.getHeight())[0];
 		}
 		
-		if (charset == null) {
+		if (CHARSET == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/menubar/charset.png") );
-			charset = TextureRegion.split(tmp, tmp.getWidth()/11, tmp.getHeight())[0];
+			CHARSET = TextureRegion.split(tmp, tmp.getWidth()/11, tmp.getHeight())[0];
 		}
 		
 		bbox = new Rectangle(Game.SCREENW/2 - endbutton.getWidth()/2, 
@@ -185,23 +185,23 @@ public class MenuBar
 			int digit = val % 10;
 			if (val == 0 && i != 0) {
 				if (negative) {
-					digit = charset.length-1;
-					Batch.draw(charset[digit], XPos - i*charset[digit].getRegionWidth()-i, Game.SCREENH-6-charset[digit].getRegionHeight());
+					digit = CHARSET.length-1;
+					Batch.draw(CHARSET[digit], XPos - i*CHARSET[digit].getRegionWidth()-i, Game.SCREENH-6-CHARSET[digit].getRegionHeight());
 					i++;
 				}
 				
 				if (req != tmpreq && tmpreq < 0) {
-					Batch.draw(reqx, XPos - (i-1)*charset[0].getRegionWidth()-i-reqflag.getWidth()-4, 
-							Game.SCREENH-6-charset[0].getRegionHeight());
+					Batch.draw(reqx, XPos - (i-1)*CHARSET[0].getRegionWidth()-i-reqflag.getWidth()-4, 
+							Game.SCREENH-6-CHARSET[0].getRegionHeight());
 				} else {
-					Batch.draw(reqflag, XPos - (i-1)*charset[0].getRegionWidth()-i-reqflag.getWidth()-4, 
-							Game.SCREENH-6-charset[0].getRegionHeight());
+					Batch.draw(reqflag, XPos - (i-1)*CHARSET[0].getRegionWidth()-i-reqflag.getWidth()-4, 
+							Game.SCREENH-6-CHARSET[0].getRegionHeight());
 				}
 				
 				break;
 			}
 			
-			Batch.draw(charset[digit], XPos - i*charset[digit].getRegionWidth()-i, Game.SCREENH-6-charset[digit].getRegionHeight());
+			Batch.draw(CHARSET[digit], XPos - i*CHARSET[digit].getRegionWidth()-i, Game.SCREENH-6-CHARSET[digit].getRegionHeight());
 
 			
 			val -= digit;

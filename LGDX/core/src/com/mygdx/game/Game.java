@@ -19,6 +19,7 @@ import ui.MenuBar;
 import ui.OutpostFlag;
 import ui.PowerButtons;
 import ui.Profile;
+import ui.ReqIndicator;
 import ui.UnitDeployer;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -239,6 +240,7 @@ public class Game extends ApplicationAdapter
 		Blast.init();
 		OutpostFlag.init();
 		RadioTower.init();
+		ReqIndicator.init();
 	}
 	
 	public void release()
@@ -259,6 +261,7 @@ public class Game extends ApplicationAdapter
 		TankBarrier.release();
 		Blast.release();
 		OutpostFlag.release();
+		ReqIndicator.release();
 		RadioTower.dispose();
 		
 		if (physics != null)
