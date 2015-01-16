@@ -10,14 +10,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
+import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 import com.mygdx.game.Shaders;
 
+import entity.Squad;
 import entity.Unit;
 
 public class RadioTower extends Unit
 {
 	public static Texture Tower;
+	private static Texture mortar;
 	private static AnimTex flag;
 	
 	private final int id;
@@ -30,6 +33,9 @@ public class RadioTower extends Unit
 		if (Tower == null)
 			Tower = new Texture( Gdx.files.internal("img/objects/tower.png") );
 		
+		if (mortar == null)
+			mortar = new Texture( Gdx.files.internal("img/objects/tower_mortar.png") );
+		
 		if (flag == null) {
 			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
 			flag.newAnimation(0, 3, 0, 2, 0.333f/4f);
@@ -40,6 +46,9 @@ public class RadioTower extends Unit
 	{
 		if (Tower != null)
 			Tower.dispose();
+		
+		if (mortar != null)
+			mortar.dispose();
 		
 		if (flag != null)
 			flag.release();
@@ -78,6 +87,7 @@ public class RadioTower extends Unit
 				
 				flag.render(Batch, Cam, 0, new Vector2(Coords.x+6, Coords.y), 1f, 1f);
 				Batch.draw(Tower, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y));
+				drawMortar(Batch, Cam, x , y);
 			}
 		}
 	}
@@ -123,8 +133,41 @@ public class RadioTower extends Unit
 		
 		flag.render(Batch, Cam, 0, new Vector2(pos.x+6, pos.y), 1f, 1f);
 		Batch.draw(Tower, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y));
+		drawMortar(Batch, Cam, 0 , 0);
+		
 		Batch.setColor(Color.WHITE);
 		
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+			Shaders.setShader(Batch, Shaders.health);
+			int h = (int)(height * (float)health/maxhealth);
+			Batch.draw(Tower, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), 
+					Tower.getWidth(), h, 0, height-h, Tower.getWidth(), h, false, false);
+			
+			Shaders.revertShader(Batch);
+		}
+		
 		drawLogo(Batch, Cam);
+	}
+	
+	private void drawMortar(SpriteBatch Batch, Camera Cam, int offsetX, int offsetY)
+	{
+		if (forward)
+			Batch.draw( mortar, Cam.getRenderX(pos.x + Tower.getWidth()-7 + offsetX), Cam.getRenderY(pos.y+131 + offsetY) );
+		else
+			Batch.draw( mortar, Cam.getRenderX(pos.x + 6 - mortar.getWidth() + offsetX), Cam.getRenderY(pos.y+131 + offsetY), 
+					mortar.getWidth(), mortar.getHeight(), 0, 0, mortar.getWidth(), mortar.getHeight(), true, false);
+	}
+	
+	@Override
+	public void drawTargetAngle(SpriteBatch Batch, Camera Cam)
+	{
+		float offset = width;
+		if (!forward) {
+			offset = -offset;
+		}
+		
+		animtime += Gdx.graphics.getDeltaTime();
+		Squad.target.setTime(animtime);
+		Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + barrelsrc.x + offset), Cam.getRenderY(pos.y + barrelsrc.y));
 	}
 }

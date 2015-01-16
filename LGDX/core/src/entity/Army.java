@@ -89,7 +89,6 @@ public abstract class Army
 	
 	public void setBase(MilitaryBase Base)
 	{
-		// TODO add towers on either side of the base
 		base = Base;
 		
 		// add towers on both sides of the base
@@ -114,7 +113,7 @@ public abstract class Army
 			s.setCanMove(false);
 			
 			s.addUnit(Tower);
-			s.setBarrelSrc( new Vector2(Tower.width/2f, Tower.height*0.8f) );
+			s.setBarrelSrc( new Vector2(Tower.width/2f, 136f) );
 			s.setTargetX(-1);
 
 			addSquad(s);
