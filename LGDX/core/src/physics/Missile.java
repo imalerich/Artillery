@@ -47,6 +47,7 @@ public class Missile
 	protected double posttotaltime;
 	
 	protected boolean hasfired;
+	protected final int sourceArmy;
 	
 	public static void init()
 	{
@@ -70,8 +71,9 @@ public class Missile
 		}
 	}
 	
-	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength)
+	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength, int SourceArmy)
 	{
+		sourceArmy = SourceArmy;
 		ter = Ter;
 		gw = GW;
 		particle = Particle;
@@ -161,7 +163,7 @@ public class Missile
 		x1 = Game.WORLDH - ter.getHeight((int)pos.x);
 		x2 = Game.WORLDH - ter.getHeight((int)(pos.x + 16));
 		
-		gw.procBlast( new Blast(pos, 64, strength));
+		gw.procBlast( new Blast(pos, 64, strength, sourceArmy));
 	}
 	
 	protected void playSound()

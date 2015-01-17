@@ -17,6 +17,8 @@ public class Blast
 	private static ShapeRenderer sr;
 	private double time = 0f;
 	
+	private final int sourceArmy;
+	
 	public static void init()
 	{
 		sr = new ShapeRenderer();
@@ -28,11 +30,17 @@ public class Blast
 			sr.dispose();
 	}
 	
-	public Blast(Vector2 Pos, float Radius, float Strength)
+	public Blast(Vector2 Pos, float Radius, float Strength, int SourceArmy)
 	{
 		pos = Pos;
 		radius = Radius;
 		strength = Strength;
+		sourceArmy = SourceArmy;
+	}
+	
+	public int getSourceArmy()
+	{
+		return sourceArmy;
 	}
 	
 	public void update()

@@ -60,6 +60,8 @@ public class CombatPacket
 	private float distancetraveled;
 	private boolean hasfired;
 	
+	private int sourceArmy;
+	
 	public static void init()
 	{
 		if (tex == null) {
@@ -111,6 +113,7 @@ public class CombatPacket
 	public CombatPacket(Terrain Ter, Particles Particles, Unit Offense, Unit Defense, 
 			Armament Arms, float Delay, float Offset, boolean TargetInFox)
 	{
+		sourceArmy = Offense.getSquad().getArmy().getConnection();
 		delay = Delay;
 		offset = Offset;
 		ter = Ter;
@@ -299,6 +302,7 @@ public class CombatPacket
 		
 		defense.getArmor().damage(arms.getStrength());
 		defense.damage(dmg);
+		defense.getSquad().setLastHitBy(sourceArmy);;
 	}
 	
 	private int getMoveDirection()

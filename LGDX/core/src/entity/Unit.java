@@ -36,6 +36,9 @@ public abstract class Unit
 	protected float animtime = 0f;
 	protected Armor armor;
 	
+	// the requisition bonus given when dead
+	private int reqbonus = 0;
+	
 	private Squad squad;
 	
 	public void setUnitData(int Speed, float Health, int ViewRadius)
@@ -43,6 +46,16 @@ public abstract class Unit
 		speed = Speed;
 		health = Health;
 		maxhealth = Health;
+	}
+	
+	public void setReqBonus(int Bonus)
+	{
+		reqbonus = Bonus;
+	}
+	
+	public int getReqBonus()
+	{
+		return reqbonus;
 	}
 	
 	public void setArmor(Armor A)

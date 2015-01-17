@@ -84,6 +84,7 @@ public class Squad
 	// state to use when adding a unit
 	private Vector2 barrelSrc = new Vector2();
 	
+	private int lastHitBy = -1;
 	private Army army;
 	
 	public static void init()
@@ -148,6 +149,11 @@ public class Squad
 		addbarrier = false;
 		foxpos = null;
 		barrierpos = null;
+	}
+	
+	public void setLastHitBy(int Army)
+	{
+		lastHitBy = Army;
 	}
 	
 	public void setReqBonus(int Bonus)
@@ -254,6 +260,13 @@ public class Squad
 			Unit unit = u.next();
 			if (!unit.isAlive()) {
 				unit.setAsDeceased(Deceased, Part);
+				
+				// add the bonus requisition to the army
+				float xpos = unit.getBBox().x + unit.getBBox().width/2f;
+				float ypos = unit.getBBox().y + unit.getBBox().height;
+				army.getWorld().getRemoteArmy(lastHitBy).addRequisition(unit.getReqBonus(), new Vector2(xpos, ypos));
+				
+				// remove the unit
 				u.remove();
 			}
 		}
@@ -271,6 +284,7 @@ public class Squad
 				
 			if (Intersector.overlaps(new Circle(B.pos, B.radius), unit.getBBox()) ||
 					unit.getBBox().contains(B.pos)) {
+				setLastHitBy(B.getSourceArmy());
 				float dmg = Math.max(B.strength - unit.getArmor().getStrength(), 0);
 				unit.getArmor().damage((int)B.strength);
 

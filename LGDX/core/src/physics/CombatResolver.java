@@ -51,7 +51,7 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 		
-			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength()) );
+			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength(), Offense.getArmy().getConnection()) );
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 			
-			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength) );
+			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection()) );
 		}
 			
 	}

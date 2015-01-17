@@ -75,6 +75,7 @@ public class Gunman extends Unit
 		
 		halfwidth = anim.getFrameWidth();
 		
+		setReqBonus(50);
 		pos = Pos;
 		pos.y = Game.WORLDH - Ter.getHeight((int)pos.x+halfwidth) - 3;
 		

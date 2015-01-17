@@ -76,6 +76,8 @@ public abstract class Army
 	
 	public abstract void initStage(Camera Cam, int NewStage);
 	
+	public abstract void addRequisition(int Ammount, Vector2 Pos);
+	
 	public Army()
 	{
 		towerqueue = new Vector<RadioTower>();
@@ -94,7 +96,8 @@ public abstract class Army
 		
 		// add towers on both sides of the base
 		addTower( new RadioTower(world, new Vector2(base.getPos().x, base.getPos().y), base.getLogo(), -1));
-		addTower( new RadioTower(world, new Vector2(MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), base.getPos().y), base.getLogo(), -1));
+		addTower( new RadioTower(world, new Vector2(base.getPos().x + MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), 
+				base.getPos().y), base.getLogo(), -1));
 	}
 	
 	public void update()

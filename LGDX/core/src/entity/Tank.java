@@ -60,6 +60,7 @@ public class Tank extends Unit
 	
 	public Tank(String Filename, Terrain Ter, int Speed, int Health)
 	{
+		setReqBonus(100);
 		tex = new Texture(Gdx.files.internal(Filename) );
 		tr = new TextureRegion(tex);
 		

@@ -120,6 +120,13 @@ public class UserArmy extends Army
 		//
 	}
 	
+	@Override
+	public void addRequisition(int Ammount, Vector2 Pos)
+	{
+		requisition += Ammount;
+		world.addReqIndicator(Pos, Ammount);
+	}
+	
 	public boolean checkOutpostFlags()
 	{
 		return selecttower;

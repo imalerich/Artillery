@@ -298,4 +298,10 @@ public class RemoteArmy extends Army
 	{
 		//
 	}
+
+	@Override
+	public void addRequisition(int Ammount, Vector2 Pos) 
+	{
+		//
+	}
 }
