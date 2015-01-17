@@ -10,9 +10,12 @@ import com.mygdx.game.Camera;
 public class ReqIndicator 
 {
 	private static Texture tex;
+	private final int value;
+	private final float lifespan;
+	
 	private Vector2 pos;
 	private Vector2 vel;
-	private final int value;
+	private float time;
 	
 	public static void init()
 	{
@@ -26,15 +29,25 @@ public class ReqIndicator
 			tex.dispose();
 	}
 	
-	public ReqIndicator(Vector2 Pos, Vector2 Vel, int Value)
+	public ReqIndicator(Vector2 Pos, Vector2 Vel, int Value, float LifeSpan)
 	{
 		pos = new Vector2(Pos);
+		pos.x -= tex.getWidth()/2f;
 		vel = new Vector2(Vel);
+		
 		value = Value;
+		lifespan = LifeSpan;
+		time = 0f;
+	}
+	
+	public boolean isAlive()
+	{
+		return (time < lifespan);
 	}
 	
 	public void update()
 	{
+		time += Gdx.graphics.getDeltaTime();
 		pos.x += ( vel.x * Gdx.graphics.getDeltaTime() );
 		pos.y += ( vel.y * Gdx.graphics.getDeltaTime() );
 	}
@@ -43,15 +56,18 @@ public class ReqIndicator
 	{
 		if (value == 0)
 			return;
-			
+		
 		// draw the background texture
+		float alpha = 1f - (float)Math.pow( Math.min((time/lifespan), 1f), 4 );
+		
+		Batch.setColor(1f, 1f, 1f, alpha);
 		Batch.draw(tex, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y));
 		
 		// draw the value
 		if (value < 0)
-			Batch.setColor(Color.RED);
+			Batch.setColor(1f, 0f, 0f, alpha);
 		else
-			Batch.setColor(Color.GREEN);
+			Batch.setColor(0f, 1f, 0f, alpha);
 		
 		drawVal(Batch, Cam);
 		Batch.setColor(Color.WHITE);

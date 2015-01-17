@@ -305,8 +305,11 @@ public class UserArmy extends Army
 		int reqbonus = 0;
 		
 		Iterator<Squad> s = squads.iterator();
-		while (s.hasNext())
-			reqbonus += s.next().getReqBonus();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+			reqbonus += squad.getReqBonus();
+			world.addReqIndicator(new Vector2(squad.getBBox().x + squad.getBBox().width/2f, squad.getBBox().y + squad.getBBox().height), squad.getReqBonus());
+		}
 		
 		return reqbonus;
 	}

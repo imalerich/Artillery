@@ -13,6 +13,7 @@ import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
 import ui.OutpostFlag;
+import ui.ReqIndicator;
 import audio.AudioWorld;
 
 import com.badlogic.gdx.Gdx;
@@ -56,6 +57,7 @@ public class GameWorld
 	private Vector<Army> enemyArmy;
 	
 	private Vector<OutpostFlag> markers;
+	private Vector<ReqIndicator> reqindicators;
 	
 	private Vector<NullTank> nullTanks;
 	private Vector<FoxHole> foxholes;
@@ -65,6 +67,8 @@ public class GameWorld
 	public GameWorld(Terrain Ter)
 	{
 		ter = Ter;
+		
+		reqindicators = new Vector<ReqIndicator>();
 		
 		currentstage = MOVESELECT;
 		particles = new Particles();
@@ -88,6 +92,11 @@ public class GameWorld
 		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.setWorldMax( new Vector2(Game.WORLDW, Game.WORLDH) );
 		cam.setPos( new Vector2(0, ter.getHeight(0) - Game.SCREENH/2) );
+	}
+	
+	public void addReqIndicator(Vector2 Pos, int Value)
+	{
+		reqindicators.add( new ReqIndicator(Pos, new Vector2(0f, 94), Value, 2f));
 	}
 	
 	public void release()
@@ -330,6 +339,15 @@ public class GameWorld
 			
 			if (!blast.isAlive())
 				bl.remove();
+		}
+		
+		Iterator<ReqIndicator> r = reqindicators.iterator();
+		while (r.hasNext()) {
+			ReqIndicator req = r.next();
+			req.update();
+			
+			if (!req.isAlive())
+				r.remove();
 		}
 	}
 	
@@ -616,6 +634,10 @@ public class GameWorld
 		} else {
 			MenuBar.setUsersTurn(false);
 		}
+		
+		Iterator<ReqIndicator> r = reqindicators.iterator();
+		while (r.hasNext())
+			r.next().draw(Batch, cam);
 		
 		MenuBar.draw(Batch, cam, currentstage, (currentTurn == userArmy) && 
 				(currentstage == MOVESELECT || currentstage == ATTACKSELECT) &&  !userArmy.isMenuOpen() && !userArmy.isStageCompleted(currentstage));
