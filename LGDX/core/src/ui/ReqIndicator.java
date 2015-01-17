@@ -76,7 +76,7 @@ public class ReqIndicator
 	private void drawVal(SpriteBatch Batch, Camera Cam)
 	{
 		boolean negative = false;
-		float xpos = Cam.getRenderX(pos.x + tex.getWidth()/2f);
+		float xpos = Cam.getRenderX(pos.x + tex.getWidth() - MenuBar.CHARSET[0].getRegionWidth()) - 3;
 		float ypos = Cam.getRenderY(pos.y + 4);
 		int val = value;
 		int i=0;
