@@ -17,7 +17,7 @@ import entity.Army;
 public class NetworkManager 
 {
 	private static final int MAXLOBBYSIZE = 4;
-	private int lobbysize = 2;
+	private int lobbysize = 1;
 	private Host h;
 	private Recipient c;
 	

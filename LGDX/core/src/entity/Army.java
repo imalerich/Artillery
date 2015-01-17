@@ -78,6 +78,8 @@ public abstract class Army
 	
 	public abstract void addRequisition(int Ammount, Vector2 Pos);
 	
+	public abstract void spendRequisition(int Ammount, Vector2 Pos);
+	
 	public Army()
 	{
 		towerqueue = new Vector<RadioTower>();
@@ -245,6 +247,8 @@ public abstract class Army
 				break;
 			}
 		}
+		
+		world.addReqIndicator(new Vector2(s.getBBox().x + s.getBBox().width/2f, s.getBBox().y + s.getBBox().height), -c.reqcost);
 		
 		return s.getID();
 	}

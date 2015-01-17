@@ -264,14 +264,18 @@ public class Squad
 				// add the bonus requisition to the army
 				float xpos = unit.getBBox().x + unit.getBBox().width/2f;
 				float ypos = unit.getBBox().y + unit.getBBox().height;
-				army.getWorld().getRemoteArmy(lastHitBy).addRequisition(unit.getReqBonus(), new Vector2(xpos, ypos));
+				
+				// do not give requisition when you kill yourself
+				if (lastHitBy != getArmy().getConnection()) {
+					army.getWorld().getRemoteArmy(lastHitBy).addRequisition(unit.getReqBonus(), new Vector2(xpos, ypos));
+				}
 				
 				// remove the unit
 				u.remove();
 			}
 		}
 		
-		calcBoundingBox(Campos);
+		calcBoundingBox();
 	}
 	
 	public void procBlasts(Blast B)
@@ -424,7 +428,7 @@ public class Squad
 		Cam.setRumble(mag);
 	}
 	
-	private void calcBoundingBox(Vector2 Campos)
+	private void calcBoundingBox()
 	{
 		// do not calculate the bounding box if there are no units in this squad
 		if (units.size() == 0) {
@@ -508,7 +512,7 @@ public class Squad
 	
 	public boolean isMouseOver(Vector2 Campos)
 	{
-		calcBoundingBox(Campos);
+		calcBoundingBox();
 		return Cursor.isMouseOver(bbox, Campos);
 	}
 	
@@ -562,6 +566,8 @@ public class Squad
 		units.lastElement().setSquad(this);
 		units.lastElement().setArmor(armor);
 		addid++;
+		
+		calcBoundingBox();
 	}
 	
 	public Unit getUnit(int ID)
@@ -646,7 +652,7 @@ public class Squad
 	public void move(Camera Cam)
 	{
 		// calculate the bounding box
-		calcBoundingBox(Cam.getPos());
+		calcBoundingBox();
 		
 		// for each unit in this squad
 		Iterator<Unit> i = units.iterator();
@@ -692,7 +698,7 @@ public class Squad
 		
 		// if they have all met their positional conditional, stop moving them
 		if (updated == 0 && ismoving) {
-			calcBoundingBox(Cam.getPos());
+			calcBoundingBox();
 			ismoving = false;
 			finishedMoving(Cam.getPos());
 			
@@ -777,7 +783,7 @@ public class Squad
 			return;
 		}
 		
-		calcBoundingBox(Campos);
+		calcBoundingBox();
 		
 		// check if this squad now occupied a fox hole
 		Iterator<FoxHole> f = getArmy().getWorld().getFoxHoles();

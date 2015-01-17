@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
+import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
 import config.SquadConfigurations;
@@ -123,8 +124,21 @@ public class UserArmy extends Army
 	@Override
 	public void addRequisition(int Ammount, Vector2 Pos)
 	{
+		if (requisition == 0)
+			return;
+		
 		requisition += Ammount;
 		world.addReqIndicator(Pos, Ammount);
+	}
+	
+	@Override
+	public void spendRequisition(int Ammount, Vector2 Pos)
+	{
+		if (requisition == 0)
+			return;
+		
+		requisition -= Ammount;
+		world.addReqIndicator(Pos, -Ammount);
 	}
 	
 	public boolean checkOutpostFlags()
@@ -698,7 +712,8 @@ public class UserArmy extends Army
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			if (foxselect.isPosValid()) {
-				requisition -= FoxHole.REQCOST;
+				spendRequisition(FoxHole.REQCOST, new Vector2(foxselect.getPos().x + FoxHole.FOXHOLE.getWidth()/2f, 
+						foxselect.getPos().y + FoxHole.FOXHOLE.getHeight()));
 				foxselect.setSelectedTarget(selected);
 			}
 			
@@ -717,8 +732,10 @@ public class UserArmy extends Army
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			requisition -= TankBarrier.REQCOST;
 			barrierselect.setSelectedTarget(selected);
+			float xpos = barrierselect.getBBox().x;
+			float ypos = Game.WORLDH - ter.getHeight((int)xpos) + TankBarrier.TANKBARRIER.getHeight();
+			spendRequisition( TankBarrier.REQCOST, new Vector2(xpos, ypos) );
 			
 			barricadeactive = false;
 			return;
@@ -746,7 +763,8 @@ public class UserArmy extends Army
 					selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
 				
 				selected.addOutpostOnFinishedMove(f);
-				requisition -= OutpostFlag.REQCOST;
+				spendRequisition( OutpostFlag.REQCOST, new Vector2(f.getBBox().x + f.getBBox().width/2f, 
+						f.getBBox().y + f.getBBox().height) );
 				
 				// tell all clients which squad is moving
 				Response r = new Response();
@@ -1191,6 +1209,8 @@ public class UserArmy extends Army
 			MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
 		else if (barricadeactive)
 			MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
+		else if (selecttower)
+			MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
 	}
 	
 	@Override

@@ -51,6 +51,11 @@ public class TankBarrierMenu
 		bbox.height = Game.WORLDH;
 	}
 	
+	public Rectangle getBBox()
+	{
+		return bbox;
+	}
+	
 	public void setSelectedTarget(Squad Selected)
 	{
 		int d = getMoveDirection(bbox.x);
