@@ -14,7 +14,7 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "#" };
+		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "#" };
 	
 	/**
 	 * Default count for a newly generate unit.
@@ -77,9 +77,14 @@ public class ConfigGenerator
 	public static final float DEFAULT_ARMAMENT_ACCURACY = 0.9f;
 	
 	/**
-	 * Default requistion cost.
+	 * Default requisition cost.
 	 */
 	public static final int DEFAULT_REQUISITION_COST = 400;
+	
+	/**
+	 * Default requisition bonus;
+	 */
+	public static final int DEFAULT_REQUISITION_BONUS = 50;
 	
 	/**
 	 * Load a configuration from the specified file.
@@ -116,6 +121,7 @@ public class ConfigGenerator
 		int health = DEFAULT_HEALTH;
 		int movedist = DEFAULT_MOVEDIST;
 		int reqcost = DEFAULT_REQUISITION_COST;
+		int reqbonus = DEFAULT_REQUISITION_BONUS;
 		
 		boolean insegment = false;
 		int linenumber = 0;
@@ -153,11 +159,14 @@ public class ConfigGenerator
 			} else if (d.param.equals("reqcost:")) {
 				reqcost = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_REQUISITION_COST);
 				continue;
+			} else if (d.param.equals("reqbonus:")) {
+				reqbonus = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_REQUISITION_BONUS);
+				continue;
 			}
 		}
 		
 		// file processed succesfully, return the configuration setting
-		return new ConfigSettings(count, health, speed, movedist, reqcost);
+		return new ConfigSettings(count, health, speed, movedist, reqcost, reqbonus);
 	}
 	
 	/**

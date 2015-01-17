@@ -232,15 +232,15 @@ public abstract class Army
 			switch (UnitType)
 			{
 			case UnitDeployer.GUNMAN:	
-				s.addUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health, c.reqbonus));
 				break;
 				
 			case UnitDeployer.STEALTHOPS:
-				s.addUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health, c.reqbonus));
 				break;
 				
 			case UnitDeployer.SPECOPS:
-				s.addUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health));
+				s.addUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health, c.reqbonus));
 				break;
 				
 			default:

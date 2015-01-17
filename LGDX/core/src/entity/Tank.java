@@ -17,6 +17,8 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
+import config.SquadConfigurations;
+
 public class Tank extends Unit 
 {
 	private static float MAXANGLE = 180+15;
@@ -60,7 +62,6 @@ public class Tank extends Unit
 	
 	public Tank(String Filename, Terrain Ter, int Speed, int Health)
 	{
-		setReqBonus(100);
 		tex = new Texture(Gdx.files.internal(Filename) );
 		tr = new TextureRegion(tex);
 		
@@ -74,10 +75,7 @@ public class Tank extends Unit
 		pos = new Vector2(64, 0);
 		pos.y = Game.WORLDH - Ter.getHeight((int)pos.x+halfwidth) - 3;
 		
-		barrelOffset = new Vector2();		/*Batch.draw(tr, Cam.GetRenderX(pos.x + OffsetX),
-		Cam.GetRenderY(pos.y + OffsetY),
-		halfwidth, 0, width, tr.getRegionHeight(), 1f, 1f, 
-		theta, 0, 0, width, tr.getRegionHeight(), !forward, false);*/
+		barrelOffset = new Vector2();		
 
 		forward = true;
 		barrelPhi = 0.0f;
@@ -85,6 +83,8 @@ public class Tank extends Unit
 		speed = Speed;
 		health = Health;
 		maxhealth = Health;
+		
+		setReqBonus( SquadConfigurations.getConfiguration(SquadConfigurations.TANK).reqbonus );
 	}
 	
 	@Override

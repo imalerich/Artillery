@@ -5,6 +5,7 @@ UNIT
 	speed: 130
 	health: 46
 	movedist: 768
+	reqbonus: 200
 
 END
 

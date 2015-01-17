@@ -6,6 +6,7 @@ UNIT
 	speed: 160
 	health: 16
 	reqcost: 500
+	reqbonus: 50
 
 END
 

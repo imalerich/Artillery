@@ -57,7 +57,7 @@ public class Gunman extends Unit
 		return !death.isCompleted(0);
 	}
 	
-	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed, int Health)
+	public Gunman(Texture Tex, Terrain Ter, Vector2 Pos, int Speed, int Health, int ReqBonus)
 	{
 		if (anim == null) {
 			anim = new AnimTex(Tex, 1, 4, 4);
@@ -73,9 +73,9 @@ public class Gunman extends Unit
 			death.setTime(0.0f);
 		}
 		
+		setReqBonus(ReqBonus);
 		halfwidth = anim.getFrameWidth();
 		
-		setReqBonus(50);
 		pos = Pos;
 		pos.y = Game.WORLDH - Ter.getHeight((int)pos.x+halfwidth) - 3;
 		
