@@ -19,6 +19,7 @@ import ui.MenuBar;
 import ui.OutpostFlag;
 import ui.PowerButtons;
 import ui.Profile;
+import ui.ProfileWeapon;
 import ui.ReqIndicator;
 import ui.UnitDeployer;
 
@@ -240,6 +241,7 @@ public class Game extends ApplicationAdapter
 		Blast.init();
 		OutpostFlag.init();
 		RadioTower.init();
+		ProfileWeapon.init();
 		ReqIndicator.init();
 	}
 	
@@ -262,6 +264,7 @@ public class Game extends ApplicationAdapter
 		Blast.release();
 		OutpostFlag.release();
 		ReqIndicator.release();
+		ProfileWeapon.release();
 		RadioTower.dispose();
 		
 		if (physics != null)

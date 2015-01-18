@@ -46,8 +46,9 @@ public class OutpostFlag
 		
 		// generate the base data
 		int ypos = Ter.getMaxHeight(xpos, xpos+RadioTower.Tower.getWidth());
-		int max = Ter.getMinHeight(xpos, xpos+RadioTower.Tower.getWidth());
-		Ter.cutRegion(xpos, ypos, RadioTower.Tower.getWidth(), ypos-max);
+		// TODO decide if you need this
+		// int max = Ter.getMinHeight(xpos, xpos+RadioTower.Tower.getWidth());
+		// Ter.cutRegion(xpos, ypos, RadioTower.Tower.getWidth(), ypos-max);
 		ypos = Game.WORLDH - Ter.getHeight(0) - 3;
 		
 		pos = new Vector2(xpos + RadioTower.Tower.getWidth()/2f - tex.getFrameWidth()/2, ypos);
