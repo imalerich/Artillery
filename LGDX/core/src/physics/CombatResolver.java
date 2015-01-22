@@ -44,6 +44,9 @@ public class CombatResolver
 	
 	public void addGrenade(Squad Offense, Armament Grenade)
 	{
+		// un-cloak the offensive unit
+		Offense.setInvis(false);
+		
 		Vector2 vel = getVel(Grenade, Offense, Offense.getPowerRatio());
 		
 		Iterator<Unit> u = Offense.getUnitIterator();
@@ -57,6 +60,9 @@ public class CombatResolver
 	
 	public void addMissile(Squad Offense)
 	{
+		// un-cloak the offensive unit
+		Offense.setInvis(false);
+		
 		float strength = Offense.getPrimary().getStrength();
 		Vector2 vel = getVel(Offense.getPrimary(), Offense, Offense.getPowerRatio());
 		
@@ -97,6 +103,9 @@ public class CombatResolver
 		
 	public void addConflict(Squad Offense, Squad Defense)
 	{
+		// un-cloak the offensive unit
+		Offense.setInvis(false);
+		
 		Armament arms = Offense.getPrimary();
 		Vector<Unit> u = Defense.getUnits();
 		int index = 0;
@@ -113,7 +122,7 @@ public class CombatResolver
 			
 			for (int k=0; k<arms.getFireRate(); k++) {
 				// for each round a second apart
-				combatqueue.add( new CombatPacket(ter, particles, offense, defense, arms, 2*k, offset, Defense.isInFox()) );
+				combatqueue.add( new CombatPacket(ter, particles, offense, defense, arms, 2*k, offset, Defense.isStealthed()) );
 			}
 			
 			// increment the index

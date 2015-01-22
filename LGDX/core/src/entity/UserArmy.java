@@ -587,14 +587,27 @@ public class UserArmy extends Army
 			return;
 		}
 		
-		if (selected.getPrimary().getType() == Armament.POINTTARGET) {
+		if (selected.getClassification() == Classification.TANK || 
+				selected.getClassification() == Classification.TOWER) {
 			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
 			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
 			menu.removeGlyph(ButtonOptions.TOWER);
-		} else {
-			menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
+			
+		} else if (selected.getClassification() == Classification.STEALTHOPS) {
+			// stealth troops cannot place fox holes or place tank traps
 			menu.addGlyph(ButtonOptions.MOVETANKTRAP);
+			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
+			
 			menu.addGlyph(ButtonOptions.TOWER);
+			
+		} else if (selected.getClassification() == Classification.GUNMAN ||
+				selected.getClassification() == Classification.SPECOPS) {
+			// gun men and specops cannot place tank traps
+			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
+			
+			menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
+			menu.addGlyph(ButtonOptions.TOWER);
+			
 		}
 		
 		if (!selected.canMove()) {

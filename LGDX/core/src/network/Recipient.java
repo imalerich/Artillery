@@ -18,6 +18,7 @@ import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
 import config.SquadConfigurations;
+import entity.Classification;
 import entity.RemoteArmy;
 import entity.Squad;
 import entity.Tank;
@@ -88,7 +89,7 @@ public class Recipient
 		owned = new UserArmy(game, base, game.getTerrain(), parent, c.getID());
 		game.setUserArmy(owned);
 		
-		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, owned);
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, owned, Classification.TANK);
 		squad.setPrimary(tankSettings.getFirstPrimary());
 		squad.setArmor(tankSettings.getFirstArmor());
 		
@@ -277,7 +278,7 @@ public class Recipient
 		base.setLogo(id-1);
 		RemoteArmy army = new RemoteArmy(game, base, game.getTerrain(), parent, ID);
 		
-		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, army);
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, army, Classification.TANK);
 		squad.setPrimary(tankSettings.getFirstPrimary());
 		squad.setArmor(tankSettings.getFirstArmor());
 		

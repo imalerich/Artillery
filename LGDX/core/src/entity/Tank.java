@@ -229,8 +229,13 @@ public class Tank extends Unit
 		renderBarrel(Batch, Cam, 0, 0);
 		render(Batch, Cam, 0, 0, height);
 		
+		boolean drawhealth = true;
+		if (getSquad().isStealthed() && !(getSquad().getArmy() instanceof UserArmy)) {
+			drawhealth = false;
+		}
+		
 		// draw the tanks health
-		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) && drawhealth) {
 			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
 			

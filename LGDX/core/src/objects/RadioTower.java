@@ -17,6 +17,7 @@ import com.mygdx.game.Shaders;
 import config.SquadConfigurations;
 import entity.Squad;
 import entity.Unit;
+import entity.UserArmy;
 
 public class RadioTower extends Unit
 {
@@ -142,7 +143,12 @@ public class RadioTower extends Unit
 		
 		Batch.setColor(Color.WHITE);
 		
-		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+		boolean drawhealth = true;
+		if (getSquad().isStealthed() && !(getSquad().getArmy() instanceof UserArmy)) {
+			drawhealth = false;
+		}
+		
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) &&  drawhealth) {
 			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
 			Batch.draw(Tower, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), 

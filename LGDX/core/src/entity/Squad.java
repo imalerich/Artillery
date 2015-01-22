@@ -39,6 +39,8 @@ public class Squad
 	private static final int MUGSHOTCOUNT = 4;
 	private static final int SPACING = 2;
 	
+	private final Classification classification;
+	
 	private static int MAXHEIGHT = 12;
 	private int squadspacing = 24;
 	private int maxmovedist = 0;
@@ -80,6 +82,10 @@ public class Squad
 	
 	private boolean rumble = false;
 	private int reqbonus = 0;
+	
+	private boolean hasActiveCloak = false;
+	private boolean isInvis = false;
+	private float opacity = 1f;
 	
 	// state to use when adding a unit
 	private Vector2 barrelSrc = new Vector2();
@@ -126,8 +132,9 @@ public class Squad
 			health_b.dispose();
 	}
 	
-	public Squad(Terrain Ter, int MoveDist, Army A)
+	public Squad(Terrain Ter, int MoveDist, Army A, Classification C)
 	{
+		classification = C;
 		units = new Vector<Unit>();
 		bbox = new Rectangle(0, 0, Float.MAX_VALUE, Float.MAX_VALUE);
 		minx = maxx = 0f;
@@ -149,6 +156,25 @@ public class Squad
 		addbarrier = false;
 		foxpos = null;
 		barrierpos = null;
+	}
+	
+	public Classification getClassification()
+	{
+		return classification;
+	}
+	
+	public void setActiveCloak(boolean S)
+	{
+		hasActiveCloak = S;
+		isInvis = S;
+	}
+	
+	public void setInvis(boolean S)
+	{
+		if (hasActiveCloak)
+			isInvis = S;
+		else
+			isInvis = false;
 	}
 	
 	public void setLastHitBy(int Army)
@@ -191,9 +217,9 @@ public class Squad
 		return id;
 	}
 	
-	public boolean isInFox()
+	public boolean isStealthed()
 	{
-		return occupied != null;
+		return (occupied != null) || (isInvis);
 	}
 	
 	public void setBarrelSrc(Vector2 Src)
@@ -686,6 +712,9 @@ public class Squad
 				u.moveLeft(Cam);
 			else if (direction == 1)
 				u.moveRight(Cam);
+			
+			// regain cloak on movement
+			setInvis(true);
 		}
 		
 		if (updated > 0) {
@@ -909,11 +938,38 @@ public class Squad
 		Batch.draw(pointer, Cam.getRenderX(xpos), Cam.getRenderY(Game.WORLDH-ypos + (float)pointerheight));
 	}
 	
+	private void setOpacity(float Target, float Rate)
+	{
+		if (opacity < Target) 
+			opacity += Rate * Gdx.graphics.getDeltaTime();
+
+		if (opacity > Target)
+			opacity -= Rate * Gdx.graphics.getDeltaTime();
+		
+		if (Math.abs(opacity - Target) < 1/255f)
+			opacity = Target;
+	}
+	
 	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight)
 	{
-		if (occupied != null && !Highlight) {
-			Batch.setColor(1f, 1f, 1f, 0.6f);
+		// partially transparent to the user
+		if (isStealthed() && !Highlight && (getArmy() instanceof UserArmy)) {
+			setOpacity(0.6f, 1f);
 		}
+		
+		// fully transparent to enemy units
+		if (isStealthed() && !(getArmy() instanceof UserArmy)) {
+			setOpacity(0.0f, 1f);
+		}
+		
+		if (!isStealthed()) {
+			setOpacity(1f, 2f);
+		}
+		
+		Batch.setColor(1f, 1f, 1f, opacity);
+		
+		if (Highlight)  
+			Batch.setColor(Color.WHITE);
 		
 		// draw and determine whether this squad is forward or not
 		int forwardc = 0;
@@ -938,7 +994,7 @@ public class Squad
 		// must manually be set to true each frame by the squad who is targeting
 		isTarget = false;
 		
-		if (occupied != null) {
+		if (isStealthed()) {
 			Batch.setColor(Color.WHITE);
 		}
 	}

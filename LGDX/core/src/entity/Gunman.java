@@ -167,7 +167,12 @@ public class Gunman extends Unit
 		int height = anim.getFrameHeight();
 		drawAnim(Batch, Cam, index, Coords, width, height);
 		
-		if (Cursor.isMouseOver(getBBox(), Cam.getPos())) {
+		boolean drawhealth = true;
+		if (getSquad().isStealthed() && !(getSquad().getArmy() instanceof UserArmy)) {
+			drawhealth = false;
+		}
+		
+		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) && drawhealth) {
 			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
 			drawAnim(Batch, Cam, index, Coords, width, h);

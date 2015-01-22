@@ -7,6 +7,9 @@ public class Armament
 	public static final int UNITTARGET = 0;
 	public static final int POINTTARGET = 1;
 	
+	// TODO needs implementation
+	public static final int FLAMETARGET = 2;
+	
 	// generic armament properties
 	private int type;
 	private int range;
@@ -31,7 +34,7 @@ public class Armament
 		speed = Speed;
 		angle = 0f;
 		
-		// accuracy is floaing point in the bounds 0f -> 1f
+		// accuracy is a floating point in the bounds 0f -> 1f
 		accuracy = Accuracy;
 		accuracy = Math.min(accuracy, 1.0f);
 		accuracy = Math.max(accuracy, 0.0f);

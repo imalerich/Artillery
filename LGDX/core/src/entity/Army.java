@@ -113,7 +113,7 @@ public abstract class Army
 			RadioTower Tower = t.next();
 			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
 
-			Squad s = new Squad(ter, 0, this);
+			Squad s = new Squad(ter, 0, this, Classification.TOWER);
 			s.setReqBonus(RadioTower.REQBONUS);
 			s.setPrimary(c.getFirstPrimary());
 			s.setArmor(c.getFirstArmor());
@@ -214,7 +214,7 @@ public abstract class Army
 			break;
 		}
 		
-		Squad s = new Squad(ter, c.maxmovedist, this);
+		Squad s = new Squad(ter, c.maxmovedist, this, Classification.GUNMAN);
 		s.setTargetX((int)base.getPos().x+offset);
 		
 		int spacing = s.getSquadSpacing();
@@ -224,6 +224,10 @@ public abstract class Army
 		s.setPrimary(c.getFirstPrimary());
 		s.setSecondary(c.getFirstSecondary());
 		s.setArmor(c.getFirstArmor());
+		
+		// stealth ops have active cloak
+		if (UnitType == UnitDeployer.STEALTHOPS)
+			s.setActiveCloak(true);
 		
 		for (int i=0; i<c.count; i++)
 		{
@@ -306,7 +310,7 @@ public abstract class Army
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			
-			if (IgnoreFox && squad.isInFox()) {
+			if (IgnoreFox && squad.isStealthed()) {
 				continue;
 			}
 			
