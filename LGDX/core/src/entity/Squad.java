@@ -37,7 +37,7 @@ public class Squad
 	private static Texture health_f;
 	private static Texture health_b;
 	private static final int MUGSHOTCOUNT = 4;
-	private static final int SPACING = 2;
+	public static final int SPACING = 2;
 	
 	private final Classification classification;
 	

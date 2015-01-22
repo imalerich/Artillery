@@ -199,24 +199,26 @@ public abstract class Army
 		
 		// get the appropriate configuration settings
 		ConfigSettings c = null;
+		Squad s = null;
 		switch (UnitType)
 		{
 		case UnitDeployer.GUNMAN:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
+			s = new Squad(ter, c.maxmovedist, this, Classification.GUNMAN);
 			break;
 			
 		case UnitDeployer.STEALTHOPS:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
+			s = new Squad(ter, c.maxmovedist, this, Classification.STEALTHOPS);
 			break;
 			
 		case UnitDeployer.SPECOPS:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
+			s = new Squad(ter, c.maxmovedist, this, Classification.SPECOPS);
 			break;
 		}
 		
-		Squad s = new Squad(ter, c.maxmovedist, this, Classification.GUNMAN);
 		s.setTargetX((int)base.getPos().x+offset);
-		
 		int spacing = s.getSquadSpacing();
 		addSquad(s);
 		
