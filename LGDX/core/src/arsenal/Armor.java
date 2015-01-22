@@ -34,6 +34,11 @@ public class Armor
 		strength = (int)(maxstrength * ((float)health/maxhealth));
 	}
 	
+	public int getMaxHealth()
+	{
+		return maxhealth;
+	}
+	
 	public int getHealth()
 	{
 		return health;

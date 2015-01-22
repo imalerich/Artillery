@@ -158,6 +158,11 @@ public abstract class Unit
 		return health/maxhealth;
 	}
 	
+	public float getArmorPercentage()
+	{
+		return armor.getHealth()/armor.getMaxHealth();
+	}
+	
 	public float getHealth()
 	{
 		return health;

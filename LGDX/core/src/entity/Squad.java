@@ -35,6 +35,7 @@ public class Squad
 	public static AnimTex target;
 	private static TextureRegion[] mugshots;
 	private static Texture health_f;
+	private static Texture armor_f;
 	private static Texture health_b;
 	private static final int MUGSHOTCOUNT = 4;
 	public static final int SPACING = 2;
@@ -108,7 +109,11 @@ public class Squad
 		}
 		
 		if (health_b == null) {
-			health_b = new Texture( Gdx.files.internal("img/ui/profile/health_b.png"));
+			health_b = new Texture( Gdx.files.internal("img/ui/profile/health_b.png") );
+		}
+		
+		if (armor_f == null) {
+			armor_f = new Texture( Gdx.files.internal("img/ui/profile/armor_f.png") );
 		}
 		
 		if (mugshots == null) {
@@ -130,6 +135,9 @@ public class Squad
 		
 		if (health_b != null)
 			health_b.dispose();
+		
+		if (armor_f != null)
+			armor_f.dispose();
 	}
 	
 	public Squad(Terrain Ter, int MoveDist, Army A, Classification C)
@@ -879,11 +887,16 @@ public class Squad
 				index = MUGSHOTCOUNT-1;
 			int offset = (32+SPACING)*i;
 			
-			Batch.draw(mugshots[index], XPos+offset, YPos);
-			Batch.draw(health_b, XPos+offset,YPos-health_b.getHeight());
-			Batch.draw(health_f, XPos+offset+2, YPos-health_b.getHeight()+2, 
+			Batch.draw(mugshots[index], XPos+offset, YPos-3);
+			Batch.draw(health_b, XPos+offset,YPos-health_b.getHeight()-3);
+			Batch.draw(health_f, XPos+offset+2, YPos-health_b.getHeight()-1, 
 					(int)(unit.getHealthPercentage()*health_f.getWidth()), health_f.getHeight(), 0, 0, 
 					(int)(unit.getHealthPercentage()*health_f.getWidth()), health_f.getHeight(), false, false);
+			
+			Batch.draw(health_b, XPos+offset,YPos - (health_b.getHeight()*2) - 3);
+			Batch.draw(armor_f, XPos+offset+2, YPos - (health_b.getHeight()*2) - 1, 
+					(int)(unit.getArmorPercentage()*health_f.getWidth()), health_f.getHeight(), 0, 0, 
+					(int)(unit.getArmorPercentage()*health_f.getWidth()), health_f.getHeight(), false, false);
 			i++;
 		}
 	}

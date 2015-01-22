@@ -20,7 +20,6 @@ public class Profile
 {
 	public static Texture BG;
 	private static Texture close;
-	private static Texture addunit;
 	
 	private static Rectangle closerect;
 	private static Rectangle addrect;
@@ -36,9 +35,6 @@ public class Profile
 		
 		if (close != null)
 			close.dispose();
-		
-		if (addunit != null)
-			addunit.dispose();
 	}
 	
 	public static void init()
@@ -48,9 +44,6 @@ public class Profile
 		
 		if (close == null)
 			close = new Texture( Gdx.files.internal("img/ui/profile/closeprofile.png") );
-		
-		if (addunit == null)
-			addunit = new Texture( Gdx.files.internal("img/ui/profile/add_unit.png") );
 		
 		resetPos();
 	}
@@ -65,7 +58,6 @@ public class Profile
 		ypos = -BG.getHeight()-4;
 		
 		closerect = new Rectangle(4, 0, close.getWidth(), close.getHeight());
-		addrect = new Rectangle(10, ypos+BG.getHeight()-36, addunit.getWidth(), addunit.getHeight());
 	}
 	
 	public static boolean isMouseOverClose()
@@ -81,15 +73,15 @@ public class Profile
 		{
 		case GUNMAN:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
-			return c.reqcost/c.count;
+			return 2 * (c.reqcost/c.count);
 			
 		case STEALTHOPS:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
-			return c.reqcost/c.count;
+			return 2 * (c.reqcost/c.count);
 			
 		case SPECOPS:
 			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
-			return c.reqcost/c.count;
+			return 2 * (c.reqcost/c.count);
 			
 		case TOWER:
 			break;
@@ -162,8 +154,7 @@ public class Profile
 		S.drawMugshots(Batch, 10, ypos+(BG.getHeight()-36));
 		
 		int offset = (32+Squad.SPACING)*S.getUnitCount();
-		addrect.x = 10+offset;
-		addrect.y = ypos+BG.getHeight()-36;
+		addrect = new Rectangle(12+offset, ypos+BG.getHeight()-36, ProfileWeapon.add_options.getWidth(), ProfileWeapon.add_options.getHeight());
 		
 		offsety = 0;
 		if (Cursor.isMouseOverAbsolute(addrect) && Cursor.isButtonPressed(Cursor.LEFT)) {
@@ -180,7 +171,9 @@ public class Profile
 		}
 		
 		if (S.getUnitCount() < 6 && S.getClassification() != Classification.TANK &&
-				S.getClassification() != Classification.TOWER)
-			Batch.draw(addunit, addrect.x, addrect.y-offsety);
+				S.getClassification() != Classification.TOWER) {
+			Batch.draw(ProfileWeapon.add_options_bg, addrect.x, addrect.y);
+			Batch.draw(ProfileWeapon.add_options, addrect.x, addrect.y-offsety);
+		}
 	}
 }

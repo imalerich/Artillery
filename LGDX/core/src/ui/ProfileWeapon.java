@@ -19,8 +19,8 @@ public class ProfileWeapon
 	private static Texture specs;
 	private static Texture seperator;
 	private static Texture settings_bar;
-	private static Texture add_options;
-	private static Texture add_options_bg;
+	public static Texture add_options;
+	public static Texture add_options_bg;
 	
 	private static int RIFLE = 0;
 	private static int MISSILE = 1;
