@@ -8,10 +8,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Cursor;
+
+import entity.Squad;
 
 public class ProfileWeapon 
 {
+	// TODO 
+	public static int UPGRADE_COST = 100;
+	
 	private static Texture stamp;
 	private static Texture specs;
 	private static Texture seperator;
@@ -83,7 +89,7 @@ public class ProfileWeapon
 		return stamp.getHeight() + 5;
 	}
 	
-	public static void draw(SpriteBatch Batch, Armament A, boolean Primary, int XPos, int YPos)
+	public static void draw(SpriteBatch Batch, Squad S, Armament A, boolean Primary, int XPos, int YPos)
 	{
 		if (A == null)
 			return;
@@ -97,7 +103,7 @@ public class ProfileWeapon
 		Batch.draw(specs, XPos+stamp.getWidth()+8, YPos-stamp.getHeight()-2);
 		
 		float str = Math.min( A.getStrength()/20f, 1f );
-		if (A.getType() == Armament.POINTTARGET && Primary) {
+		if (A.getType() == Armament.POINTTARGET) {
 			str = Math.min( A.getStrength()/40f, 1f );
 		}
 		
@@ -140,14 +146,29 @@ public class ProfileWeapon
 			index = RIFLE;
 		}
 		
-		// draw the weapon stamp overaly
+		// draw the weapon stamp overlay
 		Batch.draw(weapons[index], XPos+5, YPos-stamp.getHeight()-2);
 		
 		// draw the options button
 		int yoff = 0;
 		Rectangle r = new Rectangle(add_opt_rect.x + XPos, add_opt_rect.y + YPos, add_opt_rect.width, add_opt_rect.height);
-		if (Cursor.isMouseOverAbsolute(r) && Cursor.isButtonPressed(Cursor.LEFT))
+		if (Cursor.isMouseOverAbsolute(r) && Cursor.isButtonPressed(Cursor.LEFT)) {
 			yoff = -2;
+		}
+		
+		if (Cursor.isMouseOverAbsolute(r) && !A.isMaxed())
+			MenuBar.setTmpRequisition( S.getArmy().getReq() - UPGRADE_COST );
+		
+		if (Cursor.isMouseOverAbsolute(r) && Cursor.isButtonJustReleased(Cursor.LEFT) &&
+				S.getArmy().getReq() >= UPGRADE_COST && !A.isMaxed()) {
+			S.getArmy().spendRequisition(UPGRADE_COST, 
+					new Vector2(S.getBBox().x + S.getBBox().width/2f, S.getBBox().y + S.getBBox().height));
+			
+			A.addFireRate(0.2f);
+			A.addRange(32);
+			A.addAccuracy(0.02f);
+			A.addStrength(1);
+		}
 		
 		Batch.draw(add_options_bg, r.x, r.y);
 		Batch.draw(add_options, r.x, r.y + yoff);

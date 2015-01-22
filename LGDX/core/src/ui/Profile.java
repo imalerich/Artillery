@@ -72,8 +72,9 @@ public class Profile
 		Batch.draw(MilitaryBase.getLogo(ArmyIndex), 4+STAMPX, ypos+(BG.getHeight()-STAMPY));
 		Batch.draw(close, closerect.x, closerect.y-offsety);
 		
-		ProfileWeapon.draw(Batch, S.getPrimary(), true, 4, ypos+BG.getHeight()-57);
-		ProfileWeapon.draw(Batch, S.getSecondary(), false, 4, ypos+BG.getHeight()-57 - ProfileWeapon.getHeight());
+		MenuBar.setTmpRequisition( S.getArmy().getReq() );
+		ProfileWeapon.draw(Batch, S, S.getPrimary(), true, 4, ypos+BG.getHeight()-57);
+		ProfileWeapon.draw(Batch, S, S.getSecondary(), false, 4, ypos+BG.getHeight()-57 - ProfileWeapon.getHeight());
 		
 		S.drawMugshots(Batch, 10, ypos+(BG.getHeight()-36));
 	}

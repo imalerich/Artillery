@@ -1186,7 +1186,9 @@ public class UserArmy extends Army
 	private void checkReqCosts(Camera Cam)
 	{
 		MenuBar.setRequisition(requisition);
-		MenuBar.setTmpRequisition(requisition);
+		
+		if (!profileactive)
+			MenuBar.setTmpRequisition(requisition);
 		
 		// check for actions that cost requisition
 		if (menuactive) {

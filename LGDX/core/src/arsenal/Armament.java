@@ -10,13 +10,13 @@ public class Armament
 	// generic armament properties
 	private int type;
 	private int range;
-	private int firerate;
+	private float firerate;
 	private int strength;
 	private int speed;
 	private float accuracy;
 	private float angle;
 	
-	public void init(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
+	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
 		if (type != UNITTARGET && type != POINTTARGET)
@@ -55,9 +55,19 @@ public class Armament
 		return range;
 	}
 	
-	public int getFireRate()
+	public void addRange(int R)
+	{
+		range = Math.min(range + R, 1024);
+	}
+	
+	public float getFireRate()
 	{
 		return firerate;
+	}
+	
+	public void addFireRate(float R)
+	{
+		firerate = Math.min(firerate + R, 3f);
 	}
 	
 	public int getStrength()
@@ -65,9 +75,52 @@ public class Armament
 		return strength;
 	}
 	
+	public void setStrength(int S)
+	{
+		strength = S;
+	}
+	
+	public void addStrength(int S)
+	{
+		if (type == Armament.POINTTARGET)
+			strength = Math.min(strength + S, 40);
+		else
+			strength = Math.min(strength + S, 20);
+	}
+	
+	public boolean isMaxed()
+	{
+		if (firerate < 3f)
+			return false;
+		
+		if (type == Armament.POINTTARGET) {
+			if (strength < 40)
+				return false;
+			
+			return true;
+		} else if (type == Armament.UNITTARGET){ 
+			if (strength < 20)
+				return false;
+			
+			// range and accuracy only apply to unit target
+			if (range < 1024)
+				return false;
+
+			if (accuracy < 1f)
+				return false;
+		}
+		
+		return true;
+	}
+	
 	public float getAccuracy()
 	{
 		return accuracy;
+	}
+	
+	public void addAccuracy(float A)
+	{
+		accuracy = Math.min(accuracy + A, 1f);
 	}
 	
 	public int getSpeed()

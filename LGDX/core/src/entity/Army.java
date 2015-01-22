@@ -295,6 +295,11 @@ public abstract class Army
 		return count;
 	}
 	
+	public int getReq()
+	{
+		return requisition;
+	}
+	
 	public void getMouseOver(SelectionStack Stack, Camera Cam, boolean IgnoreFox)
 	{
 		Iterator<Squad> s = squads.iterator();
