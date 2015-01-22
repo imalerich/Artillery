@@ -151,10 +151,10 @@ public class Profile
 		ProfileWeapon.draw(Batch, S, S.getPrimary(), true, 4, ypos+BG.getHeight()-57);
 		ProfileWeapon.draw(Batch, S, S.getSecondary(), false, 4, ypos+BG.getHeight()-57 - ProfileWeapon.getHeight());
 		
-		S.drawMugshots(Batch, 10, ypos+(BG.getHeight()-36));
+		S.drawMugshots(Batch, 12, ypos+(BG.getHeight()-36));
 		
 		int offset = (32+Squad.SPACING)*S.getUnitCount();
-		addrect = new Rectangle(12+offset, ypos+BG.getHeight()-36, ProfileWeapon.add_options.getWidth(), ProfileWeapon.add_options.getHeight());
+		addrect = new Rectangle(14+offset, ypos+BG.getHeight()-36, ProfileWeapon.add_options.getWidth(), ProfileWeapon.add_options.getHeight());
 		
 		offsety = 0;
 		if (Cursor.isMouseOverAbsolute(addrect) && Cursor.isButtonPressed(Cursor.LEFT)) {
