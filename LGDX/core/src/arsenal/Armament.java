@@ -16,6 +16,9 @@ public class Armament
 	private float accuracy;
 	private float angle;
 	
+	public final int upgrade_cost;
+	public final float levelmod;
+	
 	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
@@ -36,12 +39,19 @@ public class Armament
 	
 	public Armament(Armament A)
 	{
+		upgrade_cost = A.upgrade_cost;
+		levelmod = A.levelmod;
+		
 		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy);
 	}
 	
-	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy)
+	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, int UpCost, float LevelMod)
 	{
 		init(Type, Range, FireRate, Strength, Speed, Accuracy);
+		
+		upgrade_cost = UpCost;
+		levelmod = LevelMod;
+		
 	}
 	
 	// getter methods for the properties of this armament

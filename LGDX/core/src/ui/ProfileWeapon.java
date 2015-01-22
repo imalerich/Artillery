@@ -15,9 +15,6 @@ import entity.Squad;
 
 public class ProfileWeapon 
 {
-	// TODO 
-	public static int UPGRADE_COST = 100;
-	
 	private static Texture stamp;
 	private static Texture specs;
 	private static Texture seperator;
@@ -157,17 +154,17 @@ public class ProfileWeapon
 		}
 		
 		if (Cursor.isMouseOverAbsolute(r) && !A.isMaxed())
-			MenuBar.setTmpRequisition( S.getArmy().getReq() - UPGRADE_COST );
+			MenuBar.setTmpRequisition( S.getArmy().getReq() - A.upgrade_cost);
 		
 		if (Cursor.isMouseOverAbsolute(r) && Cursor.isButtonJustReleased(Cursor.LEFT) &&
-				S.getArmy().getReq() >= UPGRADE_COST && !A.isMaxed()) {
-			S.getArmy().spendRequisition(UPGRADE_COST, 
+				S.getArmy().getReq() >= A.upgrade_cost && !A.isMaxed()) {
+			S.getArmy().spendRequisition(A.upgrade_cost, 
 					new Vector2(S.getBBox().x + S.getBBox().width/2f, S.getBBox().y + S.getBBox().height));
 			
-			A.addFireRate(0.2f);
-			A.addRange(32);
-			A.addAccuracy(0.02f);
-			A.addStrength(1);
+			A.addFireRate(0.2f * A.levelmod);
+			A.addRange((int)(32 * A.levelmod));
+			A.addAccuracy(0.02f * A.levelmod);
+			A.addStrength((int)(1 * A.levelmod));
 		}
 		
 		Batch.draw(add_options_bg, r.x, r.y);

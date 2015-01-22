@@ -26,6 +26,9 @@ PRIMARY
 	speed: 800
 	accuracy: 0.9
 
+	upgrade: 100
+	levelmod: 1
+
 END
 
 SECONDARY
@@ -34,5 +37,8 @@ SECONDARY
 	firerate: 1
 	strength: 2
 	speed: 800
+
+	upgrade: 100
+	levelmod: 1
 
 END

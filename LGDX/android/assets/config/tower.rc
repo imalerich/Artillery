@@ -25,4 +25,7 @@ PRIMARY
 	strength: 22
 	speed: 1500
 
+	upgrade: 200
+	levelmod: 1.5
+
 END

@@ -14,7 +14,7 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "#" };
+		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
 	/**
 	 * Default count for a newly generate unit.
@@ -85,6 +85,16 @@ public class ConfigGenerator
 	 * Default requisition bonus;
 	 */
 	public static final int DEFAULT_REQUISITION_BONUS = 50;
+	
+	/**
+	 * Default cost to upgrade a weapon.
+	 */
+	public static final int DEFAULT_UPGRADE_COST = 100;
+	
+	/**
+	 * Default level mod scalar.
+	 */
+	public static final float DEFAULT_LEVELMOD = 1f;
 	
 	/**
 	 * Load a configuration from the specified file.
@@ -235,6 +245,9 @@ public class ConfigGenerator
 		int speed = DEFAULT_ARMAMENT_SPEED;
 		float accuracy = DEFAULT_ARMAMENT_ACCURACY;
 		
+		int upgrade = DEFAULT_UPGRADE_COST;
+		float levelmod = DEFAULT_LEVELMOD;
+		
 		boolean inprimary = false;
 		boolean insegment = false;
 		int linenumber = 0;
@@ -262,7 +275,7 @@ public class ConfigGenerator
 				// end of ARMOR section - add the armor found and reset defaults
 				insegment = false;
 				
-				Armament a = new Armament(type, range, firerate, strength, speed, accuracy);
+				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod);
 				if (inprimary) {
 					Confg.addPrimary(a);
 				} else {
@@ -301,6 +314,12 @@ public class ConfigGenerator
 				continue;
 			} else if (d.param.equals("accuracy:")) {
 				accuracy = LineData.getFloat(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_ACCURACY);
+				continue;
+			} else if (d.param.equals("upgrade:")) {
+				upgrade = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_UPGRADE_COST);
+				continue;
+			} else if (d.param.equals("levelmod:")) {
+				levelmod = LineData.getFloat(Filename, linenumber, d.opt, DEFAULT_LEVELMOD);
 				continue;
 			}
 		}
