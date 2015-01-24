@@ -13,7 +13,8 @@ public class ConfigGenerator
 	/**
 	 * Valid data tokens to be contained within a config file
 	 */
-	public static final String[] TOKENS = { "UNIT", "ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
+	public static final String[] TOKENS = { "UNIT", "POINT", "LANDMINE", "FLAME", 
+		"ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
 		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
 	/**
@@ -297,6 +298,10 @@ public class ConfigGenerator
 					type = Armament.UNITTARGET;
 				} else if (d.opt.equals("POINT")) {
 					type = Armament.POINTTARGET;
+				} else if (d.opt.equals("FLAME")) {
+					type = Armament.FLAMETARGET;
+				} else if (d.opt.equals("LANDMINE")) {
+					type = Armament.LANDMINE;
 				}
 				
 				continue;

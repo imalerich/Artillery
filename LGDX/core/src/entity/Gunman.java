@@ -1,6 +1,7 @@
 package entity;
 
 import terrain.Terrain;
+import arsenal.Armament;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -200,7 +201,12 @@ public class Gunman extends Unit
 		
 		animtime += Gdx.graphics.getDeltaTime();
 		Squad.target.setTime(animtime);
-		Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
-				Cam.getRenderY(pos.y + height/2f + width));
+		
+		if (getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.POINTTARGET)
+			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
+					Cam.getRenderY(pos.y + height/2f + width));
+		else if (getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.LANDMINE)
+			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f - Squad.target.getFrameWidth()/2f), 
+					Cam.getRenderY(pos.y - Squad.target.getFrameHeight()));
 	}
 }

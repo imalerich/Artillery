@@ -6,9 +6,10 @@ public class Armament
 	// constants that define the two possible types of armaments
 	public static final int UNITTARGET = 0;
 	public static final int POINTTARGET = 1;
+	public static final int LANDMINE = 2;
 	
 	// TODO needs implementation
-	public static final int FLAMETARGET = 2;
+	public static final int FLAMETARGET = 3;
 	
 	// generic armament properties
 	private int type;
@@ -25,7 +26,7 @@ public class Armament
 	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
-		if (type != UNITTARGET && type != POINTTARGET)
+		if (type != UNITTARGET && type != POINTTARGET && type != LANDMINE)
 			type = UNITTARGET;
 		
 		range = Range;
@@ -95,7 +96,7 @@ public class Armament
 	
 	public void addStrength(int S)
 	{
-		if (type == Armament.POINTTARGET)
+		if (type != Armament.UNITTARGET)
 			strength = Math.min(strength + S, 40);
 		else
 			strength = Math.min(strength + S, 20);
@@ -106,7 +107,7 @@ public class Armament
 		if (firerate < 3f)
 			return false;
 		
-		if (type == Armament.POINTTARGET) {
+		if (type == Armament.POINTTARGET || type == Armament.LANDMINE) {
 			if (strength < 40)
 				return false;
 			

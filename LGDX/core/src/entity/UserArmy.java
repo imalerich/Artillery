@@ -250,7 +250,24 @@ public class UserArmy extends Army
 			
 			// add secondary weapons to the combat resolver
 			if (squad.getSecondary() != null && squad.isFiring()) {
-				Resolver.addGrenade(squad, squad.getSecondary());
+				switch (squad.getSecondary().getType())
+				{
+				case Armament.POINTTARGET:
+					Resolver.addGrenade(squad, squad.getSecondary());
+					break;
+					
+				case Armament.UNITTARGET:
+					break;
+				
+				case Armament.LANDMINE:
+					squad.addLandMines(getWorld());
+					break;
+					
+				case Armament.FLAMETARGET:
+					break;
+					
+				}
+				
 				continue;
 			}
 		}
@@ -847,12 +864,26 @@ public class UserArmy extends Army
 			return;
 		}
 		
-		if (selected.getPrimary().getType() == Armament.POINTTARGET) {
+		if (selected.getClassification() == Classification.TANK) {
+			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
 			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
 			offensemenu.removeGlyph(ButtonOptions.GRENADER);
-		} else {
+			
+		} else if (selected.getClassification() == Classification.TOWER){
+			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
+			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
+			offensemenu.removeGlyph(ButtonOptions.GRENADER);
+			
+		} else if (selected.getClassification() == Classification.GUNMAN || 
+				selected.getClassification() == Classification.SPECOPS) {
+			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
 			offensemenu.addGlyph(ButtonOptions.GRENADEL);
 			offensemenu.addGlyph(ButtonOptions.GRENADER);
+			
+		} else if (selected.getClassification() == Classification.STEALTHOPS) {
+			offensemenu.addGlyph(ButtonOptions.LANDMINE);
+			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
+			offensemenu.removeGlyph(ButtonOptions.GRENADER);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -894,6 +925,16 @@ public class UserArmy extends Army
 			} else if (selected.getPrimary().getType() == Armament.POINTTARGET) {
 				targetpoint = true;
 			}
+			
+			break;
+			
+		case ButtonOptions.LANDMINE:
+			selected.setFiring(true);
+			
+			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			offensemenu.resetClock();
 			
 			break;
 			

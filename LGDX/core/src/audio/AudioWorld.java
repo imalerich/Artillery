@@ -16,6 +16,9 @@ public class AudioWorld
 	
 	public void playSound(Sound Sfx, float XPos)
 	{
+		if (!Game.SOUND)
+			return;
+		
 		float vol = getVol(XPos);
 		float pan = getPan(XPos);
 		
@@ -24,6 +27,9 @@ public class AudioWorld
 	
 	public void playSound(Sound Sfx, float XPos, float Vol)
 	{
+		if (!Game.SOUND)
+			return;
+		
 		float vol = getVol(XPos);
 		float pan = getPan(XPos);
 		

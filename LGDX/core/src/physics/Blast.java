@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
@@ -41,6 +42,11 @@ public class Blast
 	public int getSourceArmy()
 	{
 		return sourceArmy;
+	}
+	
+	public Circle getBoundingCircle()
+	{
+		return new Circle(pos, radius);
 	}
 	
 	public void update()

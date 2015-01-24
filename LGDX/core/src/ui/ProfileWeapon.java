@@ -25,7 +25,8 @@ public class ProfileWeapon
 	private static int RIFLE = 0;
 	private static int MISSILE = 1;
 	private static int GRENADE = 2;
-	private static int WEAPONCOUNT = 3;
+	private static int LANDMINE = 3;
+	private static int WEAPONCOUNT = 4;
 	private static TextureRegion[] weapons;
 	
 	private static Rectangle add_opt_rect;
@@ -100,7 +101,7 @@ public class ProfileWeapon
 		Batch.draw(specs, XPos+stamp.getWidth()+8, YPos-stamp.getHeight()-2);
 		
 		float str = Math.min( A.getStrength()/20f, 1f );
-		if (A.getType() == Armament.POINTTARGET) {
+		if (A.getType() == Armament.POINTTARGET || A.getType() == Armament.LANDMINE) {
 			str = Math.min( A.getStrength()/40f, 1f );
 		}
 		
@@ -126,7 +127,7 @@ public class ProfileWeapon
 				(int)(settings_bar.getWidth()*acc), (int)settings_bar.getHeight(), false, false);
 		
 		Batch.setColor(0.8588f, 0.788235284f, 0.6941176f, 1f);
-		if (A.getType() == Armament.POINTTARGET) {
+		if (A.getType() == Armament.POINTTARGET || A.getType() == Armament.LANDMINE) {
 			Batch.draw(settings_bar, XPos+stamp.getWidth()+33, YPos-stamp.getHeight()-2 + 21 - 6);
 			Batch.draw(settings_bar, XPos+stamp.getWidth()+33, YPos-stamp.getHeight()-2 + 21 - 18);
 		}
@@ -139,7 +140,9 @@ public class ProfileWeapon
 				index = MISSILE;
 			else
 				index= GRENADE;
-		} else {
+		} else if (A.getType() == Armament.LANDMINE) {
+			index = LANDMINE;
+		} else if (A.getType() == Armament.UNITTARGET) {
 			index = RIFLE;
 		}
 		

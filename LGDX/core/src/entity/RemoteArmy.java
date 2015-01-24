@@ -177,14 +177,21 @@ public class RemoteArmy extends Army
 			FoxHoleMenu.cutRoom(ter, pos);
 			world.addFoxHole(pos);
 			checkForFoxOccupancy(Cam.getPos());
+			return;
 			
 		} else if (r.request.equals("ADDBARRICADE")) {
 			Vector2 pos = new Vector2(r.f0, r.f1);
 			world.addTankBarrier(pos);
+			return;
 			
 		} else if (r.request.equals("ADDTOWER")) {
 			OutpostFlag f = world.getMarker(r.i0);
 			world.getRemoteArmy(r.source).addTower( f.getTower(world, r.i0) );
+			return;
+			
+		} else if (r.request.equals("ADDMINE")) {
+			world.addLandMine(r.f0, r.i0);
+			return;
 			
 		}
 	}

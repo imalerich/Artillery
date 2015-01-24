@@ -26,17 +26,23 @@ public class MainMenu
 	private Texture button;
 	private TextureRegion[] glyphs;
 	private Rectangle[] bbox;
+	private Rectangle backbox;
+	private Rectangle[] sizebox;
 	
 	private Texture loadingbar;
 	private Texture greenbutton;
 	private Texture redbutton;
 	private Texture nullbutton;
 	
+	private Texture lobbyback;
+	private Texture lobbyslot;
+	private Texture lobbyadd;
+	
 	private double time = 0.0;
 	private int lpos = 0;
 	
 	private static final int BUTTONDOWN = 4;
-	private static final int SPACING = 4;
+	private static final int SPACING = 2;
 	
 	private int status = WAITING;
 	private static final int WAITING = 0;
@@ -63,6 +69,15 @@ public class MainMenu
 		if (loadingbar == null)
 			loadingbar = new Texture( Gdx.files.internal("img/menu/network/loadingbar.png") );
 		
+		if (lobbyback == null)
+			lobbyback = new Texture( Gdx.files.internal("img/menu/network/lobby_size.png") );
+		
+		if (lobbyslot == null)
+			lobbyslot = new Texture( Gdx.files.internal("img/menu/network/lobby_slot.png") );
+		
+		if (lobbyadd == null)
+			lobbyadd = new Texture( Gdx.files.internal("img/menu/network/add_lobbysize.png") );
+		
 		if (glyphs == null)
 		{
 			Texture tmp = new Texture( Gdx.files.internal("img/menu/network/glyphs.png") );
@@ -70,6 +85,7 @@ public class MainMenu
 		}
 		
 		bbox = new Rectangle[2];
+		sizebox = new Rectangle[4];
 	}
 	
 	public GameWorld update()
@@ -145,6 +161,22 @@ public class MainMenu
 
 			Batch.draw(button, bbox[i].x, bbox[i].y-offset);
 			Batch.draw(glyphs[i], bbox[i].x, bbox[i].y-offset);
+		}
+		
+		Batch.draw(lobbyback, backbox.x, backbox.y);
+		for (int i=0; i<sizebox.length; i++) {
+			float offsetx = lobbyslot.getWidth()/2f - lobbyadd.getWidth()/2f;
+			float offsety = lobbyslot.getHeight()/2f - lobbyadd.getHeight()/2f;
+			if (Cursor.isMouseOver(sizebox[i], cam.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
+				offsety -= 2;
+			if (Cursor.isMouseOver(sizebox[i], cam.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
+				network.setLobbySize(i+1);
+			
+			Batch.draw(lobbyadd, sizebox[i].x + offsetx, sizebox[i].y + offsety);
+		}
+		
+		for (int i=0; i<network.getLobbySize(); i++) {
+			Batch.draw(lobbyslot, sizebox[i].x, sizebox[i].y);
 		}
 	}
 	
@@ -236,6 +268,12 @@ public class MainMenu
 		
 		bbox[0] = new Rectangle(midx-width-SPACING, midy-height/2f, width, height);
 		bbox[1] = new Rectangle(midx+SPACING, midy-height/2f, width, height);
+		
+		backbox = new Rectangle(midx-lobbyback.getWidth()/2f, midy - height/2f - 3f - lobbyback.getHeight(), lobbyback.getWidth(), lobbyback.getHeight());
+		sizebox[0] = new Rectangle(backbox.x + 2, backbox.y + lobbyslot.getHeight() + 7, lobbyslot.getWidth(), lobbyslot.getHeight());
+		sizebox[1] = new Rectangle(backbox.x + lobbyslot.getWidth() + 3, backbox.y + lobbyslot.getHeight() + 7, lobbyslot.getWidth(), lobbyslot.getHeight());
+		sizebox[2] = new Rectangle(backbox.x + 2, backbox.y + 6, lobbyslot.getWidth(), lobbyslot.getHeight());
+		sizebox[3] = new Rectangle(backbox.x + lobbyslot.getWidth() + 3, backbox.y + 6, lobbyslot.getWidth(), lobbyslot.getHeight());
 	}
 	
 	private void setAsHost()

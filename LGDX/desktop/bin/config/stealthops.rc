@@ -33,7 +33,7 @@ END
 
 SECONDARY
 
-	type: POINT
+	type: LANDMINE 
 	firerate: 1
 	strength: 2
 	speed: 800

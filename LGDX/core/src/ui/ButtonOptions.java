@@ -22,7 +22,8 @@ public class ButtonOptions
 	public static final int ATTACK			= 5;
 	public static final int GRENADEL		= 6;
 	public static final int GRENADER		= 7;
-	public static final int STOP			= 8;
+	public static final int LANDMINE		= 8;
+	public static final int STOP			= 9;
 	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;

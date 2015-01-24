@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
@@ -63,12 +64,14 @@ public class GameWorld
 	private Vector<FoxHole> foxholes;
 	private Vector<TankBarrier> barriers;
 	private Vector<Blast> blasts;
+	private Vector<LandMine> mines;
 	
 	public GameWorld(Terrain Ter)
 	{
 		ter = Ter;
 		
 		reqindicators = new Vector<ReqIndicator>();
+		mines = new Vector<LandMine>();
 		
 		currentstage = MOVESELECT;
 		particles = new Particles();
@@ -97,6 +100,11 @@ public class GameWorld
 	public void addReqIndicator(Vector2 Pos, int Value)
 	{
 		reqindicators.add( new ReqIndicator(Pos, new Vector2(0f, 94), Value, 2f));
+	}
+	
+	public void addLandMine(float XPos, int SourceArmy)
+	{
+		mines.add( new LandMine(XPos, ter, this, SourceArmy) );
 	}
 	
 	public void release()
@@ -333,6 +341,12 @@ public class GameWorld
 		while (b.hasNext())
 			b.next().update();
 		
+		Iterator<LandMine> l = mines.iterator();
+		while (l.hasNext()) {
+			if (l.next().update())
+				l.remove();
+		}
+		
 		Iterator<Blast> bl = blasts.iterator();
 		while (bl.hasNext()) {
 			Blast blast = bl.next();
@@ -350,6 +364,13 @@ public class GameWorld
 			if (!req.isAlive())
 				r.remove();
 		}
+	}
+	
+	public void checkLandMines(Rectangle BBox, int Army)
+	{
+		Iterator<LandMine> l = mines.iterator();
+		while (l.hasNext())
+			l.next().checkUnitMove(BBox, Army);
 	}
 	
 	public void updateNullTanks()
@@ -429,6 +450,10 @@ public class GameWorld
 		while (e.hasNext())
 			e.next().procBlasts(B);
 		
+		Iterator<LandMine> l = mines.iterator();
+		while (l.hasNext())
+			l.next().procBlast(B);
+		
 		procFoxBlast(B);
 		
 		ter.cutHole((int)B.pos.x, Game.WORLDH - (int)B.pos.y, (int)B.radius);
@@ -488,6 +513,14 @@ public class GameWorld
 			userArmy.drawTargetPos(Batch, cam);
 		} else if (currentstage == ATTACKSELECT) {
 			userArmy.drawTargetSquad(Batch, cam);
+		}
+	}
+	
+	private void drawMines(SpriteBatch Batch)
+	{
+		Iterator<LandMine> l = mines.iterator();
+		while (l.hasNext()) {
+			l.next().draw(Batch, cam, userArmy.getConnection());
 		}
 	}
 	
@@ -580,6 +613,7 @@ public class GameWorld
 			holes.next().render(Batch, cam);
 	
 		drawNullTanks(Batch);
+		drawMines(Batch);
 		
 		/*
 		 * Draw the terrain, weather and world objects.

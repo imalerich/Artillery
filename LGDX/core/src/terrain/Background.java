@@ -14,8 +14,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
-public class Background {
+public class Background 
+{
 	public static final Color FGCOLOR = new Color(99/255f, 33/255f, 28/255f, 1f);
+	//public static final Color FGCOLOR = new Color(8/255f, 2/255f, 26/255f, 1f);
 	//public static final Color FGCOLOR = new Color(66/255f, 108/255f, 160/255f, 1f);
 	public static final Color GRASS = Terrain.getColor();
 	
@@ -93,7 +95,7 @@ public class Background {
 		p = new Particles();
 		
 		l0 = new BGLayer("img/bg/layer0.png", new Color(GRASS.r * 1.4f, GRASS.g * 1.4f, GRASS.b * 1.4f, 1f), 0.5f, 0f);
-		l1 = new BGLayer("img/bg/layer1.png", new Color(GRASS.r * 1.6f, GRASS.g * 1.6f, GRASS.b * 1.6f, 1f), 0.4f, 0f);
+		l1 = new BGLayer("img/bg/layer1.png", new Color(GRASS.r * 1.6f, GRASS.g * 1.6f, GRASS.b * 1.6f, 1f), 0.35f, 0f);
 		l2 = new BGLayer("img/bg/layer2.png", new Color(GRASS.r * 1.8f, GRASS.g * 1.8f, GRASS.b * 1.8f, 1f), 0.2f, 0f);
 		l3 = new BGLayer("img/bg/layer3.png", new Color(GRASS.r * 0.8f, GRASS.g * 0.8f, GRASS.b * 0.8f, 1f), 0.12f, 0f);
 		
@@ -119,7 +121,9 @@ public class Background {
 		if (lightlive == -1) {
 			if (lightclock > nextlight) {
 				Cam.addShakeIntensity( (float)(Math.random()*1f) + 1f );
-				thunder.play( (float)(Math.random()*0.2f + 0.1f) );
+				
+				if (Game.SOUND)
+					thunder.play( (float)(Math.random()*0.2f + 0.1f) );
 				lightlive = (int)(Math.random()*2);
 				lightclock = 0f;
 			}

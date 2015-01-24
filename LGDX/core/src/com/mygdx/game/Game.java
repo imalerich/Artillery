@@ -11,6 +11,7 @@ import physics.Blast;
 import physics.CombatPacket;
 import physics.GameWorld;
 import physics.Grenade;
+import physics.LandMine;
 import physics.Missile;
 import terrain.Background;
 import terrain.FogOfWar;
@@ -44,6 +45,8 @@ public class Game extends ApplicationAdapter
 	 */
 	private static final int MINHEIGHT = 400;
 	private static final int MAXHEIGHT = 1200;
+	
+	public static boolean SOUND = false;
 	
 	public static int WINDOWW =	960;
 	public static int WINDOWH = 1200;
@@ -245,6 +248,7 @@ public class Game extends ApplicationAdapter
 		RadioTower.init();
 		ProfileWeapon.init();
 		ReqIndicator.init();
+		LandMine.init();
 		
 		initMusic();
 	}
@@ -269,6 +273,7 @@ public class Game extends ApplicationAdapter
 		OutpostFlag.release();
 		ReqIndicator.release();
 		ProfileWeapon.release();
+		LandMine.release();
 		RadioTower.dispose();
 		
 		if (physics != null)
@@ -277,8 +282,10 @@ public class Game extends ApplicationAdapter
 	
 	public void initMusic()
 	{
-		Sound sound = Gdx.audio.newSound(Gdx.files.internal("aud/sfx/rain_thunder_loop.wav"));
-		long id = sound.play(1f);
-		sound.setLooping(id, true);
+		if (SOUND) {
+			Sound sound = Gdx.audio.newSound(Gdx.files.internal("aud/sfx/rain_thunder_loop.wav"));
+			long id = sound.play(1f);
+			sound.setLooping(id, true);
+		}
 	}
 }

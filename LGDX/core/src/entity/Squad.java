@@ -166,6 +166,23 @@ public class Squad
 		barrierpos = null;
 	}
 	
+	public void addLandMines(GameWorld World)
+	{
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			float xpos = unit.getPos().x + unit.getWidth()/2f;
+			World.addLandMine(xpos, getArmy().getConnection());
+		
+			Response r = new Response();
+			r.source = getArmy().getConnection();
+			r.request = "ADDMINE";
+			r.f0 = xpos;
+			r.i0 = getArmy().getConnection();
+			getArmy().getNetwork().getClient().sendTCP(r);
+		}
+	}
+	
 	public boolean doAddFox()
 	{
 		return addfox;
@@ -702,6 +719,7 @@ public class Squad
 	{
 		// calculate the bounding box
 		calcBoundingBox();
+		getArmy().getWorld().checkLandMines(bbox, getArmy().getConnection());
 		
 		// for each unit in this squad
 		Iterator<Unit> i = units.iterator();
