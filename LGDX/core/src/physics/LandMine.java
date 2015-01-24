@@ -88,7 +88,7 @@ public class LandMine
 	
 	public void detonate()
 	{
-		world.procBlast( new Blast(new Vector2(pos.x + tex.getWidth()/2f, pos.y + tex.getHeight()/2f), 32, strength, army) );
+		world.procBlast( new Blast(new Vector2(pos.x + tex.getWidth()/2f, pos.y + tex.getHeight()/2f), 24, strength, army) );
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam, int UserArmy)

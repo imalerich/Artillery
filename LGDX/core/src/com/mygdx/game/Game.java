@@ -15,7 +15,9 @@ import physics.LandMine;
 import physics.Missile;
 import terrain.Background;
 import terrain.FogOfWar;
+import terrain.Sky;
 import terrain.Terrain;
+import terrain.TimeOfDay;
 import ui.MenuBar;
 import ui.OutpostFlag;
 import ui.PowerButtons;
@@ -28,7 +30,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -106,6 +107,7 @@ public class Game extends ApplicationAdapter
 	@Override
 	public void render() 
 	{
+		TimeOfDay.update();
 		FrameRate.update();
 		Cursor.update();
 		updateZoom();
@@ -220,9 +222,6 @@ public class Game extends ApplicationAdapter
 	
 	public void init()
 	{
-		//Terrain.setColor( new Color(125/255f, 138/255f, 107/255f, 1f));
-		Terrain.setColor( new Color(54/255f, 47/255f, 43/255f, 1f));
-		
 		Tank.init();
 		Gunman.init();
 		Squad.init();
@@ -249,12 +248,14 @@ public class Game extends ApplicationAdapter
 		ProfileWeapon.init();
 		ReqIndicator.init();
 		LandMine.init();
+		Sky.init();
 		
 		initMusic();
 	}
 	
 	public void release()
 	{
+		RadioTower.dispose();
 		Squad.release();
 		Shaders.release();
 		MilitaryBase.release();
@@ -274,7 +275,7 @@ public class Game extends ApplicationAdapter
 		ReqIndicator.release();
 		ProfileWeapon.release();
 		LandMine.release();
-		RadioTower.dispose();
+		Sky.release();
 		
 		if (physics != null)
 			physics.release();

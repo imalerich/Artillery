@@ -117,7 +117,7 @@ public class RadioTower extends Unit
 	private void drawLogo(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the flags logo
-		Batch.setColor(1.0f, 1.0f, 1.0f, 0.4f);
+		Batch.setColor(1.0f, 1.0f, 1.0f, 0.1f);
 		Batch.draw(MilitaryBase.logos[logo], Cam.getRenderX(6+pos.x+MilitaryBase.LOGOOFFSETX),
 				Cam.getRenderY(pos.y+MilitaryBase.LOGOOFFSETY));
 		Batch.setColor(Color.WHITE);

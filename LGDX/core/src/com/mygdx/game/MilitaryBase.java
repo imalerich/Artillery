@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MilitaryBase 
 {
-	public static final Color BGCOLOR = new Color(112/255f, 107/255f, 98/255f, 1f);
+	public static Color BGCOLOR = new Color(112/255f, 107/255f, 98/255f, 1f);
 	//public static final Color BGCOLOR = Terrain.getColor(); //new Color(56/255f, 17/255f, 14/255f, 1f);
 	
 	public static final int LOGOCOUNT = 4;

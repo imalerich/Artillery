@@ -15,14 +15,17 @@ public class BGLayer
 	private final float ratio;
 	private float xpos = 0f;
 	private float xspeed;
-	private Color col;
+	private Color day;
+	private Color night;
+	private boolean usenight = false;
 	
 	public BGLayer(String Filename, Color C, float Ratio, float XSpeed)
 	{
 		tex = new Texture( Gdx.files.internal(Filename) );
 		ratio = Ratio;
 		xspeed = XSpeed;
-		col = C;
+		day = C;
+		night = C;
 		
 		if (fill == null) {
 			Pixmap tmp = new Pixmap(Game.SCREENW, Game.WORLDH, Pixmap.Format.RGB888);
@@ -31,6 +34,12 @@ public class BGLayer
 			fill = new Texture(tmp);
 			tmp.dispose();
 		}
+	}
+	
+	public void setNightColor(Color C)
+	{
+		usenight = true;
+		night = C;
 	}
 	
 	public void release()
@@ -56,6 +65,17 @@ public class BGLayer
 		return xpos;
 	}
 	
+	public Color getColor()
+	{
+		return day;
+	}
+	
+	public void setAlpha(float A)
+	{
+		day.a = A;
+		night.a = A;
+	}
+	
 	public void update( Camera Cam)
 	{
 		xpos -= Cam.getXDistMoved() * ratio;
@@ -66,11 +86,31 @@ public class BGLayer
 			xpos += tex.getWidth();
 	}
 	
+	private void setColor(SpriteBatch Batch)
+	{
+		Color c = new Color(day);
+		
+		if (usenight) {
+			if (TimeOfDay.isNight())
+				c = new Color(night);
+			else if (TimeOfDay.isTrans()) {
+				float d = TimeOfDay.getTrans();
+				float n = 1f - d;
+			
+				c.r = c.r*d + night.r*n;
+				c.g = c.g*d + night.g*n;
+				c.b = c.b*d + night.b*n;
+			}
+		}
+		
+		Batch.setColor(c);
+	}
+	
 	public void draw(SpriteBatch Batch, Camera Cam)
 	{
 		float ypos = Cam.getRenderY( Game.WORLDH - tex.getHeight() );
 		
-		Batch.setColor(col);
+		setColor(Batch);
 		Batch.draw(tex, xpos-tex.getWidth()*2f, ypos);
 		Batch.draw(tex, xpos-tex.getWidth(), ypos);
 		Batch.draw(tex, xpos, ypos);

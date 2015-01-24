@@ -123,7 +123,7 @@ public abstract class Army
 			s.setBarrelSrc( new Vector2(Tower.width/2f, 136f) );
 			s.setTargetX(-1);
 
-			addSquad(s);
+			insertSquad(s);
 			t.remove();
 		}
 	}
@@ -268,6 +268,15 @@ public abstract class Army
 		squadid++;
 		
 		squads.add(Add);
+	}
+	
+	public void insertSquad(Squad Add)
+	{
+		// set the id for this squad
+		Add.setID(squadid);;
+		squadid++;
+		
+		squads.add(0, Add);
 	}
 	
 	public Squad getSquad(int ID)

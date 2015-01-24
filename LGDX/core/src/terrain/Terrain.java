@@ -116,7 +116,7 @@ public class Terrain
 		
 		// generate the texture
 		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
-		tmp.setColor( col );
+		tmp.setColor( Color.WHITE );
 		tmp.fill();
 		tex = new Texture(tmp);
 		tmp.dispose();
@@ -626,7 +626,9 @@ public class Terrain
 		// render the texture
 		Gdx.gl.glColorMask(true, true, true, true);
 		Batch.setBlendFunction(GL20.GL_DST_ALPHA, GL20.GL_ONE_MINUS_DST_ALPHA);
+		Batch.setColor( col );
 		Batch.draw(tex, 0, 0);
+		Batch.setColor( Color.WHITE );
 		Batch.flush();
 		
 		// reset the blend function
