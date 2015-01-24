@@ -78,7 +78,7 @@ public class BGLayer
 		Batch.draw(tex, xpos+tex.getWidth()*2f, ypos);
 		
 		for (int x=0; x<=(Game.SCREENW/fill.getWidth()); x++)
-			Batch.draw(fill, x*fill.getWidth(), Cam.getRenderY( Game.WORLDH - tex.getHeight() - fill.getHeight() ));
+			Batch.draw(fill, x*fill.getWidth(), Cam.getRenderY( Game.WORLDH - tex.getHeight() - fill.getHeight()));
 		
 		Batch.setColor(Color.WHITE);
 	}

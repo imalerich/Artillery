@@ -1,7 +1,6 @@
 package menu;
 
 import network.NetworkManager;
-import particles.Weather;
 import physics.GameWorld;
 import terrain.Background;
 import terrain.Terrain;
@@ -14,6 +13,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
@@ -22,6 +22,7 @@ public class MainMenu
 {
 	private NetworkManager network;
 	private Camera cam;
+	private Camera tmp;
 	
 	private Texture button;
 	private TextureRegion[] glyphs;
@@ -53,6 +54,7 @@ public class MainMenu
 	{
 		network = Network;
 		cam = new Camera();
+		tmp = new Camera();
 		
 		if (button == null)
 			button = new Texture( Gdx.files.internal("img/ui/indicators/button.png") );
@@ -112,7 +114,7 @@ public class MainMenu
 		calcBBox();
 		int selected = -1;
 		for (int i=0; i<bbox.length; i++) {
-			if (Cursor.isMouseOver(bbox[i], cam.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
+			if (Cursor.isMouseOver(bbox[i], tmp.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
 				selected = i;
 		}
 
@@ -137,7 +139,11 @@ public class MainMenu
 	{
 		Gdx.gl.glClearColor(Background.FGCOLOR.r, Background.FGCOLOR.g, Background.FGCOLOR.b, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Weather.draw(Batch, cam);
+		//Weather.draw(Batch, cam);
+		cam.setPos( new Vector2(cam.getPos().x, Game.WORLDH - Game.SCREENH) );
+		cam.moveHorizontal( 64 * Gdx.graphics.getDeltaTime() );
+		Background.update(cam);
+		Background.drawBG(Batch, cam);
 		
 		if (status == WAITING) {
 			drawWaiting(Batch);
@@ -156,7 +162,7 @@ public class MainMenu
 	{
 		for (int i=0; i<bbox.length; i++) {
 			int offset = 0;
-			if (Cursor.isMouseOver(bbox[i], cam.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
+			if (Cursor.isMouseOver(bbox[i], tmp.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
 				offset = BUTTONDOWN;
 
 			Batch.draw(button, bbox[i].x, bbox[i].y-offset);
@@ -167,9 +173,9 @@ public class MainMenu
 		for (int i=0; i<sizebox.length; i++) {
 			float offsetx = lobbyslot.getWidth()/2f - lobbyadd.getWidth()/2f;
 			float offsety = lobbyslot.getHeight()/2f - lobbyadd.getHeight()/2f;
-			if (Cursor.isMouseOver(sizebox[i], cam.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
+			if (Cursor.isMouseOver(sizebox[i], tmp.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
 				offsety -= 2;
-			if (Cursor.isMouseOver(sizebox[i], cam.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
+			if (Cursor.isMouseOver(sizebox[i], tmp.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
 				network.setLobbySize(i+1);
 			
 			Batch.draw(lobbyadd, sizebox[i].x + offsetx, sizebox[i].y + offsety);

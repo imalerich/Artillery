@@ -13,15 +13,16 @@ import com.mygdx.game.Game;
 
 public class LandMine 
 {
-	private static final float DELAY = 0.2f;
 	private static Texture tex;
 	private final Terrain ter;
 	private final GameWorld world;
 	private final int army;
+	private final int strength;
 	
 	private Rectangle bbox;
 	private Vector2 pos;
 	private float initialY;
+	private float delay = 0.1f;
 	
 	private float timer = 0f;
 	private boolean detonate = false;
@@ -38,7 +39,7 @@ public class LandMine
 			tex.dispose();
 	}
 	
-	public LandMine(float XPos, Terrain Ter, GameWorld World, int Army)
+	public LandMine(float XPos, Terrain Ter, GameWorld World, int Army, int Strength)
 	{
 		pos = new Vector2(XPos, Game.WORLDH - Ter.getHeight( (int)XPos ));
 		pos.x -= tex.getWidth()/2f;
@@ -47,6 +48,7 @@ public class LandMine
 		ter = Ter;
 		army = Army;
 		world = World;
+		strength = Strength;
 		
 		bbox = new Rectangle(pos.x, pos.y - tex.getWidth()/2f, tex.getWidth(), tex.getWidth());
 	}
@@ -56,7 +58,7 @@ public class LandMine
 		if (detonate) {
 			timer += Gdx.graphics.getDeltaTime();
 			
-			if (timer > DELAY) {
+			if (timer > delay) {
 				detonate();
 				return true;
 			}
@@ -70,8 +72,10 @@ public class LandMine
 		if (Army == army)
 			return;
 		
-		if (BBox.contains(bbox) || BBox.overlaps(bbox))
+		if (BBox.contains(bbox) || BBox.overlaps(bbox)) {
 			detonate = true;
+			delay = 0.4f;
+		}
 	}
 	
 	public void procBlast(Blast B)
@@ -84,7 +88,7 @@ public class LandMine
 	
 	public void detonate()
 	{
-		world.procBlast( new Blast(new Vector2(pos.x + tex.getWidth()/2f, pos.y + tex.getHeight()/2f), 16, 4, army) );
+		world.procBlast( new Blast(new Vector2(pos.x + tex.getWidth()/2f, pos.y + tex.getHeight()/2f), 32, strength, army) );
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam, int UserArmy)

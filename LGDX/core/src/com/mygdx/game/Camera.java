@@ -197,9 +197,12 @@ public class Camera
 		else if (pos.x > worldmax.x)
 			pos.x = worldmin.x;
 		
-		if (pos.y < worldmin.y)
+		if (pos.y < worldmin.y) {
 			pos.y = worldmin.y;
-		else if (pos.y > worldmax.y - Game.SCREENH)
+			ydist = 0f;
+		} else if (pos.y > worldmax.y - Game.SCREENH) {
 			pos.y = worldmax.y - Game.SCREENH;
+			ydist = 0f;
+		}
 	}
 }

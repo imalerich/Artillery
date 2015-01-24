@@ -650,23 +650,7 @@ public class UserArmy extends Army
 		{
 		case ButtonOptions.STOP:
 			// leave the menu
-			selected.setTargetX(-1);
-			
-			Vector2 p = new Vector2(selected.getBBox().x + selected.getBBox().width/2f, selected.getBBox().y + selected.getBBox().height);
-			if (selected.doAddFox()) {
-				selected.addFoxOnFinishMove(null, false);
-				addRequisition(FoxHole.REQCOST, p);
-			} 
-			
-			if (selected.doAddBarrier()) {
-				selected.addBarrierOnFinishedMove(null, false);
-				addRequisition(TankBarrier.REQCOST, p);
-			}
-			
-			if (selected.doAddTower()) {
-				selected.addOutpostOnFinishedMove(null, false);
-				addRequisition(OutpostFlag.REQCOST, p);
-			}
+			checkSelectedStop();
 			
 			// tell all clients which squad is moving
 			Response r = new Response();
@@ -684,6 +668,7 @@ public class UserArmy extends Army
 
 		case ButtonOptions.MOVE:
 			// set the movement
+			checkSelectedStop();
 			moveactive = true;
 			moveselect.setPos((int)selected.getBoundingBox().x, (int)selected.getBoundingBox().width);
 			moveselect.setMaxDist(selected.getMoveDist());
@@ -695,6 +680,7 @@ public class UserArmy extends Army
 			break;
 			
 		case ButtonOptions.MOVEFOXHOLE:
+			checkSelectedStop();
 			if (requisition - FoxHole.REQCOST >= 0) {
 				foxselect.setSelected(selected);
 				foxactive = true;
@@ -707,6 +693,7 @@ public class UserArmy extends Army
 			break;
 			
 		case ButtonOptions.MOVETANKTRAP:
+			checkSelectedStop();
 			if (requisition - TankBarrier.REQCOST >= 0) {
 				barrierselect.setSelected(selected);
 				barricadeactive = true;
@@ -719,6 +706,8 @@ public class UserArmy extends Army
 			break;
 			
 		case ButtonOptions.TOWER:
+			checkSelectedStop();
+			
 			if (requisition - OutpostFlag.REQCOST >= 0) {
 				selecttower = true;
 			}
@@ -742,6 +731,29 @@ public class UserArmy extends Army
 
 		default:
 			break;
+		}
+	}
+	
+	private void checkSelectedStop()
+	{
+		if (selected == null)
+			return;
+		
+		selected.setTargetX(-1);
+		Vector2 p = new Vector2(selected.getBBox().x + selected.getBBox().width/2f, selected.getBBox().y + selected.getBBox().height);
+		if (selected.doAddFox()) {
+			selected.addFoxOnFinishMove(null, false);
+			addRequisition(FoxHole.REQCOST, p);
+		} 
+
+		if (selected.doAddBarrier()) {
+			selected.addBarrierOnFinishedMove(null, false);
+			addRequisition(TankBarrier.REQCOST, p);
+		}
+
+		if (selected.doAddTower()) {
+			selected.addOutpostOnFinishedMove(null, false);
+			addRequisition(OutpostFlag.REQCOST, p);
 		}
 	}
 	
@@ -778,6 +790,7 @@ public class UserArmy extends Army
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			
 			barrierselect.setSelectedTarget(selected);
 			float xpos = barrierselect.getBBox().x;
 			float ypos = Game.WORLDH - ter.getHeight((int)xpos) + TankBarrier.TANKBARRIER.getHeight();

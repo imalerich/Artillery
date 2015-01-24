@@ -172,13 +172,14 @@ public class Squad
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			float xpos = unit.getPos().x + unit.getWidth()/2f;
-			World.addLandMine(xpos, getArmy().getConnection());
+			World.addLandMine(xpos, getArmy().getConnection(), secondary.getStrength());
 		
 			Response r = new Response();
 			r.source = getArmy().getConnection();
 			r.request = "ADDMINE";
 			r.f0 = xpos;
 			r.i0 = getArmy().getConnection();
+			r.i1 = secondary.getStrength();
 			getArmy().getNetwork().getClient().sendTCP(r);
 		}
 	}

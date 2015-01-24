@@ -190,7 +190,7 @@ public class RemoteArmy extends Army
 			return;
 			
 		} else if (r.request.equals("ADDMINE")) {
-			world.addLandMine(r.f0, r.i0);
+			world.addLandMine(r.f0, r.i0, r.i1);
 			return;
 			
 		}

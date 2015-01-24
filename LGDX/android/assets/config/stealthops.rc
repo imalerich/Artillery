@@ -35,7 +35,7 @@ SECONDARY
 
 	type: LANDMINE 
 	firerate: 1
-	strength: 2
+	strength: 5
 	speed: 800
 
 	upgrade: 100

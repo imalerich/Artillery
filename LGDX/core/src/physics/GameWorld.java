@@ -94,7 +94,7 @@ public class GameWorld
 		cam = new Camera();
 		cam.setWorldMin( new Vector2(0.0f, 0.0f) );
 		cam.setWorldMax( new Vector2(Game.WORLDW, Game.WORLDH) );
-		cam.setPos( new Vector2(0, ter.getHeight(0) - Game.SCREENH/2) );
+		cam.setPos( new Vector2(0, Game.WORLDH - Game.SCREENH) );
 	}
 	
 	public void addReqIndicator(Vector2 Pos, int Value)
@@ -102,9 +102,9 @@ public class GameWorld
 		reqindicators.add( new ReqIndicator(Pos, new Vector2(0f, 94), Value, 2f));
 	}
 	
-	public void addLandMine(float XPos, int SourceArmy)
+	public void addLandMine(float XPos, int SourceArmy, int Strength)
 	{
-		mines.add( new LandMine(XPos, ter, this, SourceArmy) );
+		mines.add( new LandMine(XPos, ter, this, SourceArmy, Strength) );
 	}
 	
 	public void release()
