@@ -36,7 +36,7 @@ public class Terrain
 	private int height;
 	private int minlevel;
 	
-	// base locatiosn (terrain underneath is invulnerable)
+	// base locations (terrain underneath is invulnerable)
 	private Rectangle[] baseregions;
 	
 	// clocks

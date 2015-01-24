@@ -166,6 +166,21 @@ public class Squad
 		barrierpos = null;
 	}
 	
+	public boolean doAddFox()
+	{
+		return addfox;
+	}
+	
+	public boolean doAddTower()
+	{
+		return addoutpost;
+	}
+	
+	public boolean doAddBarrier()
+	{
+		return addbarrier;
+	}
+	
 	public Classification getClassification()
 	{
 		return classification;
@@ -257,21 +272,21 @@ public class Squad
 		}
 	}
 	
-	public void addFoxOnFinishMove(Vector2 Pos)
+	public void addFoxOnFinishMove(Vector2 Pos, boolean S)
 	{
-		addfox = true;
+		addfox = S;
 		foxpos = Pos;
 	}
 	
-	public void addOutpostOnFinishedMove(OutpostFlag Outpost)
+	public void addOutpostOnFinishedMove(OutpostFlag Outpost, boolean S)
 	{
-		addoutpost = true;
+		addoutpost = S;
 		outpost = Outpost;
 	}
 	
-	public void addBarrierOnFinishedMove(Vector<Vector2> Pos)
+	public void addBarrierOnFinishedMove(Vector<Vector2> Pos, boolean S)
 	{
-		addbarrier = true;
+		addbarrier = S;
 		barrierpos = Pos;
 	}
 	

@@ -75,7 +75,7 @@ public class TankBarrierMenu
 		
 		Selected.getArmy().getNetwork().getClient().sendTCP(r);
 		Selected.setTargetX(xpos);
-		Selected.addBarrierOnFinishedMove(pos);
+		Selected.addBarrierOnFinishedMove(pos, true);
 	}
 	
 	public void update(Camera Cam)

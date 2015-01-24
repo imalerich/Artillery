@@ -56,7 +56,7 @@ public class FoxHoleMenu
 		
 		Selected.getArmy().getNetwork().getClient().sendTCP(r);
 		Selected.setTargetX(xpos);
-		Selected.addFoxOnFinishMove(new Vector2(pos));
+		Selected.addFoxOnFinishMove(new Vector2(pos), true);
 	}
 	
 	public boolean isPosValid()

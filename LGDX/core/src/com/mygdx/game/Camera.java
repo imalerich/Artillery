@@ -20,6 +20,9 @@ public class Camera
 	private float rumble = 0f;
 	private double rumbletime = 0f;
 	
+	private float xdist = 0f;
+	private float ydist = 0f;
+	
 	public Camera()
 	{
 		kicktarget = new Vector2();
@@ -57,6 +60,9 @@ public class Camera
 	
 	public void update()
 	{
+		xdist = 0f;
+		ydist = 0f;
+		
 		// update the camera shake
 		shaketime += Gdx.graphics.getDeltaTime();
 		shakeintensity -= Math.pow(shaketime, 2f);
@@ -126,7 +132,7 @@ public class Camera
 	public float getRenderX(float XPos)
 	{
 		float xpos = XPos;
-		if (getPos().x > Game.WORLDW/2 && XPos < Game.SCREENW)
+		if (getPos().x> Game.WORLDW/2 && XPos < Game.SCREENW)
 			xpos += Game.WORLDW;
 		
 		return xpos - getPos().x;
@@ -162,14 +168,26 @@ public class Camera
 	
 	public void moveHorizontal(float Dist)
 	{
+		xdist = Dist;
 		pos.x += Dist;
 		validatePos();
 	}
 	
 	public void moveVertical(float Dist)
 	{
+		ydist = Dist;
 		pos.y += Dist;
 		validatePos();
+	}
+	
+	public float getXDistMoved()
+	{
+		return xdist;
+	}
+	
+	public float getYDistMoved()
+	{
+		return ydist;
 	}
 	
 	private void validatePos()

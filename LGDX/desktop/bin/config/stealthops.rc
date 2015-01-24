@@ -1,0 +1,44 @@
+ # contains the settings for a spec ops troop
+
+UNIT
+
+ 	count: 5
+	speed: 160
+	health: 16
+	reqcost: 500
+	reqbonus: 50
+
+END
+
+ARMOR
+
+	health: 8
+	strength: 8
+
+END
+
+PRIMARY
+
+	type: UNIT
+	range: 384
+	firerate: 2
+	strength: 10
+	speed: 800
+	accuracy: 0.66
+
+	upgrade: 100
+	levelmod: 1
+
+END
+
+SECONDARY
+
+	type: POINT
+	firerate: 1
+	strength: 2
+	speed: 800
+
+	upgrade: 100
+	levelmod: 1
+
+END

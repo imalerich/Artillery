@@ -8,9 +8,9 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
 public class Weather {
-	private static final Color COLOR = new Color(1f, 1f, 1f, 0.2f);
-	private static final int SPEEDY = 16;
-	private static final int SPEEDX = 8;
+	private static final Color COLOR = new Color(1f, 1f, 1f, 0.1f);
+	private static final int SPEEDY = 64;
+	private static final int SPEEDX = -32;
 	
 	private static Texture tex;
 	private static float offsety = 0;
@@ -40,8 +40,8 @@ public class Weather {
 	    float camoff =  cam.getPos().x % tex.getWidth();
 	    
     
-	    for (int i=0; i<Game.SCREENW/tex.getWidth() + 3; i++) {
-	        for (int j=-1; j<Game.SCREENH/tex.getHeight() +  2; j++) {
+	    for (int i=-2; i<=Game.SCREENW/tex.getWidth() + 3; i++) {
+	        for (int j=-2; j<=Game.SCREENH/tex.getHeight() +  2; j++) {
 	            Batch.draw(tex, i*tex.getWidth() + offsetx - camoff, j*tex.getHeight() + offsety);
 	            
 	        }
@@ -57,5 +57,8 @@ public class Weather {
 	    
 	    if (offsetx < -tex.getWidth())
 	    	offsetx += tex.getWidth();
+	    
+	    if (offsetx > tex.getWidth())
+	    	offsetx -= tex.getWidth();
 	}
 }

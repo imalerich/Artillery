@@ -635,6 +635,22 @@ public class UserArmy extends Army
 			// leave the menu
 			selected.setTargetX(-1);
 			
+			Vector2 p = new Vector2(selected.getBBox().x + selected.getBBox().width/2f, selected.getBBox().y + selected.getBBox().height);
+			if (selected.doAddFox()) {
+				selected.addFoxOnFinishMove(null, false);
+				addRequisition(FoxHole.REQCOST, p);
+			} 
+			
+			if (selected.doAddBarrier()) {
+				selected.addBarrierOnFinishedMove(null, false);
+				addRequisition(TankBarrier.REQCOST, p);
+			}
+			
+			if (selected.doAddTower()) {
+				selected.addOutpostOnFinishedMove(null, false);
+				addRequisition(OutpostFlag.REQCOST, p);
+			}
+			
 			// tell all clients which squad is moving
 			Response r = new Response();
 			r.request = "SQUADMOVE";
@@ -775,7 +791,7 @@ public class UserArmy extends Army
 				if (direction > 0)
 					selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
 				
-				selected.addOutpostOnFinishedMove(f);
+				selected.addOutpostOnFinishedMove(f, true);
 				spendRequisition( OutpostFlag.REQCOST, new Vector2(f.getBBox().x + f.getBBox().width/2f, 
 						f.getBBox().y + f.getBBox().height) );
 				

@@ -1,0 +1,29 @@
+ # contains the settings for the default tank
+
+UNIT
+
+	speed: 130
+	health: 46
+	movedist: 768
+	reqbonus: 200
+
+END
+
+ARMOR
+
+	health: 32
+	strength: 12
+
+END
+
+PRIMARY
+
+	type: POINT
+	firerate: 1
+	strength: 22
+	speed: 1500
+
+	upgrade: 100
+	levelmod: 1
+
+END

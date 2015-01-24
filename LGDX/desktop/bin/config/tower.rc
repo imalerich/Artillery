@@ -1,0 +1,31 @@
+ # contains the settings for a radio tower
+
+UNIT
+
+	count: 1
+	speed: 0
+	health: 50
+	movedist: 0
+	reqcost: 300
+	reqbonus: 200
+
+END
+
+ARMOR
+
+	health: 20
+	strength: 20
+
+END
+
+PRIMARY
+
+	type: POINT 
+	firerate: 1
+	strength: 22
+	speed: 1500
+
+	upgrade: 200
+	levelmod: 1.5
+
+END

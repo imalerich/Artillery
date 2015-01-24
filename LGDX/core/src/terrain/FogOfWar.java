@@ -55,7 +55,7 @@ public class FogOfWar
 		// turn the mask on
 		Gdx.gl.glColorMask(true, true, true, true);
 		Gdx.gl.glStencilMask(0x00);
-		Gdx.gl.glStencilFunc(GL20.GL_EQUAL,  1, 0xFF);
+		Gdx.gl.glStencilFunc(GL20.GL_EQUAL, 1, 0xFF);
 	}
 	
 	public static void maskOff(SpriteBatch Batch)

@@ -71,6 +71,11 @@ public class Particle
 		ParticleMask.addVisibleRegion(Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), (int)radius);
 	}
 	
+	public void drawParallax(SpriteBatch Batch, Camera Cam, float XPos)
+	{
+		ParticleMask.addVisibleRegion(pos.x+XPos, Cam.getRenderY(pos.y), (int)radius);
+	}
+	
 	private void modVel()
 	{
 		float time = Gdx.graphics.getDeltaTime();

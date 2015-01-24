@@ -1,7 +1,6 @@
 package objects;
 
 import physics.GameWorld;
-import terrain.Background;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -76,6 +75,7 @@ public class RadioTower extends Unit
 		forward = true;
 		ter = World.getTerrain();
 		speed = 0;
+		mugshotIndex = 3;
 	}
 	
 	public int getID()
@@ -117,7 +117,7 @@ public class RadioTower extends Unit
 	private void drawLogo(SpriteBatch Batch, Camera Cam)
 	{
 		// draw the flags logo
-		Batch.setColor(Background.FGCOLOR);
+		Batch.setColor(1.0f, 1.0f, 1.0f, 0.4f);
 		Batch.draw(MilitaryBase.logos[logo], Cam.getRenderX(6+pos.x+MilitaryBase.LOGOOFFSETX),
 				Cam.getRenderY(pos.y+MilitaryBase.LOGOOFFSETY));
 		Batch.setColor(Color.WHITE);
@@ -128,7 +128,7 @@ public class RadioTower extends Unit
 	{
 		time += Gdx.graphics.getDeltaTime();
 		
-		Batch.setColor(Background.BGCOLOR);
+		Batch.setColor(MilitaryBase.BGCOLOR);
 		flag.setTime(time);
 		
 		if (Highlight) {

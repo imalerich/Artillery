@@ -230,6 +230,8 @@ public abstract class Army
 		// stealth ops have active cloak
 		if (UnitType == UnitDeployer.STEALTHOPS)
 			s.setActiveCloak(true);
+		else
+			s.setActiveCloak(false);
 		
 		for (int i=0; i<c.count; i++)
 		{

@@ -7,7 +7,6 @@ import network.Request;
 import objects.FoxHole;
 import objects.TankBarrier;
 import particles.Particles;
-import particles.Weather;
 import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
@@ -18,6 +17,7 @@ import audio.AudioWorld;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
@@ -265,6 +265,7 @@ public class GameWorld
 	
 	public void update()
 	{
+		Background.update(cam);
 		updateCam();
 		ter.update();
 		particles.update();
@@ -554,9 +555,10 @@ public class GameWorld
 	private void drawHidden(SpriteBatch Batch)
 	{
 		// enable fog of war and draw the background
-		FogOfWar.maskOn(Batch);
-		Background.drawFG(Batch);
-		Batch.flush();
+		Gdx.gl.glColorMask(true, true, true, true);
+		Gdx.gl.glStencilFunc(GL20.GL_NOTEQUAL, 1, 0xFF);
+		Background.drawFG(Batch, cam);
+		FogOfWar.maskOff(Batch);
 		
 		disableStencil(Batch);
 		
@@ -567,10 +569,10 @@ public class GameWorld
 			e.next().drawBase(Batch, cam);
 		
 		/*
-		 * Draw the terrain, weather and world objects.
+		 * Draw the terrain, world objects.
 		 */
 		
-		Weather.draw(Batch, cam);
+		Batch.setColor( Color.WHITE );
 		ter.draw(Batch, cam.getPos());
 		
 		Iterator<FoxHole> holes = foxholes.iterator();
@@ -587,6 +589,8 @@ public class GameWorld
 		while (f.hasNext())
 			f.next().drawBase(Batch, cam);
 		
+		drawFogMask(Batch);
+		FogOfWar.maskOn(Batch);
 		enableStencil(Batch);
 		
 		drawMarkers(Batch);
@@ -601,12 +605,13 @@ public class GameWorld
 		while (e.hasNext())
 			e.next().draw(Batch, cam, checkTargets(), currentstage);
 		
+		Batch.flush();
 		FogOfWar.maskOff(Batch);
 	}
 	
 	public void draw(SpriteBatch Batch)
 	{
-		Background.drawBG(Batch);
+		Background.drawBG(Batch, cam);
 		drawFogMask(Batch);
 		drawHidden(Batch);
 		

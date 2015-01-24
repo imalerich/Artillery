@@ -71,6 +71,22 @@ public class Particles
 		
 		ParticleMask.end(Batch);
 		ParticleMask.draw(Batch);
+		Batch.flush();
+	}
+	
+	public void drawParallax(SpriteBatch Batch, Camera Cam, float XPos)
+	{
+		ParticleMask.begin(Batch);
+		for (int i=0; i<addindex; i++)
+		{
+			particles[i].drawParallax(Batch, Cam, XPos);
+			if (!particles[i].isAlive())
+				remove(i);
+		}
+		
+		ParticleMask.end(Batch);
+		ParticleMask.draw(Batch);
+		Batch.flush();
 	}
 	
 	private void expand()

@@ -119,7 +119,7 @@ public class MainMenu
 	
 	public void draw(SpriteBatch Batch)
 	{
-		Gdx.gl.glClearColor(Background.BGCOLOR.r, Background.BGCOLOR.g, Background.BGCOLOR.b, 1f);
+		Gdx.gl.glClearColor(Background.FGCOLOR.r, Background.FGCOLOR.g, Background.FGCOLOR.b, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Weather.draw(Batch, cam);
 		

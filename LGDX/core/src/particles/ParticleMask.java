@@ -13,6 +13,7 @@ public class ParticleMask
 	private static Texture tex;
 	private static int width;
 	private static int height;
+	private static float opacity = 1f;
 	
 	private static ShapeRenderer sr;
 	
@@ -64,8 +65,14 @@ public class ParticleMask
 		sr.circle(ScreenX, ScreenY, Radius);
 	}
 	
+	public static void setOpacity(float O)
+	{
+		opacity = O;
+	}
+	
 	public static void draw(SpriteBatch Batch)
 	{
+		Batch.setColor(1f, 1f, 1f, opacity);
 		maskOn(Batch);
 		
 		for (int i=-2; i<Game.SCREENW/width + 2; i++) {
