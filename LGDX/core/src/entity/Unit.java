@@ -17,6 +17,8 @@ import com.mygdx.game.Game;
 
 public abstract class Unit 
 {
+	private static final int PPS = 600;
+	
 	protected Terrain ter;
 	protected Vector2 pos;
 	protected boolean forward;
@@ -28,6 +30,9 @@ public abstract class Unit
 	
 	protected int width = 0;
 	protected int height = 0;
+	
+	protected int onfire = 0;
+	protected double firetimer = 0f;
 	
 	protected Vector2 barrelsrc = new Vector2();
 	protected boolean isFiring = false;
@@ -91,6 +96,16 @@ public abstract class Unit
 	public int getID()
 	{
 		return id;
+	}
+	
+	public int isOnFire()
+	{
+		return onfire;
+	}
+	
+	public void setOnFire(int F)
+	{
+		onfire = Math.max(F, 0);
 	}
 	
 	public void setDirectDamage(boolean B)
@@ -242,6 +257,14 @@ public abstract class Unit
 		return forward;
 	}
 	
+	public float getForward()
+	{
+		if (forward)
+			return 1f;
+		else
+			return -1f;
+	}
+	
 	public int getWidth()
 	{
 		return width;
@@ -327,6 +350,34 @@ public abstract class Unit
 		moving = true;
 		
 		setHeight();
+	}
+	
+	public void updateEmbers()
+	{
+		if (onfire > 0) {
+			firetimer += Gdx.graphics.getDeltaTime();
+			
+			firetimer += Gdx.graphics.getDeltaTime();
+
+			int addcount = (int)(PPS*firetimer);
+			if (addcount == 0) {
+				return;
+			}
+
+			for (int i=0; i<addcount; i++) {
+				firetimer = 0f;
+				float scale = (float)Math.random()/2f + 0.2f;
+				float xmod = (float)Math.random();
+				float xpos = pos.x + xmod*10f + 8;
+				if (!forward)
+					xpos = pos.x + getWidth() - xmod*10f - 8f;
+				float ypos = pos.y + 16f * (float)(-(Math.pow(2f*(xmod-0.5f), 2f)) + 1f);
+
+				getSquad().getArmy().getWorld().getParticles().addEmber(scale, new Vector2(xpos, ypos));
+			}
+			
+			firetimer = 0f;
+		}
 	}
 	
 	public void setAsDeceased(Vector<NullTank> Deceased, Particles Part)

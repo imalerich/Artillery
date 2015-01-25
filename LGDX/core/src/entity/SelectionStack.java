@@ -30,12 +30,12 @@ public class SelectionStack
 	
 	public void addSquadOver(Squad Ref)
 	{
-		references.add( new SelectionElement(OVERSQUAD, Ref) );
+		references.add( 0, new SelectionElement(OVERSQUAD, Ref) );
 	}
 	
 	public void addBarracksOver()
 	{
-		references.add( new SelectionElement(OVERADD, null) );
+		references.add( 0, new SelectionElement(OVERADD, null) );
 	}
 	
 	public void incSelection()

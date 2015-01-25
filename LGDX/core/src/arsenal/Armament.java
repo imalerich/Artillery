@@ -7,8 +7,6 @@ public class Armament
 	public static final int UNITTARGET = 0;
 	public static final int POINTTARGET = 1;
 	public static final int LANDMINE = 2;
-	
-	// TODO needs implementation
 	public static final int FLAMETARGET = 3;
 	
 	// generic armament properties
@@ -26,9 +24,6 @@ public class Armament
 	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy)
 	{
 		type = Type;
-		if (type != UNITTARGET && type != POINTTARGET && type != LANDMINE)
-			type = UNITTARGET;
-		
 		range = Range;
 		firerate = FireRate;
 		strength = Strength;

@@ -7,6 +7,7 @@ import network.Response;
 import objects.FoxHole;
 import particles.Particles;
 import physics.Blast;
+import physics.Flame;
 import physics.GameWorld;
 import physics.NullTank;
 import terrain.FogOfWar;
@@ -28,6 +29,7 @@ import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
+import com.mygdx.game.Util;
 
 public class Squad 
 {
@@ -63,7 +65,8 @@ public class Squad
 	private boolean isforward;
 	
 	private float powerratio = 0f;
-	private boolean isFiring;
+	private boolean isFiringP = false;
+	private boolean isFiringS = false;
 	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
@@ -258,6 +261,20 @@ public class Squad
 		return id;
 	}
 	
+	public void checkUnitFireDamage()
+	{
+		Iterator<Unit> u = units.iterator();
+		while  (u.hasNext()) {
+			Unit unit = u.next();
+			unit.setOnFire( unit.isOnFire() - 1 );
+			
+			// deal fire damage
+			if (unit.isOnFire() > 0) {
+				unit.damage(Flame.FLAMEDMG);
+			}
+		}
+	}
+	
 	public boolean isStealthed()
 	{
 		return (occupied != null) || (isInvis);
@@ -364,6 +381,25 @@ public class Squad
 		}
 	}
 	
+	public void procFlame(Flame F)
+	{
+		Iterator<Unit> u = units.iterator();
+		while (u.hasNext())
+		{
+			// process damage to units done by any blasts
+			Unit unit = u.next();
+			
+			if (Intersector.overlapConvexPolygons(Util.rectToPoly(unit.getBBox()), F.bounding)) {
+				setLastHitBy(F.source);
+				float dmg = Math.max(F.strength - unit.getArmor().getStrength(), 0);
+				unit.getArmor().damage((int)F.strength);
+
+				unit.damage(dmg);
+				unit.setOnFire(Flame.ONFIRETURNS);
+			}
+		}
+	}
+	
 	public Iterator<Unit> getUnitIterator()
 	{
 		return units.iterator();
@@ -379,14 +415,24 @@ public class Squad
 		return isforward;
 	}
 	
-	public void setFiring(boolean IsFiring)
+	public void setFiringPrimary(boolean IsFiring)
 	{
-		isFiring = IsFiring;
+		isFiringP = IsFiring;
 	}
 	
-	public boolean isFiring()
+	public void setFiringSecondary(boolean IsFiring)
 	{
-		return isFiring;
+		isFiringS = IsFiring;
+	}
+	
+	public boolean isFiringPrimary()
+	{
+		return isFiringP;
+	}
+	
+	public boolean isFiringSecondary()
+	{
+		return isFiringS;
 	}
 	
 	public void setAsTarget()
@@ -890,6 +936,25 @@ public class Squad
 		}
 	}
 	
+	public void drawEnemyView(Camera Cam)
+	{
+		Iterator<Unit> i = units.iterator();
+		while (i.hasNext()) {
+			Unit u = i.next();
+			
+			// only provide vision when the unit is on fire
+			if (u.isOnFire() == 0)
+				continue;
+			
+			float radius = Math.max(u.getWidth(), u.getHeight())/2f;
+			Vector2 pos = new Vector2( u.getPos() );
+			pos.x += u.getWidth()/2;
+			pos.y += u.getHeight()/2;
+			
+			FogOfWar.addVisibleRegion(Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), (int)radius);
+		}
+	}
+	
 	private void setPointerHeight()
 	{
 		// increment the pointer height
@@ -937,7 +1002,7 @@ public class Squad
 	
 	public void drawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
-		if (isFiring && units.size() > 0) {
+		if ((isFiringPrimary() || isFiringSecondary()) && units.size() > 0) {
 			Iterator<Unit> u = units.iterator();
 			while (u.hasNext()) {
 				u.next().drawTargetAngle(Batch, Cam);
@@ -1027,7 +1092,7 @@ public class Squad
 			Unit u = i.next();
 			
 			// tell the unit whether or not it should be in firing position
-			u.setFiring(isFiring || targetsquad != null);
+			u.setFiring((isFiringPrimary()) || targetsquad != null);
 			u.draw(Batch, Cam, Highlight, isTarget);
 			
 			if (u.isForward() && !isforward) {

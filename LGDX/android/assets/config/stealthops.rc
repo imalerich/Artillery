@@ -5,6 +5,7 @@ UNIT
  	count: 5
 	speed: 160
 	health: 16
+	movedist: 1024
 	reqcost: 500
 	reqbonus: 50
 
@@ -19,10 +20,10 @@ END
 
 PRIMARY
 
-	type: UNIT
+	type: FLAME 
 	range: 384
 	firerate: 2
-	strength: 10
+	strength: 4
 	speed: 800
 	accuracy: 0.66
 

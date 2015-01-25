@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
+import com.mygdx.game.Util;
 
 public class LandMine 
 {
@@ -82,6 +83,14 @@ public class LandMine
 	{
 		if (Intersector.overlaps(B.getBoundingCircle(), bbox) ||
 				bbox.contains(B.pos)  && !detonate) {
+			detonate = true;
+		}
+	}
+	
+	public void procFlame(Flame F)
+	{
+		if (Intersector.overlapConvexPolygons(Util.rectToPoly(bbox), F.bounding) 
+				&& !detonate) {
 			detonate = true;
 		}
 	}

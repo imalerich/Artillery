@@ -22,6 +22,7 @@ public class CombatResolver
 	
 	private Vector<Missile> projectilequeue = new Vector<Missile>();
 	private Vector<CombatPacket> combatqueue = new Vector<CombatPacket>();
+	private Vector<Flame> flamequeue = new Vector<Flame>();
 	private Terrain ter;
 	private Particles particles;
 	private GameWorld gw;
@@ -40,6 +41,24 @@ public class CombatResolver
 		stage = UNITSTAGE;
 		combatqueue.clear();
 		projectilequeue.clear();
+		flamequeue.clear();
+	}
+	
+	public void addFlame(Squad Offense)
+	{
+		// un-cloak the offensive unit
+		Offense.setInvis(false);
+		
+		Iterator<Unit> u = Offense.getUnitIterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			Vector2 src = new Vector2(unit.getPos().x, unit.getPos().y);
+			src.y += unit.getBarrelSrc().y;
+			src.x += unit.getBarrelSrc().x;
+			
+			flamequeue.add( new Flame(ter, particles, src, unit.isForward(), Offense.getArmy().getConnection(), Offense.getPrimary().getStrength()) );
+			gw.procFlame( flamequeue.lastElement() );
+		}
 	}
 	
 	public void addGrenade(Squad Offense, Armament Grenade)
@@ -134,7 +153,8 @@ public class CombatResolver
 		
 		// set the offense to have no target
 		Offense.setTargetSquad(null);
-		Offense.setFiring(false);
+		Offense.setFiringPrimary(false);
+		Offense.setFiringSecondary(false);
 	}
 	
 	public boolean isSimulationCompleted()
@@ -170,11 +190,13 @@ public class CombatResolver
 		if (stage == UNITSTAGE) {
 			Iterator<CombatPacket> i = combatqueue.iterator();
 			while (i.hasNext()) 
-			{
-				if (!i.next().isCompleted()) {
+				if (!i.next().isCompleted())
 					return;
-				}
-			}
+			
+			Iterator<Flame> f = flamequeue.iterator();
+			while (f.hasNext())
+				if (f.next().isAlive())
+					return;
 			
 			stage = POINTSTAGE;
 			return;
@@ -211,6 +233,15 @@ public class CombatResolver
 			
 			p.update(Cam);
 		}
+		
+		Iterator<Flame> f = flamequeue.iterator();
+		while (f.hasNext()) {
+			Flame flame = f.next();
+			if (!flame.isAlive())
+				continue;
+			
+			flame.update(Cam);
+		}
 	}
 	
 	private void drawUnitStage(SpriteBatch Batch, Camera Cam)
@@ -224,6 +255,15 @@ public class CombatResolver
 			}
 			
 			p.draw(Batch, Cam);
+		}
+		
+		Iterator<Flame> f = flamequeue.iterator();
+		while (f.hasNext()) {
+			Flame flame = f.next();
+			if (!flame.isAlive())
+				continue;
+			
+			flame.draw(Batch, Cam);
 		}
 	}
 	

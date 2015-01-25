@@ -285,12 +285,11 @@ public class Terrain
 		int localx = X - s*SEGMENTWIDTH;
 		
 		// find the height
-		int rety = 0;
 		for (int y=0; y<height; y++)
-			if ( (data[s].getPixel(localx, y) & ALPHAMASK) == 0 )
-				rety = y;
+			if ( (data[s].getPixel(localx, y) & ALPHAMASK) != 0 )
+				return y;
 		
-		return rety;
+		return height;
 	}
 	
 	public int getMinHeight(int X0, int X1)

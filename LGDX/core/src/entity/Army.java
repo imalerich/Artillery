@@ -9,6 +9,7 @@ import objects.RadioTower;
 import particles.Particles;
 import physics.Blast;
 import physics.CombatResolver;
+import physics.Flame;
 import physics.GameWorld;
 import physics.NullTank;
 import terrain.Terrain;
@@ -164,6 +165,19 @@ public abstract class Army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			s.next().procBlasts(B);
+		}
+	}
+	
+	public void procFlame(Flame F)
+	{
+		// flames cannot do self damage
+		if (F.source == getConnection())
+			return;
+		
+		// process all flames on this army
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			s.next().procFlame(F);
 		}
 	}
 	
@@ -345,6 +359,13 @@ public abstract class Army
 			s.next().drawView(Cam);
 		
 		base.drawView(Cam);
+	}
+	
+	public void drawEnemyView(Camera Cam)
+	{
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) 
+			s.next().drawEnemyView(Cam);
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam, boolean CheckTargets, int CurrentStage) 

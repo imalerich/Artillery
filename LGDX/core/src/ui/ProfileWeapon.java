@@ -26,7 +26,8 @@ public class ProfileWeapon
 	private static int MISSILE = 1;
 	private static int GRENADE = 2;
 	private static int LANDMINE = 3;
-	private static int WEAPONCOUNT = 4;
+	private static int FLAMETHROWER = 4;
+	private static int WEAPONCOUNT = 5;
 	private static TextureRegion[] weapons;
 	
 	private static Rectangle add_opt_rect;
@@ -144,6 +145,8 @@ public class ProfileWeapon
 			index = LANDMINE;
 		} else if (A.getType() == Armament.UNITTARGET) {
 			index = RIFLE;
+		} else if (A.getType() == Armament.FLAMETARGET) {
+			index = FLAMETHROWER;
 		}
 		
 		// draw the weapon stamp overlay

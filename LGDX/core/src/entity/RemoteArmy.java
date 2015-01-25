@@ -117,9 +117,19 @@ public class RemoteArmy extends Army
 			}
 			
 			s.setForward(r.b1);
-			s.setFiring(r.b0);
+			s.setFiringPrimary(r.b0);
 			s.setBarrelAngle(r.f0);
 			s.setPowerRatio(r.f1);
+			return;
+			
+		} else if (r.request.equals("FLAMEFIRING")) {
+			Squad s = getSquad(r.i0);
+			if (s == null)  {
+				return;
+			}
+			
+			s.setForward(r.b1);
+			s.setFiringPrimary(r.b0);
 			return;
 			
 		} else if (r.request.equals("UNITTARGET")) {
@@ -141,7 +151,7 @@ public class RemoteArmy extends Army
 				return;
 			
 			s.setForward(r.b1);
-			s.setFiring(r.b0);
+			s.setFiringSecondary(r.b0);
 			s.getSecondary().setAngle(r.f0);
 			s.setPowerRatio(r.f1);
 			return;
@@ -215,15 +225,35 @@ public class RemoteArmy extends Army
 				Resolver.addConflict(squad, squad.getTargetSquad());
 				continue;
 				
-			} else if (squad.isFiring() && squad.getPrimary().getType() == Armament.POINTTARGET) {
+			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.POINTTARGET) {
 				Resolver.addMissile(squad);
 				continue;
 				
+			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.FLAMETARGET) {
+				Resolver.addFlame(squad);
+				continue;
 			}
 			
 			// add secondary weapons to the combat resolver
-			if (squad.getSecondary() != null && squad.isFiring()) {
-				Resolver.addGrenade(squad,  squad.getSecondary());
+			if (squad.getSecondary() != null && squad.isFiringSecondary()) {
+				switch (squad.getSecondary().getType())
+				{
+				case Armament.POINTTARGET:
+					Resolver.addGrenade(squad, squad.getSecondary());
+					break;
+					
+				case Armament.UNITTARGET:
+					break;
+				
+				case Armament.LANDMINE:
+					squad.addLandMines(getWorld());
+					break;
+					
+				case Armament.FLAMETARGET:
+					break;
+					
+				}
+				
 				continue;
 			}
 		}
@@ -232,7 +262,8 @@ public class RemoteArmy extends Army
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			squad.setTargetSquad(null);
-			squad.setFiring(false);
+			squad.setFiringPrimary(false);
+			squad.setFiringSecondary(false);
 		}
 	}
 
@@ -277,6 +308,10 @@ public class RemoteArmy extends Army
 	{
 		if (NewStage == GameWorld.ATTACKSELECT) {
 			checkForFoxOccupancy(Cam.getPos());
+			
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext())
+				s.next().checkUnitFireDamage();
 		}
 		
 		// set the new stage as not completed

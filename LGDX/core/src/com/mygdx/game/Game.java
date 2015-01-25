@@ -5,10 +5,12 @@ import network.NetworkManager;
 import objects.FoxHole;
 import objects.RadioTower;
 import objects.TankBarrier;
+import particles.Ember;
 import particles.ParticleMask;
 import particles.Weather;
 import physics.Blast;
 import physics.CombatPacket;
+import physics.Flame;
 import physics.GameWorld;
 import physics.Grenade;
 import physics.LandMine;
@@ -248,6 +250,8 @@ public class Game extends ApplicationAdapter
 		ProfileWeapon.init();
 		ReqIndicator.init();
 		LandMine.init();
+		Flame.init();
+		Ember.init();
 		Sky.init();
 		
 		initMusic();
@@ -275,6 +279,8 @@ public class Game extends ApplicationAdapter
 		ReqIndicator.release();
 		ProfileWeapon.release();
 		LandMine.release();
+		Flame.release();
+		Ember.release();
 		Sky.release();
 		
 		if (physics != null)

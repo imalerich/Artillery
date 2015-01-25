@@ -459,6 +459,23 @@ public class GameWorld
 		ter.cutHole((int)B.pos.x, Game.WORLDH - (int)B.pos.y, (int)B.radius);
 	}
 	
+	public void procFlame(Flame F)
+	{
+		userArmy.procFlame(F);
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().procFlame(F);
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().procFlame(F);
+		
+		Iterator<LandMine> l = mines.iterator();
+		while (l.hasNext())
+			l.next().procFlame(F);
+	}
+	
 	private void procFoxBlast(Blast B)
 	{
 		Iterator<FoxHole> f = foxholes.iterator();
@@ -533,6 +550,10 @@ public class GameWorld
 			f.next().drawView(cam);
 		userArmy.drawView(cam);
 		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().drawEnemyView(cam);
+		
 		FogOfWar.end(Batch);
 	}
 	
@@ -597,9 +618,16 @@ public class GameWorld
 		
 		// draw the weather and the bases
 		userArmy.drawBase(Batch, cam);
+		
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().drawBase(Batch, cam);
+		
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().drawBase(Batch, cam);
+		
+		particles.draw(Batch, cam);
 		
 		/*
 		 * Draw the terrain, world objects.
@@ -618,10 +646,6 @@ public class GameWorld
 		/*
 		 * Draw the terrain, weather and world objects.
 		 */
-		
-		Iterator<Army> f = friendlyArmy.iterator();
-		while (f.hasNext())
-			f.next().drawBase(Batch, cam);
 		
 		drawFogMask(Batch);
 		FogOfWar.maskOn(Batch);
@@ -659,8 +683,6 @@ public class GameWorld
 		if (currentstage == ATTACKUPDATE) {
 			resolver.drawSimulation(Batch, cam);
 		}
-		
-		particles.draw(Batch, cam);
 		
 		Blast.begin(Batch);
 		Iterator<Blast> b = blasts.iterator();
@@ -755,6 +777,11 @@ public class GameWorld
 		
 		initNewStage();
 		initResolver();
+	}
+	
+	public Particles getParticles()
+	{
+		return particles;
 	}
 	
 	public static int getDirection(float StartX, float StartWidth, float TargetX, float TargetWidth)

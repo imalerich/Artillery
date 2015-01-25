@@ -136,6 +136,8 @@ public class Gunman extends Unit
 	@Override
 	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		updateEmbers();
+		
 		if (health <= 0) {
 			drawDieing(Batch, Cam);
 			return;
@@ -202,11 +204,14 @@ public class Gunman extends Unit
 		animtime += Gdx.graphics.getDeltaTime();
 		Squad.target.setTime(animtime);
 		
-		if (getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.POINTTARGET)
+		if (getSquad().isFiringSecondary() && getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.POINTTARGET)
 			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
 					Cam.getRenderY(pos.y + height/2f + width));
-		else if (getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.LANDMINE)
+		else if (getSquad().isFiringSecondary() && getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.LANDMINE)
 			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f - Squad.target.getFrameWidth()/2f), 
 					Cam.getRenderY(pos.y - Squad.target.getFrameHeight()));
+		else if (getSquad().isFiringPrimary() && getSquad().getPrimary().getType() == Armament.FLAMETARGET)
+			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + getForward() * (barrelsrc.x + 16f)), 
+					Cam.getRenderY(pos.y + barrelsrc.y - Squad.target.getCurrent(0).getRegionHeight()/2f));
 	}
 }

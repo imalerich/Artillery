@@ -56,6 +56,7 @@ public class UserArmy extends Army
 	private boolean profileactive = false;
 	private boolean targetenemies = false;
 	private boolean targetpoint = false;
+	private boolean targetside = false;
 	private boolean targetpower = false;
 	private boolean grenade = false;
 	private boolean selecttower = false;
@@ -242,14 +243,17 @@ public class UserArmy extends Army
 				Resolver.addConflict(squad, squad.getTargetSquad());
 				continue;
 				
-			} else if (squad.isFiring() && squad.getPrimary().getType() == Armament.POINTTARGET) {
+			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.POINTTARGET) {
 				Resolver.addMissile(squad);
 				continue;
 				
+			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.FLAMETARGET) {
+				Resolver.addFlame(squad);
+				continue;
 			}
 			
 			// add secondary weapons to the combat resolver
-			if (squad.getSecondary() != null && squad.isFiring()) {
+			if (squad.getSecondary() != null && squad.isFiringSecondary()) {
 				switch (squad.getSecondary().getType())
 				{
 				case Armament.POINTTARGET:
@@ -279,7 +283,8 @@ public class UserArmy extends Army
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			squad.setTargetSquad(null);
-			squad.setFiring(false);
+			squad.setFiringPrimary(false);
+			squad.setFiringSecondary(false);
 		}
 	}
 	
@@ -332,6 +337,10 @@ public class UserArmy extends Army
 			checkForFoxOccupancy(Cam.getPos());
 		} else if (NewStage == GameWorld.MOVESELECT) {
 			requisition += getReqBonus();
+			
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext())
+				s.next().checkUnitFireDamage();
 		}
 		
 		// set the new stage as not completed
@@ -409,14 +418,16 @@ public class UserArmy extends Army
 		
 		// reset the option stack and recalculate its contents
 		optionstack.reset();
+		
+		int selected = UnitDeployer.getSelected(Cam);
+		if (UnitDeployer.contains(selected))
+			optionstack.addBarracksOver();
+		
 		getMouseOver(optionstack, Cam, false);
 		
 		if (!IncludeDeployer)
 			return;
 		
-		int selected = UnitDeployer.getSelected(Cam);
-		if (UnitDeployer.contains(selected))
-			optionstack.addBarracksOver();
 	}
 	
 	private void procStackChange()
@@ -588,6 +599,9 @@ public class UserArmy extends Army
 		
 		else if (targetpoint)
 			updateTargetPoint(Cam);
+		
+		else if (targetside)
+			updateTargetSide(Cam);
 		
 		else if (targetpower)
 			updateTargetPower(Cam);
@@ -917,7 +931,8 @@ public class UserArmy extends Army
 		case ButtonOptions.STOP:
 			// leave the menu and do not select a squad
 			selected.setTargetSquad(null);
-			selected.setFiring(false);
+			selected.setFiringSecondary(false);
+			selected.setFiringPrimary(false);
 			
 			menuactive = false;
 			menurelease = false;
@@ -931,18 +946,21 @@ public class UserArmy extends Army
 			offensemenu.resetClock();
 			
 			selected.setTargetSquad(null);
-			selected.setFiring(false);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(false);
 			
 			if (selected.getPrimary().getType() == Armament.UNITTARGET) {
 				targetenemies = true;
 			} else if (selected.getPrimary().getType() == Armament.POINTTARGET) {
 				targetpoint = true;
+			} else if (selected.getPrimary().getType() == Armament.FLAMETARGET) {
+				targetside = true;
 			}
 			
 			break;
 			
 		case ButtonOptions.LANDMINE:
-			selected.setFiring(true);
+			selected.setFiringSecondary(true);
 			
 			// leave the menu
 			menuactive = false;
@@ -959,7 +977,8 @@ public class UserArmy extends Army
 			offensemenu.resetClock();
 			
 			selected.setTargetSquad(null);
-			selected.setFiring(false);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(false);
 			selected.setForward(false);
 			selected.getSecondary().setAngle(45);
 			
@@ -975,7 +994,8 @@ public class UserArmy extends Army
 			offensemenu.resetClock();
 			
 			selected.setTargetSquad(null);
-			selected.setFiring(false);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(false);
 			selected.setForward(true);
 			selected.getSecondary().setAngle(45);
 			
@@ -1077,7 +1097,7 @@ public class UserArmy extends Army
 		
 		// leave the current unit selected and leave targeting for this squad
 		if (Cursor.isButtonJustReleased(Cursor.LEFT)) {
-			selected.setFiring(true);
+			selected.setFiringPrimary(true);
 			targetpoint = false;
 			targetpower = true;
 			powerselect.setPos(Cursor.getMouseX(Cam.getPos())+Cam.getPos().x, Cursor.getMouseY()+Cam.getPos().y);
@@ -1108,8 +1128,57 @@ public class UserArmy extends Army
 		float ydist = destpos.y - sourcepos.y;
 		float theta = (float)( Math.toDegrees(Math.atan(ydist/xdist)) );
 		
-		selected.setFiring(false);
+		selected.setFiringPrimary(false);
+		selected.setFiringSecondary(false);
 		selected.setBarrelAngle(theta);
+	}
+	
+	private void updateTargetSide(Camera Cam)
+	{
+		// INVALID - do not select a side
+		if (selected == null) {
+			targetside = false;
+			return;
+		}
+		
+		// leave targeting do not select side
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			targetside = false;
+			return;
+		}
+		
+		// leave the current unit selected and leave targeting for this squad
+		if (Cursor.isButtonJustReleased(Cursor.LEFT)) {
+			targetside = false;
+			selected.setFiringPrimary(true);
+			selected.setFiringSecondary(false);
+			
+			// send a message to all clients informing them who is firing and where
+			Response r = new Response();
+			r.source = getConnection();
+			r.request = "FLAMEFIRING";
+			r.i0 = selected.getID();
+			r.b0 = selected.isFiringPrimary();
+			r.b1 = selected.isForward();
+			
+			network.getClient().sendTCP(r);
+			
+			return;
+		}
+		
+		// do not set the angle when the mouse is on the incorrect side of the selected unit
+		float xpos = Cursor.getMouseX(Cam.getPos()) + Cam.getPos().x;
+		float startx = selected.getBBox().x + selected.getBBox().width/2f;
+		int direction = GameWorld.getDirection(startx, 0f, 
+				xpos, 0f);
+		if (direction != 1 && selected.isForward()) {
+			selected.setForward(false);
+		} else if (direction != -1 && !selected.isForward()) {
+			selected.setForward(true);
+		}
+		
+		selected.setFiringPrimary(false);
+		selected.setFiringSecondary(false);
 	}
 	
 	private void updateTargetPower(Camera Cam)
@@ -1122,7 +1191,8 @@ public class UserArmy extends Army
 		
 		// leave targeting, do not select a point
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
-			selected.setFiring(false);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(false);
 			targetpower = false;
 			
 			return;
@@ -1131,7 +1201,8 @@ public class UserArmy extends Army
 		// leave the current unit selected and leave targeting for this squad
 		if (powerselect.doFire(Cam)) {
 			selected.setPowerRatio(powerselect.getPower()/PowerButtons.MAXPOWER);
-			selected.setFiring(true);
+			selected.setFiringPrimary(true);
+			selected.setFiringSecondary(false);
 			targetpower = false;
 			
 			// send a message to all clients informing them who is firing and where
@@ -1139,7 +1210,7 @@ public class UserArmy extends Army
 			r.source = getConnection();
 			r.request = "TANKFIRING";
 			r.i0 = selected.getID();
-			r.b0 = selected.isFiring();
+			r.b0 = selected.isFiringPrimary();
 			r.b1 = selected.isForward();
 			r.f0 = selected.getPrimary().getAngle();
 			r.f1 = selected.getPowerRatio();
@@ -1163,7 +1234,8 @@ public class UserArmy extends Army
 		
 		// leave targeting, do not select a point
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
-			selected.setFiring(false);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(false);
 			grenade = false;
 			
 			return;
@@ -1171,7 +1243,8 @@ public class UserArmy extends Army
 		
 		if (powerselect.doFire(Cam)) {
 			selected.setPowerRatio(powerselect.getPower()/PowerButtons.MAXPOWER);
-			selected.setFiring(true);
+			selected.setFiringPrimary(false);
+			selected.setFiringSecondary(true);
 			grenade = false;
 			
 			// send a message to all clients informing them who is firing and where
@@ -1179,7 +1252,7 @@ public class UserArmy extends Army
 			r.source = getConnection();
 			r.request = "UNITGRENADE";
 			r.i0 = selected.getID();
-			r.b0 = selected.isFiring();
+			r.b0 = selected.isFiringSecondary();
 			r.b1 = selected.isForward();
 			r.f0 = selected.getSecondary().getAngle();
 			r.f1 = selected.getPowerRatio();
@@ -1207,7 +1280,7 @@ public class UserArmy extends Army
 	@Override
 	public boolean isMenuOpen()
 	{
-		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || 
+		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetside || 
 				targetpower || foxactive || grenade || barricadeactive || selecttower);
 	}
 	
