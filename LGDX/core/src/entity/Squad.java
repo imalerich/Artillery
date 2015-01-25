@@ -63,6 +63,7 @@ public class Squad
 	private int targetpos;
 	private boolean ismoving;
 	private boolean isforward;
+	private boolean canBurn = false;
 	
 	private float powerratio = 0f;
 	private boolean isFiringP = false;
@@ -185,6 +186,11 @@ public class Squad
 			r.i1 = secondary.getStrength();
 			getArmy().getNetwork().getClient().sendTCP(r);
 		}
+	}
+	
+	public void canBurn(boolean B)
+	{
+		canBurn = B;
 	}
 	
 	public boolean doAddFox()
@@ -395,7 +401,9 @@ public class Squad
 				unit.getArmor().damage((int)F.strength);
 
 				unit.damage(dmg);
-				unit.setOnFire(Flame.ONFIRETURNS);
+				
+				if (canBurn)
+					unit.setOnFire(Flame.ONFIRETURNS);
 			}
 		}
 	}

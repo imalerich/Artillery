@@ -240,6 +240,7 @@ public abstract class Army
 		s.setPrimary(c.getFirstPrimary());
 		s.setSecondary(c.getFirstSecondary());
 		s.setArmor(c.getFirstArmor());
+		s.canBurn(true);
 		
 		// stealth ops have active cloak
 		if (UnitType == UnitDeployer.STEALTHOPS)
