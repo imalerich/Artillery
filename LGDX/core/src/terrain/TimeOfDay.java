@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 
 public class TimeOfDay 
 {
-	public static float DAYLENGTH = 27f;
-	public static float NIGHTLENGTH = 27f;
+	public static float DAYLENGTH = 8f;
+	public static float NIGHTLENGTH = 8f;
 	public static float TRANSTIME = 3f;
 	public static float TOTALTIME = DAYLENGTH + NIGHTLENGTH + TRANSTIME*2f;
 	

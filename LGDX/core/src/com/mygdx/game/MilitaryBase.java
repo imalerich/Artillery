@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 public class MilitaryBase 
 {
 	public static Color BGCOLOR = new Color(112/255f, 107/255f, 98/255f, 1f);
-	//public static final Color BGCOLOR = Terrain.getColor(); //new Color(56/255f, 17/255f, 14/255f, 1f);
+	private static int VIEWRADIUS = 600;
 	
 	public static final int LOGOCOUNT = 4;
 	public static final int LOGOOFFSETX = -2;
@@ -23,6 +23,7 @@ public class MilitaryBase
 	
 	public static TextureRegion[] logos;
 	private static Texture tex;
+	private boolean hili = false;
 	
 	private int logo;
 	private int xpos;
@@ -65,6 +66,11 @@ public class MilitaryBase
 		return logos[Index];
 	}
 	
+	public void setHili(boolean H)
+	{
+		hili = H;
+	}
+	
 	public MilitaryBase(int XPos, Terrain Ter)
 	{
 		loadTex();
@@ -78,6 +84,21 @@ public class MilitaryBase
 		ypos = Game.WORLDH - Ter.getHeight(0) - 3;
 	}
 	
+	public boolean isPointInBounds(Vector2 Pos)
+	{
+		float x0 = xpos + tex.getWidth()/2f - VIEWRADIUS;
+		float x1 = xpos + tex.getWidth()/2f + VIEWRADIUS;
+		
+		if (Pos.x >= x0 && Pos.x <= x1)
+			return true;
+		else if (Pos.x + Game.WORLDW >= x0 && Pos.x + Game.WORLDW <= x1)
+			return true;
+		else if (Pos.x - Game.WORLDW >= x0 && Pos.x - Game.WORLDW <= x1)
+			return true;
+		else
+			return false;
+	}
+	
 	public boolean isMouseOver(Vector2 Campos)
 	{
 		Rectangle r = new Rectangle(xpos, ypos-MOUSEYTOLERANCE, getWidth(), getHeight()+MOUSEYTOLERANCE);
@@ -87,6 +108,11 @@ public class MilitaryBase
 	public Vector2 getPos()
 	{
 		return new Vector2(xpos, ypos);
+	}
+	
+	public float getMidX()
+	{
+		return xpos + tex.getWidth()/2f;
 	}
 	
 	public void setLogo(int Logo)
@@ -102,6 +128,27 @@ public class MilitaryBase
 		return logo;
 	}
 	
+	private void drawOutline(SpriteBatch Batch, Camera Cam)
+	{
+		for (int x=-1; x<2; x++) {
+			for (int y=-1; y<2; y++) {
+				Vector2 Coords = new Vector2(xpos, ypos);
+				Coords.x += x;
+				Coords.y += y;
+				
+				Batch.draw(tex, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y));
+			}
+		}
+	}
+	
+	private void drawHighlight(SpriteBatch Batch, Camera Cam)
+	{
+		// draw a highlighted version of the sprite
+		Shaders.setShader(Batch, Shaders.hili);
+		drawOutline(Batch, Cam);
+		Shaders.revertShader(Batch);
+	}
+	
 	public void drawView(Camera Cam)
 	{
 		Vector2 pos = new Vector2(xpos, ypos);
@@ -109,12 +156,13 @@ public class MilitaryBase
 		pos.y += tex.getHeight()/2;
 		
 		FogOfWar.addVisibleRegion(Cam.getRenderX(pos.x), 
-				Cam.getRenderY(pos.y), 600);
+				Cam.getRenderY(pos.y), VIEWRADIUS);
 	}
-	
 	
 	public void draw(SpriteBatch Batch, Camera Cam)
 	{
+		if (hili)
+			drawHighlight(Batch, Cam);
 		// draw the base
 		Batch.setColor( BGCOLOR );
 		Batch.draw(tex, Cam.getRenderX(xpos), Cam.getRenderY(ypos));

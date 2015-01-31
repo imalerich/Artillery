@@ -114,7 +114,7 @@ public class FoxHoleMenu
 			} else if (maxx >= Game.WORLDW) {
 				if (Pos > startx && Pos < Game.WORLDW) {
 					return Pos;
-				} else if (Pos > maxx - Game.WORLDW){
+				} else if (Pos < startx && Pos > maxx - Game.WORLDW){
 					return maxx - Game.WORLDW;
 				}
 			}

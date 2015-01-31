@@ -9,6 +9,7 @@ import objects.TankBarrier;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
+import ui.Button;
 import ui.ButtonOptions;
 import ui.FoxHoleMenu;
 import ui.MenuBar;
@@ -16,6 +17,7 @@ import ui.OutpostFlag;
 import ui.PointSelect;
 import ui.PowerButtons;
 import ui.Profile;
+import ui.SpawnIndicator;
 import ui.TankBarrierMenu;
 import ui.UnitDeployer;
 import arsenal.Armament;
@@ -34,6 +36,7 @@ import config.SquadConfigurations;
 
 public class UserArmy extends Army
 {
+	private SpawnIndicator spawn;
 	private SelectionStack optionstack;
 	private SelectionStack targetstack;
 	private int prevOptionStackSize;
@@ -60,6 +63,8 @@ public class UserArmy extends Army
 	private boolean targetpower = false;
 	private boolean grenade = false;
 	private boolean selecttower = false;
+	private boolean selectspawnpoint = false;
+	private int spawnindex = -1;
 	
 	private Squad selected; // the currently selected squad, or null
 	
@@ -83,18 +88,18 @@ public class UserArmy extends Army
 		prevTargetStackSize = 0;
 		
 		menu = new ButtonOptions(0, 04);
-		menu.addGlyph(ButtonOptions.MOVE);
-		menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
-		menu.addGlyph(ButtonOptions.MOVETANKTRAP);
-		menu.addGlyph(ButtonOptions.TOWER);
-		menu.addGlyph(ButtonOptions.UPGRADE);
-		menu.addGlyph(ButtonOptions.STOP);
+		menu.addGlyph(Button.MOVE);
+		menu.addGlyph(Button.MOVEFOXHOLE);
+		menu.addGlyph(Button.MOVETANKTRAP);
+		menu.addGlyph(Button.TOWER);
+		menu.addGlyph(Button.UPGRADE);
+		menu.addGlyph(Button.STOP);
 		
 		offensemenu = new ButtonOptions(0, 0);
-		offensemenu.addGlyph(ButtonOptions.GRENADEL);
-		offensemenu.addGlyph(ButtonOptions.GRENADER);
-		offensemenu.addGlyph(ButtonOptions.ATTACK);
-		offensemenu.addGlyph(ButtonOptions.STOP);
+		offensemenu.addGlyph(Button.GRENADEL);
+		offensemenu.addGlyph(Button.GRENADER);
+		offensemenu.addGlyph(Button.ATTACK);
+		offensemenu.addGlyph(Button.STOP);
 		
 		foxselect = new FoxHoleMenu(Ter);
 		barrierselect = new TankBarrierMenu(Ter);
@@ -486,6 +491,9 @@ public class UserArmy extends Army
 	
 	private void updateDeployer(Camera Cam)
 	{
+		if (selectspawnpoint)
+			updateSpawnPoint(Cam);
+			
 		// do not update the deployer while a menu is open
 		if (isMenuOpen() || !optionstack.isOverAdd())
 			return;
@@ -502,18 +510,10 @@ public class UserArmy extends Army
 				return;
 			}
 			
-			// go ahead and spawn the unit
-			requisition = postcost;
-			int id = spawnUnit(selected);
-			
-			// tell all clients of the newly spawned squad
-			Response r = new Response();
-			r.source = getConnection();
-			r.request = "SQUADSPAWNED";
-			r.i0 = selected;
-			r.i1 = id;
-			
-			network.getClient().sendTCP(r);
+			spawnindex = selected;
+			selectspawnpoint = true;
+			spawn = new SpawnIndicator(ter, spawnindex, 0);
+			spawn.setPos( Cursor.getMouseX(Cam.getPos()) + (int)Cam.getPos().x );
 		}
 	}
 	
@@ -620,31 +620,31 @@ public class UserArmy extends Army
 		
 		if (selected.getClassification() == Classification.TANK || 
 				selected.getClassification() == Classification.TOWER) {
-			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
-			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
-			menu.removeGlyph(ButtonOptions.TOWER);
+			menu.removeGlyph(Button.MOVEFOXHOLE);
+			menu.removeGlyph(Button.MOVETANKTRAP);
+			menu.removeGlyph(Button.TOWER);
 			
 		} else if (selected.getClassification() == Classification.STEALTHOPS) {
 			// stealth troops cannot place fox holes or place tank traps
-			menu.addGlyph(ButtonOptions.MOVETANKTRAP);
-			menu.removeGlyph(ButtonOptions.MOVEFOXHOLE);
+			menu.addGlyph(Button.MOVETANKTRAP);
+			menu.removeGlyph(Button.MOVEFOXHOLE);
 			
-			menu.addGlyph(ButtonOptions.TOWER);
+			menu.addGlyph(Button.TOWER);
 			
 		} else if (selected.getClassification() == Classification.GUNMAN ||
 				selected.getClassification() == Classification.SPECOPS) {
 			// gun men and specops cannot place tank traps
-			menu.removeGlyph(ButtonOptions.MOVETANKTRAP);
+			menu.removeGlyph(Button.MOVETANKTRAP);
 			
-			menu.addGlyph(ButtonOptions.MOVEFOXHOLE);
-			menu.addGlyph(ButtonOptions.TOWER);
+			menu.addGlyph(Button.MOVEFOXHOLE);
+			menu.addGlyph(Button.TOWER);
 			
 		}
 		
 		if (!selected.canMove()) {
-			menu.removeGlyph(ButtonOptions.MOVE);
+			menu.removeGlyph(Button.MOVE);
 		} else {
-			menu.addGlyph(ButtonOptions.MOVE);
+			menu.addGlyph(Button.MOVE);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -656,13 +656,13 @@ public class UserArmy extends Army
 		if (!Cursor.isButtonPressed(Cursor.LEFT))
 			menurelease = true;
 		
-		int event = -1;
+		Button event = Button.NULL;
 		if (Cursor.isButtonJustReleased(Cursor.LEFT))
 			event = menu.getAction( menu.getButtonDown(Campos) );
 		
 		switch (event)
 		{
-		case ButtonOptions.STOP:
+		case STOP:
 			// leave the menu
 			checkSelectedStop();
 			
@@ -680,7 +680,7 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 
-		case ButtonOptions.MOVE:
+		case MOVE:
 			// set the movement
 			checkSelectedStop();
 			moveactive = true;
@@ -693,7 +693,7 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 			
-		case ButtonOptions.MOVEFOXHOLE:
+		case MOVEFOXHOLE:
 			checkSelectedStop();
 			if (requisition - FoxHole.REQCOST >= 0) {
 				foxselect.setSelected(selected);
@@ -706,7 +706,7 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 			
-		case ButtonOptions.MOVETANKTRAP:
+		case MOVETANKTRAP:
 			checkSelectedStop();
 			if (requisition - TankBarrier.REQCOST >= 0) {
 				barrierselect.setSelected(selected);
@@ -719,7 +719,7 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 			
-		case ButtonOptions.TOWER:
+		case TOWER:
 			checkSelectedStop();
 			
 			if (requisition - OutpostFlag.REQCOST >= 0) {
@@ -732,7 +732,7 @@ public class UserArmy extends Army
 			menu.resetClock();
 			break;
 			
-		case ButtonOptions.UPGRADE:
+		case UPGRADE:
 			// activate the profile
 			profileactive = true;
 			
@@ -768,6 +768,54 @@ public class UserArmy extends Army
 		if (selected.doAddTower()) {
 			selected.addOutpostOnFinishedMove(null, false);
 			addRequisition(OutpostFlag.REQCOST, p);
+		}
+	}
+	
+	private void updateSpawnPoint(Camera Cam)
+	{
+		if (!selectspawnpoint || spawnindex == -1 || spawn == null)
+			return;
+		
+		// get the world position of the world
+		int xpos = Cursor.getMouseX(Cam.getPos()) + (int)Cam.getPos().x;
+		spawn.setPos(xpos);
+		spawn.setValid( base.isPointInBounds(spawn.getPos()) );
+		
+		int direction = GameWorld.getDirection((int)base.getMidX(), 0f, spawn.getPos().x, 0f);
+		spawn.setForward(true);
+		if (direction < 0)
+			spawn.setForward(false);
+		
+		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
+			selectspawnpoint = false;
+			spawnindex = -1;
+			spawn = null;
+		}
+	
+		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
+			// if the position is valid
+			if (spawn.isValid()) {
+				// go ahead and spawn the unit
+				int postcost = reqPostDeploy(spawnindex);
+				requisition = postcost;
+				int id = spawnUnit(spawnindex, xpos, spawn.isForward());
+
+				// tell all clients of the newly spawned squad
+				Response r = new Response();
+				r.source = getConnection();
+				r.request = "SQUADSPAWNED";
+				r.i0 = spawnindex;
+				r.i1 = id;
+				r.i2 = xpos;
+				r.b0 = spawn.isForward();
+
+				network.getClient().sendTCP(r);
+			}
+			
+			// leave the menu
+			selectspawnpoint = false;
+			spawnindex = -1;
+			spawn = null;
 		}
 	}
 	
@@ -892,25 +940,25 @@ public class UserArmy extends Army
 		}
 		
 		if (selected.getClassification() == Classification.TANK) {
-			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
-			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
-			offensemenu.removeGlyph(ButtonOptions.GRENADER);
+			offensemenu.removeGlyph(Button.LANDMINE);
+			offensemenu.removeGlyph(Button.GRENADEL);
+			offensemenu.removeGlyph(Button.GRENADER);
 			
 		} else if (selected.getClassification() == Classification.TOWER){
-			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
-			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
-			offensemenu.removeGlyph(ButtonOptions.GRENADER);
+			offensemenu.removeGlyph(Button.LANDMINE);
+			offensemenu.removeGlyph(Button.GRENADEL);
+			offensemenu.removeGlyph(Button.GRENADER);
 			
 		} else if (selected.getClassification() == Classification.GUNMAN || 
 				selected.getClassification() == Classification.SPECOPS) {
-			offensemenu.removeGlyph(ButtonOptions.LANDMINE);
-			offensemenu.addGlyph(ButtonOptions.GRENADEL);
-			offensemenu.addGlyph(ButtonOptions.GRENADER);
+			offensemenu.removeGlyph(Button.LANDMINE);
+			offensemenu.addGlyph(Button.GRENADEL);
+			offensemenu.addGlyph(Button.GRENADER);
 			
 		} else if (selected.getClassification() == Classification.STEALTHOPS) {
-			offensemenu.addGlyph(ButtonOptions.LANDMINE);
-			offensemenu.removeGlyph(ButtonOptions.GRENADEL);
-			offensemenu.removeGlyph(ButtonOptions.GRENADER);
+			offensemenu.addGlyph(Button.LANDMINE);
+			offensemenu.removeGlyph(Button.GRENADEL);
+			offensemenu.removeGlyph(Button.GRENADER);
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.RIGHT)) {
@@ -922,13 +970,13 @@ public class UserArmy extends Army
 		if (!Cursor.isButtonPressed(Cursor.LEFT))
 			menurelease = true;
 		
-		int event = -1;
+		Button event = Button.NULL;
 		if (Cursor.isButtonJustReleased(Cursor.LEFT))
 			event = offensemenu.getAction( offensemenu.getButtonDown(Campos) );
 		
 		switch (event)
 		{
-		case ButtonOptions.STOP:
+		case STOP:
 			// leave the menu and do not select a squad
 			selected.setTargetSquad(null);
 			selected.setFiringSecondary(false);
@@ -939,7 +987,7 @@ public class UserArmy extends Army
 			offensemenu.resetClock();
 			break;
 			
-		case ButtonOptions.ATTACK:
+		case ATTACK:
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
@@ -959,7 +1007,7 @@ public class UserArmy extends Army
 			
 			break;
 			
-		case ButtonOptions.LANDMINE:
+		case LANDMINE:
 			selected.setFiringSecondary(true);
 			
 			// leave the menu
@@ -969,7 +1017,7 @@ public class UserArmy extends Army
 			
 			break;
 			
-		case ButtonOptions.GRENADEL:
+		case GRENADEL:
 			// leave the menu
 			selected.setTargetSquad(null);
 			menuactive = false;
@@ -987,7 +1035,7 @@ public class UserArmy extends Army
 			grenade = true;
 			break;
 			
-		case ButtonOptions.GRENADER:
+		case GRENADER:
 			// leave the menu
 			menuactive = false;
 			menurelease = false;
@@ -1281,7 +1329,7 @@ public class UserArmy extends Army
 	public boolean isMenuOpen()
 	{
 		return (menuactive || moveactive || profileactive || targetenemies || targetpoint || targetside || 
-				targetpower || foxactive || grenade || barricadeactive || selecttower);
+				targetpower || foxactive || grenade || barricadeactive || selecttower || selectspawnpoint);
 	}
 	
 	private void drawDeployer(SpriteBatch Batch, Camera Cam)
@@ -1348,13 +1396,13 @@ public class UserArmy extends Army
 		
 		// check for actions that cost requisition
 		if (menuactive) {
-			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVEFOXHOLE) {
+			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.MOVEFOXHOLE) {
 				MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
 				
-			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.MOVETANKTRAP) {
+			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.MOVETANKTRAP) {
 				MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
 				
-			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == ButtonOptions.TOWER) {
+			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.TOWER) {
 				MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
 				
 			} else {
@@ -1417,6 +1465,10 @@ public class UserArmy extends Army
 		
 		if (barricadeactive && selected != null) {
 			barrierselect.render(Batch, Cam);
+		}
+		
+		if (spawn != null) {
+			spawn.draw(Batch, Cam);
 		}
 	}
 }

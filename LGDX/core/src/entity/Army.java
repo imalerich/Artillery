@@ -203,14 +203,8 @@ public abstract class Army
 		}
 	}
 	
-	public int spawnUnit(int UnitType)
+	public int spawnUnit(int UnitType, int XPos, boolean Forward)
 	{
-		int offset = 76;
-		if (UnitType == UnitDeployer.STEALTHOPS)
-			offset = 192;
-		else if (UnitType == UnitDeployer.SPECOPS)
-			offset = 306;
-		
 		// get the appropriate configuration settings
 		ConfigSettings c = null;
 		Squad s = null;
@@ -232,8 +226,9 @@ public abstract class Army
 			break;
 		}
 		
-		s.setTargetX((int)base.getPos().x+offset);
 		int spacing = s.getSquadSpacing();
+		XPos -= (c.count*spacing)/2f;
+		s.setTargetX((int)XPos);
 		addSquad(s);
 		
 		// set the armor and armament for the squad
@@ -250,7 +245,7 @@ public abstract class Army
 		
 		for (int i=0; i<c.count; i++)
 		{
-			Vector2 pos = new Vector2(base.getPos().x+offset + i*spacing, 0);
+			Vector2 pos = new Vector2(XPos + i*spacing, 0);
 			
 			switch (UnitType)
 			{
@@ -272,6 +267,7 @@ public abstract class Army
 		}
 		
 		world.addReqIndicator(new Vector2(s.getBBox().x + s.getBBox().width/2f, s.getBBox().y + s.getBBox().height), -c.reqcost);
+		s.setForward(Forward);
 		
 		return s.getID();
 	}

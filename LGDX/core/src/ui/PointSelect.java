@@ -118,7 +118,7 @@ public class PointSelect
 			} else if (maxx >= Game.WORLDW) {
 				if (targetx > startx && targetx < Game.WORLDW) {
 					//
-				} else if (targetx > maxx - Game.WORLDW){
+				} else if (targetx < startx && targetx > maxx - Game.WORLDW){
 					targetx = maxx - Game.WORLDW;
 				}
 			}

@@ -104,7 +104,7 @@ public class RemoteArmy extends Army
 			
 		} else if (r.request.equals("SQUADSPAWNED")) {
 			// make sure the same id is used across all clients
-			int tmp = spawnUnit(r.i0);
+			int tmp = spawnUnit(r.i0, r.i2, r.b0);
 			getSquad(tmp).setID(r.i1);
 			return;
 			

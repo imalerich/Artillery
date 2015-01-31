@@ -14,17 +14,6 @@ import com.mygdx.game.Cursor;
 
 public class ButtonOptions 
 {
-	public static final int MOVE			= 0;
-	public static final int MOVEFOXHOLE		= 1;
-	public static final int MOVETANKTRAP	= 2;
-	public static final int UPGRADE			= 3;
-	public static final int TOWER			= 4;
-	public static final int ATTACK			= 5;
-	public static final int GRENADEL		= 6;
-	public static final int GRENADER		= 7;
-	public static final int LANDMINE		= 8;
-	public static final int STOP			= 9;
-	
 	private static final int BUTTONGAP = 8;
 	private static final int GROWSPEED = 16;
 	private static final int BUTTONDOWN = 4;
@@ -35,7 +24,7 @@ public class ButtonOptions
 	private double clock;
 	private int xpos;
 	private int ypos;
-	private ArrayList<Integer> buttonGlyphs;
+	private ArrayList<Button> buttonGlyphs;
 	private Rectangle[] bbox;
 	
 	public static void release()
@@ -56,7 +45,7 @@ public class ButtonOptions
 		
 		clock = 0.0;
 		
-		buttonGlyphs = new ArrayList<Integer>();
+		buttonGlyphs = new ArrayList<Button>();
 		setPos(XPos, YPos, new Vector2(0, 0));
 	}
 	
@@ -65,17 +54,17 @@ public class ButtonOptions
 		clock = 0.0;
 	}
 	
-	public void addGlyph(Integer Glyph)
+	public void addGlyph(Button Glyph)
 	{
 		if (buttonGlyphs.contains(Glyph)) {
 			return;
 		}
 		
 		int index = 0;
-		Iterator<Integer> i = buttonGlyphs.iterator();
+		Iterator<Button> i = buttonGlyphs.iterator();
 		while (i.hasNext()) {
 			// add the glyph at the first position available
-			if (Glyph < i.next()) {
+			if (Glyph.ordinal() < i.next().ordinal()) {
 				buttonGlyphs.add(index, Glyph);
 				calcBoundingBoxes();
 				return;
@@ -89,13 +78,13 @@ public class ButtonOptions
 		buttonGlyphs.add(Glyph);
 	}
 	
-	public void removeGlyph(Integer Glyph)
+	public void removeGlyph(Button Glyph)
 	{
 		if (!buttonGlyphs.contains(Glyph)) {
 			return;
 		}
 		
-		Iterator<Integer> i = buttonGlyphs.iterator();
+		Iterator<Button> i = buttonGlyphs.iterator();
 		while (i.hasNext()) {
 			// if the designated glyph is found, remove it
 			if (i.next() == Glyph) {
@@ -127,12 +116,12 @@ public class ButtonOptions
 		calcBoundingBoxes();
 	}
 	
-	public int getAction(int Button)
+	public Button getAction(int B)
 	{
-		if (Button == -1 || Button > buttonGlyphs.size())
-			return -1;
+		if (B == -1 || B > buttonGlyphs.size())
+			return Button.NULL;
 		
-		return buttonGlyphs.get(Button);
+		return buttonGlyphs.get(B);
 	}
 	
 	public int getButtonDown(Vector2 Campos)
@@ -158,9 +147,9 @@ public class ButtonOptions
 		int selected = getButtonDown(Cam.getPos());
 		
 		int index = 0;
-		Iterator<Integer> i = buttonGlyphs.iterator();
+		Iterator<Button> i = buttonGlyphs.iterator();
 		while (i.hasNext()) {
-			Integer n = i.next();
+			Integer n = i.next().ordinal();
 			
 			int x = xpos + index*button.getWidth() - width/2 + index*BUTTONGAP;
 			

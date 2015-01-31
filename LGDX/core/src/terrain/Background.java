@@ -14,11 +14,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
+import com.mygdx.game.Util;
 
 public class Background 
 {
-	public static final Color DAY = new Color(99/255f, 33/255f, 28/255f, 1f);
-	public static final Color NIGHT = new Color(8/255f, 2/255f, 26/255f, 1f);
+	public static final Color DAY = new Color(74/255f, 69/255f, 61/255f, 1f);
+	public static final Color NIGHT = new Color(64/255f, 61/255f, 74/255f, 1f);
 	public static final Color NIGHTF = new Color(DAY.r, DAY.g, DAY.b, 0.15f);
 	public static final Color TERRAIN = new Color(54/255f, 47/255f, 43/255f, 1f);
 	public static final Color BUILDING = new Color(112/255f, 107/255f, 98/255f, 1f);
@@ -98,24 +99,23 @@ public class Background
 		
 		p = new Particles();
 		
-		l0 = new BGLayer("img/bg/layer0.png", new Color(TERRAIN.r * 1.45f, TERRAIN.g * 1.45f, TERRAIN.b * 1.45f, 1f), 0.5f, 0f);
-		l1 = new BGLayer("img/bg/layer1.png", new Color(TERRAIN.r * 1.65f, TERRAIN.g * 1.65f, TERRAIN.b * 1.65f, 1f), 0.35f, 0f);
-		l2 = new BGLayer("img/bg/layer2.png", new Color(TERRAIN.r * 1.85f, TERRAIN.g * 1.85f, TERRAIN.b * 1.85f, 1f), 0.2f, 0f);
-		l3 = new BGLayer("img/bg/layer3.png", new Color(TERRAIN.r * 0.8f, TERRAIN.g * 0.8f, TERRAIN.b * 0.8f, 1f), 0.12f, 0f);
+		c0 = new BGLayer("img/bg/clouds0.png", Util.brightenColor(DAY, 0.08f), 0.10f, 16f);
+		c1 = new BGLayer("img/bg/clouds1.png", Util.brightenColor(DAY, 0.06f), 0.08f, 8f);
+		c2 = new BGLayer("img/bg/clouds2.png", Util.brightenColor(DAY, 0.04f), 0.06f, 4f);
+		c3 = new BGLayer("img/bg/clouds3.png", Util.brightenColor(DAY, 0.02f), 0.04f, 2f);
 		
-		l0.setNightColor( new Color(l0.getColor().r*0.5f + NIGHT.r*0.5f, l0.getColor().g*0.5f + NIGHT.g*0.5f, l0.getColor().b*0.5f + NIGHT.b*0.5f, 1f) );
-		l1.setNightColor( new Color(l1.getColor().r*0.5f + NIGHT.r*0.5f, l1.getColor().g*0.5f + NIGHT.g*0.5f, l1.getColor().b*0.5f + NIGHT.b*0.5f, 1f) );
-		l2.setNightColor( new Color(l2.getColor().r*0.5f + NIGHT.r*0.5f, l2.getColor().g*0.5f + NIGHT.g*0.5f, l2.getColor().b*0.5f + NIGHT.b*0.5f, 1f) );
-		l3.setNightColor( new Color(l3.getColor().r*0.5f + NIGHT.r*0.5f, l3.getColor().g*0.5f + NIGHT.g*0.5f, l3.getColor().b*0.5f + NIGHT.b*0.5f, 1f) );
+		l0 = new BGLayer("img/bg/layer0.png", Util.brightenColor(TERRAIN, 0.12f), 0.5f, 0f);
+		l1 = new BGLayer("img/bg/layer1.png", Util.brightenColor(TERRAIN, 0.14f), 0.35f, 0f);
+		l2 = new BGLayer("img/bg/layer2.png", Util.brightenColor(TERRAIN, 0.16f), 0.2f, 0f);
+		l3 = new BGLayer("img/bg/layer3.png", Util.brightenColor(TERRAIN, 0.19f), 0.12f, 0f);
 		
-		float scale = 0.2f;
-		c0 = new BGLayer("img/bg/clouds0.png", new Color(DAY.r + (scale), DAY.g + (scale), DAY.b + (scale), 1f),				0.10f, 16f);
-		c1 = new BGLayer("img/bg/clouds1.png", new Color(DAY.r + (scale*0.8f), DAY.g + (scale*0.8f), DAY.b + (scale*0.8f), 1f),	0.08f, 8f);
-		c2 = new BGLayer("img/bg/clouds2.png", new Color(DAY.r + (scale*0.5f), DAY.g + (scale*0.5f), DAY.b + (scale*0.5f), 1f),	0.06f, 4f);
-		c3 = new BGLayer("img/bg/clouds3.png", new Color(DAY.r + (scale*0.3f), DAY.g + (scale*0.3f), DAY.b + (scale*0.3f), 1f),	0.04f, 2f);
+		l0.setNightColor( Util.darkenColor( Util.mergeColors(l0.getColor(), 0.2f, NIGHT), 0.05f));
+		l1.setNightColor( Util.darkenColor( Util.mergeColors(l1.getColor(), 0.2f, NIGHT), 0.05f));
+		l2.setNightColor( Util.darkenColor( Util.mergeColors(l2.getColor(), 0.2f, NIGHT), 0.05f));
+		l3.setNightColor( Util.darkenColor( Util.mergeColors(l3.getColor(), 0.2f, NIGHT), 0.05f));
 		
 		nightg = new BGLayer("img/bg/night_gradient.png", NIGHTF, 0f, 0f);
-		godrays = new BGLayer("img/bg/god_rays.png", new Color(1f, 1f, 1f, 0.4f), 0.07f, 0f);
+		godrays = new BGLayer("img/bg/god_rays.png", new Color(1f, 1f, 1f, 1.0f), 0.03f, 0f);
 		
 		light0 = new Texture( Gdx.files.internal("img/bg/lightning0.png") );
 		light1 = new Texture( Gdx.files.internal("img/bg/lightning1.png") );
@@ -189,14 +189,14 @@ public class Background
 	private static void setGlobalColors()
 	{
 		if (TimeOfDay.isNight()) {
-			Color night = new Color(TERRAIN.r*0.6f + NIGHT.r*0.4f, TERRAIN.g*0.6f + NIGHT.g*0.4f, TERRAIN.b*0.6f + NIGHT.b*0.4f, 1f);
+			Color night = Util.mergeColors(TERRAIN, 0.2f, NIGHT);
 			Terrain.setColor(night);
 			
 		} else if (TimeOfDay.isDay()) {
 			Terrain.setColor( TERRAIN );
 			
 		} else {
-			Color night = new Color(TERRAIN.r*0.6f + NIGHT.r*0.4f, TERRAIN.g*0.6f + NIGHT.g*0.4f, TERRAIN.b*0.6f + NIGHT.b*0.4f, 1f);
+			Color night = Util.mergeColors(TERRAIN, 0.2f, NIGHT);
 			float d = TimeOfDay.getTrans();
 			float n = 1f - d;
 			
@@ -239,9 +239,9 @@ public class Background
 		
 		if (!TimeOfDay.isNight()) {
 			if (TimeOfDay.isTrans())
-				setCloudAlpha( TimeOfDay.getTrans()*0.95f + 0.05f );
+				setCloudAlpha( 0.2f * (TimeOfDay.getTrans()*0.95f + 0.05f) );
 			else
-				setCloudAlpha( 1f );
+				setCloudAlpha( 0.2f );
 			
 		} else {
 			setCloudAlpha(0.05f);
@@ -254,9 +254,9 @@ public class Background
 		
 		if (!TimeOfDay.isNight()) {
 			if (TimeOfDay.isTrans())
-				godrays.setAlpha( TimeOfDay.getTrans());
+				godrays.setAlpha( 0.3f * TimeOfDay.getTrans());
 			else
-				godrays.setAlpha(1f);
+				godrays.setAlpha(0.3f);
 			
 			godrays.draw(Batch, Cam);
 		}
@@ -278,7 +278,7 @@ public class Background
 		l3.draw(Batch, Cam);
 		l2.draw(Batch, Cam);
 		
-		ParticleMask.setOpacity(0.3f);
+		ParticleMask.setOpacity(0.2f);
 		p.drawParallax(Batch, Cam, l1.getPos() - l1.getWidth()*2f);
 		p.drawParallax(Batch, Cam, l1.getPos() - l1.getWidth());
 		p.drawParallax(Batch, Cam, l1.getPos());

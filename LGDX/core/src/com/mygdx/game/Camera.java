@@ -148,6 +148,14 @@ public class Camera
 		return new Vector2(pos.x + shakepos.x + kickpos.x, pos.y + shakepos.y + kickpos.y + rumblepos.y);
 	}
 	
+	public float validatePos(float XPos)
+	{
+		if (XPos > Game.WORLDW)
+			XPos -= Game.WORLDW;
+		
+		return XPos;
+	}
+	
 	public void setPos(Vector2 Pos)
 	{
 		pos = Pos;
