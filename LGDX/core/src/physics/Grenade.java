@@ -27,9 +27,9 @@ public class Grenade extends Missile
 			tex.dispose();
 	}
 	
-	public Grenade(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength, int SourceArmy) 
+	public Grenade(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength, int SourceArmy, int BlastRadius) 
 	{
-		super(GW, Ter, Particle, Source, Velocity, Strength, SourceArmy);
+		super(GW, Ter, Particle, Source, Velocity, Strength, SourceArmy, BlastRadius);
 		dusttime = 0.3f;
 		dustdecay = 1f;
 		dustspeed = 256.0;
@@ -59,7 +59,7 @@ public class Grenade extends Missile
 	@Override
 	protected void procBlast()
 	{
-		gw.procBlast( new Blast(pos, 16, strength, sourceArmy));
+		gw.procBlast( new Blast(pos, blastRadius, strength, sourceArmy));
 	}
 	
 	@Override

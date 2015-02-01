@@ -113,8 +113,12 @@ public class PointSelect
 		
 		if (rdist < ldist) {
 			// right
-			if (maxx < Game.WORLDW && targetx > maxx) {
-				targetx = maxx;
+			if (maxx < Game.WORLDW) {
+				if (targetx > maxx) {
+					targetx = maxx;
+				} else if (targetx < startx){
+					targetx = maxx;
+				}
 			} else if (maxx >= Game.WORLDW) {
 				if (targetx > startx && targetx < Game.WORLDW) {
 					//

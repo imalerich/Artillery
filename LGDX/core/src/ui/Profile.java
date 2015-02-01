@@ -148,8 +148,21 @@ public class Profile
 		Batch.draw(close, closerect.x, closerect.y-offsety);
 		
 		MenuBar.setTmpRequisition( S.getArmy().getReq() );
-		ProfileWeapon.draw(Batch, S, S.getPrimary(), true, 4, ypos+BG.getHeight()-57);
-		ProfileWeapon.draw(Batch, S, S.getSecondary(), false, 4, ypos+BG.getHeight()-57 - ProfileWeapon.getHeight());
+		int off = 0;
+		if (S.getPrimary() != null) {
+			ProfileWeapon.draw(Batch, S, S.getPrimary(), true, 4, ypos+BG.getHeight()-57 - off);
+			off += ProfileWeapon.getHeight();
+		}
+		
+		if (S.getSecondary() != null) {
+			ProfileWeapon.draw(Batch, S, S.getSecondary(), false, 4, ypos+BG.getHeight()-57 - off);
+			off += ProfileWeapon.getHeight();
+		}
+		
+		if (S.getOffhand() != null) {
+			ProfileWeapon.draw(Batch, S, S.getOffhand(), false, 4, ypos+BG.getHeight()-57 - off);
+			off += ProfileWeapon.getHeight();
+		}
 		
 		S.drawMugshots(Batch, 12, ypos+(BG.getHeight()-36));
 		

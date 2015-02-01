@@ -23,6 +23,7 @@ public class UnitDeployer
 	private static Rectangle[] bbox;
 	
 	private static double clock = 0.0;
+	private static boolean draw = true;
 	
 	public static void init()
 	{
@@ -34,6 +35,11 @@ public class UnitDeployer
 		if (bbox == null) {
 			bbox = new Rectangle[UNITCOUNT];
 		}
+	}
+	
+	public static void setDraw(boolean B)
+	{
+		draw = B;
 	}
 	
 	public static void resetClock()
@@ -80,6 +86,9 @@ public class UnitDeployer
 	
 	public static void draw(SpriteBatch Batch, Camera Cam, int Index)
 	{
+		if (!draw)
+			return;
+		
 		// increment the clock
 		clock += Gdx.graphics.getDeltaTime();
 		float scale = 1f;

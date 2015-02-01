@@ -14,7 +14,7 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "POINT", "LANDMINE", "FLAME", 
-		"ARMOR", "PRIMARY", "SECONDARY", "END", "count:", "speed:", "health:",
+		"ARMOR", "PRIMARY", "SECONDARY", "OFFHAND", "END", "count:", "speed:", "health:",
 		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
 	/**
@@ -250,6 +250,8 @@ public class ConfigGenerator
 		float levelmod = DEFAULT_LEVELMOD;
 		
 		boolean inprimary = false;
+		boolean insecondary = false;
+		boolean inoffhand = false;
 		boolean insegment = false;
 		int linenumber = 0;
 		
@@ -265,23 +267,39 @@ public class ConfigGenerator
 			if (d.param.equals("PRIMARY")) {
 				insegment = true;
 				inprimary = true;
+				insecondary = false;
+				inoffhand = false;
 				continue;
 				
 			} else if (d.param.equals("SECONDARY")) {
 				insegment = true;
 				inprimary = false;
+				insecondary = true;
+				inoffhand = false;
+				continue;
+			} else if (d.param.equals("OFFHAND")) {
+				insegment = true;
+				inprimary = false;
+				insecondary = false;
+				inoffhand = true;
 				continue;
 				
 			} else if (d.param.equals("END") && insegment) { 
-				// end of ARMOR section - add the armor found and reset defaults
+				// end of ARMAMENT section - add the armament found and reset defaults
 				insegment = false;
 				
 				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod);
 				if (inprimary) {
 					Confg.addPrimary(a);
-				} else {
+				} else if (insecondary){
 					Confg.addSecondary(a);
+				} else if (inoffhand) {
+					Confg.addOffhand(a);
 				}
+				
+				inprimary = false;
+				insecondary = false;
+				inoffhand = false;
 				
 				type = DEFAULT_ARMAMENT_TYPE;
 				range = DEFAULT_ARMAMENT_RANGE;

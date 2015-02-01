@@ -65,7 +65,7 @@ public class CombatResolver
 	{
 		// un-cloak the offensive unit
 		Offense.setInvis(false);
-		
+			
 		Vector2 vel = getVel(Grenade, Offense, Offense.getPowerRatio());
 		
 		Iterator<Unit> u = Offense.getUnitIterator();
@@ -73,7 +73,7 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 		
-			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength(), Offense.getArmy().getConnection()) );
+			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength(), Offense.getArmy().getConnection(), 16) );
 		}
 	}
 	
@@ -90,9 +90,25 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 			
-			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection()) );
+			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection(), 64) );
 		}
+	}
+	
+	public void addMortar(Squad Offense)
+	{
+		// un-cloak the offensive unit
+		Offense.setInvis(false);
+		
+		float strength = Offense.getOffhand().getStrength();
+		Vector2 vel = getVel(Offense.getOffhand(), Offense, Offense.getPowerRatio());
+		
+		Iterator<Unit> u = Offense.getUnitIterator();
+		while (u.hasNext()) {
+			Unit unit = u.next();
+			Vector2 pos = getPos(unit);
 			
+			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection(), 24) );
+		}
 	}
 	
 	private Vector2 getVel(Armament Arms, Squad Offense, float Power)

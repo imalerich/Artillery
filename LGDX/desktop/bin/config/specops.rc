@@ -22,23 +22,23 @@ PRIMARY
 	type: UNIT
 	range: 768
 	firerate: 1
-	strength: 14
+	strength: 6
 	speed: 800
-	accuracy: 0.9
+	accuracy: 0.75
 
 	upgrade: 100
 	levelmod: 1
 
 END
 
-SECONDARY
+OFFHAND
 
 	type: POINT
 	firerate: 1
-	strength: 2
-	speed: 800
+	strength: 22
+	speed: 1600
 
-	upgrade: 100
-	levelmod: 1
+	upgrade: 200
+	levelmod: 1.5
 
 END

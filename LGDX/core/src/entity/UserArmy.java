@@ -87,7 +87,7 @@ public class UserArmy extends Army
 		prevOptionStackSize = 0;
 		prevTargetStackSize = 0;
 		
-		menu = new ButtonOptions(0, 04);
+		menu = new ButtonOptions(0, 4);
 		menu.addGlyph(Button.MOVE);
 		menu.addGlyph(Button.MOVEFOXHOLE);
 		menu.addGlyph(Button.MOVETANKTRAP);
@@ -243,6 +243,11 @@ public class UserArmy extends Army
 		while (s.hasNext()) {
 			Squad squad = s.next();
 			
+			if (squad.doSwapState()) {
+				squad.swapState();
+				squad.setSwapState(false);
+			}
+			
 			// add each squad and its target to the combat resolver
 			if (squad.getTargetSquad() != null && squad.getPrimary().getType() == Armament.UNITTARGET) {
 				Resolver.addConflict(squad, squad.getTargetSquad());
@@ -254,6 +259,11 @@ public class UserArmy extends Army
 				
 			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.FLAMETARGET) {
 				Resolver.addFlame(squad);
+				continue;
+			}
+			
+			if (squad.isFiringOffhand() && squad.getOffhand().getType() == Armament.POINTTARGET) {
+				Resolver.addMortar(squad);
 				continue;
 			}
 			
@@ -290,6 +300,7 @@ public class UserArmy extends Army
 			squad.setTargetSquad(null);
 			squad.setFiringPrimary(false);
 			squad.setFiringSecondary(false);
+			squad.setFiringOffhand(false);
 		}
 	}
 	
@@ -382,6 +393,7 @@ public class UserArmy extends Army
 		buildOptionStack(Cam, true);
 		setSelected();
 		updateDeployer(Cam);
+		UnitDeployer.setDraw(true);
 		
 		updateMenu(Cam);
 	}
@@ -393,6 +405,7 @@ public class UserArmy extends Army
 		if (stagecompleted[GameWorld.ATTACKSELECT])
 			return;
 		
+		UnitDeployer.setDraw(false);
 		buildOptionStack(Cam, false);
 		setSelected();
 		
@@ -626,19 +639,23 @@ public class UserArmy extends Army
 			
 		} else if (selected.getClassification() == Classification.STEALTHOPS) {
 			// stealth troops cannot place fox holes or place tank traps
-			menu.addGlyph(Button.MOVETANKTRAP);
+			menu.removeGlyph(Button.MOVETANKTRAP);
 			menu.removeGlyph(Button.MOVEFOXHOLE);
 			
 			menu.addGlyph(Button.TOWER);
 			
-		} else if (selected.getClassification() == Classification.GUNMAN ||
-				selected.getClassification() == Classification.SPECOPS) {
+		} else if (selected.getClassification() == Classification.GUNMAN) {
 			// gun men and specops cannot place tank traps
 			menu.removeGlyph(Button.MOVETANKTRAP);
 			
 			menu.addGlyph(Button.MOVEFOXHOLE);
 			menu.addGlyph(Button.TOWER);
 			
+		} else if (selected.getClassification() == Classification.SPECOPS) {
+			menu.removeGlyph(Button.MOVEFOXHOLE);
+			menu.removeGlyph(Button.MOVETANKTRAP);
+			menu.removeGlyph(Button.MOVEFOXHOLE);
+			menu.removeGlyph(Button.TOWER);
 		}
 		
 		if (!selected.canMove()) {
@@ -943,20 +960,41 @@ public class UserArmy extends Army
 			offensemenu.removeGlyph(Button.LANDMINE);
 			offensemenu.removeGlyph(Button.GRENADEL);
 			offensemenu.removeGlyph(Button.GRENADER);
+			offensemenu.removeGlyph(Button.SETMORTAR);
+			offensemenu.removeGlyph(Button.SETPISTOL);
 			
 		} else if (selected.getClassification() == Classification.TOWER){
 			offensemenu.removeGlyph(Button.LANDMINE);
 			offensemenu.removeGlyph(Button.GRENADEL);
 			offensemenu.removeGlyph(Button.GRENADER);
+			offensemenu.removeGlyph(Button.SETMORTAR);
+			offensemenu.removeGlyph(Button.SETPISTOL);
 			
-		} else if (selected.getClassification() == Classification.GUNMAN || 
-				selected.getClassification() == Classification.SPECOPS) {
-			offensemenu.removeGlyph(Button.LANDMINE);
+		} else if (selected.getClassification() == Classification.GUNMAN) {
 			offensemenu.addGlyph(Button.GRENADEL);
 			offensemenu.addGlyph(Button.GRENADER);
 			
+			offensemenu.removeGlyph(Button.SETMORTAR);
+			offensemenu.removeGlyph(Button.SETPISTOL);
+			offensemenu.removeGlyph(Button.LANDMINE);
+			
 		} else if (selected.getClassification() == Classification.STEALTHOPS) {
 			offensemenu.addGlyph(Button.LANDMINE);
+			
+			offensemenu.removeGlyph(Button.SETMORTAR);
+			offensemenu.removeGlyph(Button.SETPISTOL);
+			offensemenu.removeGlyph(Button.GRENADEL);
+			offensemenu.removeGlyph(Button.GRENADER);
+		} else if (selected.getClassification() == Classification.SPECOPS) {
+			if (selected.canMove()) {
+				offensemenu.addGlyph(Button.SETMORTAR);
+				offensemenu.removeGlyph(Button.SETPISTOL);
+			} else {
+				offensemenu.removeGlyph(Button.SETMORTAR);
+				offensemenu.addGlyph(Button.SETPISTOL);
+			}
+			
+			offensemenu.removeGlyph(Button.LANDMINE);
 			offensemenu.removeGlyph(Button.GRENADEL);
 			offensemenu.removeGlyph(Button.GRENADER);
 		}
@@ -981,6 +1019,7 @@ public class UserArmy extends Army
 			selected.setTargetSquad(null);
 			selected.setFiringSecondary(false);
 			selected.setFiringPrimary(false);
+			selected.setSwapState(false);
 			
 			menuactive = false;
 			menurelease = false;
@@ -993,11 +1032,20 @@ public class UserArmy extends Army
 			menurelease = false;
 			offensemenu.resetClock();
 			
+			selected.setSwapState(false);
 			selected.setTargetSquad(null);
 			selected.setFiringPrimary(false);
 			selected.setFiringSecondary(false);
 			
-			if (selected.getPrimary().getType() == Armament.UNITTARGET) {
+			if (!selected.canMove() && selected.getOffhand() != null) {
+				Vector2 pos = new Vector2(selected.getBBox().x-64, selected.getBBox().y + selected.getBBox().height/2);
+				if (selected.isForward())
+					pos = new Vector2(selected.getBBox().x+selected.getBBox().width+64, selected.getBBox().y + selected.getBBox().height/2);
+				
+				selected.getOffhand().setAngle(45);
+				powerselect.setPos(pos);
+				grenade = true;
+			} else if (selected.getPrimary().getType() == Armament.UNITTARGET) {
 				targetenemies = true;
 			} else if (selected.getPrimary().getType() == Armament.POINTTARGET) {
 				targetpoint = true;
@@ -1009,8 +1057,35 @@ public class UserArmy extends Army
 			
 		case LANDMINE:
 			selected.setFiringSecondary(true);
+			selected.setSwapState(false);
 			
 			// leave the menu
+			menuactive = false;
+			menurelease = false;
+			offensemenu.resetClock();
+			
+			break;
+			
+		case SETMORTAR:
+			// leave the menu and do not select a squad
+			selected.setTargetSquad(null);
+			selected.setFiringSecondary(false);
+			selected.setFiringPrimary(false);
+			selected.setSwapState(true);
+			
+			menuactive = false;
+			menurelease = false;
+			offensemenu.resetClock();
+			
+			break;
+			
+		case SETPISTOL:
+			// leave the menu and do not select a squad
+			selected.setTargetSquad(null);
+			selected.setFiringSecondary(false);
+			selected.setFiringPrimary(false);
+			selected.setSwapState(true);
+			
 			menuactive = false;
 			menurelease = false;
 			offensemenu.resetClock();
@@ -1024,6 +1099,7 @@ public class UserArmy extends Army
 			menurelease = false;
 			offensemenu.resetClock();
 			
+			selected.setSwapState(false);
 			selected.setTargetSquad(null);
 			selected.setFiringPrimary(false);
 			selected.setFiringSecondary(false);
@@ -1041,6 +1117,7 @@ public class UserArmy extends Army
 			menurelease = false;
 			offensemenu.resetClock();
 			
+			selected.setSwapState(false);
 			selected.setTargetSquad(null);
 			selected.setFiringPrimary(false);
 			selected.setFiringSecondary(false);
@@ -1292,17 +1369,26 @@ public class UserArmy extends Army
 		if (powerselect.doFire(Cam)) {
 			selected.setPowerRatio(powerselect.getPower()/PowerButtons.MAXPOWER);
 			selected.setFiringPrimary(false);
-			selected.setFiringSecondary(true);
+			
 			grenade = false;
 			
 			// send a message to all clients informing them who is firing and where
 			Response r = new Response();
 			r.source = getConnection();
-			r.request = "UNITGRENADE";
+			if (selected.getSecondary() != null) {
+				selected.setFiringSecondary(true);
+				r.request = "UNITGRENADE";
+				r.b0 = selected.isFiringSecondary();
+				r.f0 = selected.getSecondary().getAngle();
+			} else {
+				selected.setFiringOffhand(true);
+				r.request = "UNITMORTAR";
+				r.b0 = selected.isFiringOffhand();
+				r.f0 = selected.getOffhand().getAngle();
+			}
+			
 			r.i0 = selected.getID();
-			r.b0 = selected.isFiringSecondary();
 			r.b1 = selected.isForward();
-			r.f0 = selected.getSecondary().getAngle();
 			r.f1 = selected.getPowerRatio();
 			
 			network.getClient().sendTCP(r);

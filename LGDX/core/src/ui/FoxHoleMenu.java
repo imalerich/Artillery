@@ -109,8 +109,12 @@ public class FoxHoleMenu
 		
 		if (d == 1) {
 			// right
-			if (maxx < Game.WORLDW && Pos > maxx) {
-				return maxx;
+			if (maxx < Game.WORLDW) {
+				if (Pos > maxx) {
+					return maxx;
+				} else if (Pos < startx){
+					Pos = maxx;
+				}
 			} else if (maxx >= Game.WORLDW) {
 				if (Pos > startx && Pos < Game.WORLDW) {
 					return Pos;

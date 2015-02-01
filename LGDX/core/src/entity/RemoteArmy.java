@@ -155,6 +155,16 @@ public class RemoteArmy extends Army
 			s.getSecondary().setAngle(r.f0);
 			s.setPowerRatio(r.f1);
 			return;
+		} else if (r.request.equals("UNITMORTAR")) {
+			Squad s = getSquad(r.i0);
+			if (s == null)
+				return;
+			
+			s.setForward(r.b1);
+			s.setFiringOffhand(r.b0);
+			s.getSecondary().setAngle(r.f0);
+			s.setPowerRatio(r.f1);
+			return;
 		}
 		
 		if (r.request.equals("UNITHEALTH")) {
@@ -231,6 +241,11 @@ public class RemoteArmy extends Army
 				
 			} else if (squad.isFiringPrimary() && squad.getPrimary().getType() == Armament.FLAMETARGET) {
 				Resolver.addFlame(squad);
+				continue;
+			}
+			
+			if (squad.isFiringOffhand() && squad.getOffhand().getType() == Armament.POINTTARGET) {
+				Resolver.addMortar(squad);
 				continue;
 			}
 			

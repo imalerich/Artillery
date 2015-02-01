@@ -52,6 +52,7 @@ public class Squad
 	// the armor and armament that is used by this squad
 	private Armament primary;
 	private Armament secondary;
+	private Armament offhand;
 	private Armor armor;
 	
 	private Vector<Unit> units;
@@ -68,6 +69,7 @@ public class Squad
 	private float powerratio = 0f;
 	private boolean isFiringP = false;
 	private boolean isFiringS = false;
+	private boolean isFiringO = false;
 	private boolean isTarget;
 	private boolean direction;
 	private double pointerheight;
@@ -85,6 +87,7 @@ public class Squad
 	private boolean addoutpost;
 	private OutpostFlag outpost;
 	
+	private boolean swapState = false;
 	private boolean rumble = false;
 	private int reqbonus = 0;
 	
@@ -433,6 +436,11 @@ public class Squad
 		isFiringS = IsFiring;
 	}
 	
+	public void setFiringOffhand(boolean IsFiring)
+	{
+		isFiringO = IsFiring;
+	}
+	
 	public boolean isFiringPrimary()
 	{
 		return isFiringP;
@@ -441,6 +449,11 @@ public class Squad
 	public boolean isFiringSecondary()
 	{
 		return isFiringS;
+	}
+	
+	public boolean isFiringOffhand()
+	{
+		return isFiringO;
 	}
 	
 	public void setAsTarget()
@@ -468,6 +481,11 @@ public class Squad
 		secondary = new Armament(Arms);
 	}
 	
+	public void setOffhand(Armament Arms)
+	{
+		offhand = new Armament(Arms);
+	}
+	
 	public Armament getPrimary()
 	{
 		return primary;
@@ -476,6 +494,11 @@ public class Squad
 	public Armament getSecondary()
 	{
 		return secondary;
+	}
+	
+	public Armament getOffhand()
+	{
+		return offhand;
 	}
 	
 	public void setArmor(Armor Set)
@@ -521,6 +544,22 @@ public class Squad
 		while (u.hasNext()) {
 			u.next().setForward(direction == 1);
 		}
+	}
+	
+	public void setSwapState(boolean B)
+	{
+		swapState = B;
+	}
+	
+	public boolean doSwapState()
+	{
+		return swapState;
+	}
+	
+	public void swapState()
+	{
+		if (swapState)
+			canmove = !canmove;
 	}
 	
 	public Rectangle getBoundingBox()
@@ -1010,7 +1049,7 @@ public class Squad
 	
 	public void drawTargetSquad(SpriteBatch Batch, Camera Cam)
 	{
-		if ((isFiringPrimary() || isFiringSecondary()) && units.size() > 0) {
+		if ((isFiringPrimary() || isFiringSecondary() || isFiringOffhand()) && units.size() > 0) {
 			Iterator<Unit> u = units.iterator();
 			while (u.hasNext()) {
 				u.next().drawTargetAngle(Batch, Cam);

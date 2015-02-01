@@ -12,6 +12,7 @@ public class ConfigSettings
 	private Vector<Armor> armor;
 	private Vector<Armament> primary;
 	private Vector<Armament> secondary;
+	private Vector<Armament> offhand;
 	
 	/**
 	 * Default count of a unit.
@@ -64,6 +65,7 @@ public class ConfigSettings
 		armor = new Vector<Armor>();
 		primary = new Vector<Armament>();
 		secondary = new Vector<Armament>();
+		offhand = new Vector<Armament>();
 	}
 	
 	/**
@@ -97,6 +99,16 @@ public class ConfigSettings
 	}
 	
 	/**
+	 * Add a new offhand armament configuration for the unit.
+	 * @param A
+	 * 	Offhand armament to be added.
+	 */
+	public void addOffhand(Armament A)
+	{
+		offhand.add(A);
+	}
+	
+	/**
 	 * Get an accessor for this configurations armor.
 	 * @return
 	 * Iterator of the confgiurations armors.
@@ -127,6 +139,16 @@ public class ConfigSettings
 	}
 	
 	/**
+	 * Get an accessor for this configurations armaments.
+	 * @return
+	 * 	Iterator of the configurations offhand weapons.
+	 */
+	public Iterator<Armament> getOffhand()
+	{
+		return offhand.iterator();
+	}
+	
+	/**
 	 * Get the first set of armor in the list.
 	 * @return
 	 * 	The first set of armor.
@@ -147,13 +169,23 @@ public class ConfigSettings
 	}
 	
 	/**
-	 * Get the first armement in the list.
+	 * Get the first secondary armament in the list.
 	 * @return
-	 * 	The first armament.
+	 * 	The first secondary armament.
 	 */
 	public Armament getFirstSecondary()
 	{
 		return secondary.firstElement();
+	}
+	
+	/**
+	 * Get the first offhand armament in the list.
+	 * @return
+	 *  The first offhand armament.
+	 */
+	public Armament getFirstOffhand()
+	{
+		return offhand.firstElement();
 	}
 	
 	/**
@@ -184,5 +216,15 @@ public class ConfigSettings
 	public int secondaryCount()
 	{
 		return secondary.size();
+	}
+	
+	/**
+	 * Get the numver of elements in the offhand armament list.
+	 * @return
+	 * 	Number of offhand armament elements available.
+	 */
+	public int offhandCount()
+	{
+		return offhand.size();
 	}
 }

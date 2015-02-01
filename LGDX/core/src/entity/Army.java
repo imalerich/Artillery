@@ -230,12 +230,18 @@ public abstract class Army
 		XPos -= (c.count*spacing)/2f;
 		s.setTargetX((int)XPos);
 		addSquad(s);
+		s.canBurn(true);
 		
 		// set the armor and armament for the squad
-		s.setPrimary(c.getFirstPrimary());
-		s.setSecondary(c.getFirstSecondary());
-		s.setArmor(c.getFirstArmor());
-		s.canBurn(true);
+		if (c.primaryCount() > 0)
+			s.setPrimary(c.getFirstPrimary());
+		if (c.secondaryCount() > 0)
+			s.setSecondary(c.getFirstSecondary());
+		if (c.offhandCount() > 0)
+			s.setOffhand(c.getFirstOffhand());
+		
+		if (c.armorCount() > 0)
+			s.setArmor(c.getFirstArmor());
 		
 		// stealth ops have active cloak
 		if (UnitType == UnitDeployer.STEALTHOPS)

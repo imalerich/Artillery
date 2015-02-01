@@ -19,6 +19,8 @@ public class Gunman extends Unit
 	public static Texture GUNMAN;
 	public static Texture SPECOPS;
 	public static Texture STEALTHTROOPS;
+	public static Texture MORTAR;
+	public static Texture MORTARUP;
 	
 	private AnimTex death;
 	private AnimTex anim;
@@ -32,6 +34,8 @@ public class Gunman extends Unit
 		STEALTHTROOPS = new Texture( Gdx.files.internal("img/units/stealthtroops.png") );
 		SPECOPS = new Texture( Gdx.files.internal("img/units/specops.png") );
 		DEATHANIM = new Texture( Gdx.files.internal("img/units/deathanim.png") );
+		MORTAR = new Texture( Gdx.files.internal("img/units/mortar.png") );
+		MORTARUP = new Texture( Gdx.files.internal("img/units/mortar_setup.png") );
 	}
 	
 	@Override
@@ -48,6 +52,12 @@ public class Gunman extends Unit
 		
 		if (DEATHANIM != null)
 			DEATHANIM.dispose();
+		
+		if (MORTAR != null)
+			MORTAR.dispose();
+		
+		if (MORTARUP != null)
+			MORTARUP.dispose();
 		
 		anim.release();
 	}
@@ -101,9 +111,7 @@ public class Gunman extends Unit
 				Coords.x += x;
 				Coords.y += y;
 				
-				if (forward)
-					anim.render(Batch, Cam, Index, Coords, 1.0f, 1.0f);
-				else anim.render(Batch, Cam, Index, Coords, -1.0f, 1.0f);
+				drawAnim(Batch, Cam, Index, Coords, width, height);
 			}
 		}
 	}
@@ -187,9 +195,20 @@ public class Gunman extends Unit
 	
 	private void drawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
 	{
-		if (forward)
-			anim.render(Batch, Cam, Index, Coords, 1.0f, 1.0f, true, SrcWidth, SrcHeight);
-		else anim.render(Batch, Cam, Index, Coords, -1.0f, 1.0f, true, SrcWidth, SrcHeight);
+		if (getSquad().doSwapState()) {
+			int h = (int)(MORTARUP.getHeight()* (float)health/maxhealth);
+			Batch.draw(MORTARUP, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y), 
+					MORTARUP.getWidth(), h, 0, MORTARUP.getHeight()-h, MORTARUP.getWidth(), h, !forward, false);
+		} else if (!getSquad().canMove()) {
+			int h = (int)(MORTAR.getHeight()* (float)health/maxhealth);
+			Batch.draw(MORTAR, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y), 
+					MORTAR.getWidth(), h, 0, MORTAR.getHeight()-h, MORTAR.getWidth(), h, !forward, false);
+		} else {
+			float dir = 1f;
+			if (!forward) dir = -1f;
+		
+			anim.render(Batch, Cam, Index, Coords, dir, 1.0f, true, SrcWidth, SrcHeight);
+		}
 	}
 	
 	@Override
@@ -205,6 +224,9 @@ public class Gunman extends Unit
 		Squad.target.setTime(animtime);
 		
 		if (getSquad().isFiringSecondary() && getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.POINTTARGET)
+			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
+					Cam.getRenderY(pos.y + height/2f + width));
+		else if (getSquad().isFiringOffhand() && getSquad().getOffhand() != null && getSquad().getOffhand().getType() == Armament.POINTTARGET)
 			Batch.draw(Squad.target.getCurrent(0), Cam.getRenderX(pos.x + width/2f + direction*width),
 					Cam.getRenderY(pos.y + height/2f + width));
 		else if (getSquad().isFiringSecondary() && getSquad().getSecondary() != null && getSquad().getSecondary().getType() == Armament.LANDMINE)
