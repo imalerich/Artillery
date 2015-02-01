@@ -115,7 +115,7 @@ public class Terrain
 		generateFromSeed(Seed);
 		
 		// generate the texture
-		Pixmap tmp = new Pixmap(Game.SCREENW, Game.SCREENH, Pixmap.Format.RGB888);
+		Pixmap tmp = new Pixmap(1, 1, Pixmap.Format.RGB888);
 		tmp.setColor( Color.WHITE );
 		tmp.fill();
 		tex = new Texture(tmp);
@@ -626,7 +626,7 @@ public class Terrain
 		Gdx.gl.glColorMask(true, true, true, true);
 		Batch.setBlendFunction(GL20.GL_DST_ALPHA, GL20.GL_ONE_MINUS_DST_ALPHA);
 		Batch.setColor( col );
-		Batch.draw(tex, 0, 0);
+		Batch.draw(tex, 0, 0, Game.SCREENW, Game.SCREENH);
 		Batch.setColor( Color.WHITE );
 		Batch.flush();
 		
