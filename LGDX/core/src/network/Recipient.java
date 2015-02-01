@@ -14,6 +14,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
@@ -102,7 +103,15 @@ public class Recipient
 		
 		// set the camera to center the base
 		Vector2 campos = game.getCam().getPos();
-		campos.x = pos;
+		campos.x = base.getMidX() - Game.SCREENW/2f;
+		if (campos.x < 0) 
+			campos.x += Game.WORLDW;
+		else if (campos.x > Game.WORLDW) 
+			campos.x -= Game.WORLDW;
+		
+		campos.y = (base.getPos().y + base.getHeight()/2f) - (Game.SCREENH/2f);
+		campos.y = Math.min(campos.y, Game.WORLDH-Game.SCREENH);
+		campos.y = Math.max(campos.y, 0f);
 		game.getCam().setPos(campos);
 	}
 	

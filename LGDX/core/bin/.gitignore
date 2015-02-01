@@ -1,6 +1,7 @@
+/arsenal/
+/audio/
 /com/
-/terrain/
-/entity/
 /config/
-/ui/
-/physics/
+/entity/
+/menu/
+/network/
