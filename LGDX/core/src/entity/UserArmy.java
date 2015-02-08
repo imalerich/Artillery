@@ -525,7 +525,7 @@ public class UserArmy extends Army
 			
 			spawnindex = selected;
 			selectspawnpoint = true;
-			spawn = new SpawnIndicator(ter, spawnindex, 0);
+			spawn = new SpawnIndicator(ter, this, spawnindex, 0);
 			spawn.setPos( Cursor.getMouseX(Cam.getPos()) + (int)Cam.getPos().x );
 		}
 	}

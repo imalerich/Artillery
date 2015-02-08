@@ -13,6 +13,7 @@ public class Armament
 	private int type;
 	private int range;
 	private float firerate;
+	private int maxfirerate;
 	private int strength;
 	private int speed;
 	private float accuracy;
@@ -21,11 +22,12 @@ public class Armament
 	public final int upgrade_cost;
 	public final float levelmod;
 	
-	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy)
+	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy, int MaxFireRate)
 	{
 		type = Type;
 		range = Range;
 		firerate = FireRate;
+		maxfirerate = MaxFireRate;
 		strength = Strength;
 		speed = Speed;
 		angle = 0f;
@@ -41,12 +43,12 @@ public class Armament
 		upgrade_cost = A.upgrade_cost;
 		levelmod = A.levelmod;
 		
-		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy);
+		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy, A.maxfirerate);
 	}
 	
-	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, int UpCost, float LevelMod)
+	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, int UpCost, float LevelMod, int MaxFireRate)
 	{
-		init(Type, Range, FireRate, Strength, Speed, Accuracy);
+		init(Type, Range, FireRate, Strength, Speed, Accuracy, MaxFireRate);
 		
 		upgrade_cost = UpCost;
 		levelmod = LevelMod;
@@ -74,9 +76,14 @@ public class Armament
 		return firerate;
 	}
 	
+	public int getMaxFireRate()
+	{
+		return maxfirerate;
+	}
+	
 	public void addFireRate(float R)
 	{
-		firerate = Math.min(firerate + R, 3f);
+		firerate = Math.min(firerate + R, maxfirerate);
 	}
 	
 	public int getStrength()
@@ -99,7 +106,7 @@ public class Armament
 	
 	public boolean isMaxed()
 	{
-		if (firerate < 3f)
+		if (firerate < maxfirerate)
 			return false;
 		
 		if (type == Armament.POINTTARGET || type == Armament.LANDMINE) {

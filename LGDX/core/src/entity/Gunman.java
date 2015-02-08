@@ -4,6 +4,7 @@ import terrain.Terrain;
 import arsenal.Armament;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -111,7 +112,7 @@ public class Gunman extends Unit
 				Coords.x += x;
 				Coords.y += y;
 				
-				drawAnim(Batch, Cam, Index, Coords, width, height);
+				drawAnim(Batch, Cam, Index, Coords, width, height, false);
 			}
 		}
 	}
@@ -176,7 +177,7 @@ public class Gunman extends Unit
 		
 		int width = anim.getFrameWidth();
 		int height = anim.getFrameHeight();
-		drawAnim(Batch, Cam, index, Coords, width, height);
+		drawAnim(Batch, Cam, index, Coords, width, height, true);
 		
 		boolean drawhealth = true;
 		if (getSquad().isStealthed() && !(getSquad().getArmy() instanceof UserArmy)) {
@@ -186,15 +187,18 @@ public class Gunman extends Unit
 		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) && drawhealth) {
 			Shaders.setShader(Batch, Shaders.health);
 			int h = (int)(height * (float)health/maxhealth);
-			drawAnim(Batch, Cam, index, Coords, width, h);
+			drawAnim(Batch, Cam, index, Coords, width, h, true);
 			Shaders.revertShader(Batch);
 		}
 		
 		moving = false;
 	}
 	
-	private void drawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight)
+	private void drawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight, boolean setColor)
 	{
+		if (setColor)
+			Batch.setColor(getSquad().getArmy().unitcolor);
+		
 		if (getSquad().doSwapState()) {
 			int h = (int)(MORTARUP.getHeight()* (float)health/maxhealth);
 			Batch.draw(MORTARUP, Cam.getRenderX(Coords.x), Cam.getRenderY(Coords.y), 
@@ -209,6 +213,8 @@ public class Gunman extends Unit
 		
 			anim.render(Batch, Cam, Index, Coords, dir, 1.0f, true, SrcWidth, SrcHeight);
 		}
+		
+		Batch.setColor(Color.WHITE);
 	}
 	
 	@Override

@@ -20,8 +20,9 @@ PRIMARY
 
 	type: POINT
 	firerate: 1
+	maxfirerate: 3
 	strength: 22
-	speed: 1000
+	speed: 1300
 
 	upgrade: 100
 	levelmod: 1

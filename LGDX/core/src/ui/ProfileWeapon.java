@@ -107,7 +107,7 @@ public class ProfileWeapon
 		}
 		
 		float range = Math.min( A.getRange()/1024f, 1f ) ;
-		float shots = Math.min( A.getFireRate()/3f, 1f );
+		float shots = Math.min( A.getFireRate()/A.getMaxFireRate(), 1f );
 		float acc = Math.min( (A.getAccuracy() - 0.5f) * 2f, 1f );
 		
 		Batch.setColor(.298f, 0.294f, 0.3647f, 1f);

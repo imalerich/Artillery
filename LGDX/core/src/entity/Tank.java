@@ -7,6 +7,7 @@ import physics.NullTank;
 import terrain.Terrain;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -226,8 +227,10 @@ public class Tank extends Unit
 		else if (Target)
 			DrawTarget(Batch, Cam);
 		
+		Batch.setColor(getSquad().getArmy().unitcolor);
 		renderBarrel(Batch, Cam, 0, 0);
 		render(Batch, Cam, 0, 0, height);
+		Batch.setColor(Color.WHITE);
 		
 		boolean drawhealth = true;
 		if (getSquad().isStealthed() && !(getSquad().getArmy() instanceof UserArmy)) {

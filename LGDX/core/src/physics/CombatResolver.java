@@ -73,7 +73,12 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 		
-			projectilequeue.add( new Grenade(gw, ter, particles, pos, vel, Grenade.getStrength(), Offense.getArmy().getConnection(), 16) );
+			for (int i=0; i<Grenade.getFireRate(); i++) {
+				float p = ((float)i)/Grenade.getFireRate()/5f + 4/5f;
+				Vector2 V = new Vector2(vel.x * p, vel.y *p);
+				
+				projectilequeue.add( new Grenade(gw, ter, particles, pos, V, Grenade.getStrength(), Offense.getArmy().getConnection(), 16) );
+			}
 		}
 	}
 	
@@ -90,7 +95,12 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 			
-			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection(), 64) );
+			for (int i=0; i<Offense.getPrimary().getFireRate(); i++) {
+				float p = ((float)i)/Offense.getPrimary().getFireRate()/5f + 4/5f;
+				Vector2 V = new Vector2(vel.x * p, vel.y *p);
+				
+				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), 64) );
+			}
 		}
 	}
 	
@@ -107,7 +117,12 @@ public class CombatResolver
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
 			
-			projectilequeue.add( new Missile(gw, ter, particles, pos, vel, strength, Offense.getArmy().getConnection(), 24) );
+			for (int i=0; i<Offense.getOffhand().getFireRate(); i++) {
+				float p = ((float)i)/Offense.getOffhand().getFireRate()/5f + 4/5f;
+				Vector2 V = new Vector2(vel.x * p, vel.y *p);
+				
+				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), 24) );
+			}
 		}
 	}
 	

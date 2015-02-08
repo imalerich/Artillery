@@ -109,7 +109,7 @@ public class Recipient
 		else if (campos.x > Game.WORLDW) 
 			campos.x -= Game.WORLDW;
 		
-		campos.y = (base.getPos().y + base.getHeight()/2f) - (Game.SCREENH/2f);
+		campos.y = (base.getPos().y + MilitaryBase.getHeight()/2f) - (Game.SCREENH/2f);
 		campos.y = Math.min(campos.y, Game.WORLDH-Game.SCREENH);
 		campos.y = Math.max(campos.y, 0f);
 		game.getCam().setPos(campos);

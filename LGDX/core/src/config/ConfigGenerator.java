@@ -15,7 +15,8 @@ public class ConfigGenerator
 	 */
 	public static final String[] TOKENS = { "UNIT", "POINT", "LANDMINE", "FLAME", 
 		"ARMOR", "PRIMARY", "SECONDARY", "OFFHAND", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "accuracy:", "movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
+		"strength:", "type:", "range:", "firerate:", "maxfirerate:", "accuracy:", 
+		"movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
 	/**
 	 * Default count for a newly generate unit.
@@ -58,9 +59,14 @@ public class ConfigGenerator
 	public static final int DEFAULT_ARMAMENT_RANGE = 512;
 	
 	/**
-	 * Default weapon firerate.
+	 * Default weapon fire rate.
 	 */
 	public static final int DEFAULT_ARMAMENT_FIRERATE = 1;
+	
+	/**
+	 * Default weapon maximum fire rate.
+	 */
+	public static final int DEFAULT_ARMAMENT_MAXFIRERATE = 1;
 	
 	/**
 	 * Default weapon strength.
@@ -245,6 +251,7 @@ public class ConfigGenerator
 		int strength = DEFAULT_ARMAMENT_STRENGTH;
 		int speed = DEFAULT_ARMAMENT_SPEED;
 		float accuracy = DEFAULT_ARMAMENT_ACCURACY;
+		int maxfirerate = DEFAULT_ARMAMENT_MAXFIRERATE;
 		
 		int upgrade = DEFAULT_UPGRADE_COST;
 		float levelmod = DEFAULT_LEVELMOD;
@@ -288,7 +295,7 @@ public class ConfigGenerator
 				// end of ARMAMENT section - add the armament found and reset defaults
 				insegment = false;
 				
-				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod);
+				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod, maxfirerate);
 				if (inprimary) {
 					Confg.addPrimary(a);
 				} else if (insecondary){
@@ -343,6 +350,9 @@ public class ConfigGenerator
 				continue;
 			} else if (d.param.equals("levelmod:")) {
 				levelmod = LineData.getFloat(Filename, linenumber, d.opt, DEFAULT_LEVELMOD);
+				continue;
+			} else if (d.param.equals("maxfirerate:")) {
+				maxfirerate = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_MAXFIRERATE);
 				continue;
 			}
 		}

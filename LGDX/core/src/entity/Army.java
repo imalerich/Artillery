@@ -15,6 +15,7 @@ import physics.NullTank;
 import terrain.Terrain;
 import ui.UnitDeployer;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
@@ -38,6 +39,8 @@ public abstract class Army
 	
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
+	//protected Color unitcolor = new Color(161/255f, 158/255f, 135/255f, 1f);
+	protected Color unitcolor = new Color(28/255f, 28/255f, 28/255f, 1f);
 	
 	// towers to be added (held in queue)
 	private Vector<RadioTower> towerqueue;
@@ -101,6 +104,16 @@ public abstract class Army
 		addTower( new RadioTower(world, new Vector2(base.getPos().x, base.getPos().y), base.getLogo(), -1));
 		addTower( new RadioTower(world, new Vector2(base.getPos().x + MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), 
 				base.getPos().y), base.getLogo(), -1));
+	}
+	
+	public void setColor(Color C)
+	{
+		unitcolor = C;
+	}
+	
+	public Color getColor()
+	{
+		return unitcolor;
 	}
 	
 	public void update()

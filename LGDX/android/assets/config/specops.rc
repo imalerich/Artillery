@@ -35,6 +35,7 @@ OFFHAND
 
 	type: POINT
 	firerate: 1
+	maxfirerate: 3
 	strength: 22
 	speed: 1600
 

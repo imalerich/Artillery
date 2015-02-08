@@ -11,6 +11,7 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
 import config.SquadConfigurations;
+import entity.Army;
 import entity.Gunman;
 
 public class SpawnIndicator 
@@ -27,13 +28,15 @@ public class SpawnIndicator
 	private boolean valid;
 	private boolean forward = true;
 	private float alpha = 0.6f;
+	private Army a;
 	
-	public SpawnIndicator(Terrain Ter, int Type, int XPos)
+	public SpawnIndicator(Terrain Ter, Army A, int Type, int XPos)
 	{
 		ter = Ter;
 		unittype = Type;
 		valid = true;
 		xpos = XPos;
+		a = A;
 		
 		switch (unittype)
 		{
@@ -125,7 +128,7 @@ public class SpawnIndicator
 		else
 			setAlpha(0.2f, 2f);
 		
-		Batch.setColor(1f, 1f, 1f, alpha);
+		Batch.setColor(a.getColor().r, a.getColor().g, a.getColor().b, alpha);
 		
 		for (int i=0; i<spawncount; i++)
 		{
