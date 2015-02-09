@@ -14,23 +14,27 @@ public class Armament
 	private int range;
 	private float firerate;
 	private int maxfirerate;
+	private int bounces;
 	private int strength;
 	private int speed;
 	private float accuracy;
 	private float angle;
+	private int divcount;
 	
 	public final int upgrade_cost;
 	public final float levelmod;
 	
-	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy, int MaxFireRate)
+	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy, int MaxFireRate, int Bounces, int DivCount)
 	{
 		type = Type;
 		range = Range;
 		firerate = FireRate;
 		maxfirerate = MaxFireRate;
+		bounces = Bounces;
 		strength = Strength;
 		speed = Speed;
 		angle = 0f;
+		divcount = DivCount;
 		
 		// accuracy is a floating point in the bounds 0f -> 1f
 		accuracy = Accuracy;
@@ -43,16 +47,16 @@ public class Armament
 		upgrade_cost = A.upgrade_cost;
 		levelmod = A.levelmod;
 		
-		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy, A.maxfirerate);
+		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy, A.maxfirerate, A.bounces, A.divcount);
 	}
 	
-	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, int UpCost, float LevelMod, int MaxFireRate)
+	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, 
+			int UpCost, float LevelMod, int MaxFireRate, int Bounces, int DivCount)
 	{
-		init(Type, Range, FireRate, Strength, Speed, Accuracy, MaxFireRate);
+		init(Type, Range, FireRate, Strength, Speed, Accuracy, MaxFireRate, Bounces, DivCount);
 		
 		upgrade_cost = UpCost;
 		levelmod = LevelMod;
-		
 	}
 	
 	// getter methods for the properties of this armament
@@ -61,9 +65,29 @@ public class Armament
 		return type;
 	}
 	
+	public int getDivCount()
+	{
+		return divcount;
+	}
+	
+	public void setDivCount(int C)
+	{
+		divcount = C;
+	}
+	
 	public int getRange()
 	{
 		return range;
+	}
+	
+	public int getBounces()
+	{
+		return bounces;
+	}
+	
+	public void setBounces(int B)
+	{
+		bounces = B;
 	}
 	
 	public void addRange(int R)

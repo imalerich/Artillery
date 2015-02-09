@@ -33,7 +33,7 @@ public class Blast
 	
 	public Blast(Vector2 Pos, float Radius, float Strength, int SourceArmy)
 	{
-		pos = Pos;
+		pos = new Vector2(Pos);
 		radius = Radius;
 		strength = Strength;
 		sourceArmy = SourceArmy;

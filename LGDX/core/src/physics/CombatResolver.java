@@ -20,6 +20,7 @@ public class CombatResolver
 	private static final int POINTSTAGE = 1;
 	private static final int COMPLETED = 2;
 	
+	private Vector<Missile> addqueue = new Vector<Missile>();
 	private Vector<Missile> projectilequeue = new Vector<Missile>();
 	private Vector<CombatPacket> combatqueue = new Vector<CombatPacket>();
 	private Vector<Flame> flamequeue = new Vector<Flame>();
@@ -42,6 +43,11 @@ public class CombatResolver
 		combatqueue.clear();
 		projectilequeue.clear();
 		flamequeue.clear();
+	}
+	
+	public Vector<Missile> getProjectiles()
+	{
+		return addqueue;
 	}
 	
 	public void addFlame(Squad Offense)
@@ -72,12 +78,13 @@ public class CombatResolver
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
+			int b = Grenade.getBounces();
 		
 			for (int i=0; i<Grenade.getFireRate(); i++) {
 				float p = ((float)i)/Grenade.getFireRate()/5f + 4/5f;
 				Vector2 V = new Vector2(vel.x * p, vel.y *p);
 				
-				projectilequeue.add( new Grenade(gw, ter, particles, pos, V, Grenade.getStrength(), Offense.getArmy().getConnection(), 16) );
+				projectilequeue.add( new Grenade(gw, ter, particles, pos, V, Grenade.getStrength(), Offense.getArmy().getConnection(), b, 16) );
 			}
 		}
 	}
@@ -94,12 +101,14 @@ public class CombatResolver
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
+			int b = Offense.getPrimary().getBounces();
+			int d = Offense.getPrimary().getDivCount();
 			
 			for (int i=0; i<Offense.getPrimary().getFireRate(); i++) {
 				float p = ((float)i)/Offense.getPrimary().getFireRate()/5f + 4/5f;
 				Vector2 V = new Vector2(vel.x * p, vel.y *p);
 				
-				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), 64) );
+				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), b, 64, d) );
 			}
 		}
 	}
@@ -116,12 +125,14 @@ public class CombatResolver
 		while (u.hasNext()) {
 			Unit unit = u.next();
 			Vector2 pos = getPos(unit);
+			int b = Offense.getOffhand().getBounces();
+			int d = Offense.getOffhand().getDivCount();
 			
 			for (int i=0; i<Offense.getOffhand().getFireRate(); i++) {
 				float p = ((float)i)/Offense.getOffhand().getFireRate()/5f + 4/5f;
 				Vector2 V = new Vector2(vel.x * p, vel.y *p);
 				
-				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), 24) );
+				projectilequeue.add( new Missile(gw, ter, particles, pos, V, strength, Offense.getArmy().getConnection(), b, 24, d) );
 			}
 		}
 	}
@@ -195,6 +206,8 @@ public class CombatResolver
 	
 	public void updateSimulation(Camera Cam)
 	{
+		addQueue();
+		
 		// update the current stage
 		if (stage == UNITSTAGE) {
 			updateUnitStage(Cam);
@@ -204,6 +217,16 @@ public class CombatResolver
 		
 		// check if we should move on to the next stage
 		checkNextStage();
+	}
+	
+	public void addQueue()
+	{
+		Iterator<Missile> m = addqueue.iterator();
+		while (m.hasNext())  {
+			Missile missile = m.next();
+			projectilequeue.add(missile);
+			m.remove();
+		}
 	}
 	
 	public void drawSimulation(SpriteBatch Batch, Camera Cam)

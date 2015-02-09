@@ -1,6 +1,7 @@
 package ui;
 
 import terrain.Terrain;
+import arsenal.Armament;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -152,6 +153,11 @@ public class Profile
 		if (S.getPrimary() != null) {
 			ProfileWeapon.draw(Batch, S, S.getPrimary(), true, 4, ypos+BG.getHeight()-57 - off);
 			off += ProfileWeapon.getHeight();
+			
+			if (S.getPrimary().getType() == Armament.POINTTARGET) {
+				ProfileTankOptions.draw(Batch, S.getPrimary(), ypos, off);
+				off += ProfileWeapon.getHeight();
+			}
 		}
 		
 		if (S.getSecondary() != null) {
@@ -162,6 +168,11 @@ public class Profile
 		if (S.getOffhand() != null) {
 			ProfileWeapon.draw(Batch, S, S.getOffhand(), false, 4, ypos+BG.getHeight()-57 - off);
 			off += ProfileWeapon.getHeight();
+			
+			if (S.getOffhand().getType() == Armament.POINTTARGET) {
+				ProfileTankOptions.draw(Batch, S.getOffhand(), ypos, off);
+				off += ProfileWeapon.getHeight();
+			}
 		}
 		
 		S.drawMugshots(Batch, 12, ypos+(BG.getHeight()-36));

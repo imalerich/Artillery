@@ -44,7 +44,7 @@ public class Camera
 	
 	public void addShakeIntensity(float Intensity)
 	{
-		shakeintensity += Intensity;
+		shakeintensity = Math.min(shakeintensity + Intensity, 6f);
 	}
 	
 	public void setRumble(float Intensity)
@@ -75,8 +75,10 @@ public class Camera
 			shakepos.y = 0f;
 		}
 		
-		shakepos.x = (float)(shakeintensity * Math.sin(shaketime*64));
-		shakepos.y = (float)(shakeintensity * Math.cos(shaketime*58));
+		if (shaketime > 0f) {
+			shakepos.x = (float)(shakeintensity * Math.sin(shaketime*64));
+			shakepos.y = (float)(shakeintensity * Math.cos(shaketime*58));
+		}
 		
 		// update rumble
 		rumbletime += Gdx.graphics.getDeltaTime();

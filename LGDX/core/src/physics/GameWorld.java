@@ -433,11 +433,16 @@ public class GameWorld
 		resolver.updateSimulation(cam);
 	}
 	
+	public CombatResolver getCombat()
+	{
+		return resolver;
+	}
+	
 	public void procBlast(Blast B)
 	{
 		blasts.add(B);
 		
-		cam.addShakeIntensity(B.radius/16f);
+		cam.addShakeIntensity( (float)Math.log(B.radius) );
 		
 		// process any blasts on all armies
 		userArmy.procBlasts(B);

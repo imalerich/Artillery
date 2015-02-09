@@ -20,7 +20,7 @@ PRIMARY
 
 	type: POINT
 	firerate: 1
-	maxfirerate: 3
+	maxfirerate: 2
 	strength: 22
 	speed: 1300
 

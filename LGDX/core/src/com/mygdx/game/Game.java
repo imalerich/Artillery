@@ -24,6 +24,7 @@ import ui.MenuBar;
 import ui.OutpostFlag;
 import ui.PowerButtons;
 import ui.Profile;
+import ui.ProfileTankOptionButton;
 import ui.ProfileWeapon;
 import ui.ReqIndicator;
 import ui.UnitDeployer;
@@ -253,6 +254,7 @@ public class Game extends ApplicationAdapter
 		Flame.init();
 		Ember.init();
 		Sky.init();
+		ProfileTankOptionButton.init();
 		
 		initMusic();
 	}
@@ -282,6 +284,7 @@ public class Game extends ApplicationAdapter
 		Flame.release();
 		Ember.release();
 		Sky.release();
+		ProfileTankOptionButton.release();
 		
 		if (physics != null)
 			physics.release();

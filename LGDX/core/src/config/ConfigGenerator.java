@@ -15,92 +15,29 @@ public class ConfigGenerator
 	 */
 	public static final String[] TOKENS = { "UNIT", "POINT", "LANDMINE", "FLAME", 
 		"ARMOR", "PRIMARY", "SECONDARY", "OFFHAND", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "maxfirerate:", "accuracy:", 
+		"strength:", "type:", "range:", "firerate:", "maxfirerate:", "divcount:", "bounces:", "accuracy:", 
 		"movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
-	/**
-	 * Default count for a newly generate unit.
-	 */
 	public static final int DEFAULT_COUNT = 4;
-	
-	/**
-	 * Default movement speed of the generated unit.
-	 */
 	public static final int DEFAULT_SPEED = 120;
-	
-	/**
-	 * Default movement distance of the unit per turn;
-	 */
 	public static final int DEFAULT_MOVEDIST = 512;
-	
-	/**
-	 * Default maximum health held by the unit.
-	 */
 	public static final int DEFAULT_HEALTH = 16;
-	
-	/**
-	 * Default health for armor.
-	 */
 	public static final int DEFAULT_ARMOR_HEALTH = 0;
-	
-	/**
-	 * Default strength for armor.
-	 */
 	public static final int DEFAULT_ARMOR_STRENGTH = 0;
 	
-	/**
-	 * Default weapon type.
-	 */
 	public static final int DEFAULT_ARMAMENT_TYPE = Armament.UNITTARGET;
-	
-	/**
-	 * Default weapon range.
-	 */
 	public static final int DEFAULT_ARMAMENT_RANGE = 512;
-	
-	/**
-	 * Default weapon fire rate.
-	 */
 	public static final int DEFAULT_ARMAMENT_FIRERATE = 1;
-	
-	/**
-	 * Default weapon maximum fire rate.
-	 */
 	public static final int DEFAULT_ARMAMENT_MAXFIRERATE = 1;
-	
-	/**
-	 * Default weapon strength.
-	 */
 	public static final int DEFAULT_ARMAMENT_STRENGTH = 8;
-	
-	/**
-	 * Default weapon speed.
-	 */
 	public static final int DEFAULT_ARMAMENT_SPEED = 800;
-	
-	/**
-	 * Default weapon accuracy.
-	 */
+	public static final int DEFAULT_ARMAMENT_BOUNCES = 0;
 	public static final float DEFAULT_ARMAMENT_ACCURACY = 0.9f;
+	public static final int DEFAULT_ARMAMENT_DIVCOUNT = 0;
 	
-	/**
-	 * Default requisition cost.
-	 */
 	public static final int DEFAULT_REQUISITION_COST = 400;
-	
-	/**
-	 * Default requisition bonus;
-	 */
 	public static final int DEFAULT_REQUISITION_BONUS = 50;
-	
-	/**
-	 * Default cost to upgrade a weapon.
-	 */
 	public static final int DEFAULT_UPGRADE_COST = 100;
-	
-	/**
-	 * Default level mod scalar.
-	 */
 	public static final float DEFAULT_LEVELMOD = 1f;
 	
 	/**
@@ -252,6 +189,8 @@ public class ConfigGenerator
 		int speed = DEFAULT_ARMAMENT_SPEED;
 		float accuracy = DEFAULT_ARMAMENT_ACCURACY;
 		int maxfirerate = DEFAULT_ARMAMENT_MAXFIRERATE;
+		int bounces = DEFAULT_ARMAMENT_BOUNCES;
+		int divcount = DEFAULT_ARMAMENT_DIVCOUNT;
 		
 		int upgrade = DEFAULT_UPGRADE_COST;
 		float levelmod = DEFAULT_LEVELMOD;
@@ -295,7 +234,7 @@ public class ConfigGenerator
 				// end of ARMAMENT section - add the armament found and reset defaults
 				insegment = false;
 				
-				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod, maxfirerate);
+				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod, maxfirerate, bounces, divcount);
 				if (inprimary) {
 					Confg.addPrimary(a);
 				} else if (insecondary){
@@ -308,6 +247,7 @@ public class ConfigGenerator
 				insecondary = false;
 				inoffhand = false;
 				
+				bounces = DEFAULT_ARMAMENT_BOUNCES;
 				type = DEFAULT_ARMAMENT_TYPE;
 				range = DEFAULT_ARMAMENT_RANGE;
 				firerate = DEFAULT_ARMAMENT_FIRERATE;
@@ -353,6 +293,12 @@ public class ConfigGenerator
 				continue;
 			} else if (d.param.equals("maxfirerate:")) {
 				maxfirerate = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_MAXFIRERATE);
+				continue;
+			} else if (d.param.equals("bounces:")) {
+				bounces = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_BOUNCES);
+				continue;
+			} else if (d.param.equals("divcount:")) {
+				divcount = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_DIVCOUNT);
 				continue;
 			}
 		}

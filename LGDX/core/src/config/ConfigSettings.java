@@ -14,34 +14,11 @@ public class ConfigSettings
 	private Vector<Armament> secondary;
 	private Vector<Armament> offhand;
 	
-	/**
-	 * Default count of a unit.
-	 */
 	public final int count;
-	
-	/**
-	 * Max health of a unit.
-	 */
 	public final int health;
-	
-	/**
-	 * Movement speed of a unit.
-	 */
 	public final int speed;
-	
-	/**
-	 * Maximum move distance of the unit per turn.
-	 */
 	public final int maxmovedist;
-	
-	/**
-	 * Requisition cost for this unit.
-	 */
 	public final int reqcost;
-	
-	/**
-	 * Requisition bonus for this unit.
-	 */
 	public final int reqbonus;
 	
 	/**

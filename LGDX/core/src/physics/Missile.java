@@ -50,6 +50,9 @@ public class Missile
 	protected final int sourceArmy;
 	protected final int blastRadius;
 	
+	protected int bounces;
+	protected int divcount;
+	
 	public static void init()
 	{
 		if (tex == null) {
@@ -72,12 +75,20 @@ public class Missile
 		}
 	}
 	
-	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, float Strength, int SourceArmy, int BlastRadius)
+	public void setDivCount(int C)
+	{
+		divcount = C;
+	}
+	
+	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, 
+			float Strength, int SourceArmy, int Bounces, int BlastRadius, int DivCount)
 	{
 		sourceArmy = SourceArmy;
 		ter = Ter;
 		gw = GW;
 		particle = Particle;
+		bounces = Bounces;
+		divcount = DivCount;
 		
 		pos = new Vector2(Source);
 		vel = new Vector2(Velocity);
@@ -135,10 +146,48 @@ public class Missile
 		}
 		
 		if (ter.contains(pos.x, pos.y) && !hashit) {
+			if (bounces > 0) {
+				bounces--;
+				float V = vel.len();
+				
+				// TODO - decide if you wanna do this
+				// procBlast( (1f - bounces/3f)/2f + 0.3333f );
+				
+				x0 = Game.WORLDH - ter.getHeight((int)(pos.x - 16));
+				x1 = Game.WORLDH - ter.getHeight((int)pos.x);
+				x2 = Game.WORLDH - ter.getHeight((int)(pos.x + 16));
+				
+				Vector2 v0 = new Vector2(-16, x0-x1);
+				Vector2 v1 = new Vector2(16, x2-x1);
+				v0 = v0.nor();
+				v1 = v1.nor();
+
+				float theta = (float)Math.acos( Vector2.dot(v0.x, v0.y, v1.x, v1.y) );
+				theta = -(float)Math.toDegrees(theta);
+				if (theta > -100) {
+					theta = -100;
+				}
+				
+				Vector2 v = getParticleVelocity(v0, theta/2);
+				v.nor();
+				
+				vel.x = -vel.x;
+				vel.y = -vel.y;
+				vel.nor();
+				
+				theta = (float)Math.acos( Vector2.dot(vel.x, vel.y, v.x, v.y) );
+				vel = vel.rotateRad(-theta*2);
+				
+				vel.x *= V * 0.8f;
+				vel.y *= V * 0.8f;
+				
+				return;
+			}
+			
 			hashit = true;
 			
 			// process the blast
-			procBlast();
+			procBlast(1f);
 		}
 	}
 	
@@ -159,13 +208,14 @@ public class Missile
 		Cam.addKick(-tmp.x*mag, -tmp.y*mag);
 	}
 	
-	protected void procBlast()
+	protected void procBlast(float blastScale)
 	{
 		x0 = Game.WORLDH - ter.getHeight((int)(pos.x - 16));
 		x1 = Game.WORLDH - ter.getHeight((int)pos.x);
 		x2 = Game.WORLDH - ter.getHeight((int)(pos.x + 16));
 		
-		gw.procBlast( new Blast(pos, blastRadius, strength, sourceArmy));
+		gw.procBlast( new Blast(pos, blastRadius*blastScale, strength, sourceArmy));
+		diverge();
 	}
 	
 	protected void playSound()
@@ -240,6 +290,34 @@ public class Missile
 		v.rotate((int)(Theta));
 
 		return v;
+	}
+	
+	protected void diverge()
+	{
+		Vector2 v0 = new Vector2(-16, x0-x1);
+		Vector2 v1 = new Vector2(16, x2-x1);
+		v0 = v0.nor();
+		v1 = v1.nor();
+		
+		float theta = (float)Math.acos( Vector2.dot(v0.x, v0.y, v1.x, v1.y) );
+		theta = -(float)Math.toDegrees(theta);
+		if (theta > -100) {
+			theta = -100;
+		}
+		
+		for (int i=0; i<divcount; i++) {
+			Vector2 v = getParticleVelocity(v0, theta * ((float)i/(divcount-1)));
+			float speed = vel.len();
+			v.nor();
+			v.scl(speed/3f);
+			
+			Missile m = new Missile(gw, ter, particle, pos, v, strength, sourceArmy, 0, 16, 0);
+			m.setDivCount(0);
+			gw.getCombat().getProjectiles().add(m);
+		}
+		
+		
+		divcount = 0;
 	}
 	
 	protected void addTerrainParticles()
