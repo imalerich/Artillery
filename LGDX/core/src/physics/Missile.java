@@ -52,6 +52,8 @@ public class Missile
 	
 	protected int bounces;
 	protected int divcount;
+	protected int breakcount;
+	protected boolean incinerate;
 	
 	public static void init()
 	{
@@ -81,7 +83,7 @@ public class Missile
 	}
 	
 	public Missile(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, 
-			float Strength, int SourceArmy, int Bounces, int BlastRadius, int DivCount)
+			float Strength, int SourceArmy, int Bounces, int BlastRadius, int DivCount, int BreakCount, boolean Incinerate)
 	{
 		sourceArmy = SourceArmy;
 		ter = Ter;
@@ -89,6 +91,8 @@ public class Missile
 		particle = Particle;
 		bounces = Bounces;
 		divcount = DivCount;
+		breakcount = BreakCount;
+		incinerate = Incinerate;
 		
 		pos = new Vector2(Source);
 		vel = new Vector2(Velocity);
@@ -143,6 +147,11 @@ public class Missile
 			pos.x -= Game.WORLDW;
 		} else if (pos.x < 0) {
 			pos.x += Game.WORLDW;
+		}
+		
+		if (vel.y < 0f && breakcount > 0) {
+			disperse();
+			hashit = true;
 		}
 		
 		if (ter.contains(pos.x, pos.y) && !hashit) {
@@ -214,7 +223,12 @@ public class Missile
 		x1 = Game.WORLDH - ter.getHeight((int)pos.x);
 		x2 = Game.WORLDH - ter.getHeight((int)(pos.x + 16));
 		
-		gw.procBlast( new Blast(pos, blastRadius*blastScale, strength, sourceArmy));
+		if (incinerate) {
+			gw.getCombat().addFireBall(pos.x);
+		} else {
+			gw.procBlast( new Blast(pos, blastRadius*blastScale, strength, sourceArmy));
+		}
+		
 		diverge();
 	}
 	
@@ -311,13 +325,25 @@ public class Missile
 			v.nor();
 			v.scl(speed/3f);
 			
-			Missile m = new Missile(gw, ter, particle, pos, v, strength, sourceArmy, 0, 16, 0);
-			m.setDivCount(0);
+			Missile m = new Missile(gw, ter, particle, pos, v, strength, sourceArmy, 0, 16, 0, 0, false);
 			gw.getCombat().getProjectiles().add(m);
 		}
 		
-		
 		divcount = 0;
+	}
+	
+	protected void disperse()
+	{
+		posttotaltime = dusttime + 1f;
+		
+		for (int i=0; i<breakcount; i++) {
+			float theta = ( ((float)i/(breakcount-1)) * (float)Math.PI - (float)Math.PI/2f )/2f;
+			Vector2 v = new Vector2(vel);
+			v.rotateRad(theta);
+			
+			Missile m = new Missile(gw, ter, particle, pos, v, strength, sourceArmy, bounces, 16, divcount, 0, incinerate);
+			gw.getCombat().getProjectiles().add(m);
+		}
 	}
 	
 	protected void addTerrainParticles()
@@ -357,7 +383,9 @@ public class Missile
 			p.x += v.x * (float)(posttime) * (i/(float)addcount);
 			p.y += v.y * (float)(posttime) * (i/(float)addcount);
 			
-			particle.addParticle(radius, p, v, dustdecay, 20f);
+			if (!incinerate) {
+				particle.addParticle(radius, p, v, dustdecay, 20f);
+			}
 		}
 		
 		posttime = 0.0;

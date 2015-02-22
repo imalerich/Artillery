@@ -17,6 +17,7 @@ public class Ember
 	private Vector2 pos;
 	private Vector2 vel;
 	private Vector2 slowrate;
+	private boolean isalive = true;
 	
 	public static void init()
 	{
@@ -33,18 +34,23 @@ public class Ember
 	public Ember(float Scale, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
 	{
 		scale = Scale;
-		pos = Pos;
-		vel = Vel;
+		pos = new Vector2(Pos);
+		vel = new Vector2(Vel);
 		DECAY = Decay;
 		
 		if (SlowTime != 0f)	 {
 			slowrate = new Vector2(vel.x/SlowTime, vel.y/SlowTime);
-			slowrate.x = Math.abs(vel.x);
-			slowrate.y = Math.abs(vel.y);
+			slowrate.x = Math.abs(slowrate.x);
+			slowrate.y = Math.abs(slowrate.y);
 		}
 	}
 	
-	public boolean update()
+	public boolean isAlive()
+	{
+		return isalive;
+	}
+	
+	public void update()
 	{
 		modVel();
 		pos.x += vel.x * Gdx.graphics.getDeltaTime();
@@ -60,7 +66,8 @@ public class Ember
 		if (scale < 0f)
 			scale = 0f;
 		
-		return scale > 0f;
+		if (scale <= 0f)
+			isalive = false;
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam)

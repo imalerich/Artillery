@@ -28,9 +28,9 @@ public class Grenade extends Missile
 	}
 	
 	public Grenade(GameWorld GW, Terrain Ter, Particles Particle, Vector2 Source, Vector2 Velocity, 
-			float Strength, int SourceArmy, int Bounces, int BlastRadius) 
+			float Strength, int SourceArmy, int Bounces, int BlastRadius, boolean Incinerate) 
 	{
-		super(GW, Ter, Particle, Source, Velocity, Strength, SourceArmy, Bounces, BlastRadius, 0);
+		super(GW, Ter, Particle, Source, Velocity, Strength, SourceArmy, Bounces, BlastRadius, 0, 0, Incinerate);
 		dusttime = 0.3f;
 		dustdecay = 1f;
 		dustspeed = 256.0;

@@ -17,7 +17,7 @@ import com.mygdx.game.Game;
 
 public abstract class Unit 
 {
-	private static final int PPS = 600;
+	private static final int PPS = 1200;
 	
 	protected Terrain ter;
 	protected Vector2 pos;
@@ -355,8 +355,6 @@ public abstract class Unit
 	public void updateEmbers()
 	{
 		if (onfire > 0) {
-			firetimer += Gdx.graphics.getDeltaTime();
-			
 			firetimer += Gdx.graphics.getDeltaTime();
 
 			int addcount = (int)(PPS*firetimer);

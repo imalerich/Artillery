@@ -13,7 +13,7 @@ public class ProfileTankOptionButton
 	private static Texture tank_options_fg;
 	private static TextureRegion[] tank_options;
 	
-	private static final int TANKOPTIONS = 2;
+	private static final int TANKOPTIONS = 4;
 	
 	private static Rectangle r;
 	

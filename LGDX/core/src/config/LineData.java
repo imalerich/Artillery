@@ -69,6 +69,32 @@ public class LineData
 	}
 	
 	/**
+	 * Returns the Boolean format of a string, if the input String is not a valid boolean value,
+	 * the default value is returned.
+	 * @param Filename
+	 * 	Filename this line is from, used for error output.
+	 * @param LineNumber
+	 * 	Linenumber for this line, used for error output.
+	 * @param Opt
+	 * 	Options to be parsed.
+	 * @param Default
+	 * 	Default value to be used if an error occurs.
+	 * @return
+	 * 	A float parsed from Opt, if that fails, the Default is returned.
+	 */
+	public static boolean getBoolean(String Filename, int LineNumber, String Opt, boolean Default)
+	{
+		if (Opt.toUpperCase().equals("TRUE"))
+			return true;
+		else if (Opt.toUpperCase().equals("FALSE"))
+			return false;
+		
+		printErr(Filename, LineNumber, Opt);
+		System.err.println("Defaulting to value of " + Default + '\n');
+		return Default;
+	}
+	
+	/**
 	 * Output error information if an error occured while parsing an option.
 	 * @param Filename
 	 * 	Filename the error occured in.

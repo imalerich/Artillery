@@ -1,8 +1,6 @@
 package particles;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Vector;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -10,28 +8,38 @@ import com.mygdx.game.Camera;
 
 public class Particles 
 {
-	private static final int SIZE = 100;
+	private static final int SIZE = 1000;
 	private static final float DEFAULTDECAY = 5f;
 	
-	private Vector<Ember> embers;
+	private Ember[] embers;
 	private Particle[] particles;
 	private int addindex;
+	private int addember;
 	
 	public Particles()
 	{
 		particles = new Particle[SIZE];
-		embers = new Vector<Ember>();
-		addindex =  0;
+		embers = new Ember[SIZE];
+		addindex = 0;
+		addember = 0;
 	}
 	
 	public void addEmber(float Scale, Vector2 Pos)
+	{
+		addEmber(Scale, Pos, new Vector2(), 0f, 0.5f);
+	}
+	
+	public void addEmber(float Scale, Vector2 Pos, Vector2 Vel, float SlowTime, float Decay)
 	{
 		if (Scale <= 0f)
 			return;
 		
 		float xpos = Pos.x - Ember.tex.getWidth()/2f;
 		float ypos = Pos.y - Ember.tex.getHeight()/2f;
-		embers.add( new Ember(Scale, new Vector2(xpos, ypos), new Vector2(), 0f, 0.5f));
+		
+		expandEmbers();
+		embers[addember] = new Ember(Scale, new Vector2(xpos, ypos), Vel, SlowTime, Decay);
+		addember++;
 	}
 	
 	public void addParticle(float Radius, Vector2 Pos)
@@ -73,10 +81,11 @@ public class Particles
 				remove(i);
 		}
 		
-		Iterator<Ember> e = embers.iterator();
-		while (e.hasNext()) {
-			if (!e.next().update())
-				e.remove();
+		for (int i=0; i<addember; i++)
+		{
+			embers[i].update();
+			if (!embers[i].isAlive())
+				removeEmber(i);
 		}
 	}
 	
@@ -95,9 +104,13 @@ public class Particles
 		Batch.flush();
 		
 		Batch.setColor(1f, 1f, 1f, 0.5f);
-		Iterator<Ember> e = embers.iterator();
-		while (e.hasNext())
-			e.next().draw(Batch, Cam);
+		for (int i=0; i<addember; i++)
+		{
+			embers[i].draw(Batch,  Cam);
+			if (!embers[i].isAlive())
+				removeEmber(i);
+		}
+		
 		Batch.setColor(1f);
 	}
 	
@@ -124,10 +137,25 @@ public class Particles
 		}
 	}
 	
+	private void expandEmbers()
+	{
+		if (addember >= embers.length) {
+			// increase the size of the array
+			embers = Arrays.copyOf(embers, embers.length+SIZE);
+		}
+	}
+	
 	private void remove(int Index)
 	{
 		// replace this particle with the last particle added
 		particles[Index] = particles[addindex-1];
 		addindex--;
+	}
+	
+	private void removeEmber(int Index)
+	{
+		// replace this particle with the last particle added
+		embers[Index] = embers[addember-1];
+		addember--;
 	}
 }

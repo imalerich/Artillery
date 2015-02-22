@@ -1,6 +1,5 @@
 package arsenal;
 
-
 public class Armament 
 {
 	// constants that define the two possible types of armaments
@@ -14,17 +13,21 @@ public class Armament
 	private int range;
 	private float firerate;
 	private int maxfirerate;
-	private int bounces;
 	private int strength;
 	private int speed;
 	private float accuracy;
 	private float angle;
+	
+	private int bounces;
 	private int divcount;
+	private int breakcount;
+	private boolean incinerate;
 	
 	public final int upgrade_cost;
 	public final float levelmod;
 	
-	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy, int MaxFireRate, int Bounces, int DivCount)
+	public void init(int Type, int Range, float FireRate, int Strength, int Speed, float Accuracy, 
+			int MaxFireRate, int Bounces, int DivCount, int BreakCount, boolean Incinerate)
 	{
 		type = Type;
 		range = Range;
@@ -35,6 +38,8 @@ public class Armament
 		speed = Speed;
 		angle = 0f;
 		divcount = DivCount;
+		breakcount = BreakCount;
+		incinerate = Incinerate;
 		
 		// accuracy is a floating point in the bounds 0f -> 1f
 		accuracy = Accuracy;
@@ -47,13 +52,13 @@ public class Armament
 		upgrade_cost = A.upgrade_cost;
 		levelmod = A.levelmod;
 		
-		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy, A.maxfirerate, A.bounces, A.divcount);
+		init(A.type, A.range, A.firerate, A.strength, A.speed, A.accuracy, A.maxfirerate, A.bounces, A.divcount, A.breakcount, A.incinerate);
 	}
 	
 	public Armament(int Type, int Range, int FireRate, int Strength, int Speed, float Accuracy, 
-			int UpCost, float LevelMod, int MaxFireRate, int Bounces, int DivCount)
+			int UpCost, float LevelMod, int MaxFireRate, int Bounces, int DivCount, int BreakCount, boolean Incinerate)
 	{
-		init(Type, Range, FireRate, Strength, Speed, Accuracy, MaxFireRate, Bounces, DivCount);
+		init(Type, Range, FireRate, Strength, Speed, Accuracy, MaxFireRate, Bounces, DivCount, BreakCount, Incinerate);
 		
 		upgrade_cost = UpCost;
 		levelmod = LevelMod;
@@ -75,6 +80,16 @@ public class Armament
 		divcount = C;
 	}
 	
+	public void setBreakCount(int B)
+	{
+		breakcount = B;
+	}
+	
+	public int getBreakCount()
+	{
+		return breakcount;
+	}
+	
 	public int getRange()
 	{
 		return range;
@@ -93,6 +108,16 @@ public class Armament
 	public void addRange(int R)
 	{
 		range = Math.min(range + R, 1024);
+	}
+	
+	public boolean doIncinerate()
+	{
+		return incinerate;
+	}
+	
+	public void setIncinerate(boolean B)
+	{
+		incinerate = B;
 	}
 	
 	public float getFireRate()

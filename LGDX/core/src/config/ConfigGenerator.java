@@ -14,8 +14,8 @@ public class ConfigGenerator
 	 * Valid data tokens to be contained within a config file
 	 */
 	public static final String[] TOKENS = { "UNIT", "POINT", "LANDMINE", "FLAME", 
-		"ARMOR", "PRIMARY", "SECONDARY", "OFFHAND", "END", "count:", "speed:", "health:",
-		"strength:", "type:", "range:", "firerate:", "maxfirerate:", "divcount:", "bounces:", "accuracy:", 
+		"ARMOR", "PRIMARY", "SECONDARY", "OFFHAND", "END", "count:", "speed:", "health:", "incinerate:",
+		"strength:", "type:", "range:", "firerate:", "maxfirerate:", "divcount:", "bounces:", "breakcount:", "accuracy:", 
 		"movedist:", "reqcost:", "reqbonus:", "upgrade:", "levelmod:", "#" };
 	
 	public static final int DEFAULT_COUNT = 4;
@@ -34,6 +34,8 @@ public class ConfigGenerator
 	public static final int DEFAULT_ARMAMENT_BOUNCES = 0;
 	public static final float DEFAULT_ARMAMENT_ACCURACY = 0.9f;
 	public static final int DEFAULT_ARMAMENT_DIVCOUNT = 0;
+	public static final int DEFAULT_ARMAMENT_BREAKCOUNT = 0;
+	public static final boolean DEFAULT_ARMAMENT_INCINERATE = false;
 	
 	public static final int DEFAULT_REQUISITION_COST = 400;
 	public static final int DEFAULT_REQUISITION_BONUS = 50;
@@ -191,6 +193,8 @@ public class ConfigGenerator
 		int maxfirerate = DEFAULT_ARMAMENT_MAXFIRERATE;
 		int bounces = DEFAULT_ARMAMENT_BOUNCES;
 		int divcount = DEFAULT_ARMAMENT_DIVCOUNT;
+		int breakcount = DEFAULT_ARMAMENT_BREAKCOUNT;
+		boolean incinerate = DEFAULT_ARMAMENT_INCINERATE;
 		
 		int upgrade = DEFAULT_UPGRADE_COST;
 		float levelmod = DEFAULT_LEVELMOD;
@@ -234,7 +238,8 @@ public class ConfigGenerator
 				// end of ARMAMENT section - add the armament found and reset defaults
 				insegment = false;
 				
-				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, levelmod, maxfirerate, bounces, divcount);
+				Armament a = new Armament(type, range, firerate, strength, speed, accuracy, upgrade, 
+						levelmod, maxfirerate, bounces, divcount, breakcount, incinerate);
 				if (inprimary) {
 					Confg.addPrimary(a);
 				} else if (insecondary){
@@ -299,6 +304,12 @@ public class ConfigGenerator
 				continue;
 			} else if (d.param.equals("divcount:")) {
 				divcount = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_DIVCOUNT);
+				continue;
+			} else if (d.param.equals("breakcount:")) {
+				breakcount = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_BREAKCOUNT);
+				continue;
+			} else if (d.param.equals("incinerate:")) {
+				incinerate = LineData.getBoolean(Filename, linenumber, d.opt, DEFAULT_ARMAMENT_INCINERATE);
 				continue;
 			}
 		}
