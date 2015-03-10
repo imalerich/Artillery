@@ -1072,6 +1072,13 @@ public class UserArmy extends Army
 			selected.setFiringSecondary(false);
 			selected.setFiringPrimary(false);
 			selected.setSwapState(true);
+				
+			Response r = new Response();
+			r.request = "SWAPSTATE";
+			r.source = getConnection();
+			r.squad = selected.getID();
+			r.b0 = selected.doSwapState();
+			network.getClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1085,6 +1092,13 @@ public class UserArmy extends Army
 			selected.setFiringSecondary(false);
 			selected.setFiringPrimary(false);
 			selected.setSwapState(true);
+				
+			r = new Response();
+			r.request = "SWAPSTATE";
+			r.source = getConnection();
+			r.squad = selected.getID();
+			r.b0 = selected.doSwapState();
+			network.getClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1201,6 +1215,7 @@ public class UserArmy extends Army
 			r.i0 = selected.getID(); // unit that will be shooting
 			r.i1 = t.getArmy().getConnection(); // army that is being shot at
 			r.i2 = t.getID(); // squad that is being shot at
+			selected.getPrimary().setNetworkData(r);
 			
 			network.getClient().sendTCP(r);
 		}
@@ -1285,6 +1300,7 @@ public class UserArmy extends Army
 			r.i0 = selected.getID();
 			r.b0 = selected.isFiringPrimary();
 			r.b1 = selected.isForward();
+			selected.getPrimary().setNetworkData(r);
 			
 			network.getClient().sendTCP(r);
 			
@@ -1339,6 +1355,7 @@ public class UserArmy extends Army
 			r.b1 = selected.isForward();
 			r.f0 = selected.getPrimary().getAngle();
 			r.f1 = selected.getPowerRatio();
+			selected.getPrimary().setNetworkData(r);
 			
 			network.getClient().sendTCP(r);
 			
@@ -1380,11 +1397,15 @@ public class UserArmy extends Army
 				r.request = "UNITGRENADE";
 				r.b0 = selected.isFiringSecondary();
 				r.f0 = selected.getSecondary().getAngle();
+				selected.getSecondary().setNetworkData(r);
+				
 			} else {
 				selected.setFiringOffhand(true);
 				r.request = "UNITMORTAR";
 				r.b0 = selected.isFiringOffhand();
 				r.f0 = selected.getOffhand().getAngle();
+				selected.getOffhand().setNetworkData(r);
+				
 			}
 			
 			r.i0 = selected.getID();

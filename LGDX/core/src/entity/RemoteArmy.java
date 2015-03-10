@@ -120,6 +120,8 @@ public class RemoteArmy extends Army
 			s.setFiringPrimary(r.b0);
 			s.setBarrelAngle(r.f0);
 			s.setPowerRatio(r.f1);
+			s.getPrimary().setDataFromNetwork(r);
+			
 			return;
 			
 		} else if (r.request.equals("FLAMEFIRING")) {
@@ -130,6 +132,7 @@ public class RemoteArmy extends Army
 			
 			s.setForward(r.b1);
 			s.setFiringPrimary(r.b0);
+			s.getPrimary().setDataFromNetwork(r);
 			return;
 			
 		} else if (r.request.equals("UNITTARGET")) {
@@ -139,12 +142,15 @@ public class RemoteArmy extends Army
 			
 			Squad t = world.getRemoteArmy(r.i1).getSquad(r.i2);
 			s.setTargetSquad(t);
+			if (s.getPrimary() != null)
+				s.getPrimary().setDataFromNetwork(r);
 			
 			if (t != null) {
 				t.setAsTarget();
 			}
 			
 			return;
+			
 		} else if (r.request.equals("UNITGRENADE")) {
 			Squad s = getSquad(r.i0);
 			if (s == null)
@@ -154,7 +160,9 @@ public class RemoteArmy extends Army
 			s.setFiringSecondary(r.b0);
 			s.getSecondary().setAngle(r.f0);
 			s.setPowerRatio(r.f1);
+			s.getSecondary().setDataFromNetwork(r);;
 			return;
+			
 		} else if (r.request.equals("UNITMORTAR")) {
 			Squad s = getSquad(r.i0);
 			if (s == null)
@@ -162,8 +170,9 @@ public class RemoteArmy extends Army
 			
 			s.setForward(r.b1);
 			s.setFiringOffhand(r.b0);
-			s.getSecondary().setAngle(r.f0);
+			s.getOffhand().setAngle(r.f0);
 			s.setPowerRatio(r.f1);
+			s.getOffhand().setDataFromNetwork(r);
 			return;
 		}
 		
@@ -214,6 +223,14 @@ public class RemoteArmy extends Army
 			return;
 			
 		}
+		
+		if (r.request.equals("SWAPSTATE")) {
+			Squad s = getSquad(r.squad);
+			s.setSwapState(r.b0);
+			
+			return;
+			
+		}
 	}
 
 	@Override
@@ -229,6 +246,11 @@ public class RemoteArmy extends Army
 		Iterator<Squad> s = squads.iterator();
 		while (s.hasNext()) {
 			Squad squad = s.next();
+			
+			if (squad.doSwapState()) {
+				squad.swapState();
+				squad.setSwapState(false);
+			}
 			
 			// add primary weapons to the combat resolver
 			if (squad.getTargetSquad() != null && squad.getPrimary().getType() == Armament.UNITTARGET) {

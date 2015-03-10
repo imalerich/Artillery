@@ -1,5 +1,7 @@
 package arsenal;
 
+import network.Response;
+
 public class Armament 
 {
 	// constants that define the two possible types of armaments
@@ -62,6 +64,30 @@ public class Armament
 		
 		upgrade_cost = UpCost;
 		levelmod = LevelMod;
+	}
+	
+	public void setNetworkData(Response r)
+	{
+		r.armsBounces = getBounces();
+		r.armsBreakcount = getBreakCount();
+		r.armsDivcount = getDivCount();
+		r.armsFirerate = getFireRate();
+		r.armsIncinerate = doIncinerate();
+		r.armsSpeed = getSpeed();
+		r.armsStrength = getStrength();
+	}
+	
+	public void setDataFromNetwork(Response r)
+	{
+		firerate = r.armsFirerate > 0 ? r.armsFirerate : firerate;
+		strength = r.armsStrength > 0 ? r.armsStrength : strength;
+		speed = r.armsSpeed > 0 ? r.armsSpeed : speed;
+		
+		// set special armament additions
+		bounces = r.armsBounces;
+		divcount = r.armsDivcount;
+		breakcount = r.armsBreakcount;
+		incinerate = r.armsIncinerate;
 	}
 	
 	// getter methods for the properties of this armament
