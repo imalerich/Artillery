@@ -174,6 +174,19 @@ public class RemoteArmy extends Army
 			s.setPowerRatio(r.f1);
 			s.getOffhand().setDataFromNetwork(r);
 			return;
+			
+		} else if (r.request.equals("CANCELATTACK")) {
+			Squad s = getSquad(r.squad);
+			if (s == null)
+				return;
+			
+			// selected squad actions were canceled
+			s.setTargetSquad(null);
+			s.setFiringSecondary(false);
+			s.setFiringPrimary(false);
+			s.setSwapState(false);
+			return;
+			
 		}
 		
 		if (r.request.equals("UNITHEALTH")) {

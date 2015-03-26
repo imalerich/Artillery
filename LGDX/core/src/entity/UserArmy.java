@@ -1020,6 +1020,12 @@ public class UserArmy extends Army
 			selected.setFiringSecondary(false);
 			selected.setFiringPrimary(false);
 			selected.setSwapState(false);
+				
+			Response r = new Response();
+			r.request = "CANCELATTACK";
+			r.source = getConnection();
+			r.squad = selected.getID();
+			network.getClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1073,7 +1079,7 @@ public class UserArmy extends Army
 			selected.setFiringPrimary(false);
 			selected.setSwapState(true);
 				
-			Response r = new Response();
+			r = new Response();
 			r.request = "SWAPSTATE";
 			r.source = getConnection();
 			r.squad = selected.getID();
