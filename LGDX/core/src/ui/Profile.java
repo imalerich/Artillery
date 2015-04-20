@@ -155,7 +155,7 @@ public class Profile
 			off += ProfileWeapon.getHeight();
 			
 			if (S.getPrimary().getType() == Armament.POINTTARGET) {
-				ProfileTankOptions.draw(Batch, S.getPrimary(), ypos, off);
+				ProfileTankOptions.draw(Batch, S, S.getPrimary(), ypos, off);
 				off += ProfileWeapon.getHeight();
 			}
 		}
@@ -170,7 +170,7 @@ public class Profile
 			off += ProfileWeapon.getHeight();
 			
 			if (S.getOffhand().getType() == Armament.POINTTARGET) {
-				ProfileTankOptions.draw(Batch, S.getOffhand(), ypos, off);
+				ProfileTankOptions.draw(Batch, S, S.getOffhand(), ypos, off);
 				off += ProfileWeapon.getHeight();
 			}
 		}

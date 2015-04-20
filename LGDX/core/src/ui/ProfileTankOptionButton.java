@@ -62,6 +62,11 @@ public class ProfileTankOptionButton
 			return 0;
 	}
 	
+	public static boolean isMouseOver()
+	{
+		return Cursor.isMouseOverAbsolute(r);
+	}
+	
 	public static boolean isActive()
 	{
 		return ( Cursor.isMouseOverAbsolute(r) && Cursor.isButtonJustReleased(Cursor.LEFT) );
