@@ -37,7 +37,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import config.SquadConfigurations;
+import config.AppConfigs;
+import config.SquadConfigs;
 import entity.Gunman;
 import entity.Squad;
 import entity.Tank;
@@ -227,6 +228,7 @@ public class Game extends ApplicationAdapter
 	
 	public void init()
 	{
+		AppConfigs.init();
 		Tank.init();
 		Gunman.init();
 		Squad.init();
@@ -244,7 +246,7 @@ public class Game extends ApplicationAdapter
 		ParticleMask.init();
 		Terrain.init();
 		Weather.init();
-		SquadConfigurations.init();
+		SquadConfigs.init();
 		FoxHole.init();
 		TankBarrier.init();
 		Blast.init();

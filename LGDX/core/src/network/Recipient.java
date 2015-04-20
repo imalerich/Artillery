@@ -18,7 +18,7 @@ import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
-import config.SquadConfigurations;
+import config.SquadConfigs;
 import entity.Classification;
 import entity.RemoteArmy;
 import entity.Squad;
@@ -83,7 +83,7 @@ public class Recipient
 		}
 		
 		// add the hosts base to the game world
-		ConfigSettings tankSettings = SquadConfigurations.getConfiguration(SquadConfigurations.TANK);
+		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
 		
 		MilitaryBase base = new MilitaryBase(pos, game.getTerrain());
 		base.setLogo(id-1);
@@ -281,7 +281,7 @@ public class Recipient
 	public void addNetworkedArmy(int Pos, int TankOffset, int ID)
 	{
 		// add the hosts base to the game world
-		ConfigSettings tankSettings = SquadConfigurations.getConfiguration(SquadConfigurations.TANK);
+		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
 		
 		MilitaryBase base = new MilitaryBase(Pos, game.getTerrain());
 		base.setLogo(id-1);

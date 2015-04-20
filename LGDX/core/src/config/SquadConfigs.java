@@ -1,6 +1,6 @@
 package config;
 
-public class SquadConfigurations 
+public class SquadConfigs 
 {
 	private static final int CONFIGCOUNT = 5;
 	public static final int GUNMAN = 0;

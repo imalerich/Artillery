@@ -1,0 +1,10 @@
+# contains global app settings
+
+ARMS
+
+	bounce_cost: 500
+	incinerate_cost: 500
+	div_cost: 600
+	break_cost: 850
+
+END

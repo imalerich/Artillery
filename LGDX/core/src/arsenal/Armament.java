@@ -21,21 +21,15 @@ public class Armament
 	private float angle;
 	
 	private int bounces;
+	private boolean incinerate;
 	private int divcount;
 	private int breakcount;
-	private boolean incinerate;
 	
-	// available enhancements and their costs
-	// TODO - generate these from a global app config
-	public static final int BOUNCESCOST = 500;
-	public static final int DIVCOST = 500;
-	public static final int BREAKCOST = 500;
-	public static final int INCINERATECOST = 500;
-	
+	// available enhancements (costs are stored in AppCongigs.Arms)
 	public boolean bouncesUnlocked;
+	public boolean incinerateUnlocked;
 	public boolean divUnlocked;
 	public boolean breakUnlocked;
-	public boolean incinerateUnlocked;
 	
 	public final int upgrade_cost;
 	public final float levelmod;

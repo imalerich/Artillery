@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
-import config.SquadConfigurations;
+import config.SquadConfigs;
 import entity.Army;
 import entity.Gunman;
 
@@ -41,21 +41,21 @@ public class SpawnIndicator
 		switch (unittype)
 		{
 		case UnitDeployer.GUNMAN:	
-			spawncount = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN).count;
+			spawncount = SquadConfigs.getConfiguration(SquadConfigs.GUNMAN).count;
 			tex = TextureRegion.split(Gunman.GUNMAN, Gunman.GUNMAN.getWidth()/4, Gunman.GUNMAN.getHeight())[0][0];
 			width = Gunman.GUNMAN.getWidth()/4;
 			height = Gunman.GUNMAN.getHeight()/1;
 			break;
 
 		case UnitDeployer.STEALTHOPS:
-			spawncount = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS).count;
+			spawncount = SquadConfigs.getConfiguration(SquadConfigs.STEALTHOPS).count;
 			tex = TextureRegion.split(Gunman.STEALTHTROOPS, Gunman.GUNMAN.getWidth()/4, Gunman.GUNMAN.getHeight())[0][0];
 			width = Gunman.STEALTHTROOPS.getWidth()/4;
 			height = Gunman.STEALTHTROOPS.getHeight()/1;
 			break;
 
 		case UnitDeployer.SPECOPS:
-			spawncount = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS).count;
+			spawncount = SquadConfigs.getConfiguration(SquadConfigs.SPECOPS).count;
 			tex = TextureRegion.split(Gunman.SPECOPS, Gunman.GUNMAN.getWidth()/4, Gunman.GUNMAN.getHeight())[0][0];
 			width = Gunman.SPECOPS.getWidth()/4;
 			height = Gunman.SPECOPS.getHeight()/1;

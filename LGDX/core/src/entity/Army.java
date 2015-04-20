@@ -22,7 +22,7 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
-import config.SquadConfigurations;
+import config.SquadConfigs;
 
 public abstract class Army 
 {
@@ -122,7 +122,7 @@ public abstract class Army
 		
 		// add all towers in the queue to the army
 		while (t.hasNext()) {
-			ConfigSettings c = SquadConfigurations.getConfiguration(SquadConfigurations.TOWER);
+			ConfigSettings c = SquadConfigs.getConfiguration(SquadConfigs.TOWER);
 			
 			RadioTower Tower = t.next();
 			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
@@ -224,17 +224,17 @@ public abstract class Army
 		switch (UnitType)
 		{
 		case UnitDeployer.GUNMAN:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
+			c = SquadConfigs.getConfiguration(SquadConfigs.GUNMAN);
 			s = new Squad(ter, c.maxmovedist, this, Classification.GUNMAN);
 			break;
 			
 		case UnitDeployer.STEALTHOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.STEALTHOPS);
 			s = new Squad(ter, c.maxmovedist, this, Classification.STEALTHOPS);
 			break;
 			
 		case UnitDeployer.SPECOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.SPECOPS);
 			s = new Squad(ter, c.maxmovedist, this, Classification.SPECOPS);
 			break;
 		}

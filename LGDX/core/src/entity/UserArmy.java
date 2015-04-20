@@ -32,7 +32,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
-import config.SquadConfigurations;
+import config.SquadConfigs;
 
 public class UserArmy extends Army
 {
@@ -535,14 +535,14 @@ public class UserArmy extends Army
 		// get the cost of the selected unit
 		switch (Selected) {
 		case UnitDeployer.GUNMAN:
-			int r = requisition - SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN).reqcost;
+			int r = requisition - SquadConfigs.getConfiguration(SquadConfigs.GUNMAN).reqcost;
 			return r;
 			
 		case UnitDeployer.SPECOPS:
-			return requisition - SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS).reqcost;
+			return requisition - SquadConfigs.getConfiguration(SquadConfigs.SPECOPS).reqcost;
 			
 		case UnitDeployer.STEALTHOPS:
-			return requisition - SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS).reqcost;
+			return requisition - SquadConfigs.getConfiguration(SquadConfigs.STEALTHOPS).reqcost;
 			
 		default:
 			return requisition;

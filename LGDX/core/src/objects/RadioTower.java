@@ -13,7 +13,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 import com.mygdx.game.Shaders;
 
-import config.SquadConfigurations;
+import config.SquadConfigs;
 import entity.Squad;
 import entity.Unit;
 import entity.UserArmy;
@@ -63,7 +63,7 @@ public class RadioTower extends Unit
 			World.removeOutpostMarker(ID);
 		}
 		
-		setReqBonus(SquadConfigurations.getConfiguration(SquadConfigurations.TOWER).reqbonus);
+		setReqBonus(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqbonus);
 		
 		logo = Logo;
 		id = ID;

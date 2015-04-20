@@ -12,7 +12,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 
 import config.ConfigSettings;
-import config.SquadConfigurations;
+import config.SquadConfigs;
 import entity.Classification;
 import entity.Gunman;
 import entity.Squad;
@@ -73,15 +73,15 @@ public class Profile
 		switch (S.getClassification())
 		{
 		case GUNMAN:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
+			c = SquadConfigs.getConfiguration(SquadConfigs.GUNMAN);
 			return 2 * (c.reqcost/c.count);
 			
 		case STEALTHOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.STEALTHOPS);
 			return 2 * (c.reqcost/c.count);
 			
 		case SPECOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.SPECOPS);
 			return 2 * (c.reqcost/c.count);
 			
 		case TOWER:
@@ -111,17 +111,17 @@ public class Profile
 		switch (S.getClassification())
 		{
 		case GUNMAN:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.GUNMAN);
+			c = SquadConfigs.getConfiguration(SquadConfigs.GUNMAN);
 			S.addUnit( new Gunman(Gunman.GUNMAN, ter, pos, c.speed, c.health, c.reqbonus));
 			break;
 			
 		case STEALTHOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.STEALTHOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.STEALTHOPS);
 			S.addUnit( new Gunman(Gunman.STEALTHTROOPS, ter, pos, c.speed, c.health, c.reqbonus));
 			break;
 			
 		case SPECOPS:
-			c = SquadConfigurations.getConfiguration(SquadConfigurations.SPECOPS);
+			c = SquadConfigs.getConfiguration(SquadConfigs.SPECOPS);
 			S.addUnit( new Gunman(Gunman.SPECOPS, ter, pos, c.speed, c.health, c.reqbonus));
 			break;
 			

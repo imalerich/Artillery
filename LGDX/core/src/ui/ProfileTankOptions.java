@@ -5,6 +5,7 @@ import arsenal.Armament;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import config.AppConfigs;
 import entity.Squad;
 
 public class ProfileTankOptions 
@@ -14,7 +15,7 @@ public class ProfileTankOptions
 		// always draw the first button, will display as a locked symbol if unavailable (must be unlocked in order)
 		ProfileTankOptionButton.setPos(0, YPos, 5, Offset);
 		if (ProfileTankOptionButton.isMouseOver())
-			MenuBar.setTmpRequisition(S.getArmy().getReq() - Armament.BOUNCESCOST);
+			MenuBar.setTmpRequisition(S.getArmy().getReq() - AppConfigs.Arms.BOUNCECOST);
 		if (ProfileTankOptionButton.isActive())
 			setBounces(A, S);
 		ProfileTankOptionButton.draw(Batch, A.getBounces() > 0, A.bouncesUnlocked ? 0 : 4);
@@ -23,7 +24,7 @@ public class ProfileTankOptions
 		if (A.bouncesUnlocked) {
 			ProfileTankOptionButton.setPos(2+1*ProfileTankOptionButton.getWidth(), YPos, 7, Offset);
 			if (ProfileTankOptionButton.isMouseOver())
-				MenuBar.setTmpRequisition(S.getArmy().getReq() - Armament.INCINERATECOST);
+				MenuBar.setTmpRequisition(S.getArmy().getReq() - AppConfigs.Arms.INCINERATECOST);
 			if (ProfileTankOptionButton.isActive())
 				setIncinerate(A, S);
 			ProfileTankOptionButton.draw(Batch, A.doIncinerate(), A.incinerateUnlocked ? 3 : 4);
@@ -32,7 +33,7 @@ public class ProfileTankOptions
 		if (A.incinerateUnlocked) {
 			ProfileTankOptionButton.setPos(4+2*ProfileTankOptionButton.getWidth(), YPos, 7, Offset);
 			if (ProfileTankOptionButton.isMouseOver())
-				MenuBar.setTmpRequisition(S.getArmy().getReq() - Armament.DIVCOST);
+				MenuBar.setTmpRequisition(S.getArmy().getReq() - AppConfigs.Arms.DIVCOST);
 			if (ProfileTankOptionButton.isActive())
 				setDivCount(A, S);
 			ProfileTankOptionButton.draw(Batch, A.getDivCount() > 0, A.divUnlocked ? 1 : 4);
@@ -41,7 +42,7 @@ public class ProfileTankOptions
 		if (A.divUnlocked) {
 			ProfileTankOptionButton.setPos(6+3*ProfileTankOptionButton.getWidth(), YPos, 7, Offset);
 			if (ProfileTankOptionButton.isMouseOver())
-				MenuBar.setTmpRequisition(S.getArmy().getReq() - Armament.BREAKCOST);
+				MenuBar.setTmpRequisition(S.getArmy().getReq() - AppConfigs.Arms.BREAKCOST);
 			if (ProfileTankOptionButton.isActive())
 				setBreakCount(A, S);
 			ProfileTankOptionButton.draw(Batch, A.getBreakCount() > 0, A.breakUnlocked ? 2 : 4);
@@ -51,8 +52,8 @@ public class ProfileTankOptions
 	private static void setBounces(Armament A, Squad S)
 	{
 		// if they can afford bounces, purchase it
-		if (!A.bouncesUnlocked && S.getArmy().getReq() >= Armament.BOUNCESCOST) {
-			spendReq(S, Armament.BOUNCESCOST);
+		if (!A.bouncesUnlocked && S.getArmy().getReq() >= AppConfigs.Arms.BOUNCECOST) {
+			spendReq(S, AppConfigs.Arms.BOUNCECOST);
 			A.bouncesUnlocked = true;
 		}
 		
@@ -65,8 +66,8 @@ public class ProfileTankOptions
 	
 	private static void setDivCount(Armament A, Squad S)
 	{
-		if (!A.divUnlocked && S.getArmy().getReq() >= Armament.DIVCOST) {
-			spendReq(S, Armament.DIVCOST);
+		if (!A.divUnlocked && S.getArmy().getReq() >= AppConfigs.Arms.DIVCOST) {
+			spendReq(S, AppConfigs.Arms.DIVCOST);
 			A.divUnlocked = true;
 		}
 		
@@ -81,8 +82,8 @@ public class ProfileTankOptions
 	
 	private static void setBreakCount(Armament A, Squad S)
 	{
-		if (!A.breakUnlocked && S.getArmy().getReq() >= Armament.BREAKCOST) {
-			spendReq(S, Armament.BREAKCOST);
+		if (!A.breakUnlocked && S.getArmy().getReq() >= AppConfigs.Arms.BREAKCOST) {
+			spendReq(S, AppConfigs.Arms.BREAKCOST);
 			A.breakUnlocked= true;
 		}
 		
@@ -97,8 +98,8 @@ public class ProfileTankOptions
 	
 	private static void setIncinerate(Armament A, Squad S)
 	{
-		if (!A.incinerateUnlocked && S.getArmy().getReq() >= Armament.INCINERATECOST) {
-			spendReq(S, Armament.INCINERATECOST);
+		if (!A.incinerateUnlocked && S.getArmy().getReq() >= AppConfigs.Arms.INCINERATECOST) {
+			spendReq(S, AppConfigs.Arms.INCINERATECOST);
 			A.incinerateUnlocked = true;
 		}
 		

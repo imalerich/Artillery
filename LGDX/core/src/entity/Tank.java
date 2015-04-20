@@ -18,7 +18,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.Shaders;
 
-import config.SquadConfigurations;
+import config.SquadConfigs;
 
 public class Tank extends Unit 
 {
@@ -85,7 +85,7 @@ public class Tank extends Unit
 		health = Health;
 		maxhealth = Health;
 		
-		setReqBonus( SquadConfigurations.getConfiguration(SquadConfigurations.TANK).reqbonus );
+		setReqBonus( SquadConfigs.getConfiguration(SquadConfigs.TANK).reqbonus );
 	}
 	
 	@Override
