@@ -226,8 +226,6 @@ public class CombatPacket
 		else if (dist > 0f) {
 			mag *= (Game.SCREENW-dist)/(Game.SCREENW);
 		}
-
-		Cam.addKick(-getMoveDirection()*tmp.x*mag, -tmp.y*mag);
 	}
 	
 	public void draw(SpriteBatch Batch, Camera Cam)

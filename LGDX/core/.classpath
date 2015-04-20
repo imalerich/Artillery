@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
-	<classpathentry kind="lib" path="/home/imalerich/dev/Artillery/Bin/Artillery.jar"/>
-	<classpathentry kind="lib" path="/home/imalerich/dev/Artillery/Lib/kryonet-2.21-all.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ian/Development/Artillery/Lib/kryonet-2.21-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

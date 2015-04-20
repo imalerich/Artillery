@@ -313,8 +313,8 @@ public class GameWorld
 		// move the camera with the mouse
 		if (Cursor.isButtonPressed(Cursor.MIDDLE))
 		{
-			cam.moveHorizontal( 6 * -Cursor.getDeltaX() );
-			cam.moveVertical( 6 * Cursor.getDeltaY() );
+			cam.moveHorizontal( Game.CAMPANSPEED * -Cursor.getDeltaX() );
+			cam.moveVertical( Game.CAMPANSPEED * Cursor.getDeltaY() );
 		}
 		
 		// move the camera with the keyboard

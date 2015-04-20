@@ -213,8 +213,6 @@ public class Missile
 		else if (dist > 0f) {
 			mag *= (Game.SCREENW-dist)/(Game.SCREENW);
 		}
-
-		Cam.addKick(-tmp.x*mag, -tmp.y*mag);
 	}
 	
 	protected void procBlast(float blastScale)

@@ -52,12 +52,6 @@ public class Camera
 		rumble = Intensity;
 	}
 	
-	public void addKick(float X, float Y)
-	{
-		kicktarget.x += X;
-		kicktarget.y += Y;
-	}
-	
 	public void update()
 	{
 		xdist = 0f;

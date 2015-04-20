@@ -25,6 +25,11 @@ public class Armament
 	private int breakcount;
 	private boolean incinerate;
 	
+	public boolean bouncesUnlocked;
+	public boolean divUnlocked;
+	public boolean breakUnlocked;
+	public boolean incinerateUnlocked;
+	
 	public final int upgrade_cost;
 	public final float levelmod;
 	
@@ -42,6 +47,11 @@ public class Armament
 		divcount = DivCount;
 		breakcount = BreakCount;
 		incinerate = Incinerate;
+		
+		bouncesUnlocked = false;
+		divUnlocked = false;
+		breakUnlocked = false;
+		incinerateUnlocked = false;
 		
 		// accuracy is a floating point in the bounds 0f -> 1f
 		accuracy = Accuracy;

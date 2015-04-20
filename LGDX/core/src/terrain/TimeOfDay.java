@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 
 public class TimeOfDay 
 {
-	public static float DAYLENGTH = 8f;
-	public static float NIGHTLENGTH = 8f;
-	public static float TRANSTIME = 3f;
+	public static float DAYLENGTH = 20f;
+	public static float NIGHTLENGTH = 20f;
+	public static float TRANSTIME = 10f;
 	public static float TOTALTIME = DAYLENGTH + NIGHTLENGTH + TRANSTIME*2f;
 	
 	private static float time = 0f;
@@ -44,8 +44,8 @@ public class TimeOfDay
 			return 0f;
 		
 		if (time > DAYLENGTH && time < DAYLENGTH + TRANSTIME)
-			return -(time - DAYLENGTH)/3f + 1f;
+			return -(time - DAYLENGTH)/TRANSTIME + 1f;
 		else
-			return (time - (TOTALTIME-TRANSTIME))/3f;
+			return (time - (TOTALTIME-TRANSTIME))/TRANSTIME;
 	}
 }

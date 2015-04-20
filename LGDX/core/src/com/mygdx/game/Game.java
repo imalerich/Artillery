@@ -67,6 +67,8 @@ public class Game extends ApplicationAdapter
 	public static final int GAME = 1;
 	public static int stage = HOME;
 	
+	public static final float CAMPANSPEED = 1f;
+	
 	private static OrthographicCamera proj;
 	private static SpriteBatch batch;
 
