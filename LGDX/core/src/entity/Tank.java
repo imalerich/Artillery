@@ -137,6 +137,7 @@ public class Tank extends Unit
 	
 	public void setAsDeceased(Vector<NullTank> Deceased, Particles Part)
 	{
+		getSquad().getArmy().setIsTankDead(true);
 		Deceased.add(createNullTank(Part));
 	}
 	

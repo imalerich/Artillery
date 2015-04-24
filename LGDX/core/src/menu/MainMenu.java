@@ -212,12 +212,9 @@ public class MainMenu
 		for (int i=lobbycount; i<lobbysize; i++) {
 			Batch.draw(nullbutton, xpos+3+(15*i), ypos+3);
 			
-			float trans = (float)time;
-			if (trans > 1f) {
-				trans = 1f - (trans - 1f);
-			}
+			double trans = time > 1f ? 1f - (time - 1f) : time;
 			
-			Batch.setColor(1f, 1f, 1f, trans);
+			Batch.setColor(1f, 1f, 1f, (float)trans);
 			Batch.draw(redbutton, xpos+3+(15*i), ypos+3);
 			Batch.setColor(Color.WHITE);
 		}

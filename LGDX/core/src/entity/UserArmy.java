@@ -32,6 +32,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
+import config.ConfigSettings;
 import config.SquadConfigs;
 
 public class UserArmy extends Army
@@ -125,6 +126,14 @@ public class UserArmy extends Army
 	public void procMessage(Camera Cam, Response r)
 	{
 		//
+	}
+	
+	@Override
+	public void setIsTankDead(boolean TankIsDead) 
+	{
+		// the user can spawn a new tank when their current one is dead
+		MenuBar.setCanSpawnTank(TankIsDead);
+		isTankDead = TankIsDead;
 	}
 	
 	@Override
@@ -389,6 +398,28 @@ public class UserArmy extends Army
 		// do not update while waiting for others to complete
 		if (stagecompleted[GameWorld.MOVESELECT])
 			return;
+		
+		// respawn the users tank
+		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
+		if (MenuBar.shouldSpawnTank() && getReq() >= tankSettings.reqcost) {
+			MenuBar.setCanSpawnTank(false);
+			
+			// spawn the tank (xpos is not used when spawning a tank)
+			int id = spawnUnit(UnitDeployer.TANK, 0, true);
+			Squad s = getSquad(id);
+			spendRequisition(tankSettings.reqcost, new Vector2(s.getBBox().x + s.getBBox().width/2, s.getBBox().y + s.getBBox().height));
+			
+			// inform the network of the new tank
+			Response r = new Response();
+			r.source = getConnection();
+			r.request = "SQUADSPAWNED";
+			r.i0 = UnitDeployer.TANK;
+			r.i1 = id;
+			r.i2 = 0;
+			r.b0 = true;
+
+			network.getClient().sendTCP(r);
+		}
 		
 		buildOptionStack(Cam, true);
 		setSelected();
@@ -1530,6 +1561,8 @@ public class UserArmy extends Army
 			MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
 		else if (selecttower)
 			MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
+		else if (MenuBar.isOverSpawnTank())
+			MenuBar.setTmpRequisition(requisition - SquadConfigs.getConfiguration(SquadConfigs.TANK).reqcost);
 	}
 	
 	@Override

@@ -1,9 +1,4 @@
-/com/
-/physics/
-/terrain/
 /ui/
-/arsenal/
-/config/
 /entity/
-/network/
-/objects/
+/menu/
+/config/

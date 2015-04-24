@@ -402,4 +402,10 @@ public class RemoteArmy extends Army
 	{
 		//
 	}
+
+	@Override
+	public void setIsTankDead(boolean TankIsDead) 
+	{
+		//
+	}
 }

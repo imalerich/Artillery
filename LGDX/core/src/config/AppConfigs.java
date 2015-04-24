@@ -13,6 +13,6 @@ public class AppConfigs
 		String data = Gdx.files.internal(FILENAME).readString();
 
 		AppConfigGenerator.validateFile(FILENAME, data);
-		ArmsConfigs c = AppConfigGenerator.loadArmsConfiguration(FILENAME, data);
+		Arms = AppConfigGenerator.loadArmsConfiguration(FILENAME, data);
 	}
 }

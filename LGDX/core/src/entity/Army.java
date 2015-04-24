@@ -36,6 +36,7 @@ public abstract class Army
 	protected boolean[] stagecompleted;
 	protected Vector<Response> response;
 	protected int requisition = 500;
+	protected boolean isTankDead = false;
 	
 	protected MilitaryBase base;
 	protected Vector<Squad> squads;
@@ -83,6 +84,8 @@ public abstract class Army
 	public abstract void addRequisition(int Ammount, Vector2 Pos);
 	
 	public abstract void spendRequisition(int Ammount, Vector2 Pos);
+	
+	public abstract void setIsTankDead(boolean TankIsDead);
 	
 	public Army()
 	{
@@ -218,6 +221,24 @@ public abstract class Army
 	
 	public int spawnUnit(int UnitType, int XPos, boolean Forward)
 	{
+		// check if the user wishes to spawn a tank, if so, execute tank specific code
+		if (UnitType == UnitDeployer.TANK) {
+			ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
+			Squad squad = new Squad(ter, tankSettings.maxmovedist, this, Classification.TANK);
+			squad.setPrimary(tankSettings.getFirstPrimary());
+			squad.setArmor(tankSettings.getFirstArmor());
+
+			Tank tank = new Tank("img/tanks/Tank1.png", ter, tankSettings.speed, tankSettings.health);
+			tank.getPos( new Vector2(base.getPos().x + 70, base.getPos().y) );
+			tank.setBarrelOffset( new Vector2(17, 64-35) );
+			squad.addUnit(tank);
+			squad.setBarrelSrc( new Vector2(17, 64-35) );
+			addSquad(squad);
+			squad.setForward(Forward);
+			
+			return squad.getID();
+		}
+		
 		// get the appropriate configuration settings
 		ConfigSettings c = null;
 		Squad s = null;

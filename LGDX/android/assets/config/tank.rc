@@ -6,6 +6,7 @@ UNIT
 	health: 46
 	movedist: 768
 	reqbonus: 200
+	reqcost: 300
 
 END
 

@@ -16,17 +16,23 @@ public class MenuBar
 	private static Texture bar;
 	private static Texture endbutton;
 	private static Texture endinactive;
+	private static Texture respawnTank;
+	private static Texture respawnTankOverlay;
 	private static Texture powerbar;
 	private static Texture powerindicator;
 	private static Texture reqflag;
 	private static Texture reqx;
 	private static TextureRegion[] currentstage;
 	private static Rectangle bbox;
+	private static Rectangle spawnTankBbox;
 	
 	private static float powerlevel = PowerButtons.DEFAULTPOWER/PowerButtons.MAXPOWER;
 	private static int req = 0;
 	private static int tmpreq = 0;
 	private static boolean isUsersTurn = false;
+	private static boolean canSpawnTank = false;
+	
+	private static double timer = 0.0;
 	
 	public static void init()
 	{
@@ -51,6 +57,12 @@ public class MenuBar
 		if (reqx == null)
 			reqx = new Texture( Gdx.files.internal("img/ui/menubar/reqx.png") );
 		
+		if (respawnTank == null)
+			respawnTank = new Texture( Gdx.files.internal("img/ui/menubar/respawn_tank.png") );
+		
+		if (respawnTankOverlay == null)
+			respawnTankOverlay = new Texture( Gdx.files.internal("img/ui/menubar/respawn_tank_overlay.png") );
+		
 		if (currentstage == null) {
 			Texture tmp = new Texture( Gdx.files.internal("img/ui/menubar/CurrentStage.png") );
 			currentstage = TextureRegion.split(tmp, tmp.getWidth()/5, tmp.getHeight())[0];
@@ -63,6 +75,9 @@ public class MenuBar
 		
 		bbox = new Rectangle(Game.SCREENW/2 - endbutton.getWidth()/2, 
 				Game.SCREENH-endbutton.getHeight()+2, endbutton.getWidth(), endbutton.getHeight());
+		
+		spawnTankBbox = new Rectangle(powerbar.getWidth() + 4, 
+				Game.SCREENH - respawnTank.getHeight() + 2, respawnTank.getWidth(), respawnTank.getHeight());
 	}
 	
 	public static void release()
@@ -85,8 +100,19 @@ public class MenuBar
 		if (reqflag != null)
 			reqflag.dispose();
 		
+		if (respawnTank != null)
+			respawnTank.dispose();
+		
+		if (respawnTankOverlay != null)
+			respawnTankOverlay.dispose();
+		
 		if (reqx != null)
 			reqx.dispose();
+	}
+	
+	public static void setCanSpawnTank(boolean SpawnTank)
+	{
+		canSpawnTank = SpawnTank;
 	}
 	
 	public static void setPowerLevel(float Level, float Maximum)
@@ -103,6 +129,9 @@ public class MenuBar
 	{
 		bbox.x = Game.SCREENW/2 - endbutton.getWidth()/2;
 		bbox.y = Game.SCREENH - endbutton.getHeight()+2;
+		
+		spawnTankBbox.x = powerbar.getWidth() + 4;
+		spawnTankBbox.y = Game.SCREENH - respawnTank.getHeight() + 2;
 	}
 	
 	public static int getMenuBarHeight()
@@ -125,6 +154,16 @@ public class MenuBar
 		return (Cursor.isMouseOverAbsolute(bbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
 	}
 	
+	public static boolean isOverSpawnTank()
+	{
+		return Cursor.isMouseOverAbsolute(spawnTankBbox);
+	}
+	
+	public static boolean shouldSpawnTank()
+	{
+		return (Cursor.isMouseOverAbsolute(spawnTankBbox) && Cursor.isButtonJustReleased(Cursor.LEFT));
+	}
+	
 	public static void setUsersTurn(boolean State)
 	{
 		isUsersTurn = State;
@@ -144,6 +183,25 @@ public class MenuBar
 			Batch.draw(endbutton, bbox.x, bbox.y-offset);
 		else
 			Batch.draw(endinactive, bbox.x, bbox.y);
+		
+		if (Cursor.isMouseOverAbsolute(spawnTankBbox) && Cursor.isButtonPressed(Cursor.LEFT))
+			offset = 2;
+		else offset = 0;
+		
+		// used for red transparency
+		timer += Gdx.graphics.getDeltaTime() * 2f;
+		if (timer > 2f) 
+			timer -= 2f;
+		
+		if (canSpawnTank) {
+			Batch.draw(respawnTank, spawnTankBbox.x, spawnTankBbox.y - offset);
+			
+			double trans = timer > 1f ? 1f - (timer - 1f) : timer;
+			
+			Batch.setColor(1f, 1f, 1f, (float)trans);
+			Batch.draw(respawnTankOverlay, spawnTankBbox.x, spawnTankBbox.y - offset);
+			Batch.setColor(Color.WHITE);
+		}
 		
 		Batch.draw(powerbar, 2, Game.SCREENH-powerbar.getHeight()+3);
 		Batch.draw(powerindicator, 6, Game.SCREENH-powerbar.getHeight()+14, 

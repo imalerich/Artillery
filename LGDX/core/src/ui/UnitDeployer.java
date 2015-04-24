@@ -18,6 +18,7 @@ public class UnitDeployer
 	public static final int GUNMAN = 0;
 	public static final int STEALTHOPS = 1;
 	public static final int SPECOPS = 2;
+	public static final int TANK = 3;
 	
 	private static TextureRegion[] glyphs;
 	private static Rectangle[] bbox;

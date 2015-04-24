@@ -16,6 +16,8 @@ public class ReqIndicator
 	private Vector2 pos;
 	private Vector2 vel;
 	private float time;
+	private float timeOffset;
+	private float XOff;
 	
 	public static void init()
 	{
@@ -38,6 +40,7 @@ public class ReqIndicator
 		value = Value;
 		lifespan = LifeSpan;
 		time = 0f;
+		timeOffset = (float)Math.random() * (float)Math.PI*2;
 	}
 	
 	public boolean isAlive()
@@ -48,6 +51,8 @@ public class ReqIndicator
 	public void update()
 	{
 		time += Gdx.graphics.getDeltaTime();
+		XOff = (float)Math.sin(time + timeOffset) * 4;
+		
 		pos.x += ( vel.x * Gdx.graphics.getDeltaTime() );
 		pos.y += ( vel.y * Gdx.graphics.getDeltaTime() );
 	}
@@ -61,7 +66,7 @@ public class ReqIndicator
 		float alpha = 1f - (float)Math.pow( Math.min((time/lifespan), 1f), 4 );
 		
 		Batch.setColor(1f, 1f, 1f, alpha);
-		Batch.draw(tex, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y));
+		Batch.draw(tex, Cam.getRenderX(pos.x + XOff), Cam.getRenderY(pos.y));
 		
 		// draw the value
 		if (value < 0)
@@ -76,7 +81,7 @@ public class ReqIndicator
 	private void drawVal(SpriteBatch Batch, Camera Cam)
 	{
 		boolean negative = false;
-		float xpos = Cam.getRenderX(pos.x + tex.getWidth() - MenuBar.CHARSET[0].getRegionWidth()) - 3;
+		float xpos = Cam.getRenderX(pos.x + XOff + tex.getWidth() - MenuBar.CHARSET[0].getRegionWidth()) - 3;
 		float ypos = Cam.getRenderY(pos.y + 4);
 		int val = value;
 		int i=0;
