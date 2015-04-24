@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
 
+import config.AppConfigs;
 import config.ConfigSettings;
 import config.SquadConfigs;
 
@@ -35,7 +36,7 @@ public abstract class Army
 	
 	protected boolean[] stagecompleted;
 	protected Vector<Response> response;
-	protected int requisition = 500;
+	protected int requisition;
 	protected boolean isTankDead = false;
 	
 	protected MilitaryBase base;
@@ -92,6 +93,9 @@ public abstract class Army
 		towerqueue = new Vector<RadioTower>();
 		squads = new Vector<Squad>();
 		response = new Vector<Response>();
+		
+		// set the starting requistion
+		requisition = AppConfigs.Army.STARTINGREQ;
 	}
 	
 	public void addTower(RadioTower Tower)
@@ -131,7 +135,7 @@ public abstract class Army
 			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
 
 			Squad s = new Squad(ter, 0, this, Classification.TOWER);
-			s.setReqBonus(RadioTower.REQBONUS);
+			s.setReqBonus(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqbonus);
 			s.setPrimary(c.getFirstPrimary());
 			s.setArmor(c.getFirstArmor());
 			s.setCanMove(false);

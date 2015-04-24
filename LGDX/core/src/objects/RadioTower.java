@@ -20,8 +20,6 @@ import entity.UserArmy;
 
 public class RadioTower extends Unit
 {
-	public static final int REQBONUS = 100;
-	
 	public static Texture Tower;
 	private static Texture mortar;
 	private static AnimTex flag;

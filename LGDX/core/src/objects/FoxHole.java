@@ -15,7 +15,6 @@ import entity.Squad;
 
 public class FoxHole 
 {
-	public static final int REQCOST = 100;
 	public static final float MOVESPEED = 64;
 	public static final int MOUNDWIDTH = 29;
 	public static Texture FOXHOLE;

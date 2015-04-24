@@ -1,4 +1,12 @@
-/ui/
+/arsenal/
+/audio/
+/com/
+/config/
 /entity/
 /menu/
-/config/
+/network/
+/objects/
+/particles/
+/physics/
+/terrain/
+/ui/

@@ -61,14 +61,14 @@ public class Game extends ApplicationAdapter
 	public static int SCREENW = 960;
 	public static int SCREENH = 800;
 	
-	public static int WORLDW = (int)1920*4;
-	public static int WORLDH = 1200;
+	public static int WORLDW = 0;
+	public static int WORLDH = 0;
 	
 	public static final int HOME = 0;
 	public static final int GAME = 1;
 	public static int stage = HOME;
 	
-	public static final float CAMPANSPEED = 1f;
+	public static float CAMPANSPEED = 1f;
 	
 	private static OrthographicCamera proj;
 	private static SpriteBatch batch;
@@ -93,8 +93,14 @@ public class Game extends ApplicationAdapter
 	@Override
 	public void create() 
 	{
-		// init the game
+		// create application configurations and initialize the game
+		AppConfigs.init();
 		init();
+		
+		SOUND = AppConfigs.Game.AUDIOENABLED;
+		WORLDW = AppConfigs.Game.WORLDWIDTH;
+		WORLDH = AppConfigs.Game.WORLDHEIGHT;
+		CAMPANSPEED = AppConfigs.Game.CAMPANSPEED;
 		
 		// init the camera and the sprite batch
 		batch = new SpriteBatch();
@@ -228,7 +234,6 @@ public class Game extends ApplicationAdapter
 	
 	public void init()
 	{
-		AppConfigs.init();
 		Tank.init();
 		Gunman.init();
 		Squad.init();

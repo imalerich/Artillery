@@ -8,13 +8,25 @@ public class AppConfigGenerator
 	/**
 	 * Valid data tokens to be contained within a config file
 	 */
-	public static final String[] TOKENS = { "ARMS", "END", "incinerate_cost:", "bounce_cost:", "div_cost:", "break_cost:", "#" };
+	public static final String[] TOKENS = { "ARMS", "ARMY", "FOXHOLE", "TANKBARRIER", "GAME", "END", 
+		"audio_enabled:", "world_width:", "world_height:", "cam_pan_speed:", "default_req:",
+		"req_cost:", "min_fox_dist:", "incinerate_cost:", "bounce_cost:", "div_cost:", "break_cost:", "#" };
 	
 	// defaults
 	public static final int DEFAULT_ARMS_BOUNCE_COST = 500;
 	public static final int DEFAULT_ARMS_INCINERATE_COST = 500;
 	public static final int DEFAULT_ARMS_DIV_COST = 500;
 	public static final int DEFAULT_ARMS_BREAK_COST = 500;
+	
+	public static final boolean DEFAULT_AUDIO_ENABLED = true;
+	public static final int DEFAULT_WORLD_WIDTH = 1920;
+	public static final int DEFAULT_WORLD_HEIGHT = 1200;
+	public static final float DEFAULT_CAM_PAN_SPEED = 1f;
+	
+	public static final int DEFAULT_STARTING_REQ = 500;
+	
+	public static final int DEFAULT_REQ_COST = 100;
+	public static final int DEFAULT_MIN_FOX_DIST = 128;
 	
 	/**
 	 * Parse the input string for the default settings of the unit.
@@ -69,6 +81,161 @@ public class AppConfigGenerator
 		
 		// file processed succesfully, return the configuration setting
 		return new ArmsConfigs(arms_bounce_cost, arms_incinerate_cost, arms_div_cost, arms_break_cost);
+	}
+	
+	public static GameConfigs loadGameConfigurations(String Filename, String Data)
+	{
+		boolean audio_enabled = DEFAULT_AUDIO_ENABLED;
+		int world_width = DEFAULT_WORLD_WIDTH;
+		int world_height = DEFAULT_WORLD_HEIGHT;
+		float pan_speed = DEFAULT_CAM_PAN_SPEED;
+		
+		boolean insegment = false;
+		int linenumber = 0;
+		
+		Scanner s = new Scanner(Data);
+		while (s.hasNext()) {
+			linenumber++;
+			LineData d = parseLine(s.nextLine());
+			
+			if (!isValidLine(d)) {
+				continue;
+			}
+			
+			// check whether or not we are in the segment or completed
+			if (d.param.equals("GAME")) {
+				insegment = true;
+				continue;
+			} else if (d.param.equals("END") && insegment) {
+				break;
+			}
+			
+			// process parameter information
+			if (d.param.equals("audio_enabled:")) {
+				audio_enabled = LineData.getBoolean(Filename, linenumber, d.opt, DEFAULT_AUDIO_ENABLED);
+				continue;
+			} else if (d.param.equals("world_width:")) {
+				world_width = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_WORLD_WIDTH);
+				continue;
+			} else if (d.param.equals("world_height:")) {
+				world_height = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_WORLD_HEIGHT);
+				continue;
+			} else if (d.param.equals("cam_pan_speed:")) {
+				pan_speed = LineData.getFloat(Filename, linenumber, d.opt, DEFAULT_CAM_PAN_SPEED);
+				continue;
+			}
+		}
+		
+		// file processed succesfully, return the configuration setting
+		return new GameConfigs(audio_enabled, world_width, world_height, pan_speed);
+	}
+	
+	public static ArmyConfigs loadArmyConfigurations(String Filename, String Data)
+	{
+		int starting_req = DEFAULT_STARTING_REQ;
+		
+		boolean insegment = false;
+		int linenumber = 0;
+		
+		Scanner s = new Scanner(Data);
+		while (s.hasNext()) {
+			linenumber++;
+			LineData d = parseLine(s.nextLine());
+			
+			if (!isValidLine(d)) {
+				continue;
+			}
+			
+			// check whether or not we are in the segment or completed
+			if (d.param.equals("ARMY")) {
+				insegment = true;
+				continue;
+			} else if (d.param.equals("END") && insegment) {
+				break;
+			}
+			
+			// process parameter information
+			if (d.param.equals("default_req:")) {
+				starting_req = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_STARTING_REQ);
+				continue;
+			}
+		}
+		
+		// file processed succesfully, return the configuration setting
+		return new ArmyConfigs(starting_req);
+	}
+	
+	public static TankBarrierConfigs loadBarrierConfigurations(String Filename, String Data)
+	{
+		int req_cost = DEFAULT_REQ_COST;
+		
+		boolean insegment = false;
+		int linenumber = 0;
+		
+		Scanner s = new Scanner(Data);
+		while (s.hasNext()) {
+			linenumber++;
+			LineData d = parseLine(s.nextLine());
+			
+			if (!isValidLine(d)) {
+				continue;
+			}
+			
+			// check whether or not we are in the segment or completed
+			if (d.param.equals("TANKBARRIER")) {
+				insegment = true;
+				continue;
+			} else if (d.param.equals("END") && insegment) {
+				break;
+			}
+			
+			// process parameter information
+			if (d.param.equals("req_cost:")) {
+				req_cost = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_REQ_COST);
+				continue;
+			}
+		}
+		
+		// file processed succesfully, return the configuration setting
+		return new TankBarrierConfigs(req_cost);
+	}
+	
+	public static FoxHoleConfigs loadFoxHoleConfigurations(String Filename, String Data)
+	{
+		int req_cost = DEFAULT_REQ_COST;
+		int min_fox_dist = DEFAULT_MIN_FOX_DIST;
+		
+		boolean insegment = false;
+		int linenumber = 0;
+		
+		Scanner s = new Scanner(Data);
+		while (s.hasNext()) {
+			linenumber++;
+			LineData d = parseLine(s.nextLine());
+			
+			if (!isValidLine(d)) {
+				continue;
+			}
+			
+			// check whether or not we are in the segment or completed
+			if (d.param.equals("FOXHOLE")) {
+				insegment = true;
+				continue;
+			} else if (d.param.equals("END") && insegment) {
+				break;
+			}
+			
+			// process parameter information
+			if (d.param.equals("req_cost:")) {
+				req_cost = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_REQ_COST);
+				continue;
+			} else if (d.param.equals("min_fox_dist:")) {
+				min_fox_dist = LineData.getInt(Filename, linenumber, d.opt, DEFAULT_MIN_FOX_DIST);
+			}
+		}
+		
+		// file processed succesfully, return the configuration setting
+		return new FoxHoleConfigs(req_cost, min_fox_dist);
 	}
 	
 	/**

@@ -17,8 +17,6 @@ import com.mygdx.game.Shaders;
 
 public class OutpostFlag 
 {
-	public static final int REQCOST = 200;
-	
 	private static AnimTex tex;
 	private float time = 0f;
 	private final Vector2 pos;

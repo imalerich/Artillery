@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Game;
 
+import config.AppConfigGenerator;
+import config.AppConfigs;
 import entity.Unit;
 import entity.UserArmy;
 
@@ -22,7 +24,6 @@ public class CombatPacket
 {
 	public static Sound sfx;
 	public static Sound reload;
-	public static final int MINFOXDIST = 128;
 	public static final Color BULLETCOL = new Color(55/255f, 55/255f, 55/255f, 1f);
 	public static final int BULLETDIMMENSIONX = 4;
 	public static final int BULLETDIMMENSIONY = 4;
@@ -295,7 +296,7 @@ public class CombatPacket
 		}
 		
 		float dmg = Math.max(arms.getStrength() - defense.getArmor().getStrength(), 0);
-		if (distancetraveled > MINFOXDIST && targetInFox)
+		if (distancetraveled > AppConfigs.Fox.MINFOXDIST && targetInFox)
 			dmg = 0f;
 		
 		defense.getArmor().damage(arms.getStrength());

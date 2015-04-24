@@ -32,6 +32,7 @@ import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
 import com.mygdx.game.MilitaryBase;
 
+import config.AppConfigs;
 import config.ConfigSettings;
 import config.SquadConfigs;
 
@@ -743,7 +744,7 @@ public class UserArmy extends Army
 			
 		case MOVEFOXHOLE:
 			checkSelectedStop();
-			if (requisition - FoxHole.REQCOST >= 0) {
+			if (requisition - AppConfigs.Fox.REQCOST >= 0) {
 				foxselect.setSelected(selected);
 				foxactive = true;
 			}
@@ -756,7 +757,7 @@ public class UserArmy extends Army
 			
 		case MOVETANKTRAP:
 			checkSelectedStop();
-			if (requisition - TankBarrier.REQCOST >= 0) {
+			if (requisition - AppConfigs.Barrier.REQCOST >= 0) {
 				barrierselect.setSelected(selected);
 				barricadeactive = true;
 			}
@@ -770,7 +771,7 @@ public class UserArmy extends Army
 		case TOWER:
 			checkSelectedStop();
 			
-			if (requisition - OutpostFlag.REQCOST >= 0) {
+			if (requisition - SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost >= 0) {
 				selecttower = true;
 			}
 			
@@ -805,17 +806,17 @@ public class UserArmy extends Army
 		Vector2 p = new Vector2(selected.getBBox().x + selected.getBBox().width/2f, selected.getBBox().y + selected.getBBox().height);
 		if (selected.doAddFox()) {
 			selected.addFoxOnFinishMove(null, false);
-			addRequisition(FoxHole.REQCOST, p);
+			addRequisition(AppConfigs.Fox.REQCOST, p);
 		} 
 
 		if (selected.doAddBarrier()) {
 			selected.addBarrierOnFinishedMove(null, false);
-			addRequisition(TankBarrier.REQCOST, p);
+			addRequisition(AppConfigs.Barrier.REQCOST, p);
 		}
 
 		if (selected.doAddTower()) {
 			selected.addOutpostOnFinishedMove(null, false);
-			addRequisition(OutpostFlag.REQCOST, p);
+			addRequisition(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, p);
 		}
 	}
 	
@@ -880,7 +881,7 @@ public class UserArmy extends Army
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
 			if (foxselect.isPosValid()) {
-				spendRequisition(FoxHole.REQCOST, new Vector2(foxselect.getPos().x + FoxHole.FOXHOLE.getWidth()/2f, 
+				spendRequisition(AppConfigs.Fox.REQCOST, new Vector2(foxselect.getPos().x + FoxHole.FOXHOLE.getWidth()/2f, 
 						foxselect.getPos().y + FoxHole.FOXHOLE.getHeight()));
 				foxselect.setSelectedTarget(selected);
 			}
@@ -904,7 +905,7 @@ public class UserArmy extends Army
 			barrierselect.setSelectedTarget(selected);
 			float xpos = barrierselect.getBBox().x;
 			float ypos = Game.WORLDH - ter.getHeight((int)xpos) + TankBarrier.TANKBARRIER.getHeight();
-			spendRequisition( TankBarrier.REQCOST, new Vector2(xpos, ypos) );
+			spendRequisition( AppConfigs.Barrier.REQCOST, new Vector2(xpos, ypos) );
 			
 			barricadeactive = false;
 			return;
@@ -932,7 +933,7 @@ public class UserArmy extends Army
 					selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
 				
 				selected.addOutpostOnFinishedMove(f, true);
-				spendRequisition( OutpostFlag.REQCOST, new Vector2(f.getBBox().x + f.getBBox().width/2f, 
+				spendRequisition( SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, new Vector2(f.getBBox().x + f.getBBox().width/2f, 
 						f.getBBox().y + f.getBBox().height) );
 				
 				// tell all clients which squad is moving
@@ -1541,13 +1542,13 @@ public class UserArmy extends Army
 		// check for actions that cost requisition
 		if (menuactive) {
 			if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.MOVEFOXHOLE) {
-				MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+				MenuBar.setTmpRequisition(requisition - AppConfigs.Fox.REQCOST);
 				
 			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.MOVETANKTRAP) {
-				MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
+				MenuBar.setTmpRequisition(requisition - AppConfigs.Barrier.REQCOST);
 				
 			} else if (menu.getAction( menu.getButtonDown(Cam.getPos()) ) == Button.TOWER) {
-				MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
+				MenuBar.setTmpRequisition(requisition - SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost);
 				
 			} else {
 				MenuBar.setTmpRequisition(requisition);
@@ -1556,11 +1557,11 @@ public class UserArmy extends Army
 		}
 		
 		if (foxactive)
-			MenuBar.setTmpRequisition(requisition - FoxHole.REQCOST);
+			MenuBar.setTmpRequisition(requisition - AppConfigs.Fox.REQCOST);
 		else if (barricadeactive)
-			MenuBar.setTmpRequisition(requisition - TankBarrier.REQCOST);
+			MenuBar.setTmpRequisition(requisition - AppConfigs.Barrier.REQCOST);
 		else if (selecttower)
-			MenuBar.setTmpRequisition(requisition - OutpostFlag.REQCOST);
+			MenuBar.setTmpRequisition(requisition - SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost);
 		else if (MenuBar.isOverSpawnTank())
 			MenuBar.setTmpRequisition(requisition - SquadConfigs.getConfiguration(SquadConfigs.TANK).reqcost);
 	}
