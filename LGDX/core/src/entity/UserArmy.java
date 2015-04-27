@@ -311,6 +311,13 @@ public class UserArmy extends Army
 			squad.setFiringPrimary(false);
 			squad.setFiringSecondary(false);
 			squad.setFiringOffhand(false);
+			
+			// tell the network to cancel firing as well
+			Response r = new Response();
+			r.request = "CANCELATTACK";
+			r.source = getConnection();
+			r.squad = squad.getID();
+			network.getClient().sendTCP(r);
 		}
 	}
 	

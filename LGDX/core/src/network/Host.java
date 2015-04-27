@@ -26,13 +26,16 @@ public class Host
 		lobbysize = LobbySize;
 		seed = SeedGenerator.generateSeed(Game.WORLDW, Game.WORLDH);		
 		
+		int outpostsPerSide = Game.OUTPOSTSPERARMY;
+		
 		int offset = Game.WORLDW/lobbysize;
 		for (int i=0; i<lobbysize; i++) {
 			// will be used for an actual base
 			seed.addBase(offset*i, MilitaryBase.getWidth());
 			
 			// will be used for a requisition point
-			seed.addOutpost(offset*i + offset/2, RadioTower.Tower.getWidth());
+			for (int k=0; k<outpostsPerSide; k++) 
+				seed.addOutpost(offset*i + offset * ( (k+1)/(outpostsPerSide + 1)), RadioTower.Tower.getWidth());
 		}
 		
 		s = new Server();

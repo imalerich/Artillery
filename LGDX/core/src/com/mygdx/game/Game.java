@@ -63,6 +63,7 @@ public class Game extends ApplicationAdapter
 	
 	public static int WORLDW = 0;
 	public static int WORLDH = 0;
+	public static int OUTPOSTSPERARMY= 1;
 	
 	public static final int HOME = 0;
 	public static final int GAME = 1;
@@ -95,12 +96,14 @@ public class Game extends ApplicationAdapter
 	{
 		// create application configurations and initialize the game
 		AppConfigs.init();
-		init();
 		
 		SOUND = AppConfigs.Game.AUDIOENABLED;
 		WORLDW = AppConfigs.Game.WORLDWIDTH;
 		WORLDH = AppConfigs.Game.WORLDHEIGHT;
 		CAMPANSPEED = AppConfigs.Game.CAMPANSPEED;
+		OUTPOSTSPERARMY = AppConfigs.Game.OUTPOSTSPERSIDE;
+		
+		init();
 		
 		// init the camera and the sprite batch
 		batch = new SpriteBatch();
