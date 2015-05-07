@@ -8,14 +8,12 @@ public class GameConfigs
 	public final int WORLDWIDTH;
 	public final int WORLDHEIGHT;
 	public final float CAMPANSPEED;
-	public final int OUTPOSTSPERSIDE;
 	
-	public GameConfigs(boolean AudioEnabled, int WorldWidth, int WorldHeight, float CamPanSpeed, int OutpostsPerSide) 
+	public GameConfigs(boolean AudioEnabled, int WorldWidth, int WorldHeight, float CamPanSpeed) 
 	{
 		AUDIOENABLED = AudioEnabled;
 		WORLDWIDTH = WorldWidth;
 		WORLDHEIGHT = WorldHeight;
 		CAMPANSPEED = CamPanSpeed;
-		OUTPOSTSPERSIDE = OutpostsPerSide;
 	}
 }

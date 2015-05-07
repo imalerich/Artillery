@@ -60,14 +60,6 @@ public class Recipient
 			System.err.println("Error: Invalid Seed.");
 			System.exit(1);
 		}
-		
-		// add all of the outposts to the game world
-		int id = 0;
-		Iterator<Vector2> outposts = seed.getTowers();
-		while (outposts.hasNext()) {
-			id++;
-			game.addOutpostMarker((int)outposts.next().x, id);
-		}
 	}
 	
 	public void setUserArmy()

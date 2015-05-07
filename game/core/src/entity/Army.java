@@ -108,9 +108,9 @@ public abstract class Army
 		base = Base;
 		
 		// add towers on both sides of the base
-		addTower( new RadioTower(world, new Vector2(base.getPos().x, base.getPos().y), base.getLogo(), -1));
+		addTower( new RadioTower(world, new Vector2(base.getPos().x, base.getPos().y), base.getLogo()) );
 		addTower( new RadioTower(world, new Vector2(base.getPos().x + MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), 
-				base.getPos().y), base.getLogo(), -1));
+				base.getPos().y), base.getLogo()) );
 	}
 	
 	public void setColor(Color C)

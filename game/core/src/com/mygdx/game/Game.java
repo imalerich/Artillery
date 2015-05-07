@@ -21,7 +21,6 @@ import terrain.Sky;
 import terrain.Terrain;
 import terrain.TimeOfDay;
 import ui.MenuBar;
-import ui.OutpostFlag;
 import ui.PowerButtons;
 import ui.Profile;
 import ui.ProfileTankOptionButton;
@@ -63,7 +62,6 @@ public class Game extends ApplicationAdapter
 	
 	public static int WORLDW = 0;
 	public static int WORLDH = 0;
-	public static int OUTPOSTSPERARMY= 1;
 	
 	public static final int HOME = 0;
 	public static final int GAME = 1;
@@ -101,7 +99,6 @@ public class Game extends ApplicationAdapter
 		WORLDW = AppConfigs.Game.WORLDWIDTH;
 		WORLDH = AppConfigs.Game.WORLDHEIGHT;
 		CAMPANSPEED = AppConfigs.Game.CAMPANSPEED;
-		OUTPOSTSPERARMY = AppConfigs.Game.OUTPOSTSPERSIDE;
 		
 		init();
 		
@@ -258,7 +255,6 @@ public class Game extends ApplicationAdapter
 		FoxHole.init();
 		TankBarrier.init();
 		Blast.init();
-		OutpostFlag.init();
 		RadioTower.init();
 		ProfileWeapon.init();
 		ReqIndicator.init();
@@ -289,7 +285,6 @@ public class Game extends ApplicationAdapter
 		FoxHole.release();
 		TankBarrier.release();
 		Blast.release();
-		OutpostFlag.release();
 		ReqIndicator.release();
 		ProfileWeapon.release();
 		LandMine.release();

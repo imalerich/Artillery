@@ -24,8 +24,6 @@ public class RadioTower extends Unit
 	private static Texture mortar;
 	private static AnimTex flag;
 	
-	private final int id;
-	
 	private float time = 0f;
 	private int logo = 0;
 	
@@ -55,16 +53,11 @@ public class RadioTower extends Unit
 			flag.release();
 	}
 	
-	public RadioTower(GameWorld World, Vector2 Pos, int Logo, int ID)
+	public RadioTower(GameWorld World, Vector2 Pos, int Logo)
 	{
-		if (ID != -1) {
-			World.removeOutpostMarker(ID);
-		}
-		
 		setReqBonus(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqbonus);
 		
 		logo = Logo;
-		id = ID;
 		
 		width = Tower.getWidth();
 		height = Tower.getHeight();
@@ -74,11 +67,6 @@ public class RadioTower extends Unit
 		ter = World.getTerrain();
 		speed = 0;
 		mugshotIndex = 3;
-	}
-	
-	public int getID()
-	{
-		return id;
 	}
 	
 	private void drawOutline(SpriteBatch Batch, Camera Cam)

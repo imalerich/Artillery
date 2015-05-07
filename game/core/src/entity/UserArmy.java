@@ -13,7 +13,6 @@ import ui.Button;
 import ui.ButtonOptions;
 import ui.FoxHoleMenu;
 import ui.MenuBar;
-import ui.OutpostFlag;
 import ui.PointSelect;
 import ui.PowerButtons;
 import ui.Profile;
@@ -155,11 +154,6 @@ public class UserArmy extends Army
 		
 		requisition -= Ammount;
 		world.addReqIndicator(Pos, -Ammount);
-	}
-	
-	public boolean checkOutpostFlags()
-	{
-		return selecttower;
 	}
 	
 	private void setDeployBBox()
@@ -777,7 +771,6 @@ public class UserArmy extends Army
 			
 		case TOWER:
 			checkSelectedStop();
-			
 			if (requisition - SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost >= 0) {
 				selecttower = true;
 			}
@@ -819,11 +812,6 @@ public class UserArmy extends Army
 		if (selected.doAddBarrier()) {
 			selected.addBarrierOnFinishedMove(null, false);
 			addRequisition(AppConfigs.Barrier.REQCOST, p);
-		}
-
-		if (selected.doAddTower()) {
-			selected.addOutpostOnFinishedMove(null, false);
-			addRequisition(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, p);
 		}
 	}
 	
@@ -929,29 +917,27 @@ public class UserArmy extends Army
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			OutpostFlag f = world.getFlagOver();
+			System.out.println("Wanting to add tower, but cannot");
 			
-			if (f != null) {
-				selected.setTargetX( (int)(f.getBBox().x + f.getBBox().width/2) - (int)(selected.getBBox().width/2) );
+			// selected.setTargetX( (int)(f.getBBox().x + f.getBBox().width/2) - (int)(selected.getBBox().width/2) );
 				
-				int direction = GameWorld.getDirection(selected.getBBox().x + selected.getBBox().width/2, 0f, 
-						selected.getTargetX() + selected.getBBox().width/2, 0f);
-				if (direction > 0)
-					selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
+			int direction = GameWorld.getDirection(selected.getBBox().x + selected.getBBox().width/2, 0f, 
+					selected.getTargetX() + selected.getBBox().width/2, 0f);
+			if (direction > 0)
+				selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
 				
-				selected.addOutpostOnFinishedMove(f, true);
-				spendRequisition( SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, new Vector2(f.getBBox().x + f.getBBox().width/2f, 
-						f.getBBox().y + f.getBBox().height) );
-				
-				// tell all clients which squad is moving
-				Response r = new Response();
-				r.request = "SQUADMOVE";
-				r.i0 = selected.getID();
-				r.i1 = moveselect.getTargetX();
-				r.source = getConnection();
+			selected.addOutpostOnFinishMove(true);
+			spendRequisition( SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, new Vector2(selected.getBBox().x + selected.getBBox().width/2f, 
+					selected.getBBox().y + selected.getBBox().height) );
+			
+			// tell all clients which squad is moving
+			Response r = new Response();
+			r.request = "SQUADMOVE";
+			r.i0 = selected.getID();
+			r.i1 = moveselect.getTargetX();
+			r.source = getConnection();
 
-				network.getClient().sendTCP(r);
-			}
+			network.getClient().sendTCP(r);
 			
 			selecttower = false;
 			return;

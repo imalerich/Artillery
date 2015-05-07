@@ -8,7 +8,6 @@ import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
 import ui.FoxHoleMenu;
-import ui.OutpostFlag;
 import arsenal.Armament;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -224,11 +223,6 @@ public class RemoteArmy extends Army
 		} else if (r.request.equals("ADDBARRICADE")) {
 			Vector2 pos = new Vector2(r.f0, r.f1);
 			world.addTankBarrier(pos);
-			return;
-			
-		} else if (r.request.equals("ADDTOWER")) {
-			OutpostFlag f = world.getMarker(r.i0);
-			world.getRemoteArmy(r.source).addTower( f.getTower(world, r.i0) );
 			return;
 			
 		} else if (r.request.equals("ADDMINE")) {

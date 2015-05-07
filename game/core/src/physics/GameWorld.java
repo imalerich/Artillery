@@ -11,7 +11,6 @@ import terrain.Background;
 import terrain.FogOfWar;
 import terrain.Terrain;
 import ui.MenuBar;
-import ui.OutpostFlag;
 import ui.ReqIndicator;
 import audio.AudioWorld;
 
@@ -57,7 +56,6 @@ public class GameWorld
 	private Vector<Army> friendlyArmy;
 	private Vector<Army> enemyArmy;
 	
-	private Vector<OutpostFlag> markers;
 	private Vector<ReqIndicator> reqindicators;
 	
 	private Vector<NullTank> nullTanks;
@@ -84,7 +82,6 @@ public class GameWorld
 		friendlyArmy	= new Vector<Army>();
 		enemyArmy		= new Vector<Army>();
 		
-		markers			= new Vector<OutpostFlag>();
 		nullTanks		= new Vector<NullTank>();
 		foxholes		= new Vector<FoxHole>();
 		barriers		= new Vector<TankBarrier>();
@@ -187,37 +184,6 @@ public class GameWorld
 		r.i0 = 0;
 
 		userArmy.getNetwork().getClient().sendTCP(r);
-	}
-	
-	public void addOutpostMarker(int XPos, int ID)
-	{
-		markers.add( new OutpostFlag(XPos, ter, ID) );
-	}
-	
-	public OutpostFlag getMarker(int ID)
-	{
-		Iterator<OutpostFlag> i = markers.iterator();
-		while (i.hasNext()) {
-			OutpostFlag f = i.next();
-			if (f.getId() == ID) {
-				return f;
-			}
-		}
-		
-		return null;
-	}
-	
-	public void removeOutpostMarker(int ID)
-	{
-		Iterator<OutpostFlag> i = markers.iterator();
-		while (i.hasNext()) {
-			if (i.next().getId() == ID) {
-				i.remove();
-				return;
-			}
-		}
-		
-		System.err.println("The Speicified marker at " + ID + " could not be found for removal, continuing normally.");
 	}
 	
 	public void addFriendlyArmy(Army Add)
@@ -573,18 +539,6 @@ public class GameWorld
 		return false;
 	}
 	
-	public OutpostFlag getFlagOver()
-	{
-		Iterator<OutpostFlag> m = markers.iterator();
-		while (m.hasNext()) {
-			OutpostFlag f = m.next();
-			if (Cursor.isMouseOver(f.getBBox(), cam.getPos()))
-				return f;
-		}
-		
-		return null;
-	}
-	
 	private void disableStencil(SpriteBatch Batch)
 	{
 		Batch.flush();
@@ -602,13 +556,6 @@ public class GameWorld
 		Iterator<NullTank> t = nullTanks.iterator();
 		while (t.hasNext()) 
 			t.next().draw(Batch, cam);
-	}
-	
-	private void drawMarkers(SpriteBatch Batch)
-	{
-		Iterator<OutpostFlag> m = markers.iterator();
-		while (m.hasNext())
-			m.next().draw(Batch, cam, userArmy.checkOutpostFlags());
 	}
 	
 	private void drawHidden(SpriteBatch Batch)
@@ -655,8 +602,6 @@ public class GameWorld
 		drawFogMask(Batch);
 		FogOfWar.maskOn(Batch);
 		enableStencil(Batch);
-		
-		drawMarkers(Batch);
 		
 		// draw the barricades
 		Iterator<TankBarrier> barrIterator = barriers.iterator();

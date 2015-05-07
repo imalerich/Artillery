@@ -6,7 +6,6 @@ GAME
 	world_width: 7680
 	world_height: 1200
 	cam_pan_speed: 1
-	outposts_per_army: 3
 
 END
 

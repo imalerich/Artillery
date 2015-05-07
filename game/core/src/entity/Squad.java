@@ -12,9 +12,9 @@ import physics.GameWorld;
 import physics.NullTank;
 import terrain.FogOfWar;
 import terrain.Terrain;
-import ui.OutpostFlag;
 import arsenal.Armament;
 import arsenal.Armor;
+import objects.RadioTower;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -82,10 +82,8 @@ public class Squad
 	
 	private boolean canmove = true;
 	private boolean addbarrier;
-	private Vector<Vector2> barrierpos;
-	
 	private boolean addoutpost;
-	private OutpostFlag outpost;
+	private Vector<Vector2> barrierpos;
 	
 	private boolean swapState = false;
 	private boolean rumble = false;
@@ -200,10 +198,10 @@ public class Squad
 	{
 		return addfox;
 	}
-	
-	public boolean doAddTower()
+
+	public void addOutpostOnFinishMove(boolean Add)
 	{
-		return addoutpost;
+		addoutpost = Add;
 	}
 	
 	public boolean doAddBarrier()
@@ -320,12 +318,6 @@ public class Squad
 	{
 		addfox = S;
 		foxpos = Pos;
-	}
-	
-	public void addOutpostOnFinishedMove(OutpostFlag Outpost, boolean S)
-	{
-		addoutpost = S;
-		outpost = Outpost;
 	}
 	
 	public void addBarrierOnFinishedMove(Vector<Vector2> Pos, boolean S)
@@ -899,17 +891,18 @@ public class Squad
 			foxpos = null;
 		} 
 		
-		if (addoutpost) {
+		 if (addoutpost) {
 			// inform clients of the added tower
-			Response r = new Response();
-			r.source = getArmy().getConnection();
-			r.request = "ADDTOWER";
-			r.i0 = outpost.getId();
-			getArmy().getNetwork().getClient().sendTCP(r);
+			// Response r = new Response();
+			// r.source = getArmy().getConnection();
+			// r.request = "ADDTOWER";
+			// r.i0 = outpost.getId();
+			// getArmy().getNetwork().getClient().sendTCP(r);
 				
-			getArmy().addTower( outpost.getTower(getArmy().getWorld(), getArmy().base.getLogo()) );
+			Vector2 v = new Vector2(getBBox().x + getBBox().width/2f - RadioTower.Tower.getWidth()/2f, 0);
+			RadioTower t = new RadioTower(getArmy().getWorld(), v, getArmy().base.getLogo());
+			getArmy().addTower(t);
 			addoutpost = false;
-			outpost = null;
 		}
 		
 		if (addbarrier) 
