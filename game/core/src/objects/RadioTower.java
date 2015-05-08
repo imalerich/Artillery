@@ -1,5 +1,6 @@
 package objects;
 
+import java.util.Vector;
 import physics.GameWorld;
 
 import com.badlogic.gdx.Gdx;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+
 import com.mygdx.game.AnimTex;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
@@ -14,6 +16,8 @@ import com.mygdx.game.MilitaryBase;
 import com.mygdx.game.Shaders;
 import com.mygdx.game.Game;
 
+import particles.Particles;
+import physics.NullTank;
 import config.SquadConfigs;
 import entity.Squad;
 import entity.Unit;
@@ -22,9 +26,11 @@ import entity.UserArmy;
 public class RadioTower extends Unit
 {
 	public static Texture Tower;
+	public static Texture Death;
 	private static Texture mortar;
 	private static AnimTex flag;
-	
+	private AnimTex death;
+
 	private float stability = 1f;
 	private float time = 0f;
 	private int logo = 0;
@@ -34,9 +40,12 @@ public class RadioTower extends Unit
 		if (Tower == null)
 			Tower = new Texture( Gdx.files.internal("img/objects/tower.png") );
 		
+		if (Death == null)
+			Death = new Texture( Gdx.files.internal("img/objects/tower_fall_animation.png"));
+
 		if (mortar == null)
 			mortar = new Texture( Gdx.files.internal("img/objects/tower_mortar.png") );
-		
+
 		if (flag == null) {
 			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
 			flag.newAnimation(0, 3, 0, 2, 0.333f/4f);
@@ -47,12 +56,28 @@ public class RadioTower extends Unit
 	{
 		if (Tower != null)
 			Tower.dispose();
+
+		if (Death != null)
+			Death.dispose();
 		
 		if (mortar != null)
 			mortar.dispose();
 		
 		if (flag != null)
 			flag.release();
+	}
+
+	@Override
+	public boolean isAlive()
+	{
+		return !death.isCompleted(0);
+	}
+
+	@Override
+	public void setAsDeceased(Vector<NullTank> Deceased, Particles Part)
+	{
+		// do not add a deceased troop to the terrain
+		return;
 	}
 
 	public void updateStability()
@@ -78,6 +103,12 @@ public class RadioTower extends Unit
 	public RadioTower(GameWorld World, Vector2 Pos, int Logo)
 	{
 		setReqBonus(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqbonus);
+
+		if (death == null) {
+			death = new AnimTex(Death, 2, 8, 1);
+			death.newAnimation(0, 16, 0, 15, 0.333f/5f);
+			death.setTime(0f);
+		}
 	
 	 	useFullWidthForY = true;
 		logo = Logo;
@@ -90,6 +121,17 @@ public class RadioTower extends Unit
 		ter = World.getTerrain();
 		speed = 0;
 		mugshotIndex = 3;
+	}
+
+	public void drawDieing(SpriteBatch Batch, Camera Cam)
+	{
+		setHeight();
+		death.updateClock();
+
+		Batch.setColor(MilitaryBase.BGCOLOR);
+		Vector2 v = new Vector2(pos.x - (death.getFrameWidth() - Tower.getWidth())/2f, pos.y);
+		death.render(Batch, Cam, 0, v, 1.0f, 1.0f, false);
+		Batch.setColor(Color.WHITE);
 	}
 	
 	private void drawOutline(SpriteBatch Batch, Camera Cam)
@@ -135,6 +177,11 @@ public class RadioTower extends Unit
 	@Override
 	public void draw(SpriteBatch Batch, Camera Cam, boolean Highlight, boolean Target)
 	{
+		if (health <= 0) {
+			drawDieing(Batch, Cam);
+			return;
+		}
+
 		time += Gdx.graphics.getDeltaTime();
 		
 		Batch.setColor(MilitaryBase.BGCOLOR);
@@ -165,7 +212,7 @@ public class RadioTower extends Unit
 			
 			Shaders.revertShader(Batch);
 		}
-		
+
 		drawLogo(Batch, Cam);
 	}
 	
