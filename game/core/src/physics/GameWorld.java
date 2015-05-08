@@ -266,6 +266,7 @@ public class GameWorld
 			break;
 		}
 		
+		updateTowers();
 		updateObjects();
 		checkForDeaths();
 		checkNextStage();
@@ -357,6 +358,19 @@ public class GameWorld
 		Iterator<Army> e = enemyArmy.iterator();
 		while (e.hasNext())
 			e.next().checkForDeaths(cam, nullTanks, particles);
+	}
+
+	public void updateTowers() 
+	{
+		userArmy.checkTowerStability();
+
+		Iterator<Army> f = friendlyArmy.iterator();
+		while (f.hasNext())
+			f.next().checkTowerStability();
+		
+		Iterator<Army> e = enemyArmy.iterator();
+		while (e.hasNext())
+			e.next().checkTowerStability();
 	}
 	
 	public void updateMoveSelect()

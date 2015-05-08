@@ -12,6 +12,7 @@ import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.MilitaryBase;
 import com.mygdx.game.Shaders;
+import com.mygdx.game.Game;
 
 import config.SquadConfigs;
 import entity.Squad;
@@ -24,6 +25,7 @@ public class RadioTower extends Unit
 	private static Texture mortar;
 	private static AnimTex flag;
 	
+	private float stability = 1f;
 	private float time = 0f;
 	private int logo = 0;
 	
@@ -51,6 +53,26 @@ public class RadioTower extends Unit
 		
 		if (flag != null)
 			flag.release();
+	}
+
+	public void updateStability()
+	{
+		// check what percentage of this tower is still on the ground
+		int width = Tower.getWidth();
+		int pointsOK = 0;
+
+		for (int i = 0; i<width; i++) {
+			int height = Game.WORLDH - ter.getHeight((int)pos.x + i) - 1;
+
+			if (height + 2 > (int)pos.y)
+				pointsOK++;
+		}
+
+		stability = (float)pointsOK/(float)width;
+
+		// if this tower is no longer stable, destroy it
+		if (stability < 0.6)
+			health = 0;
 	}
 	
 	public RadioTower(GameWorld World, Vector2 Pos, int Logo)

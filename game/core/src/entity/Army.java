@@ -46,6 +46,7 @@ public abstract class Army
 	
 	// towers to be added (held in queue)
 	private Vector<RadioTower> towerqueue;
+	private Vector<RadioTower> towers;
 	
 	/**
 	 * Process methods from other threads.
@@ -91,6 +92,7 @@ public abstract class Army
 	public Army()
 	{
 		towerqueue = new Vector<RadioTower>();
+		towers = new Vector<RadioTower>();
 		squads = new Vector<Squad>();
 		response = new Vector<Response>();
 		
@@ -132,6 +134,7 @@ public abstract class Army
 			ConfigSettings c = SquadConfigs.getConfiguration(SquadConfigs.TOWER);
 			
 			RadioTower Tower = t.next();
+			towers.add(Tower);
 			Tower.setUnitData(c.speed, c.health, c.maxmovedist);
 
 			Squad s = new Squad(ter, 0, this, Classification.TOWER);
@@ -314,6 +317,13 @@ public abstract class Army
 		s.setForward(Forward);
 		
 		return s.getID();
+	}
+
+	public void checkTowerStability()
+	{
+		Iterator<RadioTower> r = towers.iterator();
+		while (r.hasNext())
+			r.next().updateStability();
 	}
 	
 	public void addSquad(Squad Add)
