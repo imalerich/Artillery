@@ -27,6 +27,7 @@ public abstract class Unit
 	protected float health;
 	protected float maxhealth;
 	protected boolean takedirectdamage = true;
+	protected boolean useFullWidthForY = false;
 	
 	protected int width = 0;
 	protected int height = 0;
@@ -386,11 +387,10 @@ public abstract class Unit
 	public void setHeight()
 	{
 		// set the new height
-		int nxtpos = (int)pos.x + width/2;
-		if (nxtpos >= Game.WORLDW) nxtpos -= Game.WORLDW;
-		if (nxtpos < 0) nxtpos += Game.WORLDW;
-		
-		pos.y = Game.WORLDH - ter.getHeight(nxtpos) - 3;
+		if (useFullWidthForY)
+			pos.y = Game.WORLDH - ter.getMaxHeight((int)pos.x, (int)pos.x + width) - 1;
+		else
+			pos.y = Game.WORLDH - ter.getHeight((int)(pos.x + width/2)) - 3;
 	}
 	
 	public void drawTargetAngle(SpriteBatch Batch, Camera Cam)

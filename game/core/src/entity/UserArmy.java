@@ -6,12 +6,14 @@ import network.NetworkManager;
 import network.Response;
 import objects.FoxHole;
 import objects.TankBarrier;
+import objects.RadioTower;
 import physics.CombatResolver;
 import physics.GameWorld;
 import terrain.Terrain;
 import ui.Button;
 import ui.ButtonOptions;
 import ui.FoxHoleMenu;
+import ui.RadioTowerMenu;
 import ui.MenuBar;
 import ui.PointSelect;
 import ui.PowerButtons;
@@ -48,6 +50,7 @@ public class UserArmy extends Army
 	private ButtonOptions menu;
 	private ButtonOptions offensemenu;
 	private FoxHoleMenu foxselect;
+	private RadioTowerMenu towerSelect;
 	private TankBarrierMenu barrierselect;
 	
 	private int prevdeployi;
@@ -103,6 +106,7 @@ public class UserArmy extends Army
 		offensemenu.addGlyph(Button.STOP);
 		
 		foxselect = new FoxHoleMenu(Ter);
+		towerSelect = new RadioTowerMenu(Ter);
 		barrierselect = new TankBarrierMenu(Ter);
 		
 		moveselect = new PointSelect(Ter);
@@ -772,6 +776,7 @@ public class UserArmy extends Army
 		case TOWER:
 			checkSelectedStop();
 			if (requisition - SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost >= 0) {
+				towerSelect.setSelected(selected);
 				selecttower = true;
 			}
 			
@@ -865,9 +870,8 @@ public class UserArmy extends Army
 	
 	private void updateFox(Camera Cam)
 	{
-		if (selected == null) {
+		if (selected == null)
 			return;
-		}
 		
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			foxactive = false;
@@ -911,37 +915,26 @@ public class UserArmy extends Army
 	
 	private void updateTowerSelect(Camera Cam)
 	{
+		if (selected == null)
+			return;
+
 		if (Cursor.isButtonPressed(Cursor.RIGHT) || selected == null) {
 			selecttower = false;
 			return;
 		}
 		
 		if (Cursor.isButtonJustPressed(Cursor.LEFT)) {
-			System.out.println("Wanting to add tower, but cannot");
-			
-			// selected.setTargetX( (int)(f.getBBox().x + f.getBBox().width/2) - (int)(selected.getBBox().width/2) );
-				
-			int direction = GameWorld.getDirection(selected.getBBox().x + selected.getBBox().width/2, 0f, 
-					selected.getTargetX() + selected.getBBox().width/2, 0f);
-			if (direction > 0)
-				selected.setTargetX( selected.getTargetX() + (int)selected.getWidth()*2);
-				
-			selected.addOutpostOnFinishMove(true);
-			spendRequisition( SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, new Vector2(selected.getBBox().x + selected.getBBox().width/2f, 
-					selected.getBBox().y + selected.getBBox().height) );
-			
-			// tell all clients which squad is moving
-			Response r = new Response();
-			r.request = "SQUADMOVE";
-			r.i0 = selected.getID();
-			r.i1 = moveselect.getTargetX();
-			r.source = getConnection();
+			if (towerSelect.isPosValid()) {
+				spendRequisition(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqcost, new Vector2(towerSelect.getPos().x + RadioTower.Tower.getWidth()/2f,
+					towerSelect.getPos().y + RadioTower.Tower.getHeight()));
+				towerSelect.setSelectedTarget(selected);
+			}
 
-			network.getClient().sendTCP(r);
-			
 			selecttower = false;
 			return;
 		}
+
+		towerSelect.update(Cam);
 	}
 	
 	public void addFox(Vector2 Pos)
@@ -1601,6 +1594,10 @@ public class UserArmy extends Army
 		
 		if (foxactive && selected != null) {
 			foxselect.render(Batch, Cam);
+		}
+
+		if (selecttower && selected != null) {
+			towerSelect.render(Batch, Cam);
 		}
 		
 		if (barricadeactive && selected != null) {

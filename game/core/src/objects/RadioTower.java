@@ -56,7 +56,8 @@ public class RadioTower extends Unit
 	public RadioTower(GameWorld World, Vector2 Pos, int Logo)
 	{
 		setReqBonus(SquadConfigs.getConfiguration(SquadConfigs.TOWER).reqbonus);
-		
+	
+	 	useFullWidthForY = true;
 		logo = Logo;
 		
 		width = Tower.getWidth();

@@ -319,7 +319,7 @@ public class Squad
 		addfox = S;
 		foxpos = Pos;
 	}
-	
+
 	public void addBarrierOnFinishedMove(Vector<Vector2> Pos, boolean S)
 	{
 		addbarrier = S;
@@ -892,7 +892,7 @@ public class Squad
 		} 
 		
 		 if (addoutpost) {
-			// inform clients of the added tower
+			// TODO - inform clients of the added tower
 			// Response r = new Response();
 			// r.source = getArmy().getConnection();
 			// r.request = "ADDTOWER";
