@@ -332,7 +332,9 @@ public class Squad
 		Iterator<Unit> u = units.iterator();
 		while (u.hasNext())
 		{
-			u.next().setDirectDamage(takesdirectdamage);
+			Unit next = u.next();
+			if (next != null)
+				next.setDirectDamage(takesdirectdamage);
 		}
 	}
 	

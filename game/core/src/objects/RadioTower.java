@@ -27,10 +27,12 @@ public class RadioTower extends Unit
 {
 	public static Texture Tower;
 	public static Texture Death;
+	public static AnimTex Construction;
 	private static Texture mortar;
 	private static AnimTex flag;
 	private AnimTex death;
 
+	private boolean isBeingConstructed = true;
 	private float stability = 1f;
 	private float time = 0f;
 	private int logo = 0;
@@ -50,6 +52,11 @@ public class RadioTower extends Unit
 			flag = new AnimTex("img/army/flag.png", 1, 3, 1);
 			flag.newAnimation(0, 3, 0, 2, 0.333f/4f);
 		}
+
+		if (Construction == null) {
+			Construction = new AnimTex("img/objects/tower_construction.png", 2, 8, 1);
+			Construction.newAnimation(0, 11, 0, 10, 0.333f/3.5f);
+		}
 	}
 	
 	public static void dispose()
@@ -65,6 +72,9 @@ public class RadioTower extends Unit
 		
 		if (flag != null)
 			flag.release();
+
+		if (Construction != null)
+			Construction.release();
 	}
 
 	@Override
@@ -99,6 +109,14 @@ public class RadioTower extends Unit
 		if (stability < 0.6)
 			health = 0;
 	}
+
+	public RadioTower(GameWorld World, Vector2 Pos, int Logo, boolean Construct)
+	{
+		this(World, Pos, Logo);
+		isBeingConstructed = Construct;
+		if (!isBeingConstructed)
+			Construction.setTime(100f);
+	}
 	
 	public RadioTower(GameWorld World, Vector2 Pos, int Logo)
 	{
@@ -106,7 +124,7 @@ public class RadioTower extends Unit
 
 		if (death == null) {
 			death = new AnimTex(Death, 2, 8, 1);
-			death.newAnimation(0, 16, 0, 15, 0.333f/5f);
+			death.newAnimation(0, 16, 0, 15, 0.333f/4f);
 			death.setTime(0f);
 		}
 	
@@ -182,9 +200,23 @@ public class RadioTower extends Unit
 			return;
 		}
 
+		if (isBeingConstructed)
+			Construction.setTime(time);
 		time += Gdx.graphics.getDeltaTime();
 		
 		Batch.setColor(MilitaryBase.BGCOLOR);
+		if (isBeingConstructed) {
+			if (Construction.isCompleted(0)) {
+				isBeingConstructed = false;
+			} else {
+				Vector2 v = new Vector2(pos.x - (Construction.getFrameWidth() - Tower.getWidth())/2f, pos.y);
+				Construction.render(Batch, Cam, 0, v, 1.0f, 1.0f, false);
+				Batch.setColor(Color.WHITE);
+				return;
+			}
+		}
+
+
 		flag.setTime(time);
 		
 		if (Highlight) {
