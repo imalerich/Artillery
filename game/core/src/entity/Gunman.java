@@ -166,7 +166,7 @@ public class Gunman extends Unit
 				dmgclock = 0f;
 			}
 		}
-		
+
 		if (moving)
 			anim.updateClock();
 		
@@ -196,8 +196,11 @@ public class Gunman extends Unit
 	
 	private void drawAnim(SpriteBatch Batch, Camera Cam, int Index, Vector2 Coords, int SrcWidth, int SrcHeight, boolean setColor)
 	{
-		if (setColor)
-			Batch.setColor(getSquad().getArmy().unitcolor);
+		if (setColor) {
+			Color c = getSquad().getArmy().unitcolor;
+			float a = Batch.getColor().a;
+			Batch.setColor( new Color(c.r, c.g, c.b, a));
+		}
 		
 		if (getSquad().doSwapState()) {
 			int h = (int)(MORTARUP.getHeight()* (float)health/maxhealth);
@@ -214,7 +217,8 @@ public class Gunman extends Unit
 			anim.render(Batch, Cam, Index, Coords, dir, 1.0f, true, SrcWidth, SrcHeight);
 		}
 		
-		Batch.setColor(Color.WHITE);
+		float a = Batch.getColor().a;
+		Batch.setColor( new Color(1, 1, 1, a) );
 	}
 	
 	@Override

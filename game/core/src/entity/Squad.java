@@ -903,6 +903,8 @@ public class Squad
 				
 			Vector2 v = new Vector2(getBBox().x + getBBox().width/2f - RadioTower.Tower.getWidth()/2f, 0);
 			RadioTower t = new RadioTower(getArmy().getWorld(), v, getArmy().base.getLogo());
+			t.setTowerSquad(this);
+			getArmy().removeSquad(id);
 			getArmy().addTower(t);
 			addoutpost = false;
 		}

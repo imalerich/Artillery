@@ -47,6 +47,7 @@ public abstract class Army
 	// towers to be added (held in queue)
 	private Vector<RadioTower> towerqueue;
 	private Vector<RadioTower> towers;
+	private Vector<Integer> squadRemoveQueue;
 	
 	/**
 	 * Process methods from other threads.
@@ -91,6 +92,7 @@ public abstract class Army
 	
 	public Army()
 	{
+		squadRemoveQueue = new Vector<Integer>();
 		towerqueue = new Vector<RadioTower>();
 		towers = new Vector<RadioTower>();
 		squads = new Vector<Squad>();
@@ -150,6 +152,28 @@ public abstract class Army
 			insertSquad(s);
 			t.remove();
 		}
+
+		// check for squads that need to be removed (they entered a tower)
+		Iterator<Squad> s = squads.iterator();
+		while (s.hasNext()) {
+			Squad squad = s.next();
+
+			// check if this squad is in the remove queue
+			Iterator<Integer> i = squadRemoveQueue.iterator();
+			while (i.hasNext()) {
+				if (squad.getID() == i.next()) {
+
+					s.remove();
+					i.remove();
+					break;
+				}
+			}
+		}
+	}
+
+	public void removeSquad(Integer ID)
+	{
+		squadRemoveQueue.add(ID);
 	}
 	
 	public GameWorld getWorld()
@@ -357,7 +381,7 @@ public abstract class Army
 		System.err.println("Error: Squad not found at id: " + ID);
 		return null;
 	}
-	
+
 	public void updateMove(Camera Cam)
 	{
 		Iterator<Squad> s = squads.iterator();

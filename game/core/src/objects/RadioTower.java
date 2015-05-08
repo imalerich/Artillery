@@ -32,6 +32,7 @@ public class RadioTower extends Unit
 	private static AnimTex flag;
 	private AnimTex death;
 
+	private Squad towerSquad;
 	private boolean isBeingConstructed = true;
 	private float stability = 1f;
 	private float time = 0f;
@@ -88,6 +89,16 @@ public class RadioTower extends Unit
 	{
 		// do not add a deceased troop to the terrain
 		return;
+	}
+
+	public void setTowerSquad(Squad S)
+	{
+		towerSquad = S;
+	}
+
+	public Squad getTowerSquad()
+	{
+		return towerSquad;	
 	}
 
 	public void updateStability()
