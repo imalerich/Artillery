@@ -9,6 +9,7 @@ import physics.GameWorld;
 import terrain.Terrain;
 import ui.FoxHoleMenu;
 import arsenal.Armament;
+import objects.RadioTower;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -237,6 +238,17 @@ public class RemoteArmy extends Army
 			
 			return;
 			
+		} else if (r.request.equals("ADDTOWER")) {
+			Squad s = getSquad(r.squad);
+			Army a = world.getRemoteArmy(r.source);
+			Vector2 v = new Vector2(r.f0, r.f1);
+			RadioTower t = new RadioTower(world, v, r.i0);
+			t.setTowerSquad(s);
+			a.removeSquad(r.squad);
+			a.addTower(t);
+
+			return;
+
 		}
 	}
 

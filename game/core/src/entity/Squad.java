@@ -894,19 +894,23 @@ public class Squad
 		} 
 		
 		 if (addoutpost) {
-			// TODO - inform clients of the added tower
-			// Response r = new Response();
-			// r.source = getArmy().getConnection();
-			// r.request = "ADDTOWER";
-			// r.i0 = outpost.getId();
-			// getArmy().getNetwork().getClient().sendTCP(r);
-				
 			Vector2 v = new Vector2(getBBox().x + getBBox().width/2f - RadioTower.Tower.getWidth()/2f, 0);
 			RadioTower t = new RadioTower(getArmy().getWorld(), v, getArmy().base.getLogo());
 			t.setTowerSquad(this);
 			getArmy().removeSquad(id);
 			getArmy().addTower(t);
 			addoutpost = false;
+
+			// inform clients of the added tower
+			Response r = new Response();
+			r.source = getArmy().getConnection();
+			r.squad = id;
+			r.request = "ADDTOWER";
+			r.i0 = getArmy().base.getLogo();
+			r.f0 = v.x;
+			r.f1 = v.y;
+			getArmy().getNetwork().getClient().sendTCP(r);
+				
 		}
 		
 		if (addbarrier) 
