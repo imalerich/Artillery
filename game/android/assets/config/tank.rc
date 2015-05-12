@@ -5,15 +5,15 @@ UNIT
 	speed: 130
 	health: 46
 	movedist: 768
-	reqbonus: 200
-	reqcost: 300
+	reqbonus: 600
+	reqcost: 500
 
 END
 
 ARMOR
 
 	health: 32
-	strength: 12
+	strength: 62
 
 END
 

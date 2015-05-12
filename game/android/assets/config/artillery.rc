@@ -31,8 +31,8 @@ END
 ARMS
 
 	bounce_cost: 500
-	incinerate_cost: 500
-	div_cost: 600
-	break_cost: 850
+	incinerate_cost: 0
+	div_cost: 900
+	break_cost: 1000
 
 END

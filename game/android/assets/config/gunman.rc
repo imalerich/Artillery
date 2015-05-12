@@ -1,13 +1,13 @@
- # contains the settings for the default gunman
+ # contains the settings for a gunman unit
 
 UNIT
 
 	count: 6
 	speed: 160
 	health: 10
-	movedist: 1024
-	reqcost: 300
-	reqbonus: 25 
+	movedist: 768
+	reqcost: 200
+	reqbonus: 100
 
 END
 
@@ -23,7 +23,7 @@ PRIMARY
 	type: UNIT 
 	range: 512
 	firerate: 1
-	strength: 8
+	strength: 4
 	speed: 800
 	accuracy: 0.8
 
