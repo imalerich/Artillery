@@ -101,7 +101,7 @@ public class MainMenu
 		}
 		
 		if (status != WAITING) {
-			if (network.isLobbyFull() && network.getClient() != null) {
+			if (network.isLobbyFull() && network.getUserClient() != null) {
 				return initGame();
 			}
 		}
@@ -150,7 +150,7 @@ public class MainMenu
 		} else if (status == HOST) {
 			drawHost(Batch);
 		} else if (status == CLIENT) {
-			if (network.getClient().isConnected()) {
+			if (network.getUserClient().isConnected()) {
 				drawHost(Batch);
 			} else {
 				drawClient(Batch);
@@ -283,13 +283,18 @@ public class MainMenu
 	{
 		status = HOST;
 		network.initHost();
-		network.initClient();
+		network.initUserClient();
+
+		// fill empty slots with computers
+		for (int i=0; i<network.getLobbySize()-1; i++) {
+			network.initCompClient();
+		}
 	}
 	
 	private void setAsClient()
 	{
 		status = CLIENT;
-		network.initClient();
+		network.initUserClient();
 	}
 	
 	public GameWorld initGame()

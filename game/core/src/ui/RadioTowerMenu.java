@@ -54,7 +54,7 @@ public class RadioTowerMenu
 		r.i1 = xpos;
 		r.source = Selected.getArmy().getConnection();
 		
-		Selected.getArmy().getNetwork().getClient().sendTCP(r);
+		Selected.getArmy().getNetwork().getUserClient().sendTCP(r);
 		Selected.setTargetX(xpos);
 		Selected.addOutpostOnFinishMove(true);
 	}

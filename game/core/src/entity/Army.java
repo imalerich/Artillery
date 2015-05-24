@@ -116,6 +116,11 @@ public abstract class Army
 		addTower( new RadioTower(world, new Vector2(base.getPos().x + MilitaryBase.getWidth()-RadioTower.Tower.getWidth(), 
 				base.getPos().y), base.getLogo(), false) );
 	}
+
+	public MilitaryBase getBase()
+	{
+		return base;
+	}
 	
 	public void setColor(Color C)
 	{

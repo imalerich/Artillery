@@ -20,7 +20,9 @@ import com.mygdx.game.MilitaryBase;
 import config.ConfigSettings;
 import config.SquadConfigs;
 import entity.Classification;
+import entity.Army;
 import entity.RemoteArmy;
+import entity.CompArmy;
 import entity.Squad;
 import entity.Tank;
 import entity.UserArmy;
@@ -73,38 +75,9 @@ public class Recipient
 		} catch (InterruptedException e) {
 			System.err.println("Error: thread sleep interrupted.");
 		}
-		
-		// add the hosts base to the game world
-		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
-		
-		MilitaryBase base = new MilitaryBase(pos, game.getTerrain());
-		base.setLogo(id-1);
-		owned = new UserArmy(game, base, game.getTerrain(), parent, c.getID());
-		game.setUserArmy(owned);
-		
-		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, owned, Classification.TANK);
-		squad.setPrimary(tankSettings.getFirstPrimary());
-		squad.setArmor(tankSettings.getFirstArmor());
-		
-		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
-		tank.getPos( new Vector2(base.getPos().x + 70, base.getPos().y) );
-		tank.setBarrelOffset( new Vector2(17, 64-35) );
-		squad.addUnit(tank);
-		squad.setBarrelSrc( new Vector2(17, 64-35) );
-		owned.addSquad(squad);
-		
-		// set the camera to center the base
-		Vector2 campos = game.getCam().getPos();
-		campos.x = base.getMidX() - Game.SCREENW/2f;
-		if (campos.x < 0) 
-			campos.x += Game.WORLDW;
-		else if (campos.x > Game.WORLDW) 
-			campos.x -= Game.WORLDW;
-		
-		campos.y = (base.getPos().y + MilitaryBase.getHeight()/2f) - (Game.SCREENH/2f);
-		campos.y = Math.min(campos.y, Game.WORLDH-Game.SCREENH);
-		campos.y = Math.max(campos.y, 0f);
-		game.getCam().setPos(campos);
+
+		addUserArmy();
+		centerCameraAroundUser();
 	}
 	
 	public void readRemoteArmies()
@@ -269,27 +242,64 @@ public class Recipient
 	{
 		return c;
 	}
+
+	public void addUserArmy()
+	{
+		owned = new UserArmy(game, baseForID(pos, id), game.getTerrain(), parent, c.getID());
+		addStartupToArmy(owned, pos, 70);
+		game.setUserArmy(owned);
+	}
 	
 	public void addNetworkedArmy(int Pos, int TankOffset, int ID)
 	{
-		// add the hosts base to the game world
+		RemoteArmy army = new RemoteArmy(game, baseForID(Pos, ID), game.getTerrain(), parent, ID);
+		addStartupToArmy(army, Pos, TankOffset);
+		game.addEnemyArmy(army);
+	}
+
+	public void addCompArmy(int Pos, int TankOffset, int ID)
+	{
+		CompArmy army = new CompArmy(game, baseForID(Pos, ID), game.getTerrain(), parent, ID);
+		addStartupToArmy(army, Pos, TankOffset);
+		game.addEnemyArmy(army);
+	}
+
+	public MilitaryBase baseForID(int Pos, int ID)
+	{
+		MilitaryBase base = new MilitaryBase(Pos, game.getTerrain());
+		base.setLogo(ID-1);
+		return base;
+	}
+
+	public void addStartupToArmy(Army A, int Pos, int TankOffset)
+	{
 		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
 		
-		MilitaryBase base = new MilitaryBase(Pos, game.getTerrain());
-		base.setLogo(id-1);
-		RemoteArmy army = new RemoteArmy(game, base, game.getTerrain(), parent, ID);
-		
-		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, army, Classification.TANK);
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, A, Classification.TANK);
 		squad.setPrimary(tankSettings.getFirstPrimary());
 		squad.setArmor(tankSettings.getFirstArmor());
 		
 		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
-		tank.getPos( new Vector2(base.getPos().x + TankOffset, base.getPos().y) );
+		tank.getPos( new Vector2(A.getBase().getPos().x + TankOffset, A.getBase().getPos().y) );
 		tank.setBarrelOffset( new Vector2(17, 64-35) );
 		squad.addUnit(tank);
 		squad.setBarrelSrc( new Vector2(17, 64-35) );
-		army.addSquad(squad);
+		A.addSquad(squad);
+	}
+
+	public void centerCameraAroundUser()
+	{
+		// set the camera to center the base
+		Vector2 campos = game.getCam().getPos();
+		campos.x = owned.getBase().getMidX() - Game.SCREENW/2f;
+		if (campos.x < 0) 
+			campos.x += Game.WORLDW;
+		else if (campos.x > Game.WORLDW) 
+			campos.x -= Game.WORLDW;
 		
-		game.addEnemyArmy(army);
+		campos.y = (owned.getBase().getPos().y + MilitaryBase.getHeight()/2f) - (Game.SCREENH/2f);
+		campos.y = Math.min(campos.y, Game.WORLDH-Game.SCREENH);
+		campos.y = Math.max(campos.y, 0f);
+		game.getCam().setPos(campos);
 	}
 }

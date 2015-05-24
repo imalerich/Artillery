@@ -185,7 +185,7 @@ public class Squad
 			r.f0 = xpos;
 			r.i0 = getArmy().getConnection();
 			r.i1 = secondary.getStrength();
-			getArmy().getNetwork().getClient().sendTCP(r);
+			getArmy().getNetwork().getUserClient().sendTCP(r);
 		}
 	}
 	
@@ -909,7 +909,7 @@ public class Squad
 			r.i0 = getArmy().base.getLogo();
 			r.f0 = v.x;
 			r.f1 = v.y;
-			getArmy().getNetwork().getClient().sendTCP(r);
+			getArmy().getNetwork().getUserClient().sendTCP(r);
 				
 		}
 		
@@ -937,7 +937,7 @@ public class Squad
 			r.i1 = u.getID();
 			r.f0 = u.getPos().x;
 			r.f1 = u.getPos().y;
-			getArmy().getNetwork().getClient().sendTCP(r);
+			getArmy().getNetwork().getUserClient().sendTCP(r);
 		}
 	}
 	

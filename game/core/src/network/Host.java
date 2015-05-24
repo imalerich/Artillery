@@ -30,10 +30,6 @@ public class Host
 		for (int i=0; i<lobbysize; i++) {
 			// will be used for an actual base
 			seed.addBase(offset*i, MilitaryBase.getWidth());
-			
-			// will be used for a requisition point
-			// for (int k=0; k<outpostsPerSide; k++) 
-			// 	seed.addOutpost(offset*i + offset * ( (k+1)/(outpostsPerSide + 1)), RadioTower.Tower.getWidth());
 		}
 		
 		s = new Server();

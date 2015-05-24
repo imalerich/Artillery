@@ -183,7 +183,7 @@ public class GameWorld
 		r.req = "FirstTurn";
 		r.i0 = 0;
 
-		userArmy.getNetwork().getClient().sendTCP(r);
+		userArmy.getNetwork().getUserClient().sendTCP(r);
 	}
 	
 	public void addFriendlyArmy(Army Add)
@@ -733,7 +733,7 @@ public class GameWorld
 				r.source = userArmy.getConnection();
 				r.req = "NextTurn";
 
-				userArmy.getNetwork().getClient().sendTCP(r);
+				userArmy.getNetwork().getUserClient().sendTCP(r);
 			}
 			
 			currentTurn = null;
