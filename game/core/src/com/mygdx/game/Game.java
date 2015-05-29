@@ -50,6 +50,7 @@ public class Game extends ApplicationAdapter
 	private static final int MINHEIGHT = 400;
 	private static final int MAXHEIGHT = 1200;
 	
+	public static boolean NETWORKED = false;
 	public static boolean SOUND = false;
 	
 	public static int WINDOWW =	960;
@@ -107,7 +108,8 @@ public class Game extends ApplicationAdapter
 		proj = new OrthographicCamera();
 		proj.setToOrtho(false, SCREENW, SCREENH);
 		
-		network = new NetworkManager();
+		if (Game.NETWORKED) 
+			network = new NetworkManager();
 		menu = new MainMenu(network);
 	}
 	

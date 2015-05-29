@@ -5,7 +5,9 @@ import physics.GameWorld;
 import terrain.Background;
 import terrain.Terrain;
 import terrain.TerrainSeed;
+import terrain.SeedGenerator;
 
+import com.mygdx.game.MilitaryBase;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -17,6 +19,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Camera;
 import com.mygdx.game.Cursor;
 import com.mygdx.game.Game;
+
+import config.ConfigSettings;
+import config.SquadConfigs;
+import entity.Classification;
+import entity.Army;
+import entity.RemoteArmy;
+import entity.CompArmy;
+import entity.Squad;
+import entity.Tank;
+import entity.UserArmy;
 
 public class MainMenu 
 {
@@ -38,7 +50,8 @@ public class MainMenu
 	private Texture lobbyback;
 	private Texture lobbyslot;
 	private Texture lobbyadd;
-	
+
+	private int localLobbySize = 1;
 	private double time = 0.0;
 	private int lpos = 0;
 	
@@ -101,6 +114,12 @@ public class MainMenu
 		}
 		
 		if (status != WAITING) {
+			// the game is not networked, we can init the game right away
+			if (!Game.NETWORKED) {
+				return initGame();
+			}
+
+			// we are playing on a network so we must wait for people to connect
 			if (network.isLobbyFull() && network.getUserClient() != null) {
 				return initGame();
 			}
@@ -150,7 +169,9 @@ public class MainMenu
 		} else if (status == HOST) {
 			drawHost(Batch);
 		} else if (status == CLIENT) {
-			if (network.getUserClient().isConnected()) {
+			if (!Game.NETWORKED) {
+				drawHost(Batch);
+			} else if (network.getUserClient().isConnected()) {
 				drawHost(Batch);
 			} else {
 				drawClient(Batch);
@@ -175,13 +196,17 @@ public class MainMenu
 			float offsety = lobbyslot.getHeight()/2f - lobbyadd.getHeight()/2f;
 			if (Cursor.isMouseOver(sizebox[i], tmp.getPos()) && Cursor.isButtonPressed(Cursor.LEFT))
 				offsety -= 2;
-			if (Cursor.isMouseOver(sizebox[i], tmp.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT))
-				network.setLobbySize(i+1);
+			if (Cursor.isMouseOver(sizebox[i], tmp.getPos()) && Cursor.isButtonJustReleased(Cursor.LEFT)) {
+				if (!Game.NETWORKED)
+					localLobbySize = i+1;
+				else
+					network.setLobbySize(i+1);
+			}
 			
 			Batch.draw(lobbyadd, sizebox[i].x + offsetx, sizebox[i].y + offsety);
 		}
 		
-		for (int i=0; i<network.getLobbySize(); i++) {
+		for (int i=0; i < (Game.NETWORKED ? network.getLobbySize() : localLobbySize); i++) {
 			Batch.draw(lobbyslot, sizebox[i].x, sizebox[i].y);
 		}
 	}
@@ -202,8 +227,8 @@ public class MainMenu
 		// draw the buttons
 		Batch.draw(loadingbar, xpos, ypos);
 		
-		int lobbysize = network.lobbySize();
-		int lobbycount = network.lobbyConnected();
+		int lobbysize = Game.NETWORKED ? network.lobbySize() : localLobbySize;
+		int lobbycount = Game.NETWORKED ? network.lobbyConnected() : localLobbySize;
 		
 		for (int i=0; i<lobbycount; i++) {
 			Batch.draw(greenbutton, xpos+3+(15*i), ypos+3);
@@ -282,32 +307,42 @@ public class MainMenu
 	private void setAsHost()
 	{
 		status = HOST;
-		network.initHost();
-		network.initUserClient();
 
-		// fill empty slots with computers
-		for (int i=0; i<network.getLobbySize()-1; i++) {
-			network.initCompClient();
+		if (Game.NETWORKED) {
+			network.initHost();
+			network.initUserClient();
 		}
 	}
 	
 	private void setAsClient()
 	{
 		status = CLIENT;
-		network.initUserClient();
+
+		if (Game.NETWORKED)
+			network.initUserClient();
 	}
 	
 	public GameWorld initGame()
 	{
 		// get the terrain from the network
-		TerrainSeed seed = network.getSeed();
-		while (seed == null)
+		TerrainSeed seed = Game.NETWORKED ? network.getSeed() : null;
+		while (seed == null && Game.NETWORKED)
 			seed = network.getSeed();
+		if (seed == null)
+			seed = buildLocalSeed();
+
 		Terrain ter = new Terrain( seed );
 		
 		// initialize the physics world
 		GameWorld physics = new GameWorld(ter);
-		network.setGameWorld(physics);
+		if (network != null) 
+			network.setGameWorld(physics);
+
+		// If we are not networked initialize a non-networked game
+		if (!Game.NETWORKED) {
+			buildLocalArmies(physics);
+			return physics;
+		}
 		
 		try {
 			// if host, dispatch armies to clients
@@ -325,5 +360,56 @@ public class MainMenu
 		}
 	
 		return physics;
+	}
+
+	private TerrainSeed buildLocalSeed()
+	{
+		TerrainSeed seed = SeedGenerator.generateSeed(Game.WORLDW, Game.WORLDH);
+
+		int offset = Game.WORLDW/localLobbySize;
+		for (int i=0; i<localLobbySize; i++) {
+			// will be used for an actual base
+			seed.addBase(offset*i, MilitaryBase.getWidth());
+		}
+
+		return seed;
+	}
+
+	private void buildLocalArmies(GameWorld game)
+	{
+		addUserArmy(game);
+	}
+
+	private UserArmy addUserArmy(GameWorld game)
+	{
+		UserArmy tmp = new UserArmy(game, baseForID(game, 0, 1), game.getTerrain(), null, -1);
+		addStartupToArmy(game, tmp, 0, 70);
+		game.setUserArmy(tmp);
+
+		System.out.println("Creating local user army.");
+		return tmp;
+	}
+
+	public MilitaryBase baseForID(GameWorld game, int Pos, int ID)
+	{
+		MilitaryBase base = new MilitaryBase(0, game.getTerrain());
+		base.setLogo(ID-1);
+		return base;
+	}
+
+	private void addStartupToArmy(GameWorld game, Army A, int Pos, int TankOffset)
+	{
+		ConfigSettings tankSettings = SquadConfigs.getConfiguration(SquadConfigs.TANK);
+		
+		Squad squad = new Squad(game.getTerrain(), tankSettings.maxmovedist, A, Classification.TANK);
+		squad.setPrimary(tankSettings.getFirstPrimary());
+		squad.setArmor(tankSettings.getFirstArmor());
+		
+		Tank tank = new Tank("img/tanks/Tank1.png", game.getTerrain(), tankSettings.speed, tankSettings.health);
+		tank.getPos( new Vector2(A.getBase().getPos().x + TankOffset, A.getBase().getPos().y) );
+		tank.setBarrelOffset( new Vector2(17, 64-35) );
+		squad.addUnit(tank);
+		squad.setBarrelSrc( new Vector2(17, 64-35) );
+		A.addSquad(squad);
 	}
 }

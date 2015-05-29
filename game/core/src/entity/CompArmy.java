@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Iterator;
+
 import network.NetworkManager;
 import network.Response;
 import physics.CombatResolver;
@@ -69,6 +71,10 @@ public class CompArmy extends Army {
 	@Override
 	public void catchMessage(Response r) 
 	{
+		if (getConnection() == r.source)
+			return;
+
+		System.out.println("Adding response to queue: " + r.request + '.');
 		response.add(r);
 	}
 	
@@ -117,13 +123,26 @@ public class CompArmy extends Army {
 	@Override
 	public void initStage(Camera Cam, int NewStage)
 	{
-		//
+		if (NewStage == GameWorld.ATTACKSELECT) {
+			checkForFoxOccupancy(Cam.getPos());
+
+			Iterator<Squad> s = squads.iterator();
+			while (s.hasNext())
+				s.next().checkUnitFireDamage();
+		}
+
+		// TODO - the stage will be set to uncomplete here
 	}
 	
 	@Override
 	public void addSquad(Squad Add)
 	{
-		//
+		// set the id for this squad
+		Add.setID(squadid);
+		Add.takesDirectDamage(true);
+		squadid++;
+
+		squads.add(Add);
 	}
 
 	@Override

@@ -197,10 +197,13 @@ public abstract class Unit
 	public void damage(float Dmg)
 	{
 		if (!takedirectdamage) {
+			System.out.println("The target unit does not take direct damage.\n");
 			return;
 		}
 		
+		System.out.print("Health was " + health + ". . . ");
 		health -= Dmg;
+		System.out.println("but now is " + health + "!\n");
 		
 		// inform remote squads of the damage
 		Response r = new Response();

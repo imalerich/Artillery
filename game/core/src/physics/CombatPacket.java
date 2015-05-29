@@ -289,15 +289,20 @@ public class CombatPacket
 	
 	private void procHit()
 	{
+		System.out.println("Now processing the hit.\n");
 		double doeshit = Math.random();
 		if (doeshit > arms.getAccuracy()) {
+			System.out.println("The attack missed!\n");
 			// return early, the attack missed
 			return;
 		}
 		
 		float dmg = Math.max(arms.getStrength() - defense.getArmor().getStrength(), 0);
-		if (distancetraveled > AppConfigs.Fox.MINFOXDIST && targetInFox)
+		System.out.println("Ready to deal out: " + dmg + " units of damage.");
+		if (distancetraveled > AppConfigs.Fox.MINFOXDIST && targetInFox) {
+			System.out.println("No damage dealt - the target is in a Fox Hole!");
 			dmg = 0f;
+		}
 		
 		defense.getArmor().damage(arms.getStrength());
 		defense.damage(dmg);

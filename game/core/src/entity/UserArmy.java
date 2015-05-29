@@ -124,6 +124,9 @@ public class UserArmy extends Army
 	@Override
 	public void catchMessage(Response r) 
 	{
+		if (getConnection() == r.source)
+			return;
+
 		response.add(r);
 	}
 	
@@ -194,7 +197,8 @@ public class UserArmy extends Army
 				r.request = "MOVESELECT";
 				r.b0 = true;
 				
-				network.getUserClient().sendTCP(r);
+				if (Game.NETWORKED)
+					network.getUserClient().sendTCP(r);
 			}
 			
 			return stagecompleted[Stage];
@@ -210,7 +214,8 @@ public class UserArmy extends Army
 			r.request = "MOVEUPDATE";
 			r.b0 = true;
 
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 				
 			return true;
 			
@@ -230,7 +235,8 @@ public class UserArmy extends Army
 				r.request = "ATTACKSELECT";
 				r.b0 = true;
 				
-				network.getUserClient().sendTCP(r);
+				if (Game.NETWORKED)
+					network.getUserClient().sendTCP(r);
 			}
 			
 			return stagecompleted[Stage];
@@ -417,7 +423,8 @@ public class UserArmy extends Army
 			r.i2 = 0;
 			r.b0 = true;
 
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 		}
 		
 		buildOptionStack(Cam, true);
@@ -720,7 +727,8 @@ public class UserArmy extends Army
 			r.i1 = selected.getTargetX();
 			r.source = getConnection();
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -851,7 +859,8 @@ public class UserArmy extends Army
 				r.i2 = xpos;
 				r.b0 = spawn.isForward();
 
-				network.getUserClient().sendTCP(r);
+				if (Game.NETWORKED)
+					network.getUserClient().sendTCP(r);
 			}
 			
 			// leave the menu
@@ -942,7 +951,8 @@ public class UserArmy extends Army
 		r.f0 = Pos.x;
 		r.f1 = Pos.y;
 
-		network.getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			network.getUserClient().sendTCP(r);
 	}
 	
 	public void addBarricade(Vector2 Pos)
@@ -956,7 +966,8 @@ public class UserArmy extends Army
 		r.f0 = Pos.x;
 		r.f1 = Pos.y;
 		
-		network.getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			network.getUserClient().sendTCP(r);
 	}
 	
 	private void updateOffenseButtons(Vector2 Campos)
@@ -1036,7 +1047,9 @@ public class UserArmy extends Army
 			r.request = "CANCELATTACK";
 			r.source = getConnection();
 			r.squad = selected.getID();
-			network.getUserClient().sendTCP(r);
+
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1095,7 +1108,9 @@ public class UserArmy extends Army
 			r.source = getConnection();
 			r.squad = selected.getID();
 			r.b0 = selected.doSwapState();
-			network.getUserClient().sendTCP(r);
+
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1115,7 +1130,9 @@ public class UserArmy extends Army
 			r.source = getConnection();
 			r.squad = selected.getID();
 			r.b0 = selected.doSwapState();
-			network.getUserClient().sendTCP(r);
+
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			menuactive = false;
 			menurelease = false;
@@ -1186,7 +1203,8 @@ public class UserArmy extends Army
 			r.i1 = moveselect.getTargetX();
 			r.source = getConnection();
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 		} else if (Cursor.isButtonJustPressed(Cursor.RIGHT))
 			moveactive = false;
@@ -1234,7 +1252,8 @@ public class UserArmy extends Army
 			r.i2 = t.getID(); // squad that is being shot at
 			selected.getPrimary().setNetworkData(r);
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 		}
 	}
 	
@@ -1319,7 +1338,8 @@ public class UserArmy extends Army
 			r.b1 = selected.isForward();
 			selected.getPrimary().setNetworkData(r);
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			return;
 		}
@@ -1374,7 +1394,8 @@ public class UserArmy extends Army
 			r.f1 = selected.getPowerRatio();
 			selected.getPrimary().setNetworkData(r);
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			return;
 		}
@@ -1429,7 +1450,8 @@ public class UserArmy extends Army
 			r.b1 = selected.isForward();
 			r.f1 = selected.getPowerRatio();
 			
-			network.getUserClient().sendTCP(r);
+			if (Game.NETWORKED)
+				network.getUserClient().sendTCP(r);
 			
 			return;
 		}

@@ -255,6 +255,9 @@ public class RemoteArmy extends Army
 	@Override
 	public void catchMessage(Response r) 
 	{
+		if (getConnection() == r.source)
+			return;
+
 		response.add(r);
 	}
 	

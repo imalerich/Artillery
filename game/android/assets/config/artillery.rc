@@ -3,7 +3,7 @@
 GAME
 
 	audio_enabled: false 
-	world_width: 7680
+	world_width: 3840
 	world_height: 1200
 	cam_pan_speed: 1
 

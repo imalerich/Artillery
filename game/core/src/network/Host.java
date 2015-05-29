@@ -107,7 +107,7 @@ public class Host
 				} else if (object instanceof Response) {
 					// pass the message to all other clients to be processed
 					Response r = (Response)object;
-					s.sendToAllExceptTCP(r.source, r);
+					s.sendToAllTCP(r);
 					
 				}
 			}

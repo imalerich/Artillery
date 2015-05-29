@@ -76,7 +76,7 @@ public class Recipient
 			System.err.println("Error: thread sleep interrupted.");
 		}
 
-		addUserArmy();
+		owned = addUserArmy();
 		centerCameraAroundUser();
 	}
 	
@@ -243,11 +243,14 @@ public class Recipient
 		return c;
 	}
 
-	public void addUserArmy()
+	public UserArmy addUserArmy()
 	{
-		owned = new UserArmy(game, baseForID(pos, id), game.getTerrain(), parent, c.getID());
-		addStartupToArmy(owned, pos, 70);
-		game.setUserArmy(owned);
+		UserArmy tmp = new UserArmy(game, baseForID(pos, id), game.getTerrain(), parent, c.getID());
+		addStartupToArmy(tmp, pos, 70);
+		game.setUserArmy(tmp);
+
+		System.out.println("Creating user army with network ID: " + c.getID() + '.');
+		return tmp;
 	}
 	
 	public void addNetworkedArmy(int Pos, int TankOffset, int ID)
@@ -255,13 +258,8 @@ public class Recipient
 		RemoteArmy army = new RemoteArmy(game, baseForID(Pos, ID), game.getTerrain(), parent, ID);
 		addStartupToArmy(army, Pos, TankOffset);
 		game.addEnemyArmy(army);
-	}
-
-	public void addCompArmy(int Pos, int TankOffset, int ID)
-	{
-		CompArmy army = new CompArmy(game, baseForID(Pos, ID), game.getTerrain(), parent, ID);
-		addStartupToArmy(army, Pos, TankOffset);
-		game.addEnemyArmy(army);
+		
+		System.out.println("\nCreating networked army with network ID: " + ID + '.');
 	}
 
 	public MilitaryBase baseForID(int Pos, int ID)

@@ -28,10 +28,13 @@ public class Armor
 	
 	public void damage(int Ammount)
 	{
+		System.out.println("Dealing " + Ammount + " in damage to Units armor.");
 		health = Math.max(health-Ammount, 0);
+		System.out.println("Armor health is now at " + health + '.');
 		
 		// the less health the armor has, the less damage it can withstand
 		strength = (int)(maxstrength * ((float)health/maxhealth));
+		System.out.println("Armor strength is now at " + strength + ".\n");
 	}
 	
 	public int getMaxHealth()
