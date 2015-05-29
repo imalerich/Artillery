@@ -183,7 +183,8 @@ public class GameWorld
 		r.req = "FirstTurn";
 		r.i0 = 0;
 
-		userArmy.getNetwork().getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			userArmy.getNetwork().getUserClient().sendTCP(r);
 	}
 	
 	public void addFriendlyArmy(Army Add)
@@ -733,14 +734,28 @@ public class GameWorld
 				r.source = userArmy.getConnection();
 				r.req = "NextTurn";
 
-				userArmy.getNetwork().getUserClient().sendTCP(r);
+				if (Game.NETWORKED)
+					userArmy.getNetwork().getUserClient().sendTCP(r);
 			}
 			
-			currentTurn = null;
+			if (Game.NETWORKED)
+				currentTurn = null;
+			else
+				setLocalNextTurn();
 		}
 		
 		initNewStage();
 		initResolver();
+	}
+
+	private void setLocalNextTurn()
+	{
+		int current = currentTurn.getConnection();
+		int lobbySize = friendlyArmy.size() + enemyArmy.size();
+		current = current == lobbySize ? 0 : current + 1;
+
+		System.out.println("The turn has been locally set to the army at slot " + current + ".\n");
+		currentTurn = getRemoteArmy(current);
 	}
 	
 	public Particles getParticles()

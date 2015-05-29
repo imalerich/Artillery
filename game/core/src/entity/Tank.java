@@ -240,8 +240,14 @@ public class Tank extends Unit
 		
 		// draw the tanks health
 		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) && drawhealth) {
-			Shaders.setShader(Batch, Shaders.health);
-			int h = (int)(height * (float)health/maxhealth);
+			int h = height;
+			if (armor.getHealth() == 0) {
+				Shaders.setShader(Batch, Shaders.health);
+				h = (int)(height * (float)health/maxhealth);
+			} else {
+				Shaders.setShader(Batch, Shaders.armor);
+				h = (int)(height * (float)armor.getHealth()/armor.getMaxHealth());
+			}
 			
 			render(Batch, Cam, 0, 0, h);
 			Shaders.revertShader(Batch);

@@ -214,7 +214,8 @@ public abstract class Unit
 		r.f0 = health;
 		r.f1 = maxhealth;
 		
-		getSquad().getArmy().getNetwork().getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			getSquad().getArmy().getNetwork().getUserClient().sendTCP(r);
 	}
 	
 	public void setMaxHealth()
@@ -238,7 +239,8 @@ public abstract class Unit
 		r.i1 = getID();
 		r.f0 = health;
 		
-		getSquad().getArmy().getNetwork().getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			getSquad().getArmy().getNetwork().getUserClient().sendTCP(r);
 	}
 	
 	public Vector2 getPos()

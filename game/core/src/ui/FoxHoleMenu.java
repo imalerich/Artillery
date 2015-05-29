@@ -54,7 +54,8 @@ public class FoxHoleMenu
 		r.i1 = xpos;
 		r.source = Selected.getArmy().getConnection();
 		
-		Selected.getArmy().getNetwork().getUserClient().sendTCP(r);
+		if (Game.NETWORKED)
+			Selected.getArmy().getNetwork().getUserClient().sendTCP(r);
 		Selected.setTargetX(xpos);
 		Selected.addFoxOnFinishMove(new Vector2(pos), true);
 	}

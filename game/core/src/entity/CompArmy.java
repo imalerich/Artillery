@@ -13,6 +13,7 @@ import objects.RadioTower;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Game;
 import com.mygdx.game.Camera;
 import com.mygdx.game.MilitaryBase;
 
@@ -139,7 +140,7 @@ public class CompArmy extends Army {
 	{
 		// set the id for this squad
 		Add.setID(squadid);
-		Add.takesDirectDamage(true);
+		Add.takesDirectDamage(!Game.NETWORKED);
 		squadid++;
 
 		squads.add(Add);

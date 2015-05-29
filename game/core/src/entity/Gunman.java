@@ -185,8 +185,15 @@ public class Gunman extends Unit
 		}
 		
 		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) && drawhealth) {
-			Shaders.setShader(Batch, Shaders.health);
-			int h = (int)(height * (float)health/maxhealth);
+			int h = height;
+			if (armor.getHealth() == 0) {
+				Shaders.setShader(Batch, Shaders.health);
+				h = (int)(height * (float)health/maxhealth);
+			} else {
+				Shaders.setShader(Batch, Shaders.armor);
+				h = (int)(height * (float)armor.getHealth()/armor.getMaxHealth());
+			}
+
 			drawAnim(Batch, Cam, index, Coords, width, h, true);
 			Shaders.revertShader(Batch);
 		}

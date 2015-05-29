@@ -1,5 +1,6 @@
 package menu;
 
+import java.util.Vector;
 import network.NetworkManager;
 import physics.GameWorld;
 import terrain.Background;
@@ -377,22 +378,43 @@ public class MainMenu
 
 	private void buildLocalArmies(GameWorld game)
 	{
-		addUserArmy(game);
+		Vector<Army> armies = new Vector<Army>();
+		UserArmy user = addUserArmy(game, 0);
+		armies.add(user);
+
+		for (int i=1; i<localLobbySize; i++) {
+			armies.add( addCompArmy(game, 70, i) );
+		}
+
+		int index = (int)(Math.random() * armies.size());
+		game.setCurrentTurn(index);
 	}
 
-	private UserArmy addUserArmy(GameWorld game)
+	private UserArmy addUserArmy(GameWorld game, int index)
 	{
-		UserArmy tmp = new UserArmy(game, baseForID(game, 0, 1), game.getTerrain(), null, -1);
-		addStartupToArmy(game, tmp, 0, 70);
+		int pos = index * (Game.WORLDW/localLobbySize);
+		UserArmy tmp = new UserArmy(game, baseForID(game, pos, index), game.getTerrain(), null, index);
+		addStartupToArmy(game, tmp, index, 70);
 		game.setUserArmy(tmp);
 
-		System.out.println("Creating local user army.");
+		System.out.println("Creating local user army at slot " + index + "\n");
+		return tmp;
+	}
+
+	public CompArmy addCompArmy(GameWorld game, int TankOffset, int index)
+	{
+		int pos = index * (Game.WORLDW/localLobbySize);
+		CompArmy tmp = new CompArmy(game, baseForID(game, pos, index), game.getTerrain(), null, index);
+		addStartupToArmy(game, tmp, index, TankOffset);
+		game.addEnemyArmy(tmp);
+		
+		System.out.println("Creating local cpu army at slot " + index + "\n");
 		return tmp;
 	}
 
 	public MilitaryBase baseForID(GameWorld game, int Pos, int ID)
 	{
-		MilitaryBase base = new MilitaryBase(0, game.getTerrain());
+		MilitaryBase base = new MilitaryBase(Pos, game.getTerrain());
 		base.setLogo(ID-1);
 		return base;
 	}

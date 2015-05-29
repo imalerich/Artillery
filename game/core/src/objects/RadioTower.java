@@ -248,8 +248,15 @@ public class RadioTower extends Unit
 		}
 		
 		if (Cursor.isMouseOver(getBBox(), Cam.getPos()) &&  drawhealth) {
-			Shaders.setShader(Batch, Shaders.health);
-			int h = (int)(height * (float)health/maxhealth);
+			int h = height;
+			if (armor.getHealth() == 0) {
+				Shaders.setShader(Batch, Shaders.health);
+				h = (int)(height * (float)health/maxhealth);
+			} else {
+				Shaders.setShader(Batch, Shaders.armor);
+				h = (int)(height * (float)armor.getHealth()/armor.getMaxHealth());
+			}
+
 			Batch.draw(Tower, Cam.getRenderX(pos.x), Cam.getRenderY(pos.y), 
 					Tower.getWidth(), h, 0, height-h, Tower.getWidth(), h, false, false);
 			

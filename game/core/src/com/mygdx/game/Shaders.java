@@ -10,6 +10,7 @@ public class Shaders
 	public static ShaderProgram target;
 	public static ShaderProgram enemy;
 	public static ShaderProgram health;
+	public static ShaderProgram armor;
 	public static ShaderProgram nulltank;
 	
 	private static ShaderProgram current;
@@ -31,6 +32,9 @@ public class Shaders
 		
 		if (nulltank != null)
 			nulltank.dispose();
+
+		if (armor != null)
+			armor.dispose();
 	}
 	
 	public static void init()
@@ -45,12 +49,14 @@ public class Shaders
 		String tfshader = Gdx.files.internal("shaders/target.fs").readString();
 		String efshader = Gdx.files.internal("shaders/enemy.fs").readString();
 		String healthshader = Gdx.files.internal("shaders/health.fs").readString();
+		String armorshader = Gdx.files.internal("shaders/armor.fs").readString();
 		String nullshader = Gdx.files.internal("shaders/null.fs").readString();
-		
+
 		hili = new ShaderProgram(vshader, fshader);
 		enemy = new ShaderProgram(vshader, efshader);
 		target = new ShaderProgram(vshader, tfshader);
 		health = new ShaderProgram(vshader, healthshader);
+		armor = new ShaderProgram(vshader, armorshader);
 		nulltank = new ShaderProgram(vshader, nullshader);
 	}
 	
